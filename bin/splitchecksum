@@ -1,0 +1,130 @@
+#!/usr/bin/env libui
+#####
+#
+#	Split Checksum
+#
+#	F Harvell - Thu May 20 20:35:52 EDT 2021
+#
+#####
+#
+# {libui tool} Used to split a file and get block checksums.
+#
+# Man page available for this script: man 1 splitchecksum
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.11
+
+# load mods
+LoadMod File
+
+##### configuration
+
+# defaults
+GetTmp tmpdir
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n split -i 100 -k 'Lines' -d 'Specify the number of lines to include in each split.' s:
+AddParameter -r -m -d 'The path of each file to be checked.' files
+
+##### callbacks
+
+# initialization callback
+InitCallback () {
+  Trace 'Program initialization.'
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+# loop through files
+for file in "${files[@]}"
+do
+  # print filename if multiple files
+  ((1 < ${#files[@]})) && Tell '%s:' "${file##*/}"
+
+  # verify variables are defined
+  ConfirmVar -f file
+
+  # get file directory
+  dir=$([[ -d "${file%/*}" ]] && cd "${file%/*}"; pwd)
+
+  # change to tmp directory
+  Trace 'Change directory to %s.' "${tmpdir}"
+  pushd ${tmpdir} > /dev/null
+
+  # split the file into blocks
+  Trace 'Split the file. (%s)' "${dir}/${file##*/}"
+  Action "split -l ${split} \"${dir}/${file##*/}\" ${file##*/}-"
+
+  # get the block list
+  blocks=( ${file##*/}-*(N) )
+
+  # get line counts
+  Trace 'Get line count. (%s)' "${dir}/${file##*/}"
+  counts=( $(wc -l "${dir}/${file##*/}") )
+  w=${#counts[1]}
+  ((t = 2 * w + 3))
+
+  # print header
+  Tell " %${t}s %8s %10s %16s %s" 'Lines' 'Bytes' 'CRC32' 'CRC32 Sum' 'Filename'
+  Tell -- "-%.${t}s %8s %10s %16s %s" '--------------' '--------' '----------' '----------------' '---------------'
+
+  # sum the blocks
+  lineno=0
+  crcsum=0
+  Trace 'Sum each block. (%s)' "${#blocks[@]}"
+  for block in "${blocks[@]}"
+  do
+    Trace 'Print line number.'
+    Tell -n "%${w}d - " ${lineno}
+    ((lineno += split))
+    ((lineno > ${counts[1]})) && lineno=${counts[1]}
+
+    Trace 'Sum block. (%s)' "${block}"
+    sum=( $(cksum "${block}") )
+    ((crcsum += sum[1]))
+    Tell -i "%${w}d: ${D3}%8s ${D5}%10s ${D6}%16s ${D8}%s" ${lineno} ${sum[2]} ${sum[1]} ${crcsum} ${sum[@]:2}
+  done
+  sum=( $(cksum "${dir}/${file##*/}") )
+  Tell -- "-%.${t}s %8s %10s %16s %s" '--------------' '--------' '----------' '----------------' '---------------'
+  Tell "%${t}d: ${D3}%8s ${D5}%10s ${D6}%16s ${D8}%s" ${lineno} ${sum[2]} ${sum[1]} ${crcsum} ${sum[@]:2}
+  ((1 < ${#files[@]})) && Tell
+
+  # return to original directory
+  popd > /dev/null
+done
+
+Trace 'Exit %s. (%s)' "${CMD}" 0
+Exit 0

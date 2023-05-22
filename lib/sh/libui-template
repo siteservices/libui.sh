@@ -1,0 +1,118 @@
+#!/usr/bin/env libui
+#####
+#
+#	Libui Template - Sample libui.sh Script Template
+#
+#	F Harvell - Sun May 16 18:27:06 EDT 2021
+#
+#####
+#
+# Use as a template for libui-based scripts.
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.11
+
+# load mods
+LoadMod File
+
+##### configuration
+
+# defaults
+log="demo.log"
+retval=0
+GetTmp tmpdir
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show the demo status (i.e. verbosity level).' s
+
+##### callbacks
+
+# status callback
+statuslevel=0
+StatusCallback () {
+  Trace 'Increment status level.'
+  ((statuslevel++))
+}
+
+# usage information callback
+InfoCallback () {
+  Trace 'Provide usage information.'
+  cat << EOF
+This script provides a template for new scripts using the libui library.
+EOF
+}
+
+# exit callback
+ExitCallback () {
+  Trace 'In user exit callback.'
+
+  Trace 'Exit cleanup.'
+  # <exit cleanup actions>
+}
+
+# initialization callback
+InitCallback () {
+  Trace 'In user init callback.'
+
+  Trace 'Setup / verify configuration.'
+  ConfirmVar -q 'Please provide a directory path for HOME:' -d HOME
+}
+
+##### functions
+
+# <support functions here>
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+# <start demo content>
+
+Trace 'Check for show status. (%s)' "${showstatus}"
+if ${showstatus}
+then
+  Tell 'Status level is: %s' "${statuslevel}"
+fi
+
+if Verify 'Exit with success?'
+then
+  Tell 'Returning success.'
+  retval=0
+else
+  Tell 'Returning error.'
+  retval=1
+fi
+
+# <end demo content>
+
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit "${retval}"

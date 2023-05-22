@@ -1,0 +1,131 @@
+.\" Manpage for splitchecksum {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt SPLITCHECKSUM 1
+.Os
+.Sh NAME
+.Nm splitchecksum
+.Nd Split file(s) and display a checksum for each split
+.Sh SYNOPSIS
+.Sy splitchecksum
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl s Ar <split_size>
+.Op Fl X Ar <level>
+.Ar <file> ...
+.Sh DESCRIPTION
+Used to split each of the files provided and display a CRC32 checksum for each
+split.
+Also provides a CRC32 checksum for the entire file.
+If multiple files are provided, each file is separately split and displayed in a
+separate block.
+.Pp
+Example output:
+.Bd -literal
+     Lines        CRC32 Sum      CRC32    Bytes Filename
+---------- ---------------- ---------- -------- ---------------
+  0 -  50:       2144400426 2144400426     1374 splitchecksum-aa
+ 50 - 100:       4091816874 1947416448      957 splitchecksum-ab
+100 - 130:       5813064636 1721247762     1077 splitchecksum-ac
+---------- ---------------- ---------- -------- ---------------
+      130:       5813064636 2526214123     3408 /home/fharvell/.env/bin/splitchecksum
+.Ed
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy splitchecksum
+.Op Fl l Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl s Ar <split_size>
+.Op Fl X Ar <level>
+.Ar <file> ...
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl s Ar <split_size>
+Split Size
+.Pp
+Specify the size (number of lines) of each split.
+The default is 100 lines.
+.It Ar <file>
+The name of the file(s) to be processed.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The script creates a temporary directory (via GetTmp) where the splits are
+saved.
+The temporary directory should be removed upon exit.
+Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy splitchecksum path/to/file
+.Ed
+.Pp
+This splits path/to/file into one block and provides the checksum and a whole
+file checksum.
+Note: The checksums will be the same.
+.Bd -literal -offset 4n
+.Sy splitchecksum \-s 100 path/to/file
+.Ed
+.Pp
+This splits path/to/file into block of 100 lines each and provides the checksum
+for each split and a whole file checksum.
+.Sh SEE ALSO
+.Xr linechecksum 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

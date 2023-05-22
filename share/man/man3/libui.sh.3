@@ -1,0 +1,2689 @@
+.\" Manpage for libui.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 20, 2023
+.Dt LIBUI.SH 3
+.Os
+.Sh NAME
+.Nm libui.sh
+.Nd User interface support library for Z shell and Bash scripts.
+.Pp
+.Sh SYNOPSIS
+.Bd -ragged -compact
+.Sy #!/usr/bin/env libui
+.Ed
+.Pp
+Alternatively, to source libui.sh in a Z shell or Bash script, include the line:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy LIBUI=\(dq${SHLIBPATH:+${SHLIBPATH%/}/} Ns Nm Ns Sy \&\(dq; source \(dq${LIBUI}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Ed
+.Pp
+Every libui script should contain the following command:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy Version
+.Op Fl r Ar <required_libui_version>
+.Ar <script_version>
+.Ed
+.Pp
+Where
+.Ar <version>
+is the version of the script and
+.Ar <minimum_version> ,
+if provided, ensures the libui.sh library is at least that version.
+.Pp
+Every libui script should initialize the library after configuration and before
+starting the main script by using the following command:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy Initialize
+.Ed
+.Pp
+Every libui script should exit using the following:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy Exit
+.Op Ar <return_value>
+.Ed
+.Pp
+Where
+.Ar <return_value>
+is the value to be returned by the main script.
+.Sh DESCRIPTION
+The
+.Nm
+library provides a script execution environment that simplifies development of a
+robust user interface.
+The library supports several capabilities ipso facto including script usage,
+several "standard" options that help with debugging, color terminal highlights,
+and options for alternate execution flows (confirmation, no action, verbose,
+etc.).
+.Sh STANDARD OPTIONS
+Standard command line options provided by the
+.Nm
+library are:
+.Bl -tag -offset 4n -width 4n
+.It Fl C
+Confirm
+.Pp
+Confirm operations before performing them.
+.Pp
+This also sets
+.Sx ${FMFLAGS}
+to "\-i".
+.It Fl F
+Force
+.Pp
+Force file operations.
+.Pp
+This also sets
+.Sx ${FMFLAGS}
+to "\-f".
+.It Fl H
+Help
+.Pp
+Display usage information.
+.Pp
+Note: This options is also available as
+.Fl h .
+.It Fl N
+No Action
+.Pp
+Show operations without performing them.
+.It Fl Q
+Quiet
+.Pp
+Execute quietly.
+.Pp
+Do not prompt user with questions presented by the
+.Sx Ask ,
+.Sx Action ,
+or,
+.Sx Verify
+commands.
+.It Fl V
+Version
+.Pp
+Display version information.
+.It Fl X Ar <level>
+XDebug
+.Ar <level>
+.Pp
+Set debug level to
+.Ar <level> .
+.Pp
+When provided, the specified debug level and all lower levels are enabled.
+The levels are:
+.Pp
+.Bl -tag -offset 4n -width 4n  -compact
+.It Sy 9
+Library internals debugging enabled.
+.It Sy 8
+Mod debugging enabled.
+.It Sy 7
+Remote debugging enabled.
+.It Sy 6
+Context debugging enabled, i.e., provide user script file and line numbers in
+trace messages.
+.It Sy 5
+Profiling enabled, i.e., provide a timestamp in trace messages.
+.It Sy 3
+Local debugging enabled.
+.It Sy 2
+Verbose actions enabled.
+.It Sy 1
+Wait debugging enabled.
+This will pause before executing any Exit handlers, i.e., before cleaning up.
+.El
+.It Fl Y
+Yes
+.Pp
+Provide "y" or default answer to questions defined by the
+.Sx Ask ,
+.Sx Action ,
+or,
+.Sx Verify
+commands.
+.Pp
+Note: Scripts executed without a TTY imply the
+.Fl Y
+(Yes) option.
+.El
+.Pp
+Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Pp
+A libui script can be executed using the shebang:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy #!/usr/bin/env libui
+.Ed
+.Pp
+Alternatively, to source
+.Nm
+in a Z shell or Bash script, include the line:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy LIBUI=\(dq${SHLIBPATH:+${SHLIBPATH%/}/} Ns Nm Ns Sy \&\(dq; source \(dq${LIBUI}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Ed
+.Pp
+Please note that either syntax assumes:
+.Bl -enum
+.It
+The
+.Ev PATH
+environment variable contains the directory where
+.Nm
+resides, or
+.It
+The
+.Ev SHLIBPATH
+environment variable contains the directory where
+.Nm
+resides.
+.El
+.Pp
+Ideally either or both of these environment variables would be set in the user's
+login dotfiles (e.g.: .zshrc or .bashrc).
+.Pp
+Every
+.Nm
+script (or
+.Nm
+mod) should contain the following command:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy Version
+.Op Fl m
+.Op Fl r Ar <required_libui_version>
+.Ar <script_version>
+.Ed
+.Pp
+Where
+.Ar <script_version>
+declares the main script version.
+The
+.Ar <required_libui_version> ,
+recommended, requires the
+.Nm
+library loaded to be at least that version.
+Version numbers should be in the format of Major.Minor (e.g.: 1.0).
+The library
+.Ar <required_libui_version>
+must include a three-digit minor value such as
+.Em 1.011
+or
+.Em 1.822 .
+The
+.Fl m
+flag is used to indicate that the file is a
+.Nm
+mod.
+.Pp
+To initialize the library, after setting configuration options (see below), the
+main script must include the following:
+.Bd -literal -offset 4n
+.Sy Initialize
+.Ed
+.Pp
+The main script should exit using the following:
+.Bd -literal -offset 4n
+.Sy Exit Op Ar <return_value>
+.Ed
+.Pp
+Note: The
+.Nm
+library sets traps to catch signals and execute the
+.Sx Exit
+command.
+See the
+.Sx Exit
+command for more information.
+.Sh MAIN SCRIPT REQUIRED ELEMENTS
+There are a few elements that must be set up within the main script to configure
+and prepare the
+.Nm
+library.
+.Ss Version
+The following line needs to be present within the main script after sourcing the
+library:
+.Pp
+.Bd -ragged -compact -offset 4n
+.Sy Version
+.Op Fl m
+.Op Fl r Ar <required_libui_version>
+.Ar <script_version>
+.Ed
+.Pp
+The
+.Sy Version
+command provides the
+.Nm
+library with the version of the script or
+.Nm
+mod file.
+Version numbers should be in the format of Major.Minor (e.g.: 1.0).
+If other scripts are sourced within the main script, a similar version line
+should be added in each sourced script.
+Other sourced scripts, though, should perhaps be converted into
+.Nm
+library UI Mods.
+When used in a
+.Nm
+mod, the
+.Fl m
+(Mod) option should be used to indicate that the file is a
+.Nm
+mod.
+See the
+.Sx UIMOD
+section below for more information.
+.Ss Initialize
+The following line needs to be present within the main script and is used to
+initialize the
+.Nm
+library.
+.Bd -literal -offset 4n
+.Sy Initialize
+.Ed
+.Pp
+The
+.Sy Initialize
+command must be called after main script configuration and setup and before any
+.Nm
+provided command or function is executed.
+(See the
+.Sx CONFIGURATION OPTIONS
+and
+.Sx AVAILABLE COMMANDS
+sections below).
+.Pp
+During initialization, the
+.Nm
+library sources the default
+.Sy ${LIBUI_HOOKDIR}/init
+library initialization hook file, if it exists, then sources the global
+.Sy ${LIBUI_HOOKDIR}/${CMD}-init
+initialization hook file, if it exists, and then sources the local
+.Sy ${LIBUI_HOOKPREFIX}init
+initialization hook file, if it exists.
+See the
+.Sx FILES
+section below for more information.
+.Pp
+.Em IMPORTANT :
+The main script must call
+.Sy Initialize
+after all of the
+.Nm
+configuration options are defined and before any
+.Nm
+provided command or function is executed.
+(See the
+.Sx CONFIGURATION OPTIONS
+and
+.Sx AVAILABLE COMMANDS
+sections below).
+.Ss Exit
+The following command must be present within the main script to exit and provide
+a return value:
+.Bd -literal -offset 4n
+.Sy Exit Op Ar <return_value>
+.Ed
+.Pp
+The Exit command calls the defined cleanup handlers and exits the script
+returning
+.Ar <return_value> .
+The
+.Ar <return_value>
+must be an integer and defaults to the result of the last command executed.
+.Pp
+While exiting, the
+.Nm
+library sources the local
+.Sy ${LIBUI_HOOKPREFIX}exit
+exit hook file, if it exists, then sources the global
+.Sy ${LIBUI_HOOKDIR}/${CMD}-exit
+exit hook file, if it exists, and then sources the default
+.Sy ${LIBUI_HOOKDIR}/exit
+library exit hook file, if it exists.
+See the
+.Sx FILES
+section below for more information.
+.Pp
+.Em IMPORTANT :
+The main script must call
+.Sy Exit
+when exiting so that the cleanup handlers are executed.
+.Sh MAIN SCRIPT OPTIONAL ELEMENTS
+There are a few elements that may be set up within the main script to configure
+and prepare the
+.Nm
+libary.
+.Ss Initialization Callback
+The main script may create an optional initialization callback function:
+.Bd -literal -offset 4n
+.Sy InitCallback() {
+.No \  Op Ar <commands_to_execute_during_initialization>
+.Sy }
+.Ed
+.Pp
+It will be called during initialization but, after the
+.Nm
+library initialization has completed.
+This function is where all checking of the environment and conditions for proper
+operation of the script should be performed.
+Warnings and Errors generated during initialization will be displayed along with
+usage information in the event proper operation cannot continue.
+.Pp
+.Em IMPORTANT :
+The main script must define the
+.Sy InitCallback
+function prior to calling
+.Sy Initialize
+.Ss Exit Callback
+The main script may create an optional exit callback function:
+.Bd -literal -offset 4n
+.Sy ExitCallback() {
+.No \  Op Ar <commands_to_execute_before_exit>
+.Sy }
+.Ed
+.Pp
+It will be called when a signal is caught and/or prior to exit.
+.Pp
+.Em IMPORTANT :
+The main script must define the
+.Sy ExitCallback
+function prior to calling
+.Sy Initialize
+.Ss Usage Info Callback
+The main script may create an optional usage information callback function:
+.Bd -literal -offset 4n
+.Sy InfoCallback() {
+.No \  Op Ar <commands_to_execute_when_displaying_usage>
+.Sy }
+.Ed
+.Pp
+It will be called when displaying
+.Sx Usage
+information, e.g. when using the
+.Fl H
+or
+.Fl h
+(Help) options, after the
+.Nm
+library generated help text (and prior to the version information).
+See the
+.Sx Usage
+command below for more information.
+.Pp
+.Em IMPORTANT :
+The main script must define the
+.Sy InfoCallback
+function prior to calling
+.Sy Initialize
+.Sh CONFIGURATION OPTIONS
+The main script can configure
+.Nm
+operation by executing these configuration options prior to calling
+.Sy Initialize
+.Ss AddOption
+The following configuration option enables support for a script command line
+option (flag):
+.Bd -ragged -offset 4n
+.Sy AddOption
+.Op Fl a Fl f Fl m Fl r Fl t
+.Op Fl c Ar <callback>
+.Op Fl d Ar <description>
+.Op Fl i Ar <initial_value>
+.Op Fl I Ar <initial_variable>
+.Op Fl k Ar <keyword>
+.Op Fl n Ar <name>
+.Op Fl p Ar <provided_value>
+.Op Fl s Ar <selection_value>
+.Op Fl s Ar <selection_variable>
+.Op Fl v Ar <callback>
+.Ar <command_line_option> Ns Op Ar \&:
+.Ed
+.Pp
+The available options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl a
+Automatically default to the only available choice when the selection list
+provided by the
+.Fl s
+(Select Value)
+or
+.Fl S
+(Select Variable)
+option is limited to only one item.
+.It Fl c Ar <callback>
+Setup
+.Ar <callback>
+as the callback handler function to be called if the option is provided on the
+script command line.
+The option argument, if present, will be provided to the
+.Ar <callback>
+function as the first parameter.
+.Pp
+The
+.Ar <callback>
+must be provided in the main script.
+.It Fl d Ar <description>
+Use
+.Ar <description>
+as the description associated with the option.
+.Pp
+Recommended format is a "Short descriptive sentence.".
+.Pp
+Note: Please be aware that escaped characters (e.g. double quotes '"') included
+in the
+.Ar <description>
+will need to be "double escaped" (e.g.: \e\e\e").
+.It Fl f
+Shorthand to set the initial value to "false" and the provided value to "true".
+.It Fl i Ar <initial_value>
+Use
+.Ar <initial_value>
+as the value to assign to the variable associated with the option upon script
+initialization.
+.It Fl I Ar <initial_variable>
+Use the value stored in the variable with the name
+.Ar <initial_variable>
+as the value to assign to the variable associated with the option upon script
+initialization.
+For multiple option variables, the
+.Ar <initial_variable>
+variable may be an array.
+.It Fl k Ar <keyword>
+Use
+.Ar <keyword>
+as the keyword associated with the option.
+.Pp
+Recommended format is "One" or "Two Words" that will serve as a mnemonic for the
+option.
+.It Fl m
+Allow the option to have multiple value entries.
+Each value entry must be preceded with the option switch (i.e., the
+.Ar <command_line_option> ).
+.Pp
+If the option is set to allow multiple values, the associated variable (via the
+.Fl n
+option) will be an array variable.
+This allows the main script to "walk through" the multiple values in the array
+using the
+.Em for x in Qq Em ${@}
+construct.
+.It Fl n Ar <name>
+Use
+.Ar <name>
+as the name of the variable associated with the option.
+.It Fl p Ar <provided_value>
+Use
+.Ar <provided_value>
+as the value to assign to the variable associated with the option when the
+option is provided on the script command line.
+.Pp
+The
+.Ar <provided_value>
+can be a variable but the dollar sign ($) will need to be prefixed with a
+backslash (\e).
+.Pp
+Note: When the option requires an argument (i.e., includes ":"), the option
+argument, "${OPTARG}", is used by default (i.e., when no
+.Fl p
+option is provided).
+The special value
+.Sy \e${OPTARG}
+(with the \e before the $) can be used with the
+.Fl p
+option to explicitly capture the option argument.
+.It Fl r
+Make option required.
+.Pp
+If the
+.Fl r
+option is used with AddOption, the option will be identified as being required
+for execution.
+.It Ar <command_line_option> Ns Op Ar \&:
+The option flag associated with the option.
+It can be only a single character.
+If the option flag is followed by a colon ":", the option will use the next
+token as an argument for that option.
+.It Fl s Ar <selection_value>
+Adds the
+.Ar <selection_value>
+as a possible value for the option.
+Can be used multiple times to add multiple possible values.
+.It Fl S Ar <selection_variable>
+Uses the values in the
+.Ar <selection_variable>
+array as the possible values for the option.
+.It Fl t
+Shorthand to set the initial value to "true" and the provided value to "false".
+.It Fl v Ar <callback>
+The
+.Ar <callback>
+function is called after the options and parameters have been processed by the
+.Nm
+library.
+This allows the
+.Ar <callback>
+function access to the provided options and parameters for validation.
+This is particularly helpful when using selections that are only available after
+the options and/or parameters have been processed.
+(See the
+.Fl s
+(Selection Value) and
+.Fl S
+(Selection Variable) options for more information.)
+.El
+.Pp
+Add a
+.Ar <command_line_option>
+(one character) command line option for the script.
+Include a colon ":" if the option should include an argument value (e.g.: a:).
+This is the option flag proceeded by a dash (\-) when instantiating the option
+on the script command line.
+.Pp
+.Em IMPORTANT :
+The main script must use the
+.Sy AddOption
+configuration option prior to calling
+.Sy Initialize
+The enabled script command line option added cannot be one of the
+.Nm
+library provided standard options: C, F, H, h, N, Q, V, X:, Y.
+.Ss AddParameter
+The following configuration option enables support for a script command line
+parameter:
+.Bd -ragged -offset 4n
+.Sy AddParameter
+.Op Fl a Fl m Fl r
+.Op Fl c Ar <callback>
+.Op Fl d Ar <description>
+.Op Fl i Ar <initial_value>
+.Op Fl I Ar <initial_variable>
+.Op Fl k Ar <keyword>
+.Op Fl n Ar <name>
+.Op Fl s Ar <selection_value>
+.Op Fl S Ar <selection_variable>
+.Op Ar <name>
+.Ed
+.Pp
+The available options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl a
+Automatically default to the only available choice when the selection list
+provided by the
+.Fl s
+(Select Value)
+or
+.Fl S
+(Select Variable)
+option is limited to only one item.
+.It Fl c Ar <callback>
+Setup
+.Ar <callback>
+as the callback handler function to be called for each parameter provided on the
+script command line.
+The parameter will be provided to the
+.Ar <callback>
+function as the first parameter.
+.Pp
+The
+.Ar <callback>
+must be provided in the main script.
+.It Fl d Ar <description>
+Use
+.Ar <description>
+as the description associated with the parameter.
+.Pp
+Recommended format is a "Short descriptive sentence.".
+.Pp
+Note: Please be aware that escaped characters (e.g. double quotes '"') included
+in the
+.Ar <description>
+will need to be "double escaped" (e.g.: \e\e\e").
+.It Fl i Ar <initial_value>
+Use
+.Ar <initial_value>
+as the value to assign to the variable associated with the parameter upon script
+initialization.
+.It Fl I Ar <initial_variable>
+Use the value stored in the variable with the name
+.Ar <initial_variable>
+as the value to assign to the variable associated with the parameter upon script
+initialization.
+For multiple parameter variables, the
+.Ar <initial_variable>
+variable may be an array.
+.It Fl k Ar <keyword>
+Use
+.Ar <keyword>
+as the keyword associated with the parameter.
+.Pp
+Recommended format is "One" or "Two Words" that will serve as a mnemonic for the
+parameter.
+.It Fl m
+Allow the last parameter to have multiple value entries.
+.Pp
+If the last parameter is set to allow multiple values, the associated variable
+(via the
+.Fl n
+option) will be an array variable.
+This allows the main script to "walk through" the multiple values in the array
+using the
+.Em for x in Qq Em ${@}
+construct.
+Can only be used on the last parameter added.
+.Pp
+Note: Only the last parameter can be optional and therefore this option is only
+effective with the last parameter.
+.It Fl n Ar <name>
+Use
+.Ar <name>
+as the name of the variable associated with the parameter.
+.Pp
+Note: The variable name can be provided with the
+.Fl n
+(Name) option or as a parameter.
+If both are provided, the
+.Fl n
+(Name) option takes precedence.
+.It Fl r
+Make the last parameter required.
+.Pp
+Can only be used on the last parameter added.
+.Pp
+Note: Only the last parameter can be optional and therefore this option is only
+effective with the last parameter.
+.It Ar <name>
+Use
+.Ar <name>
+as the name of the variable associated with the parameter.
+.Pp
+Note: The variable name can be provided with the
+.Fl n
+(Name) option or as a parameter.
+If both are provided, the
+.Fl n
+(Name) option takes precedence.
+.It Fl s Ar <selection_value>
+Adds the
+.Ar <selection_value>
+as a possible value for the parameter.
+Can be used multiple times to add multiple possible values.
+.It Fl S Ar <selection_variable>
+Uses the values in the
+.Ar <selection_variable>
+array as the possible values for the parameter.
+.It Fl v Ar <callback>
+The
+.Ar <callback>
+function is called after the options and parameters have been processed by the
+.Nm
+library.
+This allows the
+.Ar <callback>
+function access to the provided options and parameters for validation.
+This is particularly helpful when using selections that are only available after
+the options and/or parameters have been processed.
+(See the
+.Fl s
+(Selection Value) and
+.Fl S
+(Selection Variable) options for more information.)
+.El
+.Pp
+Add a script command line parameter for the main script.
+The
+.Sy AddParameter
+configuration options should be added in the order expected on the script
+command line.
+.Pp
+.Em IMPORTANT :
+The main script must use the
+.Sy AddParameter
+configuration option prior to calling
+.Sy Initialize
+.Ss Action
+The following command executes a command string under
+.Nm
+library control:
+.Bd -ragged -offset 4n
+.Sy Action
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl e Fl F Fl R Fl s Fl t Fl W
+.Op Fl f Ar <failure_message>
+.Op Fl i Ar <info_message>
+.Op Fl l Ar <file_path>
+.Op Fl p Ar <pipe_element>
+.Op Fl q Ar <question>
+.Op Fl r Ar <retries>
+.Op Fl w Ar <retry_wait>
+.Ar <command_string_to_evaluate>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access a log file associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+The output from the Action will be logged into the associated file.
+.It Fl a
+Open a log file, and append after any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+option.
+.It Fl c
+Open the log file, removing any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+option.
+.It Fl C
+Always confirm the action.
+.It Fl e
+Generate an error on failure.
+.Pp
+Normally, a warning will be generated if the
+.Ar <command_string_to_evaluate>
+fails to execute successfully.
+When using the
+.Fl e
+option, an error will be generated instead.
+Note: Script execution will stop if an error is generated.
+See the
+.Sx Error
+command for more information.
+.It Fl F
+Do not perform action if previous action failed.
+Also see the
+.Fl R
+(Reset) option.
+.It Fl f Ar <failure_message>
+Provide a failure message to display when the execution of the provided
+.Ar <command_string_to_execute>
+completes with a non-zero exit value.
+.It Fl i Ar <info_message>
+Provide an info message to display while the
+.Ar <command_string_to_execute>
+is running.
+When combined with the
+.Fl s
+(Spinner) option or the StartSpinner / StopSpinner commands from the
+.Xr libuiSpinner
+mod, output the provided
+.Ar <info_message>
+before the spinner.
+The cursor is left at the end of the message so that it will be erased by the
+next
+.Nm
+display output.
+.It Fl l Ar <file_path>
+Log the output from the
+.Sy Action
+to the file pointed to by
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl l Ar <file_path>
+option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Action
+command.
+See the
+.Sx Open
+and
+.Sx Close
+commands for more information.
+.It Fl p Ar <pipe_element>
+Return the
+.Ar <pipe_element>
+indexed result.
+.Pp
+This is only useful if
+.Ar <command_string_to_evaluate>
+contains pipes.
+Normally returns result from the first / only command contained in the
+.Ar <command_string_to_evaluate> .
+Can be set to "-1" to return the result from the last command.
+.It Fl q Ar <question>
+When the
+.Fl C
+(Confirm) option is used with the main script or the
+.Sy Action
+command includes the
+.Fl C
+(Confirm) option, use the
+.Ar <question>
+text to confirm the action prior to execution.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+.It Fl r Ar <retries>
+Retry
+.Ar <retries>
+times to perform the
+.Ar <command_string_to_evaluate>
+action.
+See also the
+.Fl w
+(Retry Wait) option.
+.It Fl R
+Reset previous action result to a "success" state.
+This will effectively negate the result of any previous action.
+Also see the
+.Fl F
+(No Action After Failure) option.
+.It Fl s
+Put the command in the background and display a spinner.
+.Pp
+Note: The
+.Fl s
+(Spinner) option causes
+.Nm
+to load the
+.Xr libuiSpinner.sh 3
+.Nm
+mod.
+.It Fl t
+Use the tee command to send the output of the
+.Sy Action
+command to the screen as well as the log file pointed to by
+.Fl l Ar <file_path>
+or one of the
+.Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+file IDs.
+See
+.Xr tee 1
+for more information.
+.It Fl w Ar <retry_wait>
+The number of seconds to sleep between retries.
+Only meaningful when used with the
+.Fl r
+(Retry) option.
+.It Fl W
+Don't generate a warning on failure.
+.Pp
+Normally, a warning will be generated if the
+.Ar <command_string_to_evaluate>
+fails to execute successfully.
+When using the
+.Fl W
+option, no WARNING (or ERROR) message will be generated.
+.El
+.Pp
+Evaluate the provided
+.Ar <command_string_to_evaluate> .
+Execution can be modified by one of the following:
+.Bl -bullet -offset 4n
+.It
+If the global
+.Fl C
+(Confirm) option is used with the main script, display "(Confirm)
+.Ar <question> "
+and wait for user confirmation (an answer that starts with a 'y').
+On color terminals (TTY), "(Confirm)" will be displayed using the
+.Sx ${DConfirm}
+display format which by default is yellow and the
+.Ar <question>
+text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+.It
+If the local
+.Fl C
+(Confirm) option is provided, always display
+.Ar <question>
+and wait for user confirmation (an answer that starts with a 'y').
+On color terminals (TTY), "(Confirm)" will be displayed using the
+.Sx ${DConfirm}
+display format which by default is yellow and the
+.Ar <question>
+text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+.It
+If the global
+.Fl N
+(No Action) option is used with the main script, display "(No Action)
+.Ar <command_string_to_evaluage>" .
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DNoAction}
+display format which by default is magenta.
+.El
+.Pp
+If
+.Sy Action
+is called with no arguments, it will return 0 (true) if the last
+.Sy Action
+command was successful (returned 0), otherwise it will return 1 (false).
+.Pp
+While the
+.Sy Action
+command can be logged using the
+.Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+or
+.Fl l Ar <file_path>
+options, the
+.Nm
+library can also log
+.Sy Action
+results to a log file by setting the
+.Ev LIBUI_LOG
+environment variable to a file path.
+See the
+.Sx FILES
+section below for more information.
+.Pp
+Note: It is recommended the
+.Ar <command_string_to_evaluate>
+be quoted.
+Quotes within the quoted command_string_to_evaluate will need to be escaped with
+a backslash (\e).
+.Pp
+Note: If local debugging is enabled using the
+.Fl X
+(XDebug) options, the
+.Ar <command_string_to_evaluate>
+will also be displayed just before evaluation.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DAction}
+display format which by default is blue.
+.Ss Alert
+The following command sends an alert message to the user:
+.Bd -ragged -offset 4n
+.Sy Alert
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl l Ar <file_path>
+.Ar <message>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.It Fl a
+Open the file, and append
+.Ar <data>
+after any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl c
+Open the file, removing any existing data before writing
+.Ar <data> .
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl l Ar <file_path>
+The
+.Fl l Ar <file_path>
+(Log File) option provides direct access to the log file provided as
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl l Ar <file_path>
+(Log File) option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Alert
+command.
+.El
+.Pp
+Display the highlighted
+.Ar <message>
+on STDOUT.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DAlert}
+display format which by default is green.
+.Ss AnswerMatches
+The following command checks if the last answer to an
+.Sx Ask
+command matches the provided string:
+.Bd -ragged -offset 4n
+.Sy AnswerMatches
+.Op Fl r
+.Ar <string>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl r
+Regex - Match the provided
+.Ar <string>
+as a regular expression.
+.El
+.Pp
+Return true if the answer received during last Ask matches
+.Ar <string> .
+Unless a regular expression is provided, the match is made on the number of
+characters provided in the
+.Ar <string> .
+.Pp
+See also the
+.Sx Ask
+command.
+.Ss Ask
+The following command asks the user a question:
+.Bd -ragged -offset 4n
+.Sy Ask
+.Op Fl b Fl C Fl N Fl Y Fl z
+.Op Fl d Ar <default_answer>
+.Op Fl n Ar <variable_name>
+.Op Fl r Ar <required_regex>
+.Op Fl s Ar <selection_value>
+.Op Fl S Ar <selection_variable_name>
+.Ar <question>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl b
+Binary - display a "(y/n)" after the question and accept only a yes / no answer.
+Note: The binary
+.Sy Ask
+will also accept a "q" to quit the running script.
+.It Fl C
+Display and wait only if the global
+.Fl C
+(Confirm) option is used with the main script.
+.Pp
+Note: Also sets the
+.Ar <default_answer>
+to "yes" if not otherwise set using the
+.Fl d
+option.
+.It Fl d Ar <default_answer>
+Set the default answer to
+.Ar <default_answer> .
+.Pp
+(Used when the user does not provide an answer.)
+.It Fl n Ar <variable_name>
+Save the answer to the
+.Ar <variable_name>
+variable.
+.It Fl N
+Set the default answer to "no".
+.It Fl r Ar <required_regex>
+Require an answer that matches the provided
+.Ar <required_regex>
+regular expression.
+.It Fl s Ar <selection_value>
+The
+.Ar <selection_value>
+is added as a possible response to the question.
+The
+.Fl s
+(Selection Value) option can be provided multiple times.
+The message "The possible responses are:" and the list of possible responses
+will be displayed.
+The user may select the answer by number or enter the answer text.
+.It Fl S Ar <selection_variable_name>
+The possible responses to the question are provided in the
+.Ar <selection_variable_name>
+array variable.
+The message "The possible responses are:" and the list of possible responses
+will be displayed.
+The user may select the answer by number or enter the answer text.
+.It Fl Y
+Set the default answer to "yes".
+.It Fl z
+Ask will accept an empty, zero length answer (i.e., return only).
+.El
+.Pp
+Display
+.Ar <question>
+and capture the user's answer to be used with
+.Sy AnswerMatches .
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+Available options will be displayed using the
+.Sx ${DOptions}
+display format which
+by default is green.
+Default answers will be displayed using the
+.Sx ${DAnswer}
+display format which
+by default is cyan.
+.Pp
+The provided answer will also be available in the
+.Sx ${ANSWER}
+variable.
+.Pp
+See also the
+.Sx AnswerMatches
+command and the
+.Sx ${ANSWER}
+public variable.
+.Ss Capture
+The following command captures standard out, standard error, and the return
+value after executing the provided command string:
+.Bd -ragged -offset 4n
+.Sy Capture
+.Ar <STDOUT_variable>
+.Ar <STDERR_variable>
+.Ar <return_value_variable>
+.Ar <command_string>
+.Ed
+.Pp
+Executes the provided
+.Ar <command_string>
+and captures the command's output to STDOUT in a variable with the name provided
+in
+.Ar <STDOUT_variable> ,
+captures the command's output to STDERR in a variable with the name provided in
+.Ar <STDERR_variable> ,
+and the command's return value in a variable with the name provided in
+.Ar <return_value_variable> .
+The
+.Sy Capture
+command also returns the executed command's return value.
+.Ss Confirm
+The following command indicates if the
+.Fl C
+(Confirm) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Confirm
+.Ed
+.Pp
+Returns 0 (true) if the global
+.Fl C
+(Confirm) option was used with the main script, otherwise returns 1 (false).
+See the
+.Fl C
+(Confirm)
+.Nm
+standard command line option for more information.
+.Ss ConfirmVar
+The following command validates the contents of a variable with the provided
+name:
+.Bd -ragged -offset 4n
+.Sy ConfirmVar
+.Op Fl A Fl d Fl e Fl f Fl n Fl z
+.Op Fl D Ar <default>
+.Op Fl p Ar <path>
+.Op Fl q Ar <question>
+.Op Fl Q Ar <question>
+.Op Fl s Ar <selection_value>
+.Op Fl S Ar <selection_variable_name>
+.Ar <variable_name> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl A
+Confirm
+.Ar <variable_name>
+variable is an associative array.
+.It Fl d
+Confirm
+.Ar <variable_name>
+variable contains a directory path that exists.
+.It Fl D Ar <default>
+Use the
+.Ar <default>
+value as the default answer to the question included with the
+.Fl q
+or
+.Fl Q
+(Question) option.
+.It Fl e
+Confirm
+.Ar <variable_name>
+variable contains a path that exists.
+.It Fl f
+Confirm
+.Ar <variable_name>
+variable contains a file path that exists.
+.It Fl n
+Confirm
+.Ar <variable_name>
+variable is not empty, i.e., has been set with a value.
+.It Fl p Ar <path>
+Prepend the provided
+.Ar <path>
+to the test value obtained from the
+.Ar <variable_name>
+variable prior to testing the value.
+This is useful when performing an exists, file, or directory test when only the
+filename is provided and the item location is not the current directory.
+.It Fl q Ar <question>
+If
+.Ar <variable_name>
+variable is empty, i.e., has not been set with a value, ask the
+.Ar <question>
+and save the answer in
+.Ar <variable_name>
+variable.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+Available options will be displayed using the
+.Sx ${DOptions}
+display format which
+by default is green.
+Default answers will be displayed using the
+.Sx ${DAnswer}
+display format which
+by default is cyan.
+May be used with any test.
+.It Fl Q Ar <question>
+Sames as
+.Fl q
+except that the question will always be asked.
+.It Fl s Ar <selection_value>
+The
+.Ar <selection_value>
+is added as a possible response to the question included with the
+.Fl q
+or
+.Fl Q
+(Question) option.
+The
+.Fl s
+(Selection Value) option can be provided multiple times.
+The message "The possible responses are:" and the list of possible responses
+will be displayed.
+The user may select the answer by number or enter the answer text.
+.It Fl S Ar <selection_variable_name>
+Possible responses are provided in the
+.Ar <selection_variable_name>
+array variable for the question included with the
+.Fl q
+or
+.Fl Q
+(Question) option.
+The message "The possible responses are:" and the list of possible responses
+will be displayed.
+The user may select the answer by number or enter the answer text.
+.It Fl z
+When the variable is empty and a question is asked, allows an empty, zero length
+answer.
+.El
+.Pp
+Confirm that a shell variable with the provided
+.Ar <variable_name>
+exists and meets the conditions specified by the associated options.
+Generates an error if the variable does not exist or does not meet the specified
+criteria.
+.Pp
+Note: If no option is provided, acts as if
+.Fl n
+(Not Empty) option was provided.
+.Ss Contains
+The following command checks if a value exists in an array:
+.Bd -ragged -offset 4n
+.Sy Contains
+.Ar <array_variable>
+.Ar <value>
+.Ed
+.Pp
+Returns 0 (true) if the
+.Ar <value>
+exists as an element in the array named
+.Ar <array_variable> .
+.Ss Error
+The following command sends an error message to the user:
+.Bd -ragged -offset 4n
+.Sy Error
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl e Fl E Fl L
+.Op Fl l Ar <file_path>
+.Op Fl r Ar <retval>
+.Op Ar <message>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.It Fl a
+Open the file, and append
+.Ar <data>
+after any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl c
+Open the file, removing any existing data before writing
+.Ar <data> .
+This option is only applicable when also using the
+.It Fl e
+Exit immediately after displaying error message. (Don't wait for initialization
+to complete.)
+.It Fl E
+Do not exit after displaying error message.
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl l Ar <file_path>
+The
+.Fl l Ar <file_path>
+(Log File) option provides direct access to the log file provided as
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl l Ar <file_path>
+(Log File) option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Error
+command.
+Note: The
+.Sx Close
+command will automatically be called when the script exits.
+.Pp
+.It Fl L
+Always include the location in the script file where the error occurred
+regardless of the global
+.Fl X
+(Xdebug) mode.
+.It Fl r Ar <retval>
+Return
+.Ar <retval>
+from the main script when exiting.
+.El
+.Pp
+Display the highlighted "ERROR:
+.Ar <message> Ns \(dq
+on STDERR and exit the main script.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DError}
+display format which by default is yellow on a red background.
+.Pp
+If the
+.Fl r
+(Return) option is not provided, return value will be 1.
+.Pp
+If no argument is provided, returns 0 (true) if currently processing within an
+error condition or false (1) if not within an error condition.
+.Pp
+Note: Errors that are generated during
+.Nm
+library initialization will not exit until after initialization and will display
+a
+.Sy Usage
+message.
+.Ss Force
+The following command indicates if the
+.Fl F
+(Force) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Force
+.Ed
+.Pp
+Returns 0 (true) if the global
+.Fl F
+(Force) command line option was used with the main script, otherwise returns 1
+(false).
+See the
+.Fl F
+(Force)
+.Nm
+standard command line option for more information.
+.Ss LoadMod
+The following command loads a
+.Nm
+library mod:
+.Bd -ragged -offset 4n
+.Sy LoadMod
+.Op Fl P Ar <path>
+.Ar <libui_mod_filename>
+.Ed
+.Pp
+Loads the
+.Nm
+library mod using the
+.Nm
+mod name provided in the parameter.
+The
+.Nm
+mods are loaded from the
+.Sx ${SHLIBPATH}
+directory unless a path is provided using the
+.Fl P Ar <path>
+(Path) option.
+See the
+.Sx UIMOD
+section below for more information on
+.Nm
+library mods.
+.Ss NoAction
+The following command indicates if the
+.Fl N
+(No Action) command line option was provided to the main script:
+.Bd -ragged -offset 4n
+.Sy NoAction
+.Ed
+.Pp
+Returns 0 (true) if the global
+.Fl N
+(No Action) option was provided to the main script, otherwise returns 1 (false).
+See the
+.Fl N
+(No Action)
+.Nm
+standard command line option for more information.
+.Ss Quiet
+The following command indicates if the
+.Fl Q
+(Quiet) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Quiet
+.Ed
+.Pp
+Returns 0 (true) if the global
+.Fl Q
+(Quiet) option was used with the main script, otherwise returns 1 (false).
+See the
+.Fl Q
+(Quiet)
+.Nm
+standard command line option for more information.
+.Ss Tell
+The following command sends a message to the user:
+.Bd -ragged -offset 4n
+.Sy Tell
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl i Fl n Fl N
+.Op Fl l Ar <file_path>
+.Ar <message>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.It Fl a
+Open the file, and append
+.Ar <data>
+after any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl c
+Open the file, removing any existing data before writing
+.Ar <data> .
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl i
+.Sy Tell
+in place.
+By default,
+.Sy Tell
+sends a terminal escape sequence to move the cursor to the beginning of the line
+prior to displaying the
+.Ar <message> .
+This option suppresses that escape sequence to effectively display the
+.Ar <message>
+"in place" at the current cursor position.
+.It Fl l Ar <file_path>
+The
+.Fl l Ar <file_path>
+(Log File) option provides direct access to the log file provided as
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl l Ar <file_path>
+(Log File) option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Tell
+command.
+.Pp
+.It Fl n
+Do not send a carriage return, line feed after sending the
+.Ar <message>
+to the screen.
+This effectively displays the message and leaves the cursor right after the
+.Ar <message> .
+This is useful when a
+.Ar <message>
+must be sent in multiple parts.
+.It Fl N
+Do not send a line feed after sending the
+.Ar <message>
+to the screen.
+This effectively displays the message and returns the cursor to the first
+column.
+This is useful to display a series of messages to the screen without scrolling.
+.El
+.Pp
+Display the highlighted
+.Ar <message>
+on STDOUT unless the
+.Fl Q
+(Quiet) option has been set.
+Unless the
+.Fl i
+(In place) option is used,
+.Sy Tell
+sends a terminal escape sequence to move the cursor to the beginning of the line
+prior to displaying the
+.Ar <message> .
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DTell}
+display format which by default is white.
+.Ss Trace
+The following command builds a trace message that can be used to help debug a
+script:
+.Bd -ragged -offset 4n
+.Sy Trace
+.Ar <message>
+.Ed
+.Pp
+If local debugging is enabled using the
+.Fl X
+(XDebug) options, the
+.Ar <message>
+will be displayed.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DTrace}
+display format which by default is cyan.
+See the
+.Sx DEBUGGING
+section below for more information.
+.Pp
+The Trace command should be used before each executable block within the main
+script, similar to a comment in a well-commented script.
+In fact, the recommendation is that the Trace be used as a replacement for good
+comments.
+This will enable enhanced debugging when the
+.Fl X
+(XDebug) option is provided.
+.Ss Verbose
+The following command indicates if the
+.Fl X 2
+(Verbose XDebug) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Verbose
+.Ed
+.Pp
+Returns 0 (true) if the global
+.Fl X 2
+(Verbose XDebug) option (or higher XDebug value) was used with the main script,
+otherwise returns 1 (false).
+See the
+.Fl S
+(XDebug)
+.Nm
+standard command line option and the
+.Sx DEBUGGING
+section below for more information.
+.Ss Verify
+The following command asks the user to verify a question and returns true (yes)
+or false (no):
+.Bd -ragged -offset 4n
+.Sy Verify
+.Op Fl C
+.Op Fl d Ar <default_answer>
+.Op Fl n Ar <variable_name>
+.Op Fl r Ar <required_regex>
+.Ar <question>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl C
+Display and wait only if the global
+.Fl C
+(Confirm) option was used with the main script.
+.It Fl d Ar <default_answer>
+Set the default answer to
+.Ar <default_answer> .
+.Pp
+(Used when the user does not provide an answer.)
+.It Fl n Ar <variable_name>
+Save the answer to the
+.Ar <variable_name>
+variable.
+.It Fl r Ar <required_regex>
+Require a response that matches the provided
+.Ar <required_regex>
+regular expression.
+.El
+.Pp
+Display
+.Ar <question> ,
+capture the user's answer and match it with 'y' or the regular expression
+provided with the
+.Fl r Ar <required_regex>
+option.
+Returns 0 (true) if the answer matches, otherwise returns 1 (false).
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DQuestion}
+display format which by default is white.
+Available options will be displayed using the
+.Sx ${DOptions}
+display format which
+by default is green.
+Default answers will be displayed using the
+.Sx ${DAnswer}
+display format which
+by default is cyan.
+.Pp
+If
+.Sy Verify
+is called with no arguments, it will return 0 (true) if the last
+.Sy Verify
+was successful (answered "yes"), otherwise it will return 1 (false).
+.Pp
+Note: The
+.Ar <default_answer>
+is "yes" if not otherwise set using the
+.Fl d
+option.
+The provided answer will also be available in the
+.Sx ${ANSWER}
+variable.
+.Pp
+See also the
+.Sx ${ANSWER}
+public variable.
+.Ss Version
+The following command displays version information to the user:
+.Bd -ragged -offset 4n
+.Sy Version
+.Op Fl m
+.Op Fl r Ar <required_libui_version>
+.Ar <script_version>
+.Ed
+.Pp
+The
+.Sy Version
+command is used to document the version of the script as well as to optionally
+check the version of the
+.Nm
+library being used.
+The version of the script is captured as
+.Ar <script_version>
+and, when provided, the
+.Nm
+library is verified to be at least the
+.Ar <required_libui_version> .
+The library
+.Ar <required_libui_version>
+must include a three-digit minor value such as
+.Em 1.011
+or
+.Em 1.822 .
+The
+.Fl m
+flag is used to indicate that the file is a
+.Pp
+When the
+.Sy Version
+command is used with no parameters, all available version information is
+sent to STDOUT.
+.Ss Warn
+The following command sends a warning message to the user:
+.Bd -ragged -offset 4n
+.Sy Warn
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl l Ar <file_path>
+.Op Fl r Ar <retval>
+.Ar <message>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.It Fl a
+Open the file, and append
+.Ar <data>
+after any existing data.
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl c
+Open the file, removing any existing data before writing
+.Ar <data> .
+This option is only applicable when also using the
+.Fl l Ar <file_path>
+(Log File) option.
+.It Fl l Ar <file_path>
+The
+.Fl l Ar <file_path>
+(Log File) option provides direct access to the log file provided as
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl l Ar <file_path>
+(Log File) option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Warn
+command.
+.It Fl r Ar <retval>
+Return
+.Ar <retval>
+after displaying the message.
+.El
+.Pp
+Display the highlighted "WARNING:
+.Ar <message> Ns \(dq
+on STDERR.
+The
+.Sy Warn
+command will return 0 (true) unless another value is provided using the
+.Fl r Ar <retval>
+option.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DWarn}
+display format which by default is black on a yellow background.
+.Ss Yes
+The following command indicates if the
+.Fl Y
+(Yes) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Yes
+.Op Fl e Fl E
+.Pp
+.Ed
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl e
+Enable "yes" in the script as if the global
+.Fl Y
+(Yes) option was used with the main script.
+.It Fl E
+Disable "yes" in the script as if the global
+.Fl Y
+(Yes) option was not used with the main script.
+.El
+.Pp
+Returns 0 (true) if the
+.Fl Y
+(Yes) option was used with (or enabled within) the main script, otherwise
+returns 1 (false).
+See the
+.Fl Y
+(Yes)
+.Nm
+standard command line option for more information.
+.Sh VARIABLES
+The following environment variables are required by the
+.Nm
+library for proper operation and should be provided by the OS:
+.Bl -tag -offset 4n -width 12n
+.It Dv ${EUID}
+The (numeric) user ID (UID) of the user executing the current script.
+.It Dv ${USER}
+The username of the user executing the current script.
+.El
+.Pp
+While the
+.Nm
+library utilizes local variables wherever possible.
+Shared state and status variables, however, must be global.
+All "private" variables defined and used within the
+.Nm
+library, both local and global, are proceeded by a singe underscore (_).
+To minimize conflicts, it is recommended that scripts using the
+.Nm
+library do not use variables with a single leading underscore.
+Several "public" variables, however, are defined for use by scripts using the
+.Nm
+library.
+.Pp
+The following "public" variables are provided by the
+.Nm
+library:
+.Bl -tag -offset 4n -width 12n
+.It Dv ${AA}
+Associative Array: Set to "true" if the shell supports associative arrays.
+.It Dv ${AO} Pq as in A O, not A zero
+Array Offset: Set to "1" (one) if the shell is Z shell (zsh) and "0" (zero)
+otherwise.
+.It Dv ${ANSWER}
+The last answer provided by the user via an Ask command.
+.It Dv ${IWD}
+The path of the directory where the script was initially executed.
+.It Dv ${BV}
+Bash Version: Set to the major and minor version of the Bash shell (without the
+intervening period).
+.Pp
+Note: If the executing shell is the Z shell, BV will be set to "0" (zero).
+.It Dv ${CHFLAGS}
+Chain flags: This variable collects command line flags (options) that should be
+passed on to chained scripts.
+(Chained scripts are scripts executed by the main script.)
+To properly use
+.Sx ${CHFLAGS} ,
+place it as if it were a command line option for the script to be executed
+(e.g.:
+.Sy script
+.Ar ${CHFLAGS} Ns \&).
+By default, the
+.Fl C , Fl F , Fl N , Fl Q , Fl X , No and Fl Y
+options are automatically captured.
+Additional flags can be added as needed.
+.It Dv ${CMD}
+The command name, i.e., the filename of the main script.
+.It Dv ${CMDARGS}
+An array containing the arguments provided on the command line.
+.It Dv ${CMDLINE}
+The full command line string used to call the current script.
+This is the same as: ${CMD} "${CMDARGS[@]}"
+.It Dv ${CMDPATH}
+The absolute path of the main script file.
+.It Dv ${DOMAIN}
+The domain of the current machine.
+.It Dv ${FMFLAGS}
+File management flags: For use by cp, mv, rm.
+.Pp
+Note:
+.Sx ${FMFLAGS}
+is set to "\-i" by
+.Fl C
+(Confirm) and to "\-f" by
+.Fl F
+(Force) options.
+.It Dv ${HOST}
+The hostname of the current machine (hostname only, not fully qualified).
+.It Dv ${LIBUI}
+The absolute path of the included
+.Nm
+file.
+.It Dv ${MAXINT}
+Maximum integer: Set to the shell's maximum integer value.
+.It Dv ${N}
+The newline character.
+This is equivalent to $'\n' but, available for use in
+string assignments.
+.It Dv ${NROPT}
+The number of options provided on the command line.
+.It Dv ${NRPARAM}
+The number of parameters provided on the command line.
+.It Dv ${OS}
+The name of the operating system.
+Typical values are Darwin, Linux, etc.
+.It Dv ${SHELL}
+The name of the shell being executed (limited to: zsh, bash, or sh).
+.It Dv ${SHLIBPATH}
+The shell library path.
+Set by default to the directory where
+.Nm
+resides.
+It is used when loading mods.
+It can be set before loading a mod and/or pre-set in an environment variable.
+.It Dv ${TERMINAL}
+Set to "true" if standard out is to a terminal, "false" if standard out is not
+to a terminal.
+When standard out is to a terminal, the
+.Nm
+library generates color text and additional user cues including questions, etc.
+.Pp
+Note: The
+.Dv ${TERMINAL}
+variable  can be set to "true" or "false" before sourcing
+.Nm
+to force enabling / disabling these terminal effects.
+.Pp
+Note: The
+.Dv ${TERMINAL}
+variable is only set during initialization and should not be used to determine
+if output is actually to a terminal.
+Use the [[ -t 1 ]] construct to determine if STDOUT is actually to a terminal.
+.It Dv ${UICMD}
+An array containing the names of (available)
+.Nm
+commands (including
+.Nm
+mod provided commands).
+.It Dv ${UIMOD}
+An array containing the filenames of loaded
+.Nm
+mods.
+.It Dv ${UIVERSION}
+An array containing the filenames and versions of the loaded scripts and
+.Nm
+mods in alternating "pairs": <file> <version> ...
+.It Dv ${ZSH}
+Z shell - Set to "true" if the shell is Z shell (zsh).
+.El
+.Pp
+Note: While the above "public" variables are uppercase, they are not provided as
+environment variables.
+.Sh DISPLAY MODIFIERS
+Several display modifier variables are defined for use in output.
+For example:
+.Bd -literal -offset 4n
+.Sy Tell Qq Sy ${Dfb}Blue text.${D}
+.Sy Tell Qq Sy ${D1}Display mode 1 text.${D}
+.Ed
+.Pp
+The defined variables are:
+.Pp
+.Bl -tag -offset 4n -width 12n -compact
+.It Dv ${DCS}
+Clear Screen
+.It Dv ${DCEL}
+Clear to End of Line
+.It Dv ${DCES}
+Clear to End of Screen
+.It Dv ${DJBL}
+Jump to Beginning of Line
+.It Dv ${DJH}
+Jump to Home (0,0)
+.It Dv ${DRP}
+Read Current Cursor Position -
+note that the position must be read after sending this sequence
+(e.g.: printf "${DRP}" && IFS='[;' read -sd R _x CROW CCOL)
+.It Dv ${Db0}
+Background Black
+.It Dv ${Dbr}
+Background Red
+.It Dv ${Dbg}
+Background Green
+.It Dv ${Dby}
+Background Yellow
+.It Dv ${Dbb}
+Background Blue
+.It Dv ${Dbm}
+Background Magenta
+.It Dv ${Dbc}
+Background Cyan
+.It Dv ${Db7}
+Background White
+.It Dv ${DB0}
+Background Bright Black
+.It Dv ${DBr}
+Background Bright Red
+.It Dv ${DBg}
+Background Bright Green
+.It Dv ${DBy}
+Background Bright Yellow
+.It Dv ${DBb}
+Background Bright Blue
+.It Dv ${DBm}
+Background Bright Magenta
+.It Dv ${DBc}
+Background Bright Cyan
+.It Dv ${DB7}
+Background Bright White
+.It Dv ${Df0}
+Foreground Black
+.It Dv ${Dfr}
+Foreground Red
+.It Dv ${Dfg}
+Foreground Green
+.It Dv ${Dfy}
+Foreground Yellow
+.It Dv ${Dfb}
+Foreground Blue
+.It Dv ${Dfm}
+Foreground Magenta
+.It Dv ${Dfc}
+Foreground Cyan
+.It Dv ${Df7}
+Foreground White
+.It Dv ${DF0}
+Foreground Bright Black
+.It Dv ${DFr}
+Foreground Bright Red
+.It Dv ${DFg}
+Foreground Bright Green
+.It Dv ${DFy}
+Foreground Bright Yellow
+.It Dv ${DFb}
+Foreground Bright Blue
+.It Dv ${DFm}
+Foreground Bright Magenta
+.It Dv ${DFc}
+Foreground Bright Cyan
+.It Dv ${DF7}
+Foreground Bright White
+.It Dv ${Db}
+Bold
+.It Dv ${Dd}
+Dim
+.It Dv ${Dsu}
+Start Underline
+.It Dv ${Deu}
+End Underline
+.It Dv ${Dr}
+Reverse Display
+.It Dv ${Dss}
+Start Standout
+.It Dv ${Des}
+Exit Standout
+.It Dv ${D}
+Reset to Normal
+.It Dv ${D0}
+Display mode 0 - Underlined text.
+.It Dv ${D1}
+Display mode 1 - Red text.
+.It Dv ${D2}
+Display mode 2 - Green text.
+.It Dv ${D3}
+Display mode 3 - Yellow text.
+.It Dv ${D4}
+Display mode 4 - Blue text.
+.It Dv ${D5}
+Display mode 5 - Magenta text.
+.It Dv ${D6}
+Display mode 6 - Cyan text.
+.It Dv ${D7}
+Display mode 7 - Bright (bold) text.
+.It Dv ${D8}
+Display mode 8 - "Normal" text.
+.It Dv ${D9}
+Display mode 9 - Dim text.
+.El
+.Pp
+In addition to the above provided display modifier variables, the
+.Nm
+library uses the following display modifier variables for displaying generated
+messages.
+It is possible for a main script to changes these values during initialization.
+.Bl -tag -offset 4n -width 12n -compact
+.It Dv ${DAction}
+Action display format - defaults to blue text.
+.It Dv ${DAlarm}
+Alarm display format - defaults to dim red text.
+.It Dv ${DAlert}
+Alert display format - defaults to bold green text.
+.It Dv ${DAnswer}
+Answer display format - defaults to dim yellow text.
+.It Dv ${DCaution}
+Caution display format - defaults to bold red text.
+.It Dv ${DConfirm}
+Confirm display format - defaults to bold yellow text.
+.It Dv ${DError}
+Error display format - defaults to bold yellow text on a red background.
+.It Dv ${DInfo}
+Info display format - defaults to bold magenta text.
+.It Dv ${DNoAction}
+No Action display format - defaults to magenta text.
+.It Dv ${DOptions}
+Options display format - defaults to bold white text.
+.It Dv ${DQuestion}
+Question display format - defaults to bold cyan text.
+.It Dv ${DSpinner}
+Spinner display format - defaults to bold cyan text.
+.It Dv ${DTell}
+Tell display format - defaults to bold white text.
+.It Dv ${DTrace}
+Trace display format - defaults to cyan text.
+.It Dv ${DWarning}
+Warning display format - defaults to black text on a yellow background.
+.El
+.Ss TERMINAL VARIABLE
+The
+.Nm
+library automatically generates ANSI X3.64 escape codes to deliver enhanced
+(color) display content.
+The
+.Sy TERMINAL
+variable  can be set to "true" or "false" before sourcing
+.Nm
+to enable / disable these terminal effects.
+.Sh UIMOD
+The
+.Nm
+library supports loadable
+.Nm
+mods.
+The
+.Nm
+mods can be loaded using the
+.Sx LoadMod
+command.
+The
+.Nm
+mods are loaded from the
+.Sx ${SHLIBPATH}
+directory unless a path is provided using the
+.Sx LoadMod
+.Fl P
+(Path) option.
+See the
+.Sx ${SHLIBPATH}
+variable for details.
+One or more commands (functions) may be provided in a single mod file.
+All
+.Nm
+mods should be written so that they can be executed with either Bash or Z Shell.
+Use the
+.Sy ${ZSH}
+variable to determine which shell is being executed.
+There are several
+.Nm
+mods provided with the
+.Nm
+package that can be used as examples.
+.Pp
+Each
+.Nm
+mod file should be named with the syntax:
+.Bd -ragged -offset 4n
+.Sy libui Ar <ModName> Ns Sy .sh
+.Ed
+.Pp
+Where
+.Ar <ModName>
+is the mod name that will be used with the
+.Sx LoadMod
+command (e.g.: "libuiDate.sh" for the Date mod).
+.Pp
+Each mod file should include the following command:
+.Bd -ragged -compact
+.Sy Version
+.Op Fl m
+.Op Fl r Ar <required_libui_version>
+.Ar <mod_version>
+.Ed
+.Pp
+Where
+.Ar <mod_version>
+declares the mod version.
+The
+.Ar <required_libui_version> ,
+recommended, requires the
+.Nm
+library to be at least that version.
+Version numbers should be in the format of Major.Minor (e.g.: 1.0).
+The library
+.Ar <required_libui_version>
+must include a three-digit minor value such as
+.Em 1.011
+or
+.Em 1.822 .
+The
+.Fl m
+flag is used to indicate that the file is a
+.Nm
+mod.
+.Pp
+Each command (function) provided in the
+.Nm
+mod should have a line preceding its declaration similar to:
+.Bd -ragged -offset 4n
+.Sy UICMD+=( So Ar <FunctionName> Sc Sy \&)
+.Ed
+.Pp
+Each command (function) should have an initial line similar to:
+.Bd -ragged -offset 4n
+.Sy ${_S} && ((_c Ns Ar <FunctionName> Ns Sy ++\&)\&)
+.Ed
+.Pp
+For example:
+.Bd -literal -offset 4n
+UICMD+=( 'HelloWorld' )
+HelloWorld () {
+  ${_S} && ((_cHelloWorld++))
+
+  ${_M} && Trace 'Tell the world hello.'
+  Tell 'Hello World!'
+
+  return 0
+}
+.Ed
+.Ss INTERNAL VARIABLES
+There are several global library (internal) variables that are available for
+interacting with the library.
+They can be found within the
+.Nm
+source file.
+Some of the common ones typically useful are:
+.Bl -tag -offset 4n -width 16n
+.It Dv ${_error}
+Error Mode -
+This variable is set to 0 if there are no errors, non-zero if an error has
+occurred.
+.It Dv ${_exitcallback}
+Exit Callbacks -
+This array variable contains the Exit Callback functions that are called when
+the script exits.
+.Pp
+Note: The exit callback will be provided with the exit code ${?} as a parameter
+when called.
+.It Dv ${_exitcleanup}
+Exit Cleanup -
+When this variable is set to true, the Exit Callbacks will be called and the
+temp directory will be removed when the script exits.
+When this variable is set to false, these actions are not perform when the
+script exits.
+.It Dv ${_init}
+This variable is set true when the library is being initialized, false after
+initialization.
+.It Dv ${_hdb}
+Host Debug -
+This variable is set to true when local debugging is enabled, false when
+disabled.
+.It Dv ${_initcallback}
+Initialization Callbacks -
+This array variable contains the Initialization Callback functions that are
+called during initialization.
+.Pp
+Note: The initialization callback will be provided ${@} as a parameter when
+called.
+.It Dv ${_ldb}
+Ledger Debug -
+This variable is set to true when the ledger is enabled, false when disabled.
+.It Dv ${_rdb}
+Remote Debug -
+This variable is set to true when remote debugging is enabled, false when
+disabled.
+.It Dv ${_S}
+Stats -
+This variable is set true when statistics gathering is enabled, false when
+disabled.
+.It Dv ${_sdb}
+Stats Debug -
+This variable is set to true when stats are enabled, false when disabled.
+.It Dv ${_M}
+Mod Tracing -
+This variable is set true when mod tracing is enabled, false when disabled.
+.It Dv ${_mdb}
+Mod Debug -
+This variable is set to true when mod tracing is enabled, false when disabled.
+.It Dv ${_T}
+Tracing -
+This variable is set true when tracing is enabled, false when disabled.
+.It Dv ${_tdb}
+Trace Debug -
+This variable is set to true when tracing is enabled, false when disabled.
+.It Dv ${_vdb}
+Verbose Debug -
+This variable is set to true when verbose actions are enabled, false when
+disabled.
+.It Dv ${_xdb}
+X Debug -
+This variable is set to the current debug level (as set by the
+.Fl X
+option).
+Also see the
+.Sx DEBUGGING
+section below.
+.El
+.Sh EXAMPLE SCRIPT
+The libuidemo script is provided as an example template.
+.Sh DEBUGGING
+The Trace command should be used in scripts before operation blocks to aid in
+debugging.
+For example:
+.Bd -literal -offset 4n
+.Sy Trace Ar <debug_message>
+.Ed
+.Pp
+This adds
+.Ar <debug_message>
+to debug output when debugging is enabled.
+.Pp
+Normal script debugging can be enabled using the
+.Fl X Ar <level>
+(XDebug) options.
+See the
+.Sx STANDARD OPTIONS
+section above for more information.
+.Pp
+To provide debug information during
+.Nm
+initialization, set the following environment variables:
+.Pp
+.Bl -tag -offset 4n -width 26n -compact
+.It Sy LIBUI_LIBUI=true
+Libui Debug Enable / Disable -
+Enable Xdebug / Library internals
+.It Sy LIBUI_RDEBUG=true
+Remote Debug Enable / Disable -
+Enable Xdebug / Remote debug
+.It Sy LIBUI_CONTEXT=true
+Libui Context Debug Enable / Disable -
+Enable Xdebug / Context debug
+.It Sy LIBUI_PROFILE=true
+Profiling Enable / Disable -
+Enable Xdebug / Profiling
+.It Sy LIBUI_HDEBUG=true
+Host Debug Enable / Disable -
+Enable Xdebug / Host debug
+.It Sy LIBUI_MDEBUG=true
+Mod Debug Enable / Disable -
+Enable Xdebug / Mod debug
+.It Sy LIBUI_VERBOSE=true
+Verbose Actions Enable / Disable -
+Enable Xdebug / Verbose actions
+.It Sy LIBUI_WDEBUG=true
+Wait Debug Enable / Disable -
+Enable Xdebug / Wait debug
+.El
+.Pp
+In addition to the trace debug levels above, the following additional debug
+options are available.
+.Pp
+.Bl -tag -offset 4n -width 26n -compact
+.It Sy LIBUI_LEDGER=true
+Ledger Log Enable / Disable -
+# to enable / disable the ledger file
+.It Sy LIBUI_LEDGERFILE= Ns Sq Ar <path>
+Ledger Log File Path -
+# the default is
+.Sy ${LIBUI_DOTFILE}/ledger
+.It Sy LIBUI_STATS=true
+Stats Collection Enable / Disable -
+# to enable / disable the stats file
+.It Sy LIBUI_STATSFILE= Ns Sq Ar <path>
+Stats File Path -
+# the default is
+.Sy ${LIBUI_DOTFILE}/stats
+.It Sy LIBUI_TRACE=false
+Trace Log Enable / Disable -
+# to enable / disable the trace file
+.It Sy LIBUI_TRACEFILE= Ns Sq Ar <path>
+Trace Log File Path -
+# the default is
+.Sy ${LIBUI_DOTFILE}/trace
+.El
+.Pp
+LIBUI_LEDGER and LIBUI_STATS are enabled (set to "true") by default.
+LIBUI_TRACE is disabled (set to "false") by default.
+To enable the generation of a ledger file, trace file, or stats file, set the
+respective environment variable to "true".
+To disable them, set the respective environment variable to "false".
+More information about the debugging files is available in the
+.Sx FILES
+section below.
+.Pp
+If
+.Nm
+is sourced as above, you can debug the
+.Nm
+library with something like:
+.Bd -ragged -offset 4n
+.Sy SHLIBPATH=~/.env/lib/sh/ LIBUI_HDEBUG=true LIBUI_PROFILE=true Ar <script_file>
+.Ed
+.Pp
+Note: Use Z shell (zsh) in the main script to get sub-second profiling.
+.Ss DEBUGGING VARIABLES
+There are global library (internal) debugging variables that are set when
+debugging is enabled.
+These include:
+.Pp
+.Bl -tag -offset 4n -width 8n -compact
+.It Sy ${_pdb}
+Profiling -
+This variable is set to true when profiling enabled, false when disabled.
+.It Sy ${_udb}
+Libui Debug -
+This variable is set to true when
+.Nm
+library debugging is enabled, false when disabled.
+.It Sy ${_rdb}
+Remote Debug -
+This variable is set to true when remote debugging is enabled, false when
+disabled.
+.It Sy ${_hdb}
+Host Debug -
+This variable is set to true when local debugging is enabled, false when
+disabled.
+.It Sy ${_vdb}
+Verbose Debug -
+This variable is set to true when verbose actions are enabled, false when
+disabled.
+.It Sy ${_ldb}
+Ledger Debug -
+This variable is set to true when the ledger is enabled, false when disabled.
+.It Sy ${_sdb}
+Stats Debug -
+This variable is set to true when stats are enabled, false when disabled.
+.It Sy ${_mdb}
+Mod Trace Debug -
+This variable is set to true when mod tracing is enabled, false when disabled.
+.It Sy ${_tdb}
+Trace Debug -
+This variable is set to true when tracing is enabled, false when disabled.
+.It Sy ${_xdb}
+X Debug -
+This variable is set to the current debug level (as set by the
+.Fl X
+option).
+.El
+.Sh FILES
+The
+.Nm
+library uses a dotfile directory for storage of cache and data files.
+The directory path can be controlled by setting the
+.Ev LIBUI_DOTFILE
+environment variable.
+The default path for the
+.Ev LIBUI_DOTFILE
+environment variable is
+.Sy ${HOME}/.libui .
+.Pp
+Upon startup, the
+.Nm
+library sources the global
+.Sy ${LIBUI_DOTFILE}/libui.conf
+configuration file, if it exists.
+The
+.Sy libui
+utility can be used to create a default
+.Sy libui.conf
+file.
+See
+.Xr libui 1
+for more information.
+.Pp
+During initialization, the
+.Nm
+library sources the default
+.Sy ${LIBUI_HOOKDIR}/init
+library initialization hook file, if it exists, then sources the global
+.Sy ${LIBUI_HOOKDIR}/${CMD}/init
+initialization hook file, if it exists, and then sources the local
+.Sy ${LIBUI_HOOKPREFIX}init
+initialization hook file, if it exists.
+See the
+.Sx Initialize
+section above for more information.
+.Pp
+While exiting, the
+.Nm
+library sources the local
+.Sy ${LIBUI_HOOKPREFIX}exit
+exit hook file, if it exists, then sources the global
+.Sy ${LIBUI_HOOKDIR}/${CMD}/exit
+exit hook file, if it exists, and then sources the default
+.Sy ${LIBUI_HOOKDIR}/exit
+library exit hook file, if it exists.
+See the
+.Sx Exit
+section above for more information.
+.Pp
+The
+.Ev LIBUI_HOOKDIR
+environment variable controls the default and global hook files directory.
+The default prefix value is
+.Sy ${LIBUI_DOTFILE}/hook .
+.Pp
+The
+.Ev LIBUI_HOOKPREFIX
+environment variable controls the local hook files prefix.
+The default prefix value is
+.Sy .${CMD}- .
+.Pp
+The display codes are cached in a display cache file.
+The default path for the display cache file is
+.Sy ${LIBUI_DOTFILE}/display-${TERM} .
+If the display cache file does not exist, it will be created.
+To reset display code values, remove the display cache file.
+.Pp
+The default path for the ledger file is
+.Sy ${LIBUI_DOTFILE}/ledger .
+This can be changed by setting the
+.Ev LIBUI_LEDGERFILE
+environment variable to another path.
+.Pp
+The default path for the trace file is
+.Sy ${LIBUI_DOTFILE}/trace .
+This can be changed by setting the
+.Ev LIBUI_TRACEFILE
+environment variable to another path.
+.Pp
+For performance reasons, the library will create the trace file in the
+.Sy ${TMPDIR}
+using a temporary filename in the format ${CMD}-trace.XXXXXX before copying it
+into the
+.Sy ${LIBUI_TRACEFILE}
+location when the script exits.
+Certain circumstances (e.g.: some crashes) prevent the _Cleanup handler from
+being executed leaving the errant trace file in place.
+.Pp
+The default path for the stats file is
+.Sy ${LIBUI_DOTFILE}/stats .
+This can be changed by setting the
+.Ev LIBUI_STATSFILE
+environment variable to another path.
+.Pp
+The
+.Nm
+library can log Action results to a log file by setting the
+.Ev LIBUI_LOG
+environment variable to a file path.
+See the
+.Sx Action
+section above for more information.
+.Pp
+The
+.Nm
+library can create a temporary directory (via mktemp) upon request.
+The library attempts to track and remove the temporary directory upon exit.
+Certain circumstances (e.g.: some crashes) prevent the _Cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr libui 1 ,
+.Xr logger 1 ,
+.Xr tee 1 ,
+.Xr zsh 1 ,
+.Xr LibuiDate.sh 3 ,
+.Xr LibuiFile.sh 3 ,
+.Xr LibuiFileRecord.sh 3 ,
+.Xr LibuiInfo.sh 3 ,
+.Xr LibuiPackage.sh 3 ,
+.Xr LibuiSort.sh 3 ,
+.Xr LibuiSpinner.sh 3 ,
+.Xr LibuiSyslog.sh 3 ,
+.Xr LibuiTimer.sh 3 ,
+.Xr LibuiUser.sh 3
+.Sh NOTES
+The
+.Nm
+library is young and under considerable development.
+It is worth tracking the current version to access new features being added.
+.Pp
+Vim Note: When using the
+.Qq Sy #!/usr/bin/env libui
+shebang, add the following to your
+.Sy ~/.vim/scripts.vim
+file to improve syntax highlighting:
+.Bd -literal -offset 4n
+if getline(1) =~ '^#!/usr/bin/env libui'
+  setfiletype zsh " or 'bash'
+endif
+.Ed
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

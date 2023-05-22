@@ -1,0 +1,118 @@
+.\" Manpage for libuiDate.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIDATE.SH 3
+.Os
+.Sh NAME
+.Nm libuiDate.sh
+.Nd Date Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Date
+.Pp
+.Sy ConvertDate
+.Op Fl i Ar <input_format>
+.Op Fl o Ar <output_format>
+.Ar <variable_name>
+.Ar <date_time_value>
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides a function for converting date formats.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss ConvertDate
+The ConvertDate command changes the format of a provided date / time value.
+.Pp
+.Sy ConvertDate
+.Op Fl i Ar <input_format>
+.Op Fl o Ar <output_format>
+.Ar <variable_name>
+.Ar <date_time_value>
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl i
+The format of the provided
+.Sm off
+.Ar <date_time_value> .
+.Sm on
+The format values follow the specification provided by the
+.Xr date 1
+command.
+See the
+.Xr date 1
+command for more information.
+The default format is "%a %b %d %T %Z %Y".
+.It Fl o
+The format for the desired date output.
+The format values follow the specification provided by the
+.Xr date 1
+command.
+See the
+.Xr date 1
+command for more information.
+The default output format is "%Y-%m-%d".
+.It Ar <variable_name>
+The name of the variable that the
+.Nm
+function should place the output format converted date / time value.
+.It Ar <date_time_value>
+The date / time value that should be converted.
+This value must match the input format for proper interpretation.
+.El
+.Pp
+Performs a simple conversion of the provided
+.Ar <date_time_value>
+provided and places the converted value in the
+.Ar <variable_name>
+variable.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy ConvertDate -i "'%a %b %d %T %Z %Y'" -o "'%Y-%m-%d'" today "'Tue Dec 28 18:26:37 EST 2021'"
+.Ed
+.Pp
+Result: The variable
+.Ar today
+is assignd the value '2021-12-28'
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr date 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The
+.Nm
+Uses the
+.Xr date 1
+command to perform the date / time conversions.
+It is, therefore, dependent upon the
+.Xr date 1
+command and can only perform the conversions provided by the
+.Xr date 1
+command.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

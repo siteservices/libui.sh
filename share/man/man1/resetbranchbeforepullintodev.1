@@ -1,0 +1,118 @@
+.\" Manpage for resetbranchbeforepullintodev {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt RESETBRANCHBEFOREPULLINTODEV 1
+.Os
+.Sh NAME
+.Nm resetbranchbeforepullintodev
+.Nd Reset git branch commit history to a single commit
+.Sh SYNOPSIS
+.Sy resetbranchbeforepullintodev
+.Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl X Ar <level>
+.Sh DESCRIPTION
+Used to reset git branch history to a single commit.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy resetbranchbeforepullintodev
+.Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl X Ar <level>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl s
+Skip Push
+.Pp
+Do not "git push \-\-force" the reset branch back to origin.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+.Bl -tag -offset 4n -width 6n
+.It .git
+A check is made for the .git directory to ensure that the current working
+directory is a git repository root.
+.El
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy resetbranchbeforepullintodev
+.Ed
+.Pp
+This resets the commits in the current branch back to the origin of the branch,
+creates a new overall commit, and then forces a push back to origin.
+.Bd -literal -offset 4n
+.Sy resetbranchbeforepullintodev \-C
+.Ed
+.Pp
+This performs the same actions as above, however, the user is asked to confirm
+each step before it is performed.
+.Bd -literal -offset 4n
+.Sy resetbranchbeforepullintodev \-s
+.Ed
+.Pp
+This resets the commits in the current branch back to the origin of the branch,
+and creates a new overall commit.
+.Bd -literal -offset 4n
+skips the forced push back to origin.
+.Ed
+.Sh SEE ALSO
+.Xr repopull 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+F Harvell (fharvell@siteservices.net)
+.Sh BUGS
+No known bugs.

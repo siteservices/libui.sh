@@ -1,0 +1,495 @@
+.\" Manpage for libuiFile.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIFILE.SH 3
+.Os
+.Sh NAME
+.Nm libuiFile.sh
+.Nd File Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Pp
+.Sh SYNOPSIS
+.Sy LoadMod File
+.Pp
+.Sy Close
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <file_path>
+.Pp
+.Sy GetFileList
+.Op Fl d Fl e Fl f Fl n Fl p Fl r Fl w
+.Ar <variable_name> <file_specification> ...
+.Pp
+.Sy GetRealPath
+.Op Fl d
+.Ar <variable_name> Op Ar <file_specification>
+.Pp
+.Sy GetTmp
+.Op Fl d Fl f Fl s
+.Ar <variable_name>
+.Pp
+.Sy Open
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
+.Op Fl B Ar <path>
+.Ar <file_path> ...
+.Pp
+.Sy PathMatches
+.Ar <file_spec_1> <file_spec_2>
+.Pp
+.Sy RemoveFileList
+.Op Fl f
+.Ar <variable_name>
+.Pp
+.Sy Write
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl f Ar <file_path>
+.Op Fl p Ar <format>
+.Op Fl r Ar <record_marker>
+.Ar <data> ...
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides functions for accessing and managing files.
+It includes support for file creation, access, listing, removal, and locking.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss Close
+The following command unlocks, closes, and disassociates the file ID associated
+with a file by the
+.Sx Open
+command:
+.Bd -ragged -offset 4n
+.Sy Close
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <file_path>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to associate a file ID with a file path.
+.El
+.Pp
+Unlocks and disassociates the
+.Ar <file_path>
+associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.Pp
+The Close command works with either a numeric file ID option or a
+.Ar <file_path> .
+If no file ID or
+.Ar <file_path>
+is provided, all open / locked files are closed.
+.Pp
+Note: The
+.Sy Close
+command is executed (with no parameters) during exit to unlock / close all open
+files.
+.Ss GetFileList
+The following command assigns a listing of the files matching the provided file
+specification to the named array variable:
+.Bd -ragged -offset 4n
+.Sy GetFileList
+.Op Fl d Fl e Fl f Fl n Fl p Fl r Fl w
+.Ar <variable_name> <file_specification> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl d
+Match directories only.
+.It Fl e
+Generate an error when the pattern matches nothing.
+.It Fl f
+Match files only.
+.It Fl n
+Return only filenames.
+This is useful when getting a list from a directory other than the current
+directory.
+.It Fl p
+Return only paths, i.e., only the path portion without any filenames.
+.It Fl r
+Perform a recursive expansion, i.e., include selected subdirectories.
+.It Fl w
+Generate a warning when the pattern matches nothing.
+.El
+.Pp
+Set the
+.Ar <variable_name>
+array variable to a list of the files specified by
+.Ar <file_specification> .
+More than one
+.Ar <file_specification>
+can be provided.
+.Pp
+Note:
+.Sy GetFileList
+will generate an error (No file found) unless the
+.Fl E
+(No error on empty) option is provided.
+.Ss GetRealPath
+The following command dereferences the provided file specification and returns
+the associated absolute path:
+.Bd -ragged -offset 4n
+.Sy GetRealPath
+.Op Fl d
+.Ar <variable_name> Op Ar <file_specification>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl d
+Get real path for the directory portion of the path only, i.e., ignore the
+filename.
+Note: The full path, including the filename, is returned in the
+.Ar <variable_name>
+variable.
+This is useful when getting the real path prior to creating the file.
+.El
+.Pp
+Set the
+.Ar <variable_name>
+variable to the real, dereferenced, path of the path specified by
+.Ar <file_specification> .
+This command dereferences any symbolic links and provides the "real" absolute
+path of the specified file / path.
+Only one
+.Ar <file_specification>
+can be provided.
+If a file specification is not provided, the value currently stored in the
+.Ar <variable_name>
+variable is used as the file specification.
+.Ss GetTmp
+The following command creates a temporary directory / file / subdirectory and
+assigns the path to the named variable:
+.Bd -ragged -offset 4n
+.Sy GetTmp
+.Op Fl d Fl f Fl s
+.Ar <variable_name>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl d
+Create temporary directory.
+.It Fl f
+Create temporary file.
+.It Fl s
+Create temporary subdirectory.
+.El
+.Pp
+When called with the
+.Fl d
+option (or without an option), a temporary directory will be created on the
+first call and its path is stored in the
+.Ar <variable_name>
+variable.
+.Pp
+When called with the
+.Fl f
+option, a file with a unique filename will be created within the temporary
+directory (above) and its path is stored in the
+.Ar <variable_name>
+variable.
+.Pp
+When called with the
+.Fl s
+option, a subdirectory with a unique filename will be created within the
+temporary directory (above) and its path is stored in the
+.Ar <variable_name>
+variable.
+.Pp
+Note:
+.Sy GetTmp
+will only create one temporary (parent) directory.
+It will reuse that same directory if called more than once.
+The temporary (parent) directory and its contents should be removed
+automatically on exit.
+.Ss Open
+The following command opens a file, locks it, and associates a file ID with the
+file path:
+.Bd -ragged -offset 4n
+.Sy Open
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
+.Op Fl B Ar <path>
+.Ar <file_path> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to associate a file ID with a file path.
+.It Fl a
+Open the file, and append after any existing data. (This is the default.)
+.It Fl b
+Backup the
+.Ar <file_path>
+file to a bzipped file in the same directory with the same filename and with a
+".0.bz2" extension (e.g.: <file_path>.0.bz2).
+.It Fl B Ar <path>
+Backup the
+.Ar <file_path>
+file to a bzipped file located at
+.Ar <path> .
+.Pp
+If
+.Ar <path>
+is a directory, then the backup file will have the same filename with a ".0.bz2"
+extension (e.g.: <file_path>.0.bz2) and will be located in the
+.Ar <path>
+directory.
+Additional backup copies, up to LIBUI_BACKUPS copies (default of 10), will also
+be kept with each successive version incrementally numbered starting with 1.
+.Pp
+If
+.Ar <path>
+is not a directory, then the backup file will have the
+.Ar <path>
+filename with a ".0.bz2" extension (e.g.: <path>.0.bz2) and will be located in
+the same directory as the
+.Ar <file_path>
+file.
+.It Fl c
+Open the file, removing any existing data.
+.El
+.Pp
+Opens the
+.Ar <file_path>
+file (creating it if necessary), locks the file, and associates the
+.Ar <file_path>
+with a file ID.
+Any file opened using the
+.Sy Open
+command should be closed using the
+.Sx Close
+command.
+.Pp
+If no file ID is provided, the next file ID is allocated starting with 1.
+The file ID is incremented each time
+.Sy Open
+is called.
+The file ID can be used as an option flag with the
+.Sx Action
+command, the
+.Sx Write
+command, or the
+.Sx Close
+command.
+See the
+.Sx Action
+command, the
+.Sx Write
+command, or the
+.Sx Close
+command above fore more information.
+.Pp
+If the
+.Fl a
+(Append) option flag is provided, writes to the file will be appended after any
+existing data.
+This is the default operation.
+If the
+.Fl c
+(Create) option flag is provided, the file is created, i.e. any existing data is
+erased.
+.Ss PathMatches
+The following command checks if the two provided file paths are the same file /
+directory:
+.Bd -ragged -offset 4n
+.Sy PathMatches
+.Ar <file_spec_1> <file_spec_2>
+.Ed
+.Pp
+Compares the file inodes associated with the file paths specified by
+.Ar <file_spec_1>
+and
+.Ar <file_spec_2> .
+Returns 0 (true) if the files (inodes) exist and match.
+Returns 1 (false) if a file does not exist or the inodes do not match.
+Only one
+.Ar <file_spec_1>
+and one
+.Ar <file_spec_2>
+can be provided.
+.Pp
+Note: This command dereferences any symbolic links and uses filesystem inodes to
+ensure an accurate match.
+.Ss RemoveFileList
+The following command removes the files / directories matching the provided
+paths listed in the named array variable:
+.Bd -ragged -offset 4n
+.Sy RemoveFileList
+.Op Fl f
+.Ar <variable_name>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl f
+Force removal of the files / directories.
+.El
+.Pp
+Removes the paths contained in the
+.Ar <variable_name>
+array variable.
+The
+.Fl f
+option uses the
+.Fl f
+(Force) option with the rm / rmdir commands to force the removal of the files /
+directories.
+.Pp
+Note: The
+.Sx RemoveFileList
+command causes
+.Nm
+to load the sort mod if not already loaded.
+See
+.Xr libuiSort.sh 3
+for more information.
+.Ss Write
+The following command writes data into a file associated with a file ID:
+.Bd -ragged -offset 4n
+.Sy Write
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl f Ar <file_path>
+.Op Fl p Ar <format>
+.Op Fl r Ar <record_marker>
+.Ar <data> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx Open
+command for more information.
+.It Fl a
+Open the file, and append
+.Ar <data>
+after any existing data.
+This option is only applicable when also using the
+.Fl f Ar <file_path>
+option.
+.It Fl c
+Open the file, removing any existing data before writing
+.Ar <data> .
+This option is only applicable when also using the
+.Fl f Ar <file_path>
+option.
+.It Fl f Ar <file_path>
+The
+.Fl f Ar <file_path>
+(File) option provides direct access to the file provided as
+.Ar <file_path> .
+.Pp
+Important: The use of the
+.Fl f Ar <file_path>
+option does not lock the
+.Ar <file_path>
+file for exclusive access.
+If the
+.Ar <file_path>
+file should be locked, the
+.Sx Open
+and
+.Sx Close
+commands should be used before and after the
+.Sy Write
+command.
+.It Fl p
+The
+.Fl p
+(Print Format) option supports writing the
+.Ar <data>
+using the
+.Xr printf 3
+style format string provided in
+.Ar <format> .
+.It Fl r
+The
+.Fl r
+(Record Marker) option outputs the
+.Ar <data>
+following each entry with the marker provided in
+.Ar <record_marker> .
+.El
+.Pp
+Writes the
+.Ar <data>
+to the file associated with an
+.Sx Open
+file ID or provided file.
+The default operation is to write to the file associated with file ID 1.
+.Sh FILES
+The
+.Nm
+.Xr libui.sh 3
+mod creates a temporary directory (via mktemp) when using the GetTmp command.
+The library attempts to track and remove the temporary directory upon exit.
+Certain circumstances (e.g.: some crashes) prevent the _Cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy LoadMod File
+.Sy GetTmp tmpdir
+.Ed
+.Pp
+Creates a unique, temporary directory and assigns the path to the "tmpdir"
+variable.
+.Bd -literal -offset 4n
+.Sy LoadMod File
+.Sy Open -1 -c ${tmpdir}/log
+.Sy Write -1 "Added the ${var} data to ${file}."
+.Sy Close -1
+.Ed
+.Pp
+Creates, opens, and locks the file "${tmpdir}/log", writes the new entry to the
+file, and then unlocks the file.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

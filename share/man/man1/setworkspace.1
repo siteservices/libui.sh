@@ -1,0 +1,102 @@
+.\" Manpage for setworkspace {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt SETWORKSPACE 1
+.Os
+.Sh NAME
+.Nm setworkspace
+.Nd Set up the provided directory as the current workspace.
+.Sh SYNOPSIS
+.Sy setworkspace
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Ar <workspace>
+.Sh DESCRIPTION
+Used to create a ~/.workspace file containing the information necessary to set
+the workspace when accessed by workspace knowledgable tools and scripts.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy setworkspace
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Ar <workspace>
+.Ed
+.Pp
+Available command line options are:
+.Ar <workspace>
+The workspace directory, i.e., the directory above the working git repositories.
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The script creates a .workspace file in the user's home directory.
+The .workspace file contains shell commands that configure the workspace, in
+particular, commands to set the
+.Ev WORKSPACE
+environment variable.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy setworkspace path/to/workspace
+.Ed
+.Pp
+This creates a .workspace file in the user's home directory that contains shell
+commands to configure the workspace and set the
+.Ev WORKSPACE
+environment variable to contain the absolute
+.Ar <path/to/workspace> .
+.Sh SEE ALSO
+.Xr linechecksum 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

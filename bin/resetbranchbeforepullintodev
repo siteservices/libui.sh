@@ -1,0 +1,114 @@
+#!/usr/bin/env libui
+#####
+#
+#	Reset Branch Git History
+#
+#	F Harvell - Thu Sep 24 10:17:19 EDT 2020
+#
+#####
+#
+# {libui tool} Used to reset git branch history to a single commit.
+#
+# Man page available for this script: man 1 resetbranchbeforepullintodev
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.7
+
+# load mods
+
+##### configuration
+
+# defaults
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n push -t -k "Skip Push" -d "Do not \\\"git push --force\\\" the reset branch back to origin." s
+
+##### callbacks
+
+# initialization callback
+InitCallback () {
+  Trace 'Program initialization.'
+
+  # note: must be in the branch: git checkout {branch}
+  Trace 'Verify in branch root.'
+  [[ -d '.git' ]] || Error 'Please cd to the the branch root directory.'
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+# display current branch
+git status -b
+
+# confirm correct branch for reset
+Trace 'Confirm branch.'
+if Verify "Are you sure you want to reset this branch?"
+then
+  # reset branch point to current dev
+  Trace 'Reset branch base.'
+  Action -q "git reset branch to HEAD" "git reset $(git merge-base origin/dev $(git rev-parse --abbrev-ref HEAD))"
+  ev=${?}
+
+  # add everything back
+  if ((0 == ev))
+  then
+    Trace 'Add changes to branch.'
+    Action "git add -A"
+    ev=${?}
+  fi
+
+  # commit the "new" history
+  if ((0 == ev))
+  then
+    Trace 'Commit changes.'
+    Action "git commit"
+    ev=${?}
+  fi
+
+  # update the remote repository with the new history
+  if ((0 == ev))
+  then
+    Trace 'Check for push. (%s)' "${push}"
+    if ${push}
+    then
+      Trace 'Push commit to Bitbucket.'
+      Action "git push --force"
+      ev=${?}
+    fi
+  fi
+fi
+
+Trace 'Exit %s. (%s)' "${CMD}" "${ev}"
+Exit ${ev}

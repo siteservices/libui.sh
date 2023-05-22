@@ -1,0 +1,120 @@
+#!/usr/bin/env libui
+#####
+#
+#	Set Workspace - Create User .workspace File
+#
+#	F Harvell - Fri Feb 17 19:04:07 EST 2023
+#
+#####
+#
+# {libui tool} Write a .workspace file in the user's home directory.
+#
+# If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
+# environment variable will be used. If the WORKSPACE environment variable is
+# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
+# WORKSPACE remains undefined, the current directory is used.
+#
+# Man page available for this script: man 1 setworkspace
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.2
+
+# load mods
+LoadMod File
+LoadMod Workspace
+
+##### configuration
+
+# defaults
+retval=0
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddParameter -r -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
+
+##### callbacks
+
+# usage information callback
+InfoCallback () {
+  Trace 'Provide usage information.'
+  cat << EOF
+This script creates a .workspace file in the user's directory.
+EOF
+}
+
+# initialization callback
+InitCallback () {
+  Trace 'In user init callback.'
+
+  Trace 'Validate workspace. (%s)' "${WORKSPACE}"
+  ValidateWorkspace
+}
+
+##### functions
+
+# write workspace file
+Write_workspace () {
+  Trace 'Prepare workspace file. (%s)' "${_WS_wsfile}"
+  local ws="#!/bin/zsh
+#####
+#
+#	Workspace File for ${WORKSPACE}
+#	$(date)
+#
+######
+
+# set workspace
+export WORKSPACE=\"${WORKSPACE/${HOME}/\${HOME\}}\"
+"
+
+  Trace 'Write workspace file. (%s)' "${_WS_wsfile}"
+  printf '%s' "${ws}" > "${_WS_wsfile}" || Error 'Unable to write workspace file. (%s)' "${_WS_wsfile}"
+
+  return ${?}
+}
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Move to WORKSPACE. (%s)' "${WORKSPACE}"
+pushd "${WORKSPACE}" > /dev/null
+Tell 'Working in: %s' "${WORKSPACE}"
+
+Trace 'Write workspace file. (%s)' "${WORKSPACE}"
+if [[ ! -f "${_WS_wsfile}" ]] || Verify 'Replace %s file? (%s)' "${_WS_wsfile}" "${WORKSPACE##*/}"
+then
+  Write_workspace && Alert 'Workspace file created. (%s)' "${WORKSPACE##*/}"
+fi
+retval=${?}
+
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit ${retval}

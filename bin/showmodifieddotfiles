@@ -1,0 +1,191 @@
+#!/usr/bin/env libui
+#####
+#
+#	Show Modified Dotfiles
+#
+#	F Harvell - Sun Dec 27 21:14:19 EST 2020
+#
+#####
+#
+# {libui tool} Used to list dotfiles that have been modified since being
+# installed. Note: By default, reviews files contained in the installed
+# manifest.
+#
+# Man page available for this script: man 1 showmodifieddotfiles
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.11
+
+# load mods
+
+##### configuration
+
+# defaults
+installdir=".env/var/installed"
+installts="${installdir}/date"
+manifest="${installdir}/manifest"
+previnst=0 # 1970-01-01
+modified=false
+srcfiles=( )
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n diff -f -k 'Diff' -d 'Display file differences from reference directory.' d
+AddOption -c FastCallback -n fast -k 'Fast' -d 'Perform "fast" diff by skipping .vim directory.' f
+AddOption -n usemanifest -t -k '(No) Manifest' -d 'Do not use manifest. Use all dotfiles in source directory.' M
+AddOption -n refdir -k 'Reference' -d 'The reference directory for the analysis.' r:
+AddOption -n src -i "${HOME}" -k 'Source' -d 'The source directory for the analysis.' s:
+
+##### callbacks
+
+# fast callback
+FastCallback () {
+  fast=( '.vim' )
+
+  return 0
+}
+
+# initialization callback
+InitCallback () {
+  Trace 'Program initialization.'
+
+  Trace 'Check for install timestamp file. (%s)' "${src}/${installts}"
+  if [[ -e "${src}/${installts}" ]]
+  then
+    Trace 'Get previous install timestamp. (%s)' "${src}/${installts}"
+    previnst=$(< "${src}/${installts}")
+    Trace 'Previous installation timestamp: %s' "${previnst}"
+  else
+    if Verify 'No installation date was found. Proceed at risk?'
+    then
+      previnst=${MAXINT}
+    else
+      Error 'Cannot determine last install date (aborting).'
+    fi
+  fi
+
+  Trace 'Check for source directory. (%s)' "${src}"
+  if [[ -d "${src}" ]]
+  then
+    Trace 'Check if using manifest. (%s)' "${usemanifest}"
+    if ${usemanifest}
+    then
+      Trace 'Check for existing manifest. (%s)' "${manifest}"
+      if [[ -f "${src}/${manifest}" ]]
+      then
+        srcfiles=( $(< "${src}/${manifest}") )
+      else
+        Error 'The source directory does not have a manifest file. (%s)' "${manifest}"
+      fi
+    else
+      srcfiles=( $(ls -A1 ${src} | grep '^\.') )
+    fi
+
+    Trace 'Remove fast files. (%s)' "${fast[*]}"
+    for file in "${fast[@]}"
+    do
+      srcfiles=( "${(@)srcfiles:#${file}}" )
+    done
+
+    Trace 'Check for non-dotfiles in source list. (%s)' "${srcfiles[*]}"
+    for file in "${srcfiles[@]}"
+    do
+      if [[ '.' == "${file:0:1}" ]]
+      then
+        Trace 'Check dotfile: %s' "${file}"
+        if [[ ! -e "${src}/${file}" ]]
+        then
+          Tell 'Missing source dotfile: %s' "${file}"
+        fi
+      else
+        Trace 'Skipping non-dotfile: %s' "${file}"
+      fi
+    done
+  else
+    Error 'The source directory does not exist.'
+  fi
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Change directory to source. (%s)' "${src}"
+cd ${src}
+
+Trace 'Check file modification dates. (%s)' "${srcfiles[*]}"
+for filepath in "${srcfiles[@]}"
+do
+  Trace 'Check %s for modification after installation.' "${filepath}"
+  for file in $(find ${src}/${filepath} -name '.*.sw*' -prune -o -type f -print)
+  do
+    Trace 'Check date of %s (%s) vs. %s.' "${file}" "$(date -r ${file} +%s)" "${previnst}"
+    if (($(date -r "${file}" +%s) > ${previnst}))
+    then
+      Tell 'File has been modified after installation: %s' "${file}"
+      modified=true
+    fi
+
+    Trace 'Check if installation metadata file. (%s)' "${file}"
+    if [[ "${src}/${installts}" != "${file}" && "${src}/${manifest}" != "${file}" ]]
+    then
+      Trace 'Check for reference. (%s)' "${refdir}/${file/${src}\//}"
+      if [[ -f "${refdir}/${file/${src}\//}" ]]
+      then
+        Trace 'Check %s against %s.' "${file}" "${refdir}/${file/${src}\//}"
+        Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
+        if ((0 != ${?}))
+        then
+          Tell 'File differs from reference: %s' "${file}"
+          modified=true
+          if ${diff}
+          then
+            Tell "${Dfy}diff %s %s${D}" "${file}" "${refdir}/${file/${src}\//}"
+            Action -W "diff \"${file}\" \"${refdir}/${file/${src}\//}\""
+          fi
+        fi
+      fi
+    fi
+  done
+done
+
+Trace 'Check for modified files. (%s)' "${modified}"
+if ${modified}
+then
+  ${diff} || Warn 'Check complete, some files were modified.'
+else
+  Alert 'Check complete, no modified files found.'
+fi
+
+Trace 'Exit %s. (%s)' "${CMD}" 0
+Exit 0

@@ -1,0 +1,293 @@
+.\" Manpage for libuiSSH.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 20, 2023
+.Dt LIBUISSH.SH 3
+.Os
+.Sh NAME
+.Nm libuiSSH.sh
+.Nd SSH utilities for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod SSH
+.Pp
+.Sy SSHExec
+.Op Fl q Fl v
+.Op Fl p Ar <password>
+.Op Fl P Ar <port>
+.Op Fl t Ar <target>
+.Op Fl T Ar <target_variable>
+.Op Fl u Ar <user>
+.Ar <command_string>
+.Pp
+.Sy SSHSend
+.Op Fl q Fl v
+.Fl d Ar <destination>
+.Op Fl p Ar <password>
+.Op Fl P Ar <port>
+.Op Fl t Ar <target>
+.Op Fl T Ar <target_variable>
+.Op Fl u Ar <user>
+.Ar <file> ...
+.Sh DESCRIPTION
+The
+.Nm
+libui.sh mod provides secure shell utilities for executing commands on remote
+systems.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss SSHExec
+The following command executes a command on a remote system:
+.Bd -ragged -offset 4n
+.Sy SSHExec
+.Op Fl q Fl v
+.Op Fl p Ar <password>
+.Op Fl P Ar <port>
+.Op Fl t Ar <target>
+.Op Fl T Ar <target_variable>
+.Op Fl u Ar <user>
+.Ar <command_string>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl p Ar <password>
+The password to use when attempting to ssh into the target system.
+.It Fl P Ar <port>
+The port to use when attempting to ssh into the target system.
+.It Fl q
+Normally, the command is executed on the remote server, the results are
+captured, and then the results are displayed.
+The
+.Fl q
+(Quiet) option suppresses the display of the results.
+.It Fl t Ar <target>
+The
+.Ar <target>
+identifies the system on which to execute the provided
+.Ar <command_string> .
+The
+.Fl t
+(Target) or
+.Fl T
+(Target Variable) option is required.
+.It Fl T Ar <target_variable>
+The
+.Ar <target_variable>
+is the name of the array variable containing the systems on which to execute the
+provided
+.Ar <command_string> .
+The
+.Fl t
+(Target) or
+.Fl T
+(Target Variable) option is required.
+.It Fl u Ar <user>
+The username to use when attempting to ssh into the target system.
+By default, the value in the
+.Ev USER
+environment variable is used.
+.It Fl v
+Normally, the command is executed on the remote server, the results are
+captured, and then the results are displayed.
+The
+.Fl v
+(Verbose) option displays the execution of the command immediately.
+.It Ar <command_string>
+The command to be executed on the remote system.
+.El
+.Pp
+Executes the provided
+.Ar <command_string>
+on the
+.Ar <target>
+system and returns the results in the
+.Sy SSH_OUT
+(SSH STDOUT)
+.Sy SSH_ERR
+(SSH STDERR)
+.Sy SSH_RV
+(SSH Return Value)
+variables.
+.Pp
+Multiple
+.Fl t Ar <target>
+(Target) options can be provided.
+Multiple targets can also be provided in an array variable using the
+.Fl T Ar <target_variable>
+(Target Variable) option.
+If both
+.Fl T
+(Target Variable)
+and
+.Fl t
+(Target)
+options are used, the
+.Fl T
+(Target Variable) option must be provided first.
+.Ss SSHSend
+The following command executes a command on a remote system:
+.Bd -ragged -offset 4n
+.Sy SSHSend
+.Op Fl q Fl v
+.Fl d Ar <destination>
+.Op Fl p Ar <password>
+.Op Fl P Ar <port>
+.Op Fl t Ar <target>
+.Op Fl T Ar <target_variable>
+.Op Fl u Ar <user>
+.Ar <file> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl d Ar <destination>
+The destination directory for the file when delivered to the target system(s).
+The
+.Fl d Ar <destination>
+option is required.
+.It Fl p Ar <password>
+The password to use when attempting to ssh into the target system.
+.It Fl P Ar <port>
+The port to use when attempting to ssh into the target system.
+.It Fl q
+Normally, the
+.Ar <file>
+is copied to the remote server, the results are captured, and the
+results are displayed.
+The
+.Fl q
+(Quiet) option suppresses the display of any results.
+.It Fl t Ar <target>
+The
+.Ar <target>
+identifies the system to send the
+.Ar <file> .
+The
+.Fl t
+(Target) or
+.Fl T
+(Target Variable) option is required.
+.It Fl T Ar <target_variable>
+The
+.Ar <target_variable>
+is the name of the array variable containing the systems on which to send the
+provided
+.Ar <file> .
+The
+.Fl t
+(Target) or
+.Fl T
+(Target Variable) option is required.
+.It Fl u Ar <user>
+The username to use when attempting to ssh into the target system.
+By default, the value in the
+.Ev USER
+environment variable is used.
+.It Fl v
+Normally, the
+.Ar <file>
+is copied to the remote server, the results are captured, and the
+results are displayed.
+The
+.Fl v
+(Verbose) option displays the execution of the transfer immediately.
+.It Ar <file>
+The file to be sent to the remote system.
+More than one
+.Ar <file>
+parameter can be provided, but they are all placed into the same destination.
+.El
+.Pp
+Copies the provided
+.Ar <file>
+to the
+.Ar <target>
+system and returns the results in the
+.Sy SSH_OUT
+(SSH STDOUT)
+.Sy SSH_ERR
+(SSH STDERR)
+.Sy SSH_RV
+(SSH Return Value)
+variables.
+See the
+.Sx VARIABLES
+section below for more information.
+.Pp
+Multiple
+.Ar <file>
+paths can be provided and multiple
+.Fl t Ar <target>
+(Target) options can be provided.
+Multiple targets can also be provided in an array variable using the
+.Fl T Ar <target_variable>
+(Target Variable) option.
+If both
+.Fl T
+(Target Variable)
+and
+.Fl t
+(Target)
+options are used, the
+.Fl T
+(Target Variable) option must be provided first.
+.Sh VARIABLES
+Normally, the command is executed on the remote server, the results are
+captured, and then the results are displayed.
+The results are also provided in the
+.Sy SSH_OUT
+variable and the return value from the remote command execution is provided in
+the
+.Sy SSH_RV
+variable.
+Error messages, if generated, are provided in the
+.Sy SSH_ERR
+variable.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy SSHExec -t alpha ls /tmp
+.Ed
+.Pp
+Result: Executes
+.Qq .Sy ls /tmp
+on the alpha system and displays the results.
+.Bd -literal -offset 4n
+.Sy SSHSend -t alpha -t omega -d /tmp file.txt
+.Ed
+.Pp
+Result: Sends the file
+.Qq Sy file.txt
+to the alpha and omega systems and save the file as
+.Qq Sy /tmp/file.txt .
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui 1
+.Xr libui.sh 3
+.Sh NOTES
+It is recommended that the user configure shared SSH keys to minimize the need
+for passing a password.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

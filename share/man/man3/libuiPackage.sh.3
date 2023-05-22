@@ -1,0 +1,431 @@
+.\" Manpage for libuiPackage.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 19, 2023
+.Dt LIBUIPACKAGE.SH 3
+.Os
+.Sh NAME
+.Nm libuiPackage.sh
+.Nd Package Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Package
+.Pp
+.Sy CreatePackage Oo Fl a Fl l Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Pp
+.Sy CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Pp
+.Sy ListPackage Ar <package>
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides functions for creating and listing the contents of self-extracting
+packages.
+The self-extracting packages can be tar or shar based.
+.Pp
+Note: The use of the tar format package is recommended.
+The shar format is provided in case the package content must be reviewed by a
+human (e.g. in a classified environment).
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss CreatePackage
+The CreatePackage command creates a package containing the files in the
+specified
+.Ar <source_directory>
+directory.
+.Pp
+.Sy CreatePackage Oo Fl a Fl l Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Pp
+When executed, the
+.Sy CreatePackage
+command, will create a self-extracting package containing the files in the
+specified
+.Ar <source_directory>
+directory.
+.Pp
+The available options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl a
+Append Archive
+.Pp
+This option is passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+.It Fl c
+Compression
+.Pp
+The compression option to be provided to the archive command.
+.Pp
+Note: Typically, the tar archive command supports compression options.
+These are typically
+.Fl j
+(bzip2) and
+.Fl z
+(gzip).
+No compression option is used by default.
+See
+.Xr tar 1
+for more information.
+.It Fl d Ar <description>
+Description
+.Pp
+.It Fl e Ar <environment_spec>
+This option is passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+Environment
+.Pp
+The
+.Ar <environment_spec>
+will be added before the command line that executes the installer.
+This is typically used to pass an environment variable into the installer
+process.
+.It Fl f Ar <filelist_array_var_name>
+Include
+.Pp
+The name of an array varaiable that contains a list of directories and files in
+the
+.Ar <source_directory>
+directory that should be included in the package.
+.It Fl h Ar <header_command>
+Header
+.Pp
+Execute the function or command named
+.Ar <header_command>
+to generate the package header.
+A default header function,
+.Sx CreatePackageHeader ,
+is provided
+and is automatically called to generate a self-extracting package.
+.Pp
+If a header command is provided using the
+.Fl h
+(Header) option, the respective header command must write the header into the
+.Ar <package_filename>
+provided as a parameter.
+In other words, the
+.Ar <header_command>
+will be called as:
+.Bd -literal -offset 4n
+.Sy <header_command> Oo Fl a Fl S Fl T Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Ed
+.Pp
+Where
+.Fl a
+will be used to append the archive file as the last parameter on the
+.Ar <installer>
+command line when the self-extracting header is executed,
+.Fl e Ar <environment_spec>
+will add
+.Ar <environment_spec>
+before the command line that executes the installer,
+.Fl i Ar <installer>
+is the installer command to execute,
+.Fl s Ar <source_directory>
+is the package source directory,
+and
+.Ar <package_filename>
+is the name of the package file being generated.
+.It Fl i Ar <installer>
+Installer
+.Pp
+This option is passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+.It Fl l
+List
+.Pp
+A list of the root directories and files to be packaged will be displayed.
+No archive package will be created.
+.It Fl n Ar <encoding>
+(E)ncoding
+.Pp
+The encoding option to be provided to the archive command.
+.Pp
+Note: Only the shar archive command supports encoding options.
+These are typically
+.Fl M
+(Mixed) and
+.Fl T
+(Text).
+No encoding option is used by default.
+See
+.Xr shar 1
+for more information.
+.Pp
+Note: On macOS, shar is more limited and does not support encoding options.
+This option will be silently ignored.
+.It Fl s Ar <source_directory>
+Source Directory
+.Pp
+The package source directory.
+If omitted, the current working directory will be used as the source directory.
+This option is also passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+.It Fl S
+Sharp
+.Pp
+A shar archive package will be created.
+This option is also passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+.It Fl T
+Tarp
+.Pp
+A tar archive package will be created.
+This option is also passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+This is the default format if neither
+.Fl S
+(Sharp) or
+.Fl T
+(Tarp) option is provided.
+.It Fl x Ar <exclude_array_var_name>
+(E)xclude
+.Pp
+The name of an array varaiable that contains a list of directories and files in
+the
+.It Ar <package_filename>
+Package Filename
+.Pp
+The
+.Ar <package_filename>
+of the package to be created.
+If the
+.Ar <package_filename>
+does not include an extension, one will be added, based upon the package type
+generated (i.e. .tarp for a tar package and .sharp for a shar package).
+If no output
+.Ar <package_filename>
+is provided, the file name will be the same as the
+.Ar <source_directory>
+name.
+The
+.Ar <package_filename>
+is also passed through to the
+.Ar <header_command> .
+See the
+.Sx CreatePackageHeader
+command for more information.
+.El
+.Ss ListPackage
+The ListPackage command opens a package and obtains the top-level directory and
+file names.
+.Pp
+.Sy ListPackage Ar <package>
+.Pp
+When executed, the
+.Sy ListPackage
+command, will open an archive package and list the top-level directory and file
+names.
+.Ss CreatePackageHeader
+The CreatePackageHeader command.
+.Pp
+.Sy CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Pp
+When executed, the
+.Sy CreatePackageHeader
+command, will create the
+.Ar <package_filename>
+file with a self-extracting shell program header.
+The self-extracting header, when executed by the Z shell or Bash, will:
+.Bl -bullet -offset 4n -compact
+.It
+Create a temporary directory.
+.It
+Extract the package archive into the temporary directory.
+.It
+Extract the files in the archive into a temporary subdirectory.
+.It
+Execute the
+.Ar <installer>
+script.
+.El
+.Pp
+Any command line options included when executing the package will be passed to
+the installer.
+.Pp
+An example package execution command line is:
+.Bd -literal -offset 4n
+.Sy zsh <filename>.tarp -h
+.Ed
+.Pp
+This will perform the above bullet list activities and execute the installer
+script with the
+.Fl h
+command line option, e.g.:
+.Bd -literal -offset 4n
+.Sy {environment spec} sh Ar <installer> Fl h
+.Ed
+.Pp
+Note: The package header will extract the entire archive into the temporary
+subdirectory.
+The installer script should move the files from the temporary subdirectory to
+their final destination.
+.Pp
+The available options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl a
+Append Archive
+.Pp
+When included, the
+.Fl a
+(Append Archive) option will add the archive filename as the last element on the
+installer command line.
+See the
+.Fl i
+(installer) option for more information.
+.It Fl d Ar <description>
+Description
+.Pp
+The
+.Ar <description>
+will be added as the first text line in the package header.
+If not provided, it will default to "Self-Extracting
+.Ar <source_directory>
+Package".
+.It Fl e Ar <environment_spec>
+Environment
+.Pp
+The
+.Ar <environment_spec>
+will be added before the command line that executes the installer.
+This is typically used to pass an environment variable into the installer
+process.
+.It Fl i Ar <installer>
+Installer
+.Pp
+The path of the installer program, relative to the
+.Ar <source_directory>
+directory.
+When the self-extracting archive package is executed, it will extract the
+installation program directory and then execute the installer.
+.Pp
+Note: The contents of the parent directory containing the installation program
+will be available in the temporary installation directory and relative to the
+.Ar <source_directory>
+root.
+.It Fl s Ar <source_directory>
+Source Directory
+.Pp
+The package source directory.
+If omitted, the current working directory will be used as the source directory.
+.It Fl S
+Sharp
+.Pp
+A shar archive package will be created.
+.It Fl T
+Tarp
+.Pp
+A tar archive package will be created.
+This is the default format if neither
+.Fl S
+(Sharp) or
+.Fl T
+(Tarp) option is provided.
+.It Ar <package_filename>
+Package Filename
+.Pp
+The
+.Ar <package_filename>
+of the package to be created.
+If the
+.Ar <package_filename>
+does not include an extension, one will be added, based upon the package type
+generated (i.e. .tarp for a tar package and .sharp for a shar package).
+If no output
+.Ar <package_filename>
+is provided, the file name will be the same as the
+.Ar <source_directory>
+name.
+.El
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy CreatePackage -f filelist -o package.tarp /source/dir
+.Ed
+.Pp
+Creates a
+.Ar package.tarp
+file containing the files in the
+.Ar filelist
+array from the
+.Ar /source/dir
+directory.
+.Bd -literal -offset 4n
+.Sy ListPackage package.tarp
+.Ed
+.Pp
+Lists the files contained in the
+.Ar package.tarp
+file.
+.Bd -literal -offset 4n
+.Sy CreatePackageHeader Fl S Fl i Ar ./path/to/installer Ar package.sharp
+.Ed
+.Pp
+Creates a
+.Ar package.sharp
+file containing a sharp self-extracting header configured to execute the
+.Ar ./path/to/installer
+command.
+When executed, the self-extracting header will create a temporary directory,
+extract the lib/sh directory, and execute
+the installer from the root of the extracted package.
+.Bd -literal -offset 4n
+.Sy CreatePackageHeader Fl T Fl a Fl i Ar ./path/to/installer Ar package.tarp
+.Ed
+.Pp
+Creates a
+.Ar package.tarp
+file containing a tarp self-extracting header configured to execute the
+.Ar ./path/to/installer
+command with the filename of the tarball appended to the command.
+When executed, the self-extracting header will create a temporary directory,
+extract the lib/sh directory, and execute
+the installer from the root of the extracted package.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr shar 1 ,
+.Xr tar 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The macOS version of the shar command has significant limitations when compared
+to the GNU shar utility provided in most Linux distributions.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

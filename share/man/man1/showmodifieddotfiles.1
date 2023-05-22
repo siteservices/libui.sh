@@ -1,0 +1,147 @@
+.\" Manpage for showmodifieddotfiles {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt SHOWMODIFIEDDOTFILES 1
+.Os
+.Sh NAME
+.Nm showmodifieddotfiles
+.Nd Find dotfiles modified since being installed
+.Sh SYNOPSIS
+.Sy showmodifieddotfiles
+.Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl r Ar <reference_directory>
+.Op Fl s Ar <source_directory>
+.Op Fl X Ar <level>
+.Sh DESCRIPTION
+Used to list dotfiles that have been modified since being installed.
+.Pp
+Note: By default, searches only the files / directories contained in the
+installed manifest.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy showmodifieddotfiles
+.Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl r Ar <reference_directory>
+.Op Fl s Ar <source_directory>
+.Op Fl X Ar <level>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl d
+Differences
+.Pp
+Display file differences from reference directory.
+.Pp
+Displays differences (using diff) between source directory files and the
+reference directory files.
+This is only available with the
+.Fl r
+(Reference Directory) option.
+.It Fl f
+Fast
+.Pp
+Do not search the ".vim" directory when searching for differences.
+.It Fl M
+(No) Manifest
+.Pp
+Do not use the manifest when searching for differences.
+Note: This will search all files in the source directory.
+.It Fl r Ar <reference_directory>
+Reference Directory
+.Pp
+The reference directory for the analysis.
+.Pp
+The files in the source directory are compared to the files in the reference
+directory, if supplied.
+Difference can be displayed using the
+.Fl d
+option.
+.It Fl s Ar <source>
+Source
+.Pp
+The source directory for the analysis.
+.Pp
+The source directory is the path searched for modified files.
+Defaults to the user's home directory.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+.Bl -tag -offset 4n -width 16n
+.It .env/var/installed/manifest
+File contains a listing of the files installed when the last dotfiles package
+was installed.
+.It .env/var/installed/date
+File contains the date (seconds after the epoch) when the last dotfiles package
+was installed.
+.El
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy showmodifieddotfiles
+.Ed
+.Pp
+Lists all files from the contents of the .env/manifest file that have been
+modified since the date contained in the .env/var/installed file.
+.Sh SEE ALSO
+.Xr createsitedotfilesfromdefaults 1 ,
+.Xr installdotfiles 1 ,
+.Xr packagedotfiles 1 ,
+.Xr savecurrentsitedotfilesasdefaults 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.
