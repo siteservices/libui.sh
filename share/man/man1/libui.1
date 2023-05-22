@@ -1,0 +1,498 @@
+.\" Manpage for libui
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 20, 2023
+.Dt LIBUI 1
+.Os
+.Sh NAME
+.Nm libui
+.Nd Perform
+.Xr libui.sh 3
+library utility actions
+.Sh SYNOPSIS
+.Sy libui
+.Op Fl c Fl d Fl i Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
+.Op Fl e Ar shell ...
+.Op Fl X Ar <level>
+.Op Ar <parameter>
+.Sh DESCRIPTION
+Used to perform various utility functions for the
+.Xr libui.sh 3
+user interface library.
+The
+.Nm
+command is also the primary application launcher for scripts that use the
+.Xr libui.sh 3
+user interface library.
+In the loader mode, the
+.Nm
+command loads the
+.Xr libui.sh 3
+library and then sources the application script.
+.Pp
+Some of the primary utility functions are:
+.Bl -tag -offset 4n -width 4n
+.It Fl c
+Create a default
+.Xr libui.sh 3
+configuration file«
+.It Fl d
+Demonstrate some
+.Xr libui.sh 3
+capabilities«
+.It Fl i
+Install a
+.Xr libui.sh 3
+library into the COMMONROOT directory«
+.It Fl L
+Delete stale lock files
+.It Fl m
+Access the
+.Xr libui.sh 3
+man page«
+.It Fl p
+Create a
+.Xr libui.sh 3
+distribution "package"
+.It Fl R
+Reset
+.Xr libui.sh 3
+cache files
+.It Fl s
+Display
+.Xr libui.sh 3
+statistics
+.It Fl t
+Regression tests on
+.Xr libui.sh 3
+functionality«
+.It Fl u
+Update the
+.Xr libui.sh 3
+in the COMMONROOT directory«
+.It Fl U
+Unify the
+.Xr libui.sh 3
+environment with COMMONROOT by removing duplicate files from ~/.env«
+.It Fl v
+Verify the
+.Xr libui.sh 3
+in the COMMONROOT directory«
+.El
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy libui
+.Op Fl c Fl d Fl i Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
+.Op Fl e Ar <shell> ...
+.Op Fl X Ar <level>
+.Op Ar <parameter>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl c
+Config
+.Pp
+Create a default
+.Qq Sy libui.conf
+configuration file in the
+.Qq Sy .libui
+directory in the user's home directory.
+.It Fl d
+Demo
+.Pp
+Provide a simple
+.Xr libui.sh 3
+capabilities demonstration.
+.It Fl e Ar <shell>
+Execute Shell
+.Pp
+Perform regression testing using the provided
+.Ar <shell> .
+The option can be used more than once to test with multiple shells.
+The default is testing with both Z shell and Bash.
+Note: the
+.Xr libui.sh 3
+library was only designed to work with the Z shell and Bash shells.
+.It Fl i
+Install
+.Pp
+Install
+.Xr libui.sh 3
+"package" into the directory specified by
+.Ar <parameter> ,
+if provided, or into the directory path from the
+.Ev COMMONROOT
+environment variable.
+.Pp
+This option installs
+.Xr libui.sh 3
+files from the current libui source directory into the directory path specified
+in
+.Ar <parameter> ,
+if provided, or into the directory path from the
+.Ev COMMONROOT
+environment variable.
+If a parameter is not provided and COMMONROOT is empty, an error will be
+generated.
+The library
+.Xr libui.sh 3
+and
+.Nm
+library utility will be installed in the lib/sh subdirectory.
+Man pages will be installed into the share/man/man1 and share/man/man3
+subdirectories.
+.It Fl l
+List
+.Pp
+List the files that would be included in a
+.Xr libui.sh 3
+"package".
+.It Fl L
+(Remove) Lock Files
+.Pp
+Remove leftover lock files.
+.It Fl m
+Man Page
+.Pp
+Display the
+.Xr libui.sh 3
+man page.
+.It Fl M
+Update Man Pages
+.Pp
+Update man page timestamps to match the respective script modification dates.
+.It Fl p
+Package
+.Pp
+Create a
+.Xr libui.sh 3
+"package" using the file path provided by
+.Ar <parameter> .
+.Pp
+This option creates a self-extracting "package" containing the
+.Xr libui.sh 3
+files from the current libui source directory in the file pointed to by
+.Ar <parameter> .
+.It Fl R
+Reset Caches
+.Pp
+Reset
+.Xr libui.sh 3
+caches.
+.Pp
+This will reset the display variable cache, statistics, and user information.
+The display variables cache will be regenerated and statistic collection will
+start over.
+User information questions will be asked to reset the user information file.
+See the
+.Sx FILES
+section below for more information.
+.It Fl s
+Stats
+.Pp
+Display
+.Xr libui.sh 3
+usage stats.
+.Pp
+Displays a set of usage statistics for the
+.Xr libui.sh 3
+user interface library.
+This includes overall use information as well as per-function usage.
+.It Fl t
+Test
+.Pp
+Perform a suite of
+.Xr libui.sh 3
+regression tests.
+.It Fl T
+(Single) Test
+.Pp
+Perform a single
+.Xr libui.sh 3
+regression test.
+.Pp
+Requires the name of the test as the first parameter.
+.It Fl u
+Update
+.Pp
+Update
+.Xr libui.sh 3
+in COMMONROOT.
+.Pp
+This option updates files in the
+.Ar <parameter>
+directory with files that exist in the directory containing the
+.Xr libui.sh 3
+library from which
+.Nm
+is being executed.
+If a
+.Ar <parameter>
+is not provided, the
+.Ev COMMONROOT
+environment variable is used.
+.It Fl U
+Unify
+.Pp
+Unify the user's environment by removing files already in COMMONROOT.
+.Pp
+This option deletes files that exist in the directory containing the
+.Xr libui.sh 3
+library from which
+.Nm
+is being executed where the files also exist in the
+.Ar <parameter>
+directory.
+If a
+.Ar <parameter>
+is not provided, the
+.Ev COMMONROOT
+environment variable is used.
+.It Fl v
+Verify
+.Pp
+Verify
+.Xr libui.sh 3
+in COMMONROOT.
+.Pp
+This option verifies files in the
+.Ar <parameter>
+directory with files that exist in the directory containing the
+.Xr libui.sh 3
+library from which
+.Nm
+is being executed.
+If a
+.Ar <parameter>
+is not provided, the
+.Ev COMMONROOT
+environment variable is used.
+.Pp
+When
+.Fl v
+is provided twice, displays differences (using diff) between the directories.
+.It Fl x
+Test Mode Setup
+.Pp
+Only for testing.
+Set various test modes.
+The option utilizes various sub-options to support specific tests.
+.Xr libui.sh 3 .
+.It Op Ar <parameter>
+The name of the test to perform, the package filename, or the COMMONROOT
+directory depending upon the options selected.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+When used with the
+.Fl c
+(Config) option, libui will create a default
+.Xr libui.sh 3
+configuration file.
+The file will be created in the directory pointed to by the
+.Ev LIBUI_DOTFILE
+environment variable.
+Unless otherwise defined, the
+.Xr libui.sh 3
+library will default
+.Ev LIBUI_DOTFILE
+to be
+.Qq Sy ${HOME}/.libui .
+The configuration filename is
+.Qq Sy libui.conf .
+.Pp
+When used with the
+.Fl i
+(Install) option, libui will install the
+.Xr libui.sh 3
+library, library mods, and
+.Nm
+library utility will be installed in the
+.Qq Sy lib/sh
+subdirectory.
+Example binaries will be installed in the
+.Qq Sy bin
+subdirectory.
+And man pages will be installed into the
+.Qq Sy share/man/man1
+and
+.Qq Sy share/man/man3
+subdirectories.
+.Pp
+When used with the
+.Fl R
+(Reset) option, libui will delete the display codes cache, the statistics file,
+and (re)create the user information file.
+The display codes cache and the statistics files are also stored in the
+.Ev LIBUI_DOTFILE
+directory (see above).
+The display codes cache filename is
+.Qq Sy display-${TERM} .
+The statistics file name is
+.Qq Sy stats .
+The user information is stored in the
+.Qq Sy ${HOME}/.user
+file.
+.Pp
+The script creates a temporary directory (via GetTmp) that should be removed
+upon exit.
+Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy libui Fl c
+.Ed
+.Pp
+Create a default
+.Xr libui.sh 3
+configuration file, overwriting the file if it exists.
+.Bd -literal -offset 4n
+.Sy libui Fl d
+.Ed
+.Pp
+Provide a simple demonstration of the
+.Xr libui.sh 3
+user interface library capabilities.
+.Bd -literal -offset 4n
+.Sy libui Fl i
+.Ed
+.Pp
+Install a
+.Xr libui.sh 3
+"package" into the directory pointed to by the
+.Ev COMMONROOT
+environment variable.
+The package installs the
+.Xr libui.sh 3
+library and libui utility into the ${COMMONROOT}//lib/sh directory and
+associated man pages into ${COMMONROOT}//man/man1 and ${COMMONROOT}/man//man3
+directories.
+.Bd -literal -offset 4n
+.Sy libui Fl m
+.Ed
+.Pp
+Display this man page.
+.Bd -literal -offset 4n
+.Sy libui Fl R
+.Ed
+.Pp
+Reset the display codes cache, the statistics file, and the user information
+file.
+Ask user information questions and save the answers in the user information
+file.
+.Bd -literal -offset 4n
+.Sy libui Fl t
+.Ed
+.Pp
+Perform regression tests on the
+.Xr libui.sh 3
+user interface library.
+.Bd -literal -offset 4n
+.Sy libui Fl x Sy d Fl t
+.Ed
+.Pp
+Perform
+.Xr libui.sh 3
+regression tests with debugging messages.
+.Bd -literal -offset 4n
+.Sy libui Fl T Sy test_LIBUI
+.Ed
+.Pp
+Perform the single regression test named "test_LIBUI".
+.Bd -literal -offset 4n
+.Sy libui Fl u
+.Ed
+.Pp
+Updates any of the files in the directory pointed to by the
+.Ev COMMONROOT
+environment variable with files that exist in the directory containing the
+.Xr libui.sh 3
+library.
+.Bd -literal -offset 4n
+.Sy libui Fl U
+.Ed
+.Pp
+Unify with COMMONROOT by removing duplicate
+.Xr libui.sh 3
+files from ~/.env«
+.Bd -literal -offset 4n
+.Sy libui Fl v
+.Ed
+.Pp
+Verify the
+.Xr libui.sh 3
+"package" in the COMMONROOT directory«
+Compares files in the directory containing the
+.Xr libui.sh 3
+library with those in the directory pointed to by the
+.Ev COMMONROOT
+environment variable.
+.Sh SEE ALSO
+.Xr libui.sh 3 ,
+.Xr libuiDate.sh 3 ,
+.Xr libuiFile.sh 3 ,
+.Xr libuiFileRecord.sh 3 ,
+.Xr libuiInfo.sh 3 ,
+.Xr libuiPackage.sh 3 ,
+.Xr libuiSort.sh 3 ,
+.Xr libuiSyslog.sh 3 ,
+.Xr libuiTimer.sh 3 ,
+.Xr libuiUser.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

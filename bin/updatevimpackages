@@ -1,0 +1,187 @@
+#!/usr/bin/env libui
+#####
+#
+#	Update Vim Pakages - Copy relevant plugin files from updated git repos
+#
+#	F Harvell - Wed May 25 23:34:04 EDT 2022
+#
+#####
+#
+# {libui tool} Used to update relevant git repositories in the WORKSPACE
+# directory and update the vim package files in the .vim directory. The
+# WORKSPACE directory needs to be the directory path above the project
+# repositories.
+#
+# If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
+# environment variable will be used. If the WORKSPACE environment variable is
+# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
+# WORKSPACE remains undefined, the current directory is used.
+#
+# Man page available for this script: man 1 updatevimpackages
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.822 1.6
+
+# load mods
+LoadMod File
+LoadMod Spinner
+LoadMod Workspace
+
+##### configuration
+
+# defaults
+vimpackdirs=( ${HOME}/.vim/pack/plugin/start ${HOME}/.vim/pack/plugin/opt )
+GetTmp tmpdir
+failure=false
+processed=false
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n gitstatus -f -k "Status" -d "Display repo git status." s
+AddParameter -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
+
+##### callbacks
+
+# usage information callback
+InfoCallback () {
+  Trace 'Provide usage information.'
+  cat << EOF
+Used to update and copy relevant vim plugin files from updated git repos. See
+man page or source header for more information.
+EOF
+}
+
+# initialization callback
+InitCallback () {
+  Trace 'Program initialization.'
+
+  Trace 'Validate workspace. (%s)' "${WORKSPACE}"
+  ValidateWorkspace -W
+  Tell 'Working in: %s' "${PWD}"
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Process vim package directory list. (%s)' "${#vimpackdirs[@]}"
+Verbose && mode='-t' || mode='-s'
+for packdir in "${vimpackdirs[@]}"
+do
+  Trace 'Change directory. (%s)' "${packdir}"
+  pushd "${packdir}" &> /dev/null || Error 'Unable to access vim package directory. (%s)' "${packdir}"
+
+  Trace 'Get file list. (%s)' "${PWD}"
+  GetFileList packages '*'
+
+  Trace 'Process package list. (%s)' "${packages[*]}"
+  for package in "${packages[@]}"
+  do
+    Trace 'Change directory to %s.' "${WORKSPACE}/${package}"
+    if pushd "${WORKSPACE}/${package}" &> /dev/null
+    then
+      Verbose && Tell '========== %s' "${package}"
+
+      Trace 'Pull latest updates. (%s)' "${package}"
+      Action -i "Pulling latest updates. (${package})" ${mode} -c -l "${tmpdir}/${package}-pull.log" 'git pull --all'
+
+      Trace 'Check if getting status. (%s)' "${gitstatus}"
+      if ${gitstatus}
+      then
+        Trace 'Display current repo status.'
+        Tell -- '----- %s status' "${package}"
+        Action -q "Get ${repo} status?" "git status"
+      fi
+
+      Trace 'Check if up to date.'
+      pullstatus=$(< "${tmpdir}/${package}-pull.log")
+      if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
+      then
+        Trace 'Get source file list. (%s)' "${PWD}"
+        GetFileList sourcefiles '*'
+
+        popd &> /dev/null
+
+        Trace 'Change directory to %s.' "${package}"
+        pushd "${package}" &> /dev/null || Error 'Unable to access package destination directory. (%s)' "${packdir}"
+
+        Trace 'Get target file list. (%s)' "${PWD}"
+        GetFileList destfiles '*'
+
+        Trace 'Process file list. (%s)' "${#destfiles[@]}"
+        for file in "${destfiles[@]}"
+        do
+          #[[ ${file} =~ .*ale.*/.*test.* ]] && Tell 'skipping %s' "${file}" && continue
+          Trace 'Sync file tree. (%s)' "${file}"
+          Action "rsync -a --delete '${WORKSPACE}/${package}/${file}' '${packdir}/${package}/'"
+          if [ 0 -ne ${?} ]
+          then
+            Tell 'File not available, archived. (%s)' "${tmpdir}"
+            Action "mv ${FMFLAGS} '${packdir}/${package}/' '${tmpdir}'"
+          fi
+          sourcefiles=( ${sourcefiles[@]:#${file}} )
+        done
+
+        Trace 'Identify uncopied files. (%s)' "${#sourcefiles[@]}"
+        Verbose && [[ 0 < ${#sourcefiles[@]} ]] && Tell "${DF0}Package ${package} path not copied: %s${D}" "${sourcefiles[@]}"
+
+        processed=true
+        Alert 'Package %s has been updated.' "${package}"
+      else
+        Tell 'No updates available. (%s)' "${package}"
+      fi
+
+      popd &> /dev/null
+    else
+      Warn 'Unable to find package source. (%s)' "${package}"
+    fi
+  done
+  popd &> /dev/null
+done
+
+GetFileList logs "${tmpdir}/*.log"
+Trace 'Check for errors. (%s)' "${logs[*]}"
+egrep -q '(Abort|WARNING|ERROR)' "${logs[@]}" && failure=true && Warn 'Problems were encountered during processing.'
+
+Trace 'Check for processed projects. (%s)' "${processed}"
+if ${processed}
+then
+  Trace 'Check for failure. (%s)' "${failure}"
+  ${failure} && Verify 'A failure occurred. Exit and delete logs? (%s)' "${tmpdir}" ||
+      Alert "The vim packages have been synced."
+else
+  Tell "No vim package updates to sync."
+fi
+
+Trace 'Exit %s. (%s)' "${CMD}" 0
+Exit 0

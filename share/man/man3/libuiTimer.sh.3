@@ -1,0 +1,201 @@
+.\" Manpage for libuiTimer.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUITIMER.SH 3
+.Os
+.Sh NAME
+.Nm libuiTimer.sh
+.Nd Timer Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Timer
+.Pp
+.Sy StartTimer Op Ar <timer_variable>
+.Pp
+.Sy GetElapsed Op Ar <timer_variable>
+.Pp
+.Sy FormatElapsed Op Fl d
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides functions for starting, collecting, and formatting timer
+information.
+Timers can be started at any time and can be individually tracked by providing a
+.Ar <timer_variable>
+name.
+Time elapsed, when requested by the
+.Sx GetElapsed
+command is provided in the
+.Sx ${ELAPSED}
+variable.
+The
+.Sx ${ELAPSED}
+variable is also consumed and updated by the
+.Sx FormatElapsed
+command.
+.Pp
+Note: The default (unnamed) timer is started when the
+.Xr libui.sh 3
+.Sy Initialization
+is executed, assuming the
+.Nm
+.Xr libui.sh 3
+mod has been loaded, and can be used to determine the overall elapsed time for
+the main script.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss StartTimer
+The StartTimer command starts a timer.
+.Bd -ragged -offset 4n
+.Sy StartTimer Op Ar <timer_variable>
+.Ed
+.Pp
+When executed, the
+.Sy StartTimer
+command, will start a timer.
+The default timer is unnamed.
+A
+.Ar <timer_variable>
+name can be provided to start individual timers.
+.Ss GetElapsed
+The GetElapsed command captures the time elapsed since the last StartTimer
+command was executed.
+.Bd -ragged -offset 4n
+.Sy GetElapsed Op Ar <timer_variable>
+.Ed
+.Pp
+When executed, the
+.Sy GetElapsed
+command, will capture the number of seconds that have elapsed since the last
+StartTimer associated with the
+.Ar <timer_variable>
+was executed.
+If no
+.Ar <timer_variable>
+name is provided, the
+.Sy GetElapsed
+command will provide the number of seconds that have elapsed since the end of
+the
+.Sy Initialization
+Callback.
+(This assumes that the
+.Sy LoadMod Timer
+command was executed prior to Initialization.)
+.Pp
+The elapsed time in seconds will be provided in the
+.Sy ${ELAPSED}
+variable.
+.Pp
+Note: The Z shell provides subsecond timing while the bash shell is limited to
+integer second timing.
+.Ss FormatElapsed
+The FormatElapsed command formats the number of seconds contained in the
+.Sy ${ELAPSED}
+variable into a more human friendly format.
+.Bd -ragged -offset 4n
+.Sy FormatElapsed Op Fl d
+.Ed
+.Pp
+When executed, the
+.Sy FormatElapsed
+command, will
+convert the number of seconds contained in the
+.Sy ${ELAPSED}
+variable into the format "HHH:MM:SS.ssss", unless the
+.Fl d
+(Days) option is provided.
+If the
+.Fl d
+(Days) optin is provided, the format includes the number of days, i.e.,
+"X day[s] HHH:MM:SS.ssss".
+.Sh VARIABLES
+The
+.Nm
+.Xr libui.sh 3
+mod
+uses the
+.Sy ${ELAPSED}
+variable to exchange elapsed time.
+Other variables are also created and use as specified by the
+.Ar <timer_variable>
+parameter passed to the various commands.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy StartTimer Ar first_pass
+.Ed
+.Pp
+This will start a timer and associate it with the
+.Ar first_pass
+variable.
+.Bd -literal -offset 4n
+.Sy GetElapsed Ar first_pass
+.Ed
+.Pp
+This will store the number of seconds elapsed
+since the
+.Ar first_pass
+timer was set with the
+.Sx StartTimer
+command in the
+.Sx ${ELAPSED}
+variable.
+.Bd -literal -offset 4n
+.Sy FormatElapsed
+.Ed
+.Pp
+This will format the number of seconds contained in the
+.Sx ${ELAPSED}
+variable in the format "HHH:MM:SS.ssss".
+.Bd -literal -offset 4n
+.Sy FormatElapsed Fl d
+.Ed
+.Pp
+This will format the number of seconds contained in the
+.Sx ${ELAPSED}
+variable in the format "X day[s] HH:MM:SS.ssss".
+.Sh SEE ALSO
+.Xr awk 1 ,
+.Xr bash 1 ,
+.Xr bc 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+When the Bash shell is used, the
+.Nm
+.Xr libui.sh 3
+mod uses the
+.Xr bc 1
+or the
+.Xr awk 1
+command to provide the floating point calculations needed to format the elapsed
+seconds.
+It is, therefore, dependent upon the
+.Xr bc 1
+or the
+.Xr awk 1
+commands.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

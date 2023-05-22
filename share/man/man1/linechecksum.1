@@ -1,0 +1,158 @@
+.\" Manpage for linechecksum {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt LINECHECKSUM 1
+.Os
+.Sh NAME
+.Nm linechecksum
+.Nd Display various checksums for lines in a file
+.Sh SYNOPSIS
+.Sy linechecksum
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl e Ar <end_line>
+.Op Fl i Ar <interval>
+.Op Fl l Ar <lines>
+.Op Fl s Ar <start_line>
+.Op Fl X Ar <level>
+.Ar <File> ...
+.Sh DESCRIPTION
+Used to calculate character sums and CRC32 sums for each line in the files
+provided.
+Also provides a CRC32 checksum for the entire file.
+If multiple files are provided, each file is separately split and displayed in a
+separate block.
+.Pp
+Example output:
+.Bd -literal
+  Line Cumulative Char Sum        CRC32 Sum      CRC32   File Line
+------ ---------- -------- ---------------- ----------   ---------
+   70:        875      875       2565182507 2565182507 |     local _a
+   71:       1754     1754       6285642157 3720459650 |     local _e
+   72:       4013     4013       8275510404 1989868247 |     eval "_a=( \\"\\${${1}[@]}\\" )"
+   73:       5767     5767       8478461929  202951525 |     for _e in "${_a[@]}"
+   74:       6106     6106       9462938244  984476315 |     do
+   75:       9099     9099      10570684514 1107746270 |       [[ "${2}" == "${_e}" ]] && _rv=0 && break
+       ----------
+   75:       9099 (file checksum:  490192437) /home/fharvell/.env/lib/sh/libui.sh
+.Ed
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy linechecksum
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl e Ar <end_line>
+.Op Fl i Ar <block_size>
+.Op Fl l Ar <skip_lines>
+.Op Fl s Ar <start_line>
+.Op Fl X Ar <level>
+.Ar <File> ...
+.Ed
+.Pp
+Available Command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl e Ar <end_line>
+End Line
+.Pp
+The line number to end processing.
+.It Fl i Ar <block_size>
+Iterate
+.Pp
+The number of lines to include in each display iteration.
+The default is 40 lines.
+.It Fl l Ar <skip_lines>
+Lines
+.Pp
+The number of lines to skip between each displayed checksum line.
+The skipped lines are included in the checksum.
+.It Fl s Ar <start_line>
+Start Line
+.Pp
+The line number to start processing.
+.It Ar <file>
+The name of the file(s) to be processed.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The script creates a temporary directory (via GetTmp) that should be removed
+upon exit.
+Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy linechecksum path/to/file
+.Ed
+.Pp
+This splits path/to/file into one block and provides the checksum and a whole
+file checksum.
+Note: The checksums will be the same.
+.Bd -literal -offset 4n
+.Sy linechecksum \-l 100 path/to/file
+.Ed
+.Pp
+This splits path/to/file into block of 100 lines each and provides the checksum
+for each split and a whole file checksum.
+.Bd -literal -offset 4n
+.Sy linechecksum -i 40 \-s 100 path/to/file
+.Ed
+.Pp
+This displays path/to/file 40 lines at a time starting at line 100 and provides
+the checksum for each split and a whole file checksum.
+.Sh SEE ALSO
+.Xr splitchecksum 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

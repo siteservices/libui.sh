@@ -1,0 +1,96 @@
+.\" Manpage for libuiRoot.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIROOT.SH 3
+.Os
+.Sh NAME
+.Nm libuiRoot.sh
+.Nd Root user support tools for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Root
+.Pp
+.Sy AllowRoot
+.Pp
+.Sy RequireRoot
+.Sh DESCRIPTION
+The
+.Nm
+libui.sh mod provides functions for allowing or requiring the root user when
+executing the script.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss AllowRoot
+The following configuration option allows the "root" user (UID 0) to execute the
+script:
+.Bd -ragged -offset 4n
+.Sy AllowRoot
+.Ed
+.Pp
+Allows root (UID 0) to execute the main script.
+Without this option, if root attempts to execute the script, it will generate an
+error and exit.
+.Pp
+.Em IMPORTANT :
+The main script must use the
+.Sy AllowRoot
+configuration option prior to calling
+.Sy Initialize Qq Sy ${@} .
+.Ss RequireRoot
+The following configuration option requires the "root" user (UID 0) to execute
+the script:
+.Bd -ragged -offset 4n
+.Sy RequireRoot
+.Ed
+.Pp
+Requires root (UID 0) to execute the main script.
+Without this option, if the script it executed by someone other than root, it
+will generate an error and exit.
+.Pp
+.Em IMPORTANT :
+The main script must use the
+.Sy RequireRoot
+configuration option prior to calling
+.Sy Initialize Qq Sy ${@} .
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy AllowRoot
+.Ed
+.Pp
+Result: Allows the main script to be executed by the root user.
+.Bd -literal -offset 4n
+.Sy RequireRoot
+.Ed
+.Pp
+Result: Requires the main script to be executed by the root user.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The determination of the root user is accomplished through the UID and EID
+environment variables.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

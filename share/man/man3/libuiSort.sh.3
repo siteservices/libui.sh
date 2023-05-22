@@ -1,0 +1,124 @@
+.\" Manpage for libuiSort.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUISORT.SH 3
+.Os
+.Sh NAME
+.Nm libuiSort.sh
+.Nd Sort Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Sort
+.Pp
+.Sy Sort
+.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p
+.Op Fl c Ar <compare_function>
+.Ar <array_variable_name> ...
+.Sh DESCRIPTION
+The
+.Nm
+libui.sh mod provides a function for sorting a list contained in an array
+variable.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss Sort
+The Sort command sorts the elements in the named array variable.
+It supports sorts using a variety of lexigraphical algorithms.
+.Pp
+.Sy Sort
+.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p
+.Op Fl c Ar <compare_function>
+.Ar <array_variable_name> ...
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl a
+Performs an ASCII ascending sort.
+.It Fl A
+Performs an ASCII descending sort.
+.It Fl l
+Performs a lexically ascending sort and is the default sort.
+.It Fl L
+Performs a lexically descending sort.
+.It Fl n
+Performs a numeric ascending sort.
+.It Fl N
+Performs a numeric descending sort.
+.It Fl p
+Performs a path depth first sort that sorts deeper paths above shorter paths.
+.Pp
+The
+.Fl p
+option is used by the
+.Sy RemoveFileList
+recursion to delete nested paths.
+.It Fl c Ar <compare_function_name>
+Use the
+.Ar <compare_function_name>
+shell function to define order within the sort.
+.Pp
+The
+.Ar <compare_function_name>
+shell function must take two arguments (i.e. ${1} and ${2}) and return 0 (true)
+when ${1} is less than ${2}.
+.It Ar <array_variable_name>
+The name of the array variable that contains the list to be sorted.
+.El
+.Pp
+Performs a simple sort of the values contained within the
+.Ar <array_variable_name>
+array variable.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy Sort Ar list
+.Ed
+.Pp
+Result: Sorts the
+.Ar list
+array (using the default ascending ASCII sort).
+.Bd -literal -offset 4n
+.Sy Sort Fl n Ar list
+.Ed
+.Pp
+Result: Sorts the
+.Ar list
+array (using an ascending numeric sort).
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr sort 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The
+.Fl p
+option is used by the
+.Sy RemoveFileList
+recursion to delete nested paths.
+.Pp
+The external
+.Xr sort 1
+command is used when executed by the bash command.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

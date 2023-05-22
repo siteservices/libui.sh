@@ -1,0 +1,89 @@
+.\" Manpage for libuiInfo.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIINFO.SH 3
+.Os
+.Sh NAME
+.Nm libuiInfo.sh
+.Nd Information Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Pp
+.Sh SYNOPSIS
+.Sy LoadMod Info
+.Pp
+.Sy UsageInfo
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides functions that display information about the currently executing
+script.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss UsageInfo
+The following command displays usage (help) information to the user:
+.Bd -ragged -offset 4n
+.Sy UsageInfo
+.Ed
+.Pp
+Display usage information on STDERR.
+.Pp
+Note: It is likely that the
+.Nm
+.Xr libui.sh 3
+mod will need to be loaded before calling UsageInfo.
+See the
+.Sx EXAMPLES
+section below for more information.
+.Ss VARIABLES
+.Pp
+Version
+.Pp
+The following line needs to be present within the main script before sourcing
+the library:
+.Bd -literal -offset 4n
+.Sy Version+=\&( \(dq Ns Sy ${0} Ar <script_version> Ns Sy \(dq \&)
+.Ed
+.Pp
+The quoting and spacing in the line is important.
+It provides the
+.Nm
+library with the version of the main script.
+Version numbers should be in the format of Major.Minor (e.g.: 1.0).
+If other scripts are sourced within the main script, a similar version line
+should be added in each sourced script.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy LoadMod Info
+.Sy UsageInfo
+.Ed
+.Pp
+Displays usage information about the currently running script.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

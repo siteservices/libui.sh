@@ -1,0 +1,63 @@
+.\" Manpage for libuiMultiuser.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIMULTIUSER.SH 3
+.Os
+.Sh NAME
+.Nm libuiMultiuser.sh
+.Nd Multiuser support tools for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Multiuser
+.Pp
+.Sy Multiuser
+.Sh DESCRIPTION
+The
+.Nm
+libui.sh mod enables multiuser support by engaging file locking and other
+support to minimize problems when a script is executed by multiple users
+concurrently.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss Multiuser
+The following command returns true if the script is in multiuser mode:
+.Bd -ragged -offset 4n
+.Sy Multiuser
+.Ed
+.Pp
+Returns true if the script is in multiuser mode, otherwise returns false.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy Multiuser
+.Ed
+.Pp
+Result: Returns true if the script is in multiuser mode, otherwise returns
+false.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

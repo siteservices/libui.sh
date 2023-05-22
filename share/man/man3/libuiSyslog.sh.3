@@ -1,0 +1,96 @@
+.\" Manpage for libuiSyslog.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos. Please
+.\" note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUISYSLOG.SH 3
+.Os
+.Sh NAME
+.Nm libuiSyslog.sh
+.Nd Syslog Utility Mod for the
+.Xr libui.sh 3
+user interface library
+.Pp
+.Sh SYNOPSIS
+.Sy LoadMod Syslog
+.Pp
+.Sy Syslog
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides a function that records a syslog entry.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss Syslog
+The following command writes an entry to the system syslog:
+.Bd -ragged -offset 4n
+.Sy Syslog
+.Op Fl p Ar <priority>
+.Op Ar <message>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl p Ar <priority>
+The syslog
+.Ar <priority>
+sent with the
+.Ar <message> .
+The priority may be specified numerically or as a facility.level pair.
+The priority defaults to "user.notice".
+.El
+.Pp
+If
+.Ar <message>
+is provided, logs
+.Ar <message>
+to syslog using the
+.Xr logger 1
+command with the
+.Ar <priority>
+priority.
+If
+.Ar <message>
+is not provided, the script command line executed is logged.
+.Ss VARIABLES
+The default user priority.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy LoadMod Syslog
+.Sy Syslog -p user.info "Updated the command database."
+.Ed
+.Pp
+Adds the message to the syslog with the priority "user.info".
+The message includes the name of the script.
+.Bd -literal -offset 4n
+.Sy LoadMod Info
+.Sy Syslog
+.Ed
+.Pp
+Adds a generic message to the syslog that includes the name of the script.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

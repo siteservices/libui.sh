@@ -1,0 +1,150 @@
+.\" Manpage for updateprojects {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt UPDATEPROJECTS 1
+.Os
+.Sh NAME
+.Nm updateprojects
+.Nd Update git repos inside the WORKSPACE directory and execute the .buildrecipe
+script to rebuild the project.
+.Sh SYNOPSIS
+.Sy repopull
+.Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl b Ar <branch>
+.Op Fl X Ar <level>
+.Op Ar <WORKSPACE>
+.Sh DESCRIPTION
+Used to issue an (optional) "git checkout branch", "git pull", and (optional)
+git merge branch in each repository in the WORKSPACE directory.
+The script searches for the vim packages in the .vim directory and then attempts
+to perform a git pull on the same directories in the WORKSPACE directory.
+.Pp
+The WORKSPACE directory needs to be the path above the git repositories.
+.Pp
+If
+.Ar <WORKSPACE>
+is not provided, the path provided in the
+.Ev WORKSPACE
+environment variable will be used.
+If the
+.Ev WORKSPACE
+environment variable is not defined, the ~/.workspace file will be sourced (to
+define
+.Ev WORKSPACE Ns ).
+If the ~/.workspace file does not exist, the current working directory will be
+used.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy updateprojects
+.Op Fl s Fl v Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl b Ar <branch>
+.Op Fl X Ar <level>
+.Op Ar <WORKSPACE>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl s
+Status
+.Pp
+Display repo status.
+.It Op Ar <WORKSPACE>
+The workspace directory.
+.Pp
+If the workspace directory is not provided, the path provided in the
+.Ev WORKSPACE
+environment variable is used.
+If the
+.Ev WORKSPACE
+environment variable is not defined, the ~/.workspace file will be sourced (to
+define
+.Ev WORKSPACE Ns ).
+If the ~/.workspace file does not exist, the current working directory will be
+used.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The ~/.workspace file is sourced if the
+.Ev WORKSPACE
+variable is not defined.
+.Pp
+The script searches for the vim packages in the .vim directory and then attempts
+to perform a git pull on the same directories in the WORKSPACE directory.
+.Pp
+The script creates a temporary directory (via GetTmp) that should be removed
+upon exit.
+Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy updateprojects
+.Ed
+.Pp
+This attempts to update each of the projects in the repositories in the
+WORKSPACE directory after performing a git pull on each.
+.Bd -literal -offset 4n
+.Sy updateprojects Fl s
+.Ed
+.Pp
+This attempts to update each of the packages in the repositories in the
+WORKSPACE directory after performing a git pull and a git status on each.
+.Sh SEE ALSO
+.Xr updatevimpackges 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

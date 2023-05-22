@@ -1,0 +1,188 @@
+.\" Manpage for repopull {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 18, 2023
+.Dt REPOPULL 1
+.Os
+.Sh NAME
+.Nm repopull
+.Nd Update all git branches inside the WORKSPACE directory.
+.Sh SYNOPSIS
+.Sy repopull
+.Op Fl c Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl b Ar <branch>
+.Op Fl m Ar <branch>
+.Op Fl X Ar <level>
+.Op Ar <WORKSPACE>
+.Sh DESCRIPTION
+Used to issue an (optional) "git checkout branch", "git pull", and (optional)
+git merge branch in each repository in the WORKSPACE directory.
+The WORKSPACE needs to be the path above the git repositories.
+.Pp
+If
+.Ar <WORKSPACE>
+is not provided, the path provided in the
+.Ev WORKSPACE
+environment variable will be used.
+If the
+.Ev WORKSPACE
+environment variable is not defined, the ~/.workspace file will be sourced (to
+define
+.Ev WORKSPACE Ns ).
+If the ~/.workspace file does not exist, the current working directory will be
+used.
+.Pp
+Note: Interpolates branch names using an associative array sourced from
+~/.gitrepos file with array like:
+.Bd -literal -offset 4n
+.Sy branch[ Ns So Sy repo Sc Ns Sy ]= Ns So Sy alternate_branch_name Sc
+.Ed
+.Pp
+See the FILES section below for more information.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy repopull
+.Op Fl c Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl b Ar <branch>
+.Op Fl m Ar <branch>
+.Op Fl X Ar <level>
+.Op Ar <WORKSPACE>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl b Ar <branch>
+Branch
+.Pp
+Specify the branch to check out.
+.It Fl c
+Clear
+.Pp
+Clear out modified files and reset to the branch HEAD.
+.It Fl m Ar <branch>
+Merge
+.Pp
+Specify the branch to merge into the currently checked out branch.
+.It Fl s
+Status
+.Pp
+Display repo status.
+.It Op Ar <WORKSPACE>
+The workspace directory.
+.Pp
+If the workspace directory is not provided, the path provided in the
+.Ev WORKSPACE
+environment variable is used.
+If the
+.Ev WORKSPACE
+environment variable is not defined, the ~/.workspace file will be sourced (to
+define
+.Ev WORKSPACE Ns ).
+If the ~/.workspace file does not exist, the current working directory will be
+used.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) Ns ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The ~/.gitrepos file may contain an associative array that is used to
+interpolate branch names.
+For example, the following entry defines alternative branch names for certain
+repositories when pulling the dev branch using
+.Sy repopull Fl b Sy dev :
+.Bd -literal -offset 4n
+.Sy declare Fl A Sy dev
+.Sy dev[ Ns So Sy artifactory\-helpers Sc Ns Sy ]= Ns So Sy master Sc
+.Sy def[ Ns So Sy devops_tools Sc Ns Sy ]= Ns So Sy develop Sc
+.Sy dev[ Ns So Sy tr3_pcd Sc Ns Sy ]= Ns So Sy dev Sc
+.Sy dev[ Ns So Sy tr3_tools Sc Ns Sy ]= Ns So Sy dev Sc
+.Ed
+.Pp
+The script searches for .git directories within each subdirectory in the
+${WORKSPACE} directory.
+The presence of the .git directory indicates that the subdirectory is a git
+repository which will be updated.
+.Pp
+The script creates a temporary directory (via GetTmp) that should be removed
+upon exit.
+Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
+being executed leaving the temporary directory in place.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy repopull
+.Ed
+.Pp
+This cycles through each repository in the WORKSPACE directory and executes a
+"git pull" command.
+.Bd -literal -offset 4n
+.Sy repopull Fl s
+.Ed
+.Pp
+This cycles through each repository in the WORKSPACE directory and executes a
+"git pull" command and a "git status" command.
+.Bd -literal -offset 4n
+.Sy repopull Fl b Sy dev
+.Ed
+.Pp
+This cycles through each repository in the WORKSPACE directory checks out the
+dev branch and executes a "git pull" command.
+Please note that the actual branch checked out is interpolated using the
+associative array defined in the user's ~/.gitrepos file.
+.Sh SEE ALSO
+.Xr resetbranchbeforepullintodev 1 ,
+.Xr updateprojects 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

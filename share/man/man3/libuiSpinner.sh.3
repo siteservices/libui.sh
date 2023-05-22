@@ -1,0 +1,249 @@
+.\" Manpage for libuiSpinner.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUISPINNER.SH 3
+.Os
+.Sh NAME
+.Nm libuiSpinner.sh
+.Nd Spinner Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Spinner
+.Pp
+.Sy StartSpinner
+.Pp
+.Sy PauseSpinner
+.Pp
+.Sy ResumeSpinner
+.Pp
+.Sy StopSpinner
+.Pp
+.Sy WaitSpinner
+.Pp
+.Sy Sleep
+.Op Fl m Ar <message>
+.Op Fl u Ar <interval>
+.Op Ar <sleep>
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides commands for displaying a progress spinner.
+The
+.Sx StartSpinner
+and
+.Sx StopSpinner
+commands are used to wrap a section of (silent) code with a spinner.
+The
+.Sx WaitSpinner
+commands is used to put a command in the background and display a spinner until
+it completes.
+The
+.Sx PauseSpinner
+and
+.Sx ResumeSpinner
+commands can be used within an action or within code being executed to pause and
+resume an active spinner.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss StartSpinner
+The following command starts a visual spinner on stderr in the background.
+.Bd -ragged -offset 4n
+.Sy StartSpinner
+.Ed
+.Pp
+Starts a background subshell that displays a spinner on stderr and captures the
+background process ID ($!) for the
+.Sx StopSpinner
+command.
+.Pp
+Note: The
+.Sx StartSpinner
+and
+.Sx StopSpinner
+commands can only work with one spinner at a time.
+If
+.Sx StartSpinner
+is called twice,
+.Sx StopSpinner
+will only be able to stop the last spinner
+This can result in a spinner still being displayed (even after the script ends).
+Also, because the system uses background processes and process management, it is
+possible to start and stop a spinner too quickly leaving a running spinner in
+the background.
+.Ss PauseSpinner
+The following command pauses an active spinner.
+.Bd -ragged -offset 4n
+.Sy PauseSpinner
+.Ed
+.Pp
+Pauses an active spinner.
+This is mostly used to pause a spinner while waiting for input from the user.
+See the
+.Sx ResumeSpinner
+command for information on how to resume the paused spinner.
+.Ss ResumeSpinner
+The following command resumes a paused spinner.
+.Bd -ragged -offset 4n
+.Sy ResumeSpinner
+.Ed
+.Pp
+Resumes a paused spinner.
+This is mostly used to resume a spinner after waiting for input from the user.
+See the
+.Sx PauseSpinner
+command for information on how to pause an active spinner.
+.Ss StopSpinner
+The following command stops the last visual spinner started in the background by
+the
+.Sx StartSpinner
+command.
+.Bd -ragged -offset 4n
+.Sy StopSpinner
+.Ed
+.Pp
+Stops the last background subshell started by the
+.Sx StartSpinner
+command to display a spinner.
+It uses the background process ID captured by the
+.Sx StartSpinner
+command.
+.Pp
+Note: The
+.Sx StartSpinner
+and
+.Sx StopSpinner
+commands can only work with one spinner at a time.
+If
+.Sx StartSpinner
+is called twice,
+.Sx StopSpinner
+will only be able to stop the last spinner
+This can result in a spinner still being displayed (even after the script ends).
+Also, because the system uses background processes and process management, it is
+possible to start and stop a spinner too quickly leaving a running spinner in
+the background.
+.Ss WaitSpinner
+The following command provides a visual spinner while the last background
+command executes:
+.Bd -ragged -offset 4n
+.Sy WaitSpinner
+.Ed
+.Pp
+Display a foreground spinner on stderr until the last executed background
+process ($!) exits.
+.Ss Sleep
+The following command displays a countdown message while waiting for time to
+pass:
+.Bd -ragged -offset 4n
+.Sy Sleep
+.Op Fl m Ar "<message>"
+.Op Fl u Ar <interval>
+.Op Ar <sleep>
+.Ed
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl m Ar "<message>"
+Use the
+.Ar "<message>"
+text to display the countdown message.
+The provided
+.Ar "<message>"
+should include one "%s" to mark where the countdown value should be placed.
+The default message if the
+.Fl m
+(Message) option is not provided is, "Waiting %s...".
+.It Fl u Ar <interval>
+The number of seconds to sleep between updates to the counter.
+The default is one second if an
+Ar <interval>
+is not provided.
+.It Ar <sleep>
+The number of seconds to sleep.
+The default is one second.
+Note: The total number of seconds that the
+.Sx Sleep
+command will sleep is the
+.Ar <sleep>
+seconds
+divided by the
+.Ar <interval>
+seconds rounded up to the
+.Ar <interval>
+seconds.
+For example, using "Sleep -u 5 6" will result in a 10-second sleep.
+.El
+.Pp
+Display a countdown message while waiting for time to elapse (i.e., sleeping).
+.Sh VARIABLES
+The
+.Nm
+.Xr libui.sh 3
+mod
+only generates spinner output on stderr if stdout is to a terminal.
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy StartSpinner
+list=$(find .)
+.Sy StopSpinner
+.Ed
+.Pp
+Result: Starts a spinner in the background, performs the find, and stops the
+spinner.
+.Bd -literal -offset 4n
+tar xf tarball.tar &
+.Sy WaitSpinner
+.Ed
+.Pp
+Result: Performs the tar extraction in the background and starts a spinner that
+runs until the tar command completes.
+.Bd -literal -offset 4n
+.Sy Sleep -u 5 60
+.Ed
+.Pp
+Result: Displays "Waiting 60..." and then updates the display every 5 seconds
+with a countdown to 0.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The Spinner commands use background processes and process management to perform
+work while displaying the spinner.
+.Pp
+It is possible for a script to fail leaving the spinner running in the
+background.
+.Pp
+The
+.Xr libui.sh 3
+library uses the
+.Sx StartSpinner
+and
+.Sx StopSpinner
+commands when the
+.Fl s
+(Spinner) option is used with the Action command.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

@@ -1,0 +1,64 @@
+#!/bin/zsh
+# also works with bash but, zsh improves profiling
+#!/bin/bash
+#####
+#
+#	libui - Loader and Utility Script for libui.sh Appications
+#
+#	F Harvell - Mon Apr 19 00:09:29 EDT 2021
+#
+#####
+#
+# IMPORTANT: This script is a special loader and should not be used as a model
+# for libui.sh development. Please use the libui-template file as a model for
+# libui.sh script development.
+#
+# Man page available for this script: man 1 libui
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+# build shell libary path
+[[ -z "${SHLIBPATH}" ]] && SHLIBPATH="${BASH_SOURCE[0]}" && SHLIBPATH="${SHLIBPATH:-${(%):-%N}}" && SHLIBPATH="${SHLIBPATH%/*}"
+
+if [[ "${1:0:1}" != '-' ]]
+then
+  # load libui.sh
+  source "${SHLIBPATH%/}/libui.sh" "${1}" "${@:2}"
+
+  # execute script
+  [[ -x "${1}" ]] && source "${@}" || Error -e "The provided command is not executable. (${*})"
+else
+  # capture parameters for testing
+  script=( "${0}" )
+  arg=( "${@}" )
+  [[ " ${*} " =~ .*\ -x\ n\ .* ]] && LIBUI_LEDGER='false' && LIBUI_TRACE='false' && LIBUI_STATS='false' # no log
+  [[ " ${*} " =~ .*\ -T\ .* ]] && TERMINAL=false # plain ui in single test
+
+  # load libui.sh
+  source "${SHLIBPATH%/}/libui.sh" "${0}" "${@}"
+
+  # load mods
+  LoadMod Utility
+
+  # initialize UI
+  Initialize
+
+  # perform utility actions
+  LibuiUtility
+fi
+
+Exit ${?}

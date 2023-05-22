@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+
+# logs
+*.log
+*.out
+
+# cruft
+*.bak
+*.new
+*.old
+*.orig
+.\#*
+\#*
+**/Archive/
+**/x/
+
+# editor files
+*~
+.*.sw[a-z]
+.netrwhist
+.vscode
+Session.vim
+xcuserdata
+
+# c/c++
+*.a
+*.d
+*.o
+*.so
+
+# python
+__pycache__
+*.py[cod
+*$py.class]
+
+# swift
+*.dSYM
+*.dSYM.zip
+*.hmap
+*.ipa

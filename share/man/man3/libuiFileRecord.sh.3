@@ -1,0 +1,349 @@
+.\" Manpage for libuiFileRecord.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd May 15, 2023
+.Dt LIBUIFILERECORD.SH 3
+.Os
+.Sh NAME
+.Nm libuiFileRecord.sh
+.Nd Record CSV data Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Record
+.Pp
+.Sy RecordClose Op Ar <fileid> Op Ar <file_path>
+.Pp
+.Sy RecordEntry Op Fl d
+.Pp
+.Sy RecordOpen Op Ar <fileid> Ar <file_path>
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides functions for opening, closing, and writing CSV data files.
+The CSV format is defined using an array variable and the data to be written is
+defined using an associative array variable. The mod provides the global
+vairables
+.Sx RecordColumns
+and
+.Sx RecordData ,
+however, any array and associative array variables may be used.
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss RecordClose
+The following command unlocks and closes a file and disassociates the file ID
+associated with the file path by the
+.Sx RecordOpen
+command:
+.Bd -ragged -offset 4n
+.Sy RecordClose
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <file_path>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to associate a file ID with a file path.
+.El
+.Pp
+Unlocks and disassociates the
+.Ar <file_path>
+associated with a file ID by the
+.Sx RecordOpen
+command.
+See the
+.Sx RecordOpen
+command for more information.
+.Pp
+The
+.Sy RecordClose
+command works with either a numeric file ID option or a
+.Ar <file_path> .
+.Pp
+Note: The
+.Sy RecordClose
+command passes parameters to and uses the
+.Xr libui.sh 3
+.Sy Close
+command.
+See the
+.Sy Close
+command in the
+.Xr libui.sh 3
+man page for more information.
+The
+.Sy Close
+command is executed (with no parameters) during exit to close / unlock all open
+files.
+.Ss RecordEntry
+The following command writes a CSV entry into a file associated with a file ID:
+.Bd -ragged -offset 4n
+.Sy RecordEntry
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <data_associative_array_name> <column_array_name>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to access the file paths associated with a file ID by the
+.Sx Open
+command.
+See the
+.Sx RecordOpen
+command for more information.
+.El
+.Pp
+Writes the provided
+.Ar <data>
+to the file associated with a file ID by the
+.Sx RecordOpen
+command.
+The default operation is to write the
+.Sx RecordData
+associative array data in the
+.Sx RecordColumns
+array column order to the file associated with file ID 1.
+.Pp
+The
+.Sy RecordEntry
+command creates a comma delimited data record (in RFC 4180 format) using the
+data in either the passed
+.Ar <data_associative_array_name>
+associative array or the
+.Sx RecordData
+associative array variable.
+The comma delimited data is ordered using the column order provided in the
+passed
+.Ar <column_array_name>
+array or the
+.Sx RecordColumns
+array variable.
+During processing, the
+.Sy RecordEntry
+command copies any parameter provided data into the associated
+.Sx RecordColumns
+and
+.Sx RecordData
+variables.
+Please note that the
+.Sx RecordColumns
+array values are then used to look up the data contained in the
+.Sx RecordData
+associative array to build the data record entry.
+.Pp
+Note: If the
+.Ar <data_associative_array_name>
+is provided, the file ID option must also be provided.
+The
+.Ar <column_array_name>
+is always optional and, if not provided, the data contained in the
+.Sx RecordColumns
+array variable will be used.
+.Ss RecordOpen
+The following command opens a CSV file, locks it, and associates a file ID with
+the file:
+.Bd -ragged -offset 4n
+.Sy RecordOpen
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
+.Op Fl B Ar <path>
+.Ar <file_path> ...
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to associate a file ID with a file path.
+.It Fl a
+Open the file, and append after any existing data. (This is the default.)
+.It Fl b
+Backup the
+.Ar <file_path>
+file to a bzipped file in the same directory with the same filename and with a
+".0.bz2" extension (e.g.: <file_path>.0.bz2).
+.It Fl B Ar <path>
+Backup the
+.Ar <file_path>
+file to a bzipped file located at
+.Ar <path> .
+.Pp
+If
+.Ar <path>
+is a directory, then the backup file will have the same filename with a ".0.bz2"
+extension (e.g.: <file_path>.0.bz2) and will be located in the
+.Ar <path>
+directory.
+Additional backup copies, up to LIBUI_BACKUPS copies (default of 10), will also
+be kept with each successive version incrementally numbered starting with 1.
+.Pp
+If
+.Ar <path>
+is not a directory, then the backup file will have the
+.Ar <path>
+filename with a ".0.bz2" extension (e.g.: <path>.0.bz2) and will be located in
+the same directory as the
+.Ar <file_path>
+file.
+.It Fl c
+Open the file, removing any existing data.
+.El
+.Pp
+Opens the
+.Ar <file_path>
+file (creating it if necessary), locks the file, and associates the
+.Ar <file_path>
+with a file ID.
+Any file opened using the
+.Sy RecordOpen
+command should be closed using the
+.Sx RecordClose
+command.
+.Pp
+If no file ID is provided, the next file ID is allocated starting with 1.
+The file ID is incremented each time
+.Sy RecordOpen
+is called.
+The file ID can be used as an option flag with the
+.Sx RecordEntry
+command or the
+.Sx RecordClose
+command.
+See the
+.Sx RecordEntry
+command or the
+.Sx RecordClose
+command above fore more information.
+.Pp
+Important: the user must track calls to the
+.Sy RecordOpen
+command in order to know the associated file ID.
+There is a limit of 9 open files.
+If the
+.Fl a
+(Append) option flag is provided, writes to the file will be appended after any
+existing data.
+This is the default operation.
+If the
+.Fl c
+(Create) option flag is provided, the file is created, i.e., any existing data
+is erased.
+.Pp
+Note: The
+.Sy RecordOpen
+command passes parameters to and uses the
+.Xr libui.sh 3
+.Sy Open
+command.
+See the
+.Sy Open
+command in the
+.Xr libui.sh 3
+man page for more information.
+.Sh VARIABLES
+The
+.Nm
+.Xr libui.sh 3
+mod
+uses the
+.Sx ${RecordColumns}
+array variable and the
+.Sx ${RecordData}
+associative array variable to manage and exchange column and data values,
+respectively.
+.Sh EXAMPLES
+This example uses the
+.Nm
+mod provided
+.Sx RecordColumns
+and
+.Sx RecordData
+variables:
+.Bd -literal -offset 4n
+RecordColumns=( one two three four five )
+RecordData[one]="Test 1"
+RecordData[two]="Second"
+RecordData[three]="$3,333.33"
+RecordData[four]="\"Test four.\""
+RecordData[five]="I said, \"five!\""
+.Sy RecordOpen Ar '/var/records.csv'
+.Sy RecordEntry
+.Sy RecordClose
+.Ed
+.Pp
+This will write a record containing:
+.Bd -literal -offset 4n
+Test 1,Second,"$3,333.33","""Test four.""","I said, ""five!"""
+.Ed
+.Pp
+to the file
+.Ar /var/records.csv .
+.Pp
+This example uses user provided columns array (colarray) and data associative
+array (data) variables:
+.Bd -literal -offset 4n
+declare -a colarray
+declare -A data
+colarray=( one two three four five )
+data[one]="Test 1"
+data[two]="Second"
+data[three]="$3,333.33"
+data[four]="\"Test four.\""
+data[five]="He said, \"five!\""
+.Sy RecordOpen Fl 1 Ar '/var/records.csv'
+.Sy RecordEntry Fl 1 Ar colarray Ar data
+.Sy RecordClose Fl 1
+.Ed
+.Pp
+This will write a record containing:
+.Bd -literal -offset 4n
+Test 1,Second,"$3,333.33","""Test four.""","He said, ""five!"""
+.Ed
+.Pp
+to the file
+.Ar /var/records.csv .
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3 ,
+RFC 4180
+.Sh NOTES
+The
+.Nm
+.Xr libui.sh 3
+mod uses associative arrays.
+If the Bash shell is used, it must support associative arrays (i.e. bash v4+).
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.
