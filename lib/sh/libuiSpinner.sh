@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.13
+Version -r 1.822 -m 1.14
 
 # defaults
 
@@ -56,8 +56,8 @@ StartSpinner () { # [<info_message>]
       ${_M} && _Trace 'Check for terminal.'
       if [[ -t 2 ]] && ! Error
       then
-        ${_M} && _Trace 'Display message. (%s)' "${1}"
-        [[ -n "${1}" ]] && printf "${DJBL}${DSpinner}%s${D} ${DCEL}" "${1}"
+        ${_M} && _Trace 'Display message. (%s)' "${*}"
+        [[ -n "${@}" ]] && printf "${DJBL}${DSpinner}%s${D} ${DCEL}" "${*}"
 
         ${_M} && _Trace 'Starting spinner.'
         local _Spinner_i
@@ -171,7 +171,7 @@ StopSpinner () {
 #
 # Syntax: WaitSpinner
 #
-# Example: list=$(find .) & WaitSpinner
+# Example: list=( $(find .) ) & WaitSpinner
 #
 # Result: The find command is executed in the background and a spinner is
 # displayed until the find completes.
@@ -296,8 +296,8 @@ sudo () {
 }
 
 # module exit callback
-SpinnerExitCallback () {
-  ${_M} && _Trace 'SpinnerExitCallback [%s]' "${*}"
+_SpinnerExitCallback () {
+  ${_M} && _Trace '_SpinnerExitCallback [%s]' "${*}"
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
   ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
@@ -305,6 +305,6 @@ SpinnerExitCallback () {
 }
 
 # register exit callback
-_exitcallback+=( 'SpinnerExitCallback' )
+_exitcallback+=( '_SpinnerExitCallback' )
 
 return 0

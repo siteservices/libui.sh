@@ -35,16 +35,16 @@ defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
 
 # Set user information
 #
-# Syntax: SetUserInfo
+# Syntax: _SetUserInfo
 #
-# Example: SetUserInfo
+# Example: _SetUserInfo
 #
 # Result: Ask questions to create the ~/.user file.
 #
-UICMD+=( 'SetUserInfo' )
-SetUserInfo () {
-  ${_S} && ((_cSetUserInfo++))
-  ${_M} && _Trace 'SetUserInfo [%s]' "${*}"
+UICMD+=( '_SetUserInfo' )
+_SetUserInfo () {
+  ${_S} && ((_c_SetUserInfo++))
+  ${_M} && _Trace '_SetUserInfo [%s]' "${*}"
 
   ${_quiet} && Error 'User setup required. Please execute without -Q (Quiet) option.'
 
@@ -54,7 +54,7 @@ SetUserInfo () {
   ${_M} && _Trace 'Load user information dotfile. (%s)' "${userdotfile}"
   [[ -f "${userdotfile}" ]] && source "${userdotfile}"
 
-  ${_M} && _Trace 'Process SetUserInfo options. (%s)' "${*}"
+  ${_M} && _Trace 'Process _SetUserInfo options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
@@ -81,7 +81,7 @@ SetUserInfo () {
         ;;
 
       *)
-        Error -L '(SetUserInfo) Unknown option. (-%s)' "${OPTARG}"
+        Error -L '(_SetUserInfo) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
@@ -91,7 +91,7 @@ SetUserInfo () {
   ${_M} && _Trace 'Check for error.'
   if Error
   then
-    ${_M} && _Trace 'SetUserInfo error return. (%s)' "${ERRV}"
+    ${_M} && _Trace '_SetUserInfo error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
     Tell 'Building user information dotfile. (%s)' "${userdotfile}"
@@ -225,12 +225,14 @@ SetUserInfo () {
       done
       printf '\n'
     fi
+    local _User_rv=${?}
 
-    return ${?}
+    ${_M} && _Trace '_SetUserInfo return. (%s)' "${_User_rv}"
+    return ${_User_rv}
   fi
 }
 
 ${_M} && _Trace 'User initialization.'
-[[ -f "${userdotfile}" ]] && source "${userdotfile}" || SetUserInfo
+[[ -f "${userdotfile}" ]] && source "${userdotfile}" || _SetUserInfo
 
 return ${?}

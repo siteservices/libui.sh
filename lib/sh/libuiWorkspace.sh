@@ -91,7 +91,7 @@ ValidateWorkspace () { # [-W]
     fi
     ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
-    ((0 == NRPARAM)) && ! PathMatches -r "${PWD}" "${WORKSPACE}" && \
+    ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
     ${_WS_wd} || cd "${WORKSPACE}"

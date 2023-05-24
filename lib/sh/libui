@@ -58,7 +58,7 @@ else
   Initialize
 
   # perform utility actions
-  LibuiUtility
+  _LibuiUtility
 fi
 
 Exit ${?}

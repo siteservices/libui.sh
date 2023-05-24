@@ -27,23 +27,23 @@
 #
 #####
 
-Version -r 1.822 -m 1.11
+Version -r 1.822 -m 1.12
 
 # defaults
 
 # Create Self-Extracting Package Header
 #
-# Syntax: CreatePackageHeader [-a -S -T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+# Syntax: _CreatePackageHeader [-a -S -T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
 #
-# Example: CreatePackageHeader -T -i '\${d}/path/to/installer' -a package.tarp
+# Example: _CreatePackageHeader -T -i '\${d}/path/to/installer' -a package.tarp
 #
 # Result: Creates a package.tarp package containing a tarp self-extracting header
 # configured to execute "<tempdir>/path/to/installer $@ <archive>" when executed.
 #
-UICMD+=( 'CreatePackageHeader' )
-CreatePackageHeader () {
-  ${_S} && ((_cCreatePackageHeader++))
-  ${_M} && _Trace 'CreatePackageHeader [%s]' "${*}"
+UICMD+=( '_CreatePackageHeader' )
+_CreatePackageHeader () { # [-a -S -T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+  ${_S} && ((_c_CreatePackageHeader++))
+  ${_M} && _Trace '_CreatePackageHeader [%s]' "${*}"
 
   local _Package_append=''
   local _Package_archive='tar'
@@ -54,7 +54,7 @@ CreatePackageHeader () {
   local _Package_srcdir
   local _Package_unarchive='tar xf'
 
-  ${_M} && _Trace 'Process CreatePackageHeader options. (%s)' "${*}"
+  ${_M} && _Trace 'Process _CreatePackageHeader options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
@@ -99,20 +99,20 @@ CreatePackageHeader () {
         ;;
 
       *)
-        Error -L '(CreatePackageHeader) Unknown option. (-%s)' "${OPTARG}"
+        Error -L '(_CreatePackageHeader) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  ((1 != ${#})) && Error -L -e '(CreatePackageHeader) Invalid parameters. (%s)' "${*}"
+  ((1 != ${#})) && Error -L -e '(_CreatePackageHeader) Invalid parameters. (%s)' "${*}"
   [[ -z "${_Package_srcdir}" ]] && _Package_srcdir="${PWD}"
   [[ -z "${_Package_desc}" ]] && _Package_desc="Self-Extracting ${_Package_srcdir##*/} Package"
 
   ${_M} && _Trace 'Check for error.'
   if Error
   then
-    ${_M} && _Trace 'CreatePackageHeader error return. (%s)' "${ERRV}"
+    ${_M} && _Trace '_CreatePackageHeader error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
     ${_M} && _Trace 'Generate self-extracting package header. (%s)' "${1}"
@@ -154,6 +154,7 @@ ${_Package_null}__PAYLOAD__
 EOF
 ) > "${1}"
 
+    ${_M} && _Trace '_CreatePackageHeader return. (%s)' 0
     return 0
   fi
 }
@@ -167,7 +168,7 @@ EOF
 # Result: Creates a package.tarp package containing the files in the filelist array from the /source/dir directory.
 #
 UICMD+=( 'CreatePackage' )
-CreatePackage () {
+CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
   ${_S} && ((_cCreatePackage++))
   ${_M} && _Trace 'CreatePackage [%s]' "${*}"
 
@@ -365,14 +366,14 @@ CreatePackage () {
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
-      local _Package_retval
+      local _Package_rv
       if ${_Package_tarp}
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
-        [[ -z "${_Package_header}" ]] && _Package_header="CreatePackageHeader"
+        [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -q "Create tar package header ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         Action -q 'Append tar archive to package?' "cat '${_Package_tarball}' >> '${_Package_package}'"
-        _Package_retval=${?}
+        _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"
       else
         ${_M} && _Trace 'Create shar package: %s' "${_Package_package}"
@@ -381,7 +382,7 @@ CreatePackage () {
         cd ${_Package_subdir} > /dev/null
         Action -e -q 'Unpack tar archive?' "tar xf '${_Package_tarball}'"
         Action -e -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
-        [[ -z "${_Package_header}" ]] && _Package_header="CreatePackageHeader"
+        [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -e -q "Create shar package header ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         if [[ 'Darwin' == "${OS}" ]]
         then
@@ -389,12 +390,13 @@ CreatePackage () {
         else
           Action -q 'Create shar archive?' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         fi
-        _Package_retval=${?}
+        _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
       fi
     fi
 
-    return ${_Package_retval}
+    ${_M} && _Trace 'CreatePackage return. (%s)' "${_Package_rv}"
+    return ${_Package_rv}
   fi
 }
 
@@ -407,7 +409,7 @@ CreatePackage () {
 # Result: Lists the files contained in the package.tarp package.
 #
 UICMD+=( 'ListPackage' )
-ListPackage () {
+ListPackage () { # <package>
   ${_S} && ((_cListPackage++))
   ${_M} && _Trace 'ListPackage [%s]' "${*}"
 
@@ -449,6 +451,7 @@ ListPackage () {
     printf 'Package Files:\n'
     printf '  %s\n' "${_Package_list[@]}"
 
+    ${_M} && _Trace 'ListPackage return. (%s)' 0
     return 0
   fi
 }

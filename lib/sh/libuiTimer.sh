@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.6
+Version -r 1.822 -m 1.7
 
 # defaults
 command -v bc &> /dev/null && __BC='bc' || __BC='awk "{print $1 - $3}"'
@@ -43,7 +43,7 @@ ELAPSED=0
 # Result: Current ${SECONDS} is captured
 #
 UICMD+=( 'StartTimer' )
-StartTimer () { # [<variable>]
+StartTimer () { # [<variable_name>]
   ${_S} && ((_cStartTimer++))
   ${_M} && _Trace 'StartTimer [%s]' "${*}"
 
@@ -155,12 +155,12 @@ FormatElapsed () { # [-d]
 }
 
 # module initialization callback
-TimerInitCallback () {
-  ${_M} && _Trace 'TimerInitCallback [%s]' "${*}"
+_TimerInitCallback () {
+  ${_M} && _Trace '_TimerInitCallback [%s]' "${*}"
   StartTimer
 }
 
 # register init callback
-_initcallback+=( 'TimerInitCallback' )
+_initcallback+=( '_TimerInitCallback' )
 
 return 0

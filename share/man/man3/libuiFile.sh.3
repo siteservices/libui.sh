@@ -35,7 +35,7 @@ user interface library
 .Ar <variable_name> <file_specification> ...
 .Pp
 .Sy GetRealPath
-.Op Fl d
+.Op Fl P
 .Ar <variable_name> Op Ar <file_specification>
 .Pp
 .Sy GetTmp
@@ -48,6 +48,7 @@ user interface library
 .Ar <file_path> ...
 .Pp
 .Sy PathMatches
+.Op Fl P
 .Ar <file_spec_1> <file_spec_2>
 .Pp
 .Sy RemoveFileList
@@ -158,13 +159,13 @@ The following command dereferences the provided file specification and returns
 the associated absolute path:
 .Bd -ragged -offset 4n
 .Sy GetRealPath
-.Op Fl d
+.Op Fl P
 .Ar <variable_name> Op Ar <file_specification>
 .Ed
 .Pp
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
-.It Fl d
+.It Fl P
 Get real path for the directory portion of the path only, i.e., ignore the
 filename.
 Note: The full path, including the filename, is returned in the
@@ -327,8 +328,15 @@ The following command checks if the two provided file paths are the same file /
 directory:
 .Bd -ragged -offset 4n
 .Sy PathMatches
+.Op Fl P
 .Ar <file_spec_1> <file_spec_2>
 .Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl P
+Match the path portion only, ignoring the filenames.
+.El
 .Pp
 Compares the file inodes associated with the file paths specified by
 .Ar <file_spec_1>
