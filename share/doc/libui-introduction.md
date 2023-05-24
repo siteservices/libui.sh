@@ -808,3 +808,14 @@ used to enable and disable the Yes feature within the script.
 ```
 Yes [-e|-E]
 ```
+
+## Vim Note
+
+When using the "#!/usr/bin/env libui" shebang, add the following to your
+~/.vim/scripts.vim file to improve syntax highlighting:
+
+```
+if getline(1) =~ '^#!/usr/bin/env libui'
+  setfiletype zsh " or 'bash'
+endif
+```
