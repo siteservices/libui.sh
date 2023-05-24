@@ -23,14 +23,17 @@
 SHELL?=/bin/zsh
 
 all:
-	@echo "Build complete."
 
 install:
 	@lib/sh/libui -i "$(COMMONROOT)"
-	@echo "Install complete."
+
+update:
+	@lib/sh/libui -u "$(COMMONROOT)"
+
+verify:
+	@lib/sh/libui -v "$(COMMONROOT)"
 
 clean distclean::
-	@echo "Clean complete."
 
 env printenv::
 	@echo "COMMONROOT: '$(COMMONROOT)'"

@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.825 -m 1.2
+Version -r 1.825 -m 1.3
 
 ##### configuration
 
@@ -131,10 +131,10 @@ Current test mode options:
 #
 #####
 
-UICMD+=( 'LibuiUtilitySetup' )
-LibuiUtilitySetup () {
-  ${_S} && ((_cLibuiUtilitySetup++))
-  ${_M} && _Trace 'LibuiUtilitySetup [%s]' "${*}"
+UICMD+=( '_LibuiUtilitySetup' )
+_LibuiUtilitySetup () {
+  ${_S} && ((_c_LibuiUtilitySetup++))
+  ${_M} && _Trace '_LibuiUtilitySetup [%s]' "${*}"
 
   ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}}"
   [[ " ${arg[*]} " =~ .*\ -P\ .* ]] && LoadMod Profile
@@ -377,12 +377,12 @@ EOF
 #
 #####
 
-UICMD+=( 'LibuiTest' )
-LibuiTest () {
-  ${_S} && ((_cLibuiTest++))
-  ${_M} && _Trace 'LibuiTest [%s]' "${*}"
+UICMD+=( '_LibuiTest' )
+_LibuiTest () {
+  ${_S} && ((_c_LibuiTest++))
+  ${_M} && _Trace '_LibuiTest [%s]' "${*}"
 
-  local _Util_failedids=( )
+  local _Util_failedids; _Util_failedids=( )
   local _Util_rv=0
   local _Util_success=true
   local _Util_subopt='-t '
@@ -542,7 +542,7 @@ LibuiTest () {
   ${_M} && _Trace 'Return to prior directory.'
   popd > /dev/null
 
-  ${_M} && _Trace 'LibuiTest return. (%s)' "${_Util_rv}"
+  ${_M} && _Trace '_LibuiTest return. (%s)' "${_Util_rv}"
   return ${_Util_rv}
 }
 
@@ -717,10 +717,10 @@ LibuiStats () {
   return 0
 }
 
-UICMD+=( 'LibuiReset' )
-LibuiReset () {
-  ${_S} && ((_cLibuiReset++))
-  ${_M} && _Trace 'LibuiReset [%s]' "${*}"
+UICMD+=( 'LibuiResetCaches' )
+LibuiResetCaches () {
+  ${_S} && ((_cLibuiResetCaches++))
+  ${_M} && _Trace 'LibuiResetCaches [%s]' "${*}"
 
   ${_M} && _Trace 'Prepare to reset stats file %s.' "${_Util_statsfile}"
   if [[ -e "${_Util_statsfile}" ]]
@@ -753,9 +753,9 @@ LibuiReset () {
   fi
 
   ${_M} && _Trace 'Reset user info.'
-  Verify 'Really update user info?' && SetUserInfo -u
+  Verify 'Really update user info?' && _SetUserInfo -u
 
-  ${_M} && _Trace 'LibuiReset return. (%s)' 0
+  ${_M} && _Trace 'LibuiResetCaches return. (%s)' 0
   return 0
 }
 
@@ -863,7 +863,7 @@ LibuiPackage () {
   ${_S} && ((_cLibuiPackage++))
   ${_M} && _Trace 'LibuiPackage [%s]' "${*}"
 
-  GetRealPath -d _Util_param
+  GetRealPath -P _Util_param
   LoadMod Package
 
   pushd "${_Util_libuiroot}" > /dev/null
@@ -924,13 +924,52 @@ EOF
   return 0
 }
 
-UICMD+=( 'LibuiUnify' )
-LibuiUnify () {
-  ${_S} && ((_cX++))
-  ${_M} && _Trace 'LibuiUnify [%s]' "${*}"
+UICMD+=( 'LibuiUnity' )
+LibuiUnity () { # [-d|-u|-U|-v]
+  ${_S} && ((_cLibuiUnity++))
+  ${_M} && _Trace 'LibuiUnity [%s]' "${*}"
 
+  local _Util_diff=false
   local _Util_different=false
   local _Util_file
+  local _Util_unify=false
+  local _Util_update=false
+  local _Util_verify=true
+
+  ${_M} && _Trace 'Process LibuiUnity options. (%s)' "${*}"
+  local opt
+  local OPTIND
+  local OPTARG
+  while getopts ':duUv' opt
+  do
+    case ${opt} in
+      d)
+        ${_M} && _Trace 'Diff.'
+        _Util_diff=true
+        ;;
+
+      u)
+        ${_M} && _Trace 'Update.'
+        _Util_update=true
+        ;;
+
+      U)
+        ${_M} && _Trace 'Unify.'
+        _Util_unify=true
+        ;;
+
+      v)
+        ${_M} && _Trace 'Verify.'
+        _Util_verify=true
+        ;;
+
+      *)
+        Error -L '(LibuiUnity) Unknown option. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
 
   pushd "${_Util_libuiroot}" > /dev/null
 
@@ -946,7 +985,7 @@ LibuiUnify () {
       then
         Tell 'File differs: %s -> %s' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
         _Util_different=true
-        if [[ 'true' == "${_Util_vlevel[2]}" ]]
+        if ${_Util_diff}
         then
           Tell "${Dfy}diff %s %s${D}" "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
           Action -W "diff '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'"
@@ -1009,7 +1048,7 @@ LibuiUnify () {
 
   popd > /dev/null
 
-  ${_M} && _Trace 'LibuiUnify return. (%s)' 0
+  ${_M} && _Trace 'LibuiUnity return. (%s)' 0
   return 0
 }
 
@@ -1019,10 +1058,10 @@ LibuiUnify () {
 #
 #####
 
-UICMD+=( 'LibuiUtility' )
-LibuiUtility () {
-  ${_S} && ((_cLibuiUtility++))
-  ${_M} && _Trace 'LibuiUtility [%s]' "${*}"
+UICMD+=( '_LibuiUtility' )
+_LibuiUtility () {
+  ${_S} && ((_c_LibuiUtility++))
+  ${_M} && _Trace '_LibuiUtility [%s]' "${*}"
 
   ${_M} && _Trace 'Find operation.'
   if ${_Util_helloworld}
@@ -1032,7 +1071,7 @@ LibuiUtility () {
     Exit 0
   elif ${_Util_testing}
   then
-    LibuiTest
+    _LibuiTest
   elif ${_Util_config}
   then
     LibuiConfig
@@ -1044,7 +1083,7 @@ LibuiUtility () {
     LibuiStats
   elif ${_Util_cachereset}
   then
-    LibuiReset
+    LibuiResetCaches
   elif ${_Util_unlock}
   then
     LibuiUnlock
@@ -1062,15 +1101,18 @@ LibuiUtility () {
     LibuiInstall
   elif ${_Util_verify} || ${_Util_update} || ${_Util_unify}
   then
-    LibuiUnify
+    LibuiUnity $([[ -n "${_Util_vlevel[2]+x}" ]] && printf -- '-d '; ${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U')
   else
     ${_M} && _Trace 'Display usage.'
     LoadMod Info
     UsageInfo
   fi
+
+  ${_M} && _Trace '_LibuiUtility return. (%s)' 0
+  return 0
 }
 
 ${_M} && _Trace 'Setup libui utility functions.'
-LibuiUtilitySetup
+_LibuiUtilitySetup
 
 return 0

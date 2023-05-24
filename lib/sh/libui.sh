@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.825 # Sun May 21 16:42:44 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.825 # Wed May 24 00:41:01 EDT 2023
 
 #####
 #
@@ -2065,9 +2065,14 @@ Yes () { # [-e|-E]
   while getopts ':eE' _o
   do
     case ${_o} in
-      e|E)
+      e)
         ${_T} && _Trace 'Enable. (%s)' "${_o}"
-        [[ 'e' == "${_o}" ]] && _yes=true || _yes=false
+        _yes=true
+        ;;
+
+      E)
+        ${_T} && _Trace 'Disable. (%s)' "${_o}"
+        _yes=false
         ;;
 
       *)
@@ -2086,7 +2091,7 @@ Yes () { # [-e|-E]
 _exitcleanup=true
 _exitcallback=( )
 UICMD+=( 'Exit' )
-Exit () { # <return_value>
+Exit () { # [<return_value>]
   local _rv="${1:-${?}}"
   ${_S} && ((_cExit++))
   ${_T} && _Trace 'Exit [%s]' "${*}"

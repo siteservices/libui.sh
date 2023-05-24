@@ -40,7 +40,7 @@ Version -r 1.822 -m 1.5
 # Result: the variable "today" is assignd '2021-12-28'
 #
 UICMD+=( 'ConvertDate' )
-ConvertDate () {
+ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> <date>
   ${_S} && ((_cConvertDate++))
   ${_M} && _Trace 'ConvertDate [%s]' "${*}"
 

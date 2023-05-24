@@ -40,7 +40,7 @@ Version -r 1.822 -m 1.4
 # Result: Sorts the list array (using default ASCII ascending sort)
 #
 UICMD+=( 'Sort' )
-Sort () {
+Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
   ${_S} && ((_cSort++))
   ${_M} && _Trace 'Sort [%s]' "${*}"
 

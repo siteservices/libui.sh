@@ -58,7 +58,7 @@ IsTarget () { # <target>
 
 # Send file via SSH (scp)
 #
-# Syntax: SSHSend [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_var>] [-u <user>] <file> ...
+# Syntax: SSHSend [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <file> ...
 #
 # Example: SSHSend -t alpha file.txt /tmp/
 #
@@ -67,7 +67,7 @@ IsTarget () { # <target>
 # value in ${SSH_RV}.
 #
 UICMD+=( 'SSHSend' )
-SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_var>] [-u <user>] <file> ...
+SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <file> ...
   ${_S} && ((_cSSHSend++))
   ${_M} && _Trace 'SSHSend [%s]' "${*}"
 
@@ -177,7 +177,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
 
 # Execute Command via SSH (ssh)
 #
-# Syntax: SSHExec [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_var>] [-u <user>] <command> ...
+# Syntax: SSHExec [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
 #
 # Example: SSHExec -t alpha ls /tmp
 #
@@ -185,7 +185,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
 # response in ${SSH_OUT}, errors in ${SSH_ERR}, and return value in ${SSH_RV}.
 #
 UICMD+=( 'SSHExec' )
-SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_var>] [-u <user>] <command> ...
+SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
   ${_S} && ((_cSSHExec++))
   ${_M} && _Trace 'SSHExec [%s]' "${*}"
 

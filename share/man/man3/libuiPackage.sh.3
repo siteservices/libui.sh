@@ -27,7 +27,7 @@ user interface library
 .Pp
 .Sy CreatePackage Oo Fl a Fl l Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
-.Sy CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 .Sy ListPackage Ar <package>
 .Sh DESCRIPTION
@@ -69,7 +69,7 @@ Append Archive
 This option is passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 .It Fl c
 Compression
@@ -93,7 +93,7 @@ Description
 This option is passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 Environment
 .Pp
@@ -116,7 +116,7 @@ Execute the function or command named
 .Ar <header_command>
 to generate the package header.
 A default header function,
-.Sx CreatePackageHeader ,
+.Sx _CreatePackageHeader ,
 is provided
 and is automatically called to generate a self-extracting package.
 .Pp
@@ -154,7 +154,7 @@ Installer
 This option is passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 .It Fl l
 List
@@ -187,7 +187,7 @@ If omitted, the current working directory will be used as the source directory.
 This option is also passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 .It Fl S
 Sharp
@@ -196,7 +196,7 @@ A shar archive package will be created.
 This option is also passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 .It Fl T
 Tarp
@@ -205,7 +205,7 @@ A tar archive package will be created.
 This option is also passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 This is the default format if neither
 .Fl S
@@ -237,7 +237,7 @@ The
 is also passed through to the
 .Ar <header_command> .
 See the
-.Sx CreatePackageHeader
+.Sx _CreatePackageHeader
 command for more information.
 .El
 .Ss ListPackage
@@ -250,13 +250,13 @@ When executed, the
 .Sy ListPackage
 command, will open an archive package and list the top-level directory and file
 names.
-.Ss CreatePackageHeader
-The CreatePackageHeader command.
+.Ss _CreatePackageHeader
+The _CreatePackageHeader command.
 .Pp
-.Sy CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 When executed, the
-.Sy CreatePackageHeader
+.Sy _CreatePackageHeader
 command, will create the
 .Ar <package_filename>
 file with a self-extracting shell program header.
@@ -392,7 +392,7 @@ Lists the files contained in the
 .Ar package.tarp
 file.
 .Bd -literal -offset 4n
-.Sy CreatePackageHeader Fl S Fl i Ar ./path/to/installer Ar package.sharp
+.Sy _CreatePackageHeader Fl S Fl i Ar ./path/to/installer Ar package.sharp
 .Ed
 .Pp
 Creates a
@@ -404,7 +404,7 @@ When executed, the self-extracting header will create a temporary directory,
 extract the lib/sh directory, and execute
 the installer from the root of the extracted package.
 .Bd -literal -offset 4n
-.Sy CreatePackageHeader Fl T Fl a Fl i Ar ./path/to/installer Ar package.tarp
+.Sy _CreatePackageHeader Fl T Fl a Fl i Ar ./path/to/installer Ar package.tarp
 .Ed
 .Pp
 Creates a

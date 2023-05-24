@@ -2082,7 +2082,7 @@ test_GetFileList_Empty_Show () {
   return ${?}
 }
 
-# GetRealPath [-d] <name_of_variable_to_save_path_into> <path_specification>
+# GetRealPath [-P] <name_of_variable_to_save_path_into> <path_specification>
 tests+=( 'test_GetRealPath_Error' )
 test_GetRealPath_Error () {
   local rp
@@ -2100,7 +2100,7 @@ test_GetRealPath_d () {
   local td
   GetTmp td
   cd ${td}
-  GetRealPath -d rp
+  GetRealPath -P rp
   cd -
   LibuiPerformTest 'Tell -- "${rp}"'
   LibuiValidateTest ${?} 0 "${mp}${td}/file"
@@ -2142,7 +2142,7 @@ test_GetRealPath_d_Bad () {
   GetTmp td
   cd ${td}
   _exitcleanup=false
-  LibuiPerformTest 'GetRealPath -d rp badpath/file'
+  LibuiPerformTest 'GetRealPath -P rp badpath/file'
   local tv=${?}
   _exitcleanup=true
   cd -
