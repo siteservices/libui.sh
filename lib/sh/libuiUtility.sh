@@ -382,7 +382,7 @@ LibuiTest () {
   ${_S} && ((_cLibuiTest++))
   ${_M} && _Trace 'LibuiTest [%s]' "${*}"
 
-  local _Util_failedids=( )
+  local _Util_failedids; _Util_failedids=( )
   local _Util_rv=0
   local _Util_success=true
   local _Util_subopt='-t '

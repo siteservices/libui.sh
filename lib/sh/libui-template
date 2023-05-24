@@ -28,7 +28,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.11
+Version -r 1.822 1.12
 
 # load mods
 LoadMod File
@@ -36,7 +36,6 @@ LoadMod File
 ##### configuration
 
 # defaults
-log="demo.log"
 retval=0
 GetTmp tmpdir
 
@@ -55,9 +54,9 @@ StatusCallback () {
 
 # usage information callback
 InfoCallback () {
-  Trace 'Provide usage information.'
+  Trace 'In user info callback.'
   cat << EOF
-This script provides a template for new scripts using the libui library.
+This script is a template for new scripts using the libui library.
 EOF
 }
 
