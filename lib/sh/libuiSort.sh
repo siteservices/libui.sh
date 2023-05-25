@@ -107,7 +107,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
         ;;
 
       p)
-        ${_M} && _Trace 'Path depth.'
+        ${_M} && _Trace 'Path depth-first.'
         _Sort_cmp='cmpp'
         ;;
 

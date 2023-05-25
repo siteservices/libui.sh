@@ -548,7 +548,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
         ;;
 
       F)
-        ${_T} && _Trace 'No action after failure.'
+        ${_T} && _Trace 'Skip action if prior failure.'
         _a=false
         ;;
 

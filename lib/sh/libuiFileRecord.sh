@@ -49,7 +49,7 @@ declare -gA RecordData
 #
 # Example: RecordOpen -1 /var/records.csv
 #
-# Result: Opens and locks the <file_path> file and associates the file with <fileid>.
+# Result: Opens and locks the <file_path> file and associates the file with [-1..-9].
 #
 # Note: Uses the same parameters as the libui.sh Open command.
 #
@@ -70,7 +70,7 @@ RecordOpen () { # [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <
 #
 # Example: RecordClose -1
 #
-# Result: Unlocks and closes the file associated with <fileid>.
+# Result: Unlocks and closes the file associated with [-1..-9].
 #
 # Note: Uses the same parameters as the libui.sh Close command.
 #
@@ -87,14 +87,14 @@ RecordClose () { # [-1..-9] [<file_path>]
 
 # Save a record entry
 #
-# Syntax: RecordEntry <fileid> [<data_assoc_array>] [<column_array>]
+# Syntax: RecordEntry [-1..-9] [<data_assoc_array>] [<column_array>]
 #
 # Example: RecordEntry -1
 #
 # Result: Records an entry using the columns in RecordColumns and data in RecordData.
 #
 UICMD+=( 'RecordEntry' )
-RecordEntry () { # <fileid> [<data_assoc_array>] [<column_array>]
+RecordEntry () { # [-1..-9] [<data_assoc_array>] [<column_array>]
   ${_S} && ((_cRecordEntry++))
   ${_M} && _Trace 'RecordEntry [%s]' "${*}"
 

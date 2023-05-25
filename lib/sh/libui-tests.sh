@@ -2189,10 +2189,10 @@ test_GetRealPath_File () {
   local rp
   local td
   GetTmp td
-  Action -W "touch ${td}/filepath"
-  GetRealPath rp ${td}/filepath
+  Action -W "touch ${td}/filepath1"
+  GetRealPath rp ${td}/filepath1
   LibuiPerformTest 'Tell -- "${rp}"'
-  LibuiValidateTest ${?} 0 "${mp}${td}/filepath"
+  LibuiValidateTest ${?} 0 "${mp}${td}/filepath1"
   return ${?}
 }
 tests+=( 'test_GetRealPath_Symlink_DirFile' )
@@ -2201,12 +2201,12 @@ test_GetRealPath_Symlink_DirFile () {
   local rp
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir"
-  Action -W "touch ${td}/pathdir/filepath2"
-  Action -W "ln -s ${td}/pathdir ${td}/dirlink"
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "touch ${td}/pathdir1/filepath2"
+  Action -W "ln -s ${td}/pathdir1 ${td}/dirlink"
   GetRealPath rp ${td}/dirlink/filepath2
   LibuiPerformTest 'Tell -- "${rp}"'
-  LibuiValidateTest ${?} 0 "${mp}${td}/pathdir/filepath2"
+  LibuiValidateTest ${?} 0 "${mp}${td}/pathdir1/filepath2"
   return ${?}
 }
 tests+=( 'test_GetRealPath_Symlink_EndDir' )
@@ -2215,8 +2215,8 @@ test_GetRealPath_Symlink_EndDir () {
   local rp
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir2"
-  Action -W "mkdir ${td}/pathdir2/enddir"
+  Action -W "mkdir -p ${td}/pathdir2"
+  Action -W "mkdir -p ${td}/pathdir2/enddir"
   Action -W "ln -s ${td}/pathdir2/enddir ${td}/dirlink2"
   GetRealPath rp ${td}/dirlink2
   LibuiPerformTest 'Tell -- "${rp}"'
@@ -2229,7 +2229,7 @@ test_GetRealPath_Symlink_EndFile () {
   local rp
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir3"
+  Action -W "mkdir -p ${td}/pathdir3"
   Action -W "touch ${td}/pathdir3/filepath3"
   Action -W "ln -s ${td}/pathdir3/filepath3 ${td}/filelink3"
   GetRealPath rp ${td}/filelink3
@@ -2356,7 +2356,7 @@ test_NoAction_Verbose-q () {
   return ${?}
 }
 
-# PathMatches <path_specification_1> <path_specification_2>
+# PathMatches [-P] <path_specification_1> <path_specification_2>
 tests+=( 'test_PathMatches_Error' )
 test_PathMatches_Error () {
   _exitcleanup=false
@@ -2388,10 +2388,35 @@ tests+=( 'test_PathMatches_File' )
 test_PathMatches_File () {
   local td
   GetTmp td
-  Action -W "touch ${td}/filepath"
+  Action -W "touch ${td}/filepath1"
   cd ${td}
-  LibuiPerformTest "PathMatches filepath ${td}/filepath"
+  LibuiPerformTest "PathMatches filepath1 ${td}/filepath1"
   LibuiValidateTest ${?} 0
+  return ${?}
+}
+tests+=( 'test_PathMatches-P_Good' )
+test_PathMatches-P_Good () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local td
+  GetTmp td
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "touch ${td}/pathdir1/filepath1"
+  Action -W "touch ${td}/pathdir1/filepath2"
+  LibuiPerformTest "PathMatches -P ${mp}${td}/pathdir1/filepath1 ${td}/pathdir1/filepath2"
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+tests+=( 'test_PathMatches-P_Bad' )
+test_PathMatches-P_Bad () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local td
+  GetTmp td
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "mkdir -p ${td}/pathdir2"
+  Action -W "touch ${td}/pathdir1/filepath1"
+  Action -W "touch ${td}/pathdir2/filepath2"
+  LibuiPerformTest "PathMatches -P ${mp}${td}/pathdir1/filepath1 ${td}/pathdir2/filepath2"
+  LibuiValidateTest ${?} 1
   return ${?}
 }
 tests+=( 'test_PathMatches_Symlink_DirFile' )
@@ -2399,10 +2424,10 @@ test_PathMatches_Symlink_DirFile () {
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir"
-  Action -W "touch ${td}/pathdir/filepath2"
-  Action -W "ln -s ${td}/pathdir ${td}/dirlink"
-  LibuiPerformTest "PathMatches ${mp}${td}/pathdir/filepath2 ${td}/dirlink/filepath2"
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "touch ${td}/pathdir1/filepath2"
+  Action -W "ln -s ${td}/pathdir1 ${td}/dirlink"
+  LibuiPerformTest "PathMatches ${mp}${td}/pathdir1/filepath2 ${td}/dirlink/filepath2"
   LibuiValidateTest ${?} 0
   return ${?}
 }
@@ -2411,8 +2436,8 @@ test_PathMatches_Symlink_EndDir () {
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir2"
-  Action -W "mkdir ${td}/pathdir2/enddir"
+  Action -W "mkdir -p ${td}/pathdir2"
+  Action -W "mkdir -p ${td}/pathdir2/enddir"
   Action -W "ln -s ${td}/pathdir2/enddir ${td}/dirlink2"
   LibuiPerformTest "PathMatches ${mp}${td}/pathdir2/enddir ${td}/dirlink2"
   LibuiValidateTest ${?} 0
@@ -2423,7 +2448,7 @@ test_PathMatches_Symlink_EndFile () {
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local td
   GetTmp td
-  Action -W "mkdir ${td}/pathdir3"
+  Action -W "mkdir -p ${td}/pathdir3"
   Action -W "touch ${td}/pathdir3/filepath3"
   Action -W "ln -s ${td}/pathdir3/filepath3 ${td}/filelink3"
   LibuiPerformTest "PathMatches ${mp}${td}/pathdir3/filepath3 ${td}/filelink3"

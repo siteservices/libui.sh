@@ -37,7 +37,7 @@ LoadMod File
 
 # Validate workspace
 #
-# Syntax: ValidateWorkspace [-W]
+# Syntax: ValidateWorkspace [-w]
 #
 # Example: ValidateWorkspace
 #
@@ -52,7 +52,7 @@ LoadMod File
 # WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 UICMD+=( 'ValidateWorkspace' )
-ValidateWorkspace () { # [-W]
+ValidateWorkspace () { # [-w]
   ${_S} && ((_cValidateWorkspace++))
   ${_M} && _Trace 'ValidateWorkspace [%s]' "${*}"
 
@@ -62,7 +62,7 @@ ValidateWorkspace () { # [-W]
     ${_M} && _Trace 'ValidateWorkspace error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
-    local _WS_wd=true
+    local _WS_ws=false
 
     ${_M} && _Trace 'Process ValidateWorkspace options. (%s)' "${*}"
     local opt
@@ -71,9 +71,9 @@ ValidateWorkspace () { # [-W]
     while getopts ':W' opt
     do
       case ${opt} in
-        W)
-          ${_M} && _Trace 'Do not return to working directory.'
-          _WS_wd=false
+        w)
+          ${_M} && _Trace 'Remain in workspace directory.'
+          _WS_ws=true
           ;;
 
         *)
@@ -94,7 +94,7 @@ ValidateWorkspace () { # [-W]
     ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
-    ${_WS_wd} || cd "${WORKSPACE}"
+    ${_WS_ws} && cd "${WORKSPACE}"
   fi
 
   ${_M} && _Trace 'ValidateWorkspace return. (%s)' 0
