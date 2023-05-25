@@ -4,22 +4,22 @@
 
 Basic libui library functionality can be extended with the following mods:
 
-* Date (libuiDate.sh) - Date Format Utilities
-* File (libuiFile.sh) - File Support
-* FileRecord (libuiFileRecord.sh) - CSV File Records Support
-* Info (libuiInfo.sh) - Libui Information Utilities
-* Multiuser (libuiMultiuser.sh) - Libui Multiuser Support
-* Package (libuiPackage.sh) - Package Utilities
-* Profile (libuiProfile.sh) - Profile Configuration File Support
-* Root (libuiRoot.sh) - Libui Root Account Support
-* SSH (libuiSSH.sh) - Secure Shell Utilities
-* Sort (libuiSort.sh) - Sort Utilities
-* Spinner (libuiSpinner.sh) - Libui Progress Spinner Support
-* Syslog (libuiSyslog.sh) - System Log Support
-* Timer (libuiTimer.sh) - Libui Timer Support
-* User (libuiUser.sh) - Libui User Support
-* Utility (libuiUtility.sh) - Libui Support Utilities
-* Workspace (libuiWorkspace.sh) - Workspace Support
+* Date (man libuiDate.sh) - Date Format Utilities
+* File (man libuiFile.sh) - File Support
+* FileRecord (man libuiFileRecord.sh) - CSV File Records Support
+* Info (man libuiInfo.sh) - Libui Information Utilities
+* Multiuser (man libuiMultiuser.sh) - Libui Multiuser Support
+* Package (man libuiPackage.sh) - Package Utilities
+* Profile (man libuiProfile.sh) - Profile Configuration File Support
+* Root (man libuiRoot.sh) - Libui Root Account Support
+* SSH (man libuiSSH.sh) - Secure Shell Utilities
+* Sort (man libuiSort.sh) - Sort Utilities
+* Spinner (man libuiSpinner.sh) - Libui Progress Spinner Support
+* Syslog (man libuiSyslog.sh) - System Log Support
+* Timer (man libuiTimer.sh) - Libui Timer Support
+* User (man libuiUser.sh) - Libui User Support
+* Utility (man libuiUtility.sh) - Libui Support Utilities
+* Workspace (man libuiWorkspace.sh) - Workspace Support
 
 Man pages are available for the above: man 3 libui{Mod}.sh
 
@@ -31,7 +31,7 @@ LoadMod <mod_name>
 
 ## Libui Commands
 
-### Action (libui.sh) - Perform tasks using the libui library.
+### Action (man libui.sh) - Perform tasks using the libui library.
 
 Primary function for performing tasks while using the libui library. The Action
 command should be used for any task that might make persistent changes. It
@@ -41,7 +41,7 @@ provides support for tracing, confirmation, debugging, etc.
 Action [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failure_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 ```
 
-### AddOption (libui.sh) - Add command line option flags for the script.
+### AddOption (man libui.sh) - Add command line option flags for the script.
 
 Defines option flags for the script. The AddOption command defines the option
 flag, any associated option arguments, the name of the variable associated with
@@ -51,7 +51,7 @@ the option, and the keyword and description for the usage information.
 AddOption [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] <option>[:]
 ```
 
-### AddParameter (libui.sh) - Add command line parameters for the script.
+### AddParameter (man libui.sh) - Add command line parameters for the script.
 
 Defines parameters for the script. The AddParameter command defines the
 parameters for the script, i.e., the values following the command and any option
@@ -62,7 +62,7 @@ the keyword and description for the usage information.
 AddParameter [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] [<variable_name>]
 ```
 
-### Alert (libui.sh) - Display a highlighted alert message for the user.
+### Alert (man libui.sh) - Display a highlighted alert message for the user.
 
 Sends a highlighted text message to STDOUT. By default this message is displayed
 in green text. The message can also be logged to a log file.
@@ -71,7 +71,7 @@ in green text. The message can also be logged to a log file.
 Alert [-1..-9|-a|-c] [-l <file_path>] <message_text>
 ```
 
-### AllowRoot (libuiRoot.sh) - Allow the root user to execute the script.
+### AllowRoot (man libuiRoot.sh) - Allow the root user to execute the script.
 
 By default, the libui library prevents the root user from executing the script.
 When called prior to calling the Initialize command, this command allows the
@@ -82,7 +82,7 @@ root user is allowed, otherwise it returns 1.
 AllowRoot
 ```
 
-### AnswerMatches (libui.sh) - Checks a provided answer against a match string.
+### AnswerMatches (man libui.sh) - Checks an answer against a match string.
 
 When the Ask command is used to request a response from the user, this command
 can be used to validate the response. The answer match string can be either an
@@ -92,7 +92,7 @@ absolute match string or, with the -r option flag, a regular expression.
 AnswerMatches [-r] <answer_match_string>
 ```
 
-### Ask (libui.sh) - Displays a question to the user and obtains an answer.
+### Ask (man libui.sh) - Displays a question to the user and obtains an answer.
 
 The Ask command displays a highlighted question to the user and waits to collect
 a response. The Ask command supports answer validation, multiple-choice
@@ -103,7 +103,7 @@ variable and can optionally be assigned to a named variable.
 Ask [-b|-C|-N|-Y|-z] [-d <default>] [-n <variable_name>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_variable>] <question_text>
 ```
 
-### Capture (libui.sh) - Special function to capture the output of a command.
+### Capture (man libui.sh) - Special function to capture output from a command.
 
 Captures STDOUT, STDERR, and the return value from the executed command string.
 
@@ -111,7 +111,7 @@ Captures STDOUT, STDERR, and the return value from the executed command string.
 Capture <stdout_variable> <stderr_variable> <rv_variable> <command_string>
 ```
 
-### Close (libuiFile.sh) - Closes a file descriptor opened with the Open command.
+### Close (man libuiFile.sh) - Closes a descriptor opened with the Open command.
 
 Closes a file descriptor that was previously opened using the Open command. The
 library will automatically close any open file descriptors when the Exit command
@@ -124,7 +124,7 @@ possible to close using the file path.
 Close [-1..-9] [<file_path>]
 ```
 
-### Confirm (libui.sh) - Check if the "-C" (Confirm) option flag was used.
+### Confirm (man libui.sh) - Check if in Confirm (-C) mode.
 
 Returns 0 if the "-C" (Confirm) option flag was provided on the command line,
 otherwise it returns 1.
@@ -133,7 +133,7 @@ otherwise it returns 1.
 Confirm
 ```
 
-### ConfirmVar (libui.sh) - Confirms the value contained within a variable.
+### ConfirmVar (man libui.sh) - Confirms the value contained within a variable.
 
 Performs some tests on a variable to ensure that the value contained within the
 variable meets some limited criteria. Optionally, if the value does not meet the
@@ -153,7 +153,7 @@ provided with the -q (Optional Question) or -Q (Always Question) option flags.
 ConfirmVar [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_variable>] <variable_name> ...
 ```
 
-### Contains (libui.sh) - Utility function to check if an array contains a value.
+### Contains (man libui.sh) - Utility function to check an array for a value.
 
 The Contains command if a value is contained within the array with the provided
 array variable name.
@@ -162,7 +162,7 @@ array variable name.
 Contains <array_variable> <value>
 ```
 
-### ConvertDate (libuiDate.sh) - Converts a date string between formats.
+### ConvertDate (man libuiDate.sh) - Converts a date string between formats.
 
 This command provides an interface to the "date" command to convert data strings
 from one format to another. The default input format is "%a %b %d %T %Z %Y"
@@ -173,7 +173,7 @@ is "%Y-%m-%d".
 ConvertDate [-i <input_format>] [-o <output_format>] <var_name> <date>
 ```
 
-### CreatePackage (libuiPackage.sh) - Creates a self-extracting package.
+### CreatePackage (man libuiPackage.sh) - Creates a self-extracting package.
 
 The library supports the creation of self-extracting .tarp (tar package) and
 .sharp (shar package) packages. This command creates the package file.
@@ -184,7 +184,7 @@ that the installer is a libui script.
 ```
 CreatePackage [-a -l -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
 ```
-### Error (libui.sh) - Display a highlighted error message for the user.
+### Error (man libui.sh) - Display a highlighted error message for the user.
 
 Sends a highlighted text message to STDERR. By default this message is displayed
 in yellow text on a red background. The message can also be logged to a log
@@ -196,7 +196,7 @@ can be disabled with the -E (Disable Exit) option flag.
 Error [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <return_value>] <error_message>
 ```
 
-### ExitCallback (libui-template) - Optional function in main script.
+### ExitCallback (man libui-template) - Optional function in main script.
 
 If an ExitCallback function is defined in the script, it will be called when the
 script is exited using the Exit command.
@@ -207,7 +207,7 @@ ExitCallback () {
 }
 ```
 
-### Exit (libui.sh) - Exits the main script.
+### Exit (man libui.sh) - Exits the main script.
 
 The Exit command cleans up script resources, calls any exit callbacks, and
 terminates the script. It returns the provided return value when provided or the
@@ -217,7 +217,7 @@ return value from the last executed command.
 Exit [<return_value>]
 ```
 
-### Force (libui.sh) - Check if the "-F" (Force) option flag was used.
+### Force (man libui.sh) - Check if in Force (-F) mode.
 
 Returns 0 if the "-F" (Force) option flag was provided on the command line,
 otherwise it returns 1.
@@ -226,7 +226,7 @@ otherwise it returns 1.
 Force
 ```
 
-### FormatElapsed (libuiTimer.sh) - Reformats ELAPSED in human readable format.
+### FormatElapsed (man libuiTimer.sh) - Formats ELAPSED to be human readable.
 
 Converts the number of seconds in ELAPSED to a human readable format of "D days,
 HH:MM:SS.SSS" where "D days" is only displayed if the elapsed time is greater
@@ -236,7 +236,7 @@ than 24 hours. See the StartTimer and GetElapsed commands for more information.
 FormatElapsed [-d]
 ```
 
-### GetElapsed (libuiTimer.sh) - Get the elapsed time from a timer.
+### GetElapsed (man libuiTimer.sh) - Get the elapsed time from a timer.
 
 Captures the time elapsed in seconds since the timer identified by the variable
 name was started using the StartTimer command.
@@ -245,7 +245,7 @@ name was started using the StartTimer command.
 GetElapsed [<variable_name>]
 ```
 
-### GetFileList (libuiFile.sh) - Get a list of file into an array.
+### GetFileList (man libuiFile.sh) - Get a list of file into an array.
 
 Collects the file paths associated with the provided file specification and
 loads them into an array variable with the provided variable name. The
@@ -261,7 +261,7 @@ further refined with the option flags to limit the array results to:
 GetFileList [-d|-e|-f|-n|-p|-r|-w] <variable_name> <file_specification> ...
 ```
 
-### GetRealPath (libuiFile.sh) - Get the real, absolute path for a file.
+### GetRealPath (man libuiFile.sh) - Get the real, absolute path for a file.
 
 Gets the absolute path for provided path specification, bypassing any symbolic
 links. With the -P (Path) option flag, GetRealPath will only test the directory
@@ -271,7 +271,7 @@ portion of the path (to support the creation of new files).
 GetRealPath [-P] <variable_name> [<path_specification>]
 ```
 
-### GetTmp (libuiFile.sh) - Get a temporary directory, subdirectory or file.
+### GetTmp (man libuiFile.sh) - Get a temporary directory, subdirectory or file.
 
 Creates a temporary directory, subdirectory, or file and returns the path in the
 provided variable name. The temporary files will be created in the path defined
@@ -284,7 +284,7 @@ will exist within the one temporary directory.
 GetTmp [-d|-f|-s] <variable_name>
 ```
 
-### InfoCallback (libui-template) - Optional function in main script.
+### InfoCallback (man libui-template) - Optional function in main script.
 
 If an InfoCallback function is defined in the script, it will be called when the
 script displays usage information using the UsageInfo command.
@@ -295,7 +295,7 @@ InfoCallback () {
 }
 ```
 
-### InitCallback (libui-template) - Optional function in main script.
+### InitCallback (man libui-template) - Optional function in main script.
 
 If an InitCallback function is defined in the script, it will be called when the
 script is initialized using the Initialize command.
@@ -306,7 +306,7 @@ InitCallback () {
 }
 ```
 
-### Initialize (libui.sh) - Initializes the libui library after configuration.
+### Initialize (man libui.sh) - Initializes the libui library after configuration.
 
 Sets up the libui library to support main script operation. The Initialize
 command must be called after all configuration commands have been executed and
@@ -318,7 +318,7 @@ initialization callbacks are also called.
 Initialize
 ```
 
-### IsTarget (libuiSSH.sh) - Performs basic checks to confirm target is remote.
+### IsTarget (man libuiSSH.sh) - Performs checks to confirm target is remote.
 
 Performs some basic checks on the provided remote target name to ensure it is
 a valid host and not the localhost.
@@ -327,7 +327,7 @@ a valid host and not the localhost.
 IsTarget <target>
 ```
 
-### LibuiConfig (libuiUtility.sh) - Creates a libui configuration file.
+### LibuiConfig (man libuiUtility.sh) - Creates a libui configuration file.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -338,7 +338,7 @@ the user's home directory. It is called by the libui utility application.
 LibuiConfig
 ```
 
-### LibuiDemo (libuiUtility.sh) - Provides a simple libui capabilities demo.
+### LibuiDemo (man libuiUtility.sh) - Provides a simple libui capabilities demo.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -350,7 +350,7 @@ application.
 LibuiDemo
 ```
 
-### LibuiInstall (libuiUtility.sh) - Installs libui in another directory.
+### LibuiInstall (man libuiUtility.sh) - Installs libui in another directory.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -361,7 +361,7 @@ called by the libui utility application.
 LibuiInstall
 ```
 
-### LibuiPackage (libuiUtility.sh) - Creates a libui package for distribution.
+### LibuiPackage (man libuiUtility.sh) - Creates a libui package file.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -372,7 +372,7 @@ distribution to another system. It is called by the libui utility application.
 LibuiPackage
 ```
 
-### LibuiPackageList (libuiUtility.sh) - Lists the libui components in a package.
+### LibuiPackageList (man libuiUtility.sh) - Lists components in a package file.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -384,7 +384,7 @@ application.
 LibuiPackageList
 ```
 
-### LibuiResetCaches (libuiUtility.sh) - Reset libui cache files.
+### LibuiResetCaches (man libuiUtility.sh) - Reset libui cache files.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -396,7 +396,7 @@ libui utility application.
 LibuiResetCaches
 ```
 
-### LibuiStats (libuiUtility.sh) - Display libui usage statistics.
+### LibuiStats (man libuiUtility.sh) - Display libui usage statistics.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -408,7 +408,7 @@ utility application.
 LibuiStats
 ```
 
-### LibuiUnity (libuiUtility.sh) - Unifies the current libui with another.
+### LibuiUnity (man libuiUtility.sh) - Unifies the current libui with another.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -420,7 +420,7 @@ is called by the libui utility application.
 LibuiUnity [-u|-U|-v]
 ```
 
-### LibuiUnlock (libuiUtility.sh) - Removes stale libui lock files.
+### LibuiUnlock (man libuiUtility.sh) - Removes stale libui lock files.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -432,7 +432,7 @@ application.
 LibuiUnlock
 ```
 
-### LibuiUpdateMan (libuiUtility.sh) - Updates the date in libui man pages.
+### LibuiUpdateMan (man libuiUtility.sh) - Updates the date in libui man pages.
 
 Note: The libuiUtility mod is designed to support the libui utility application.
 
@@ -444,14 +444,14 @@ application.
 LibuiUpdateMan
 ```
 
-### ListPackage (libuiPackage.sh) - List the contents of a package.
+### ListPackage (man libuiPackage.sh) - List the contents of a package.
 ```
 ListPackage
 ```
 
 Generates a listing of files contained in a package.
 
-### LoadMod (libui.sh) - Loads a libui mod.
+### LoadMod (man libui.sh) - Loads a libui mod.
 
 The libui library supports mods that add new and/or change existing
 functionality. This command loads a mod for use. It normally loads from the
@@ -461,7 +461,7 @@ SHLIBPATH but another path can be provided using the -P (Path) option flag.
 LoadMod [-P <path>] <libui_mod_name>
 ```
 
-### LoadProfile (libuiProfile.sh) - Manually load a profile.
+### LoadProfile (man libuiProfile.sh) - Manually load a profile.
 
 The libui library supports runtime profiles. This command will manually load a
 profile.
@@ -470,7 +470,7 @@ profile.
 LoadProfile <file_path>
 ```
 
-### Multiuser (libuiMultiuser.sh) - Check if multiuser mode is enabled.
+### Multiuser (man libuiMultiuser.sh) - Check if multiuser mode is enabled.
 
 Returns 0 if multiuser mode has been enabled (by loading the Multiuser mod),
 otherwise it returns 1.
@@ -479,7 +479,7 @@ otherwise it returns 1.
 Multiuser
 ```
 
-### NoAction (libui.sh) - Check if the "-N" (No Action) option flag was used.
+### NoAction (man libui.sh) - Check if in No Action (-N) mode.
 
 Returns 0 if the "-N" (No Action) option flag was provided on the command line,
 otherwise it returns 1.
@@ -488,7 +488,7 @@ otherwise it returns 1.
 NoAction
 ```
 
-### Open (libuiFile.sh) - Open a file descriptor for use within the script.
+### Open (man libuiFile.sh) - Open a file descriptor for use within the script.
 
 The libui library supports file locking, enables file access shorthand, and can
 automatically back up files through the Open command. The file descriptor to use
@@ -500,7 +500,7 @@ Open file descriptors should be closed using the Close command.
 Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
 ```
 
-### PathMatches (libuiFile.sh) - Compares two provided filesystem paths.
+### PathMatches (man libuiFile.sh) - Compares two provided filesystem paths.
 
 Compares the absolute path for provided path specifications, bypassing any
 symbolic links. With the -P (Path) option flag, PathMatches will only test the
@@ -510,7 +510,7 @@ directory portion of the paths.
 PathMatches [-P] <path_specification_1> <path_specification_2>
 ```
 
-### PauseSpinner (libuiSpinner.sh) - Pause a running progress spinner.
+### PauseSpinner (man libuiSpinner.sh) - Pause a running progress spinner.
 
 Pauses a running progress spinner. It can be restarted by using the
 ResumeSpinner command. This is primarily used when asking for user input in the
@@ -520,7 +520,7 @@ middle of a task.
 PauseSpinner
 ```
 
-### Quiet (libui.sh) - Check if the "-Q" (Quiet) option flag was used.
+### Quiet (man libui.sh) - Check if in Quiet (-Q) mode.
 
 Returns 0 if the "-Q" (Quiet) option flag was provided on the command line,
 otherwise it returns 1.
@@ -529,7 +529,7 @@ otherwise it returns 1.
 Quiet
 ```
 
-### RecordClose (libuiFileRecord.sh) - Close a descriptor opened by RecordOpen.
+### RecordClose (man libuiFileRecord.sh) - Close descriptor opened by RecordOpen.
 
 Closes a file descriptor that was previously opened using the RecordOpen
 command. The library will automatically close any open file descriptors when the
@@ -543,7 +543,7 @@ parameters as the Close command.
 RecordClose [-1..-9] [<file_path>]
 ```
 
-### RecordEntry (libuiFileRecord.sh) - Create an entry in a Record File.
+### RecordEntry (man libuiFileRecord.sh) - Create an entry in a Record File.
 
 Creates a comma separated values (CSV) record in an open record file. If the
 data associative array or the column array is not provided, RecordEntry will use
@@ -554,7 +554,7 @@ associative array should use the same names as are included in the column array.
 RecordEntry <fileid> [<data_assoc_array>] [<column_array>]
 ```
 
-### RecordOpen (libuiFileRecord.sh) - Open a record-based file descriptor.
+### RecordOpen (man libuiFileRecord.sh) - Open a record-based file descriptor.
 
 The libui library supports file locking, enables file access shorthand, and can
 automatically back up files through the Open command. The file descriptor to use
@@ -567,7 +567,7 @@ same parameters as the Open command.
 RecordOpen [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
 ```
 
-### RemoveFileList (libuiFile.sh) - Removes files in the provided array.
+### RemoveFileList (man libuiFile.sh) - Removes files in the provided array.
 
 Removes the file paths contained in the array with the provided variable name.
 RemoveFileList will attempt to quietly force the removal when the -f (Force)
@@ -577,7 +577,7 @@ option is provided.
 RemoveFileList [-f] <name_of_array_variable> ...
 ```
 
-### RequireRoot (libuiRoot.sh) - Require the root user to execute the script.
+### RequireRoot (man libuiRoot.sh) - Require the root user to execute the script.
 
 By default, the libui library prevents the root user from executing the script.
 When called prior to calling the Initialize command, this command requires the
@@ -588,7 +588,7 @@ root user is required, otherwise it returns 1.
 RequireRoot
 ```
 
-### ResumeSpinner (libuiSpinner.sh) - Resumes a progress spinner.
+### ResumeSpinner (man libuiSpinner.sh) - Resumes a progress spinner.
 
 Resumes a running progress spinner that was paused by the PauseSpinner command.
 
@@ -596,7 +596,7 @@ Resumes a running progress spinner that was paused by the PauseSpinner command.
 ResumeSpinner
 ```
 
-### Sleep (libuiSpinner.sh) - Sleeps a script with an optional countdown.
+### Sleep (man libuiSpinner.sh) - Sleeps a script with an optional countdown.
 
 Pauses execution and optionally provides a countdown. The countdown is updated
 at the interval provided by the -u (Update) option flag. The countdown message
@@ -611,7 +611,7 @@ Waiting %s...
 Sleep [-m "<message>"] [-u <interval>] [<sleep>]
 ```
 
-### Sort (libuiSort.sh) - Sorts an array.
+### Sort (man libuiSort.sh) - Sorts an array.
 
 Sorts the array variable with the provided name. Depending upon the provided
 option flag, the sort can be forward or reverse, ASCII, lexical, numeric, path,
@@ -621,7 +621,7 @@ or custom.
 Sort [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_variable_name> ...
 ```
 
-### SSHExec (libuiSSH.sh) - Execute a command on a remote server via ssh.
+### SSHExec (man libuiSSH.sh) - Execute a command on a remote server via ssh.
 
 Sends a command to a remote server (using -t) or a list of remote servers (using
 -T) and collects the response into SSH_OUT (STDOUT), SSH_ERR (STDERR), and
@@ -631,7 +631,7 @@ SSH_RV (return value) variables.
 SSHExec [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_variable>] [-u <user>] <command> ...
 ```
 
-### SSHSend (libuiSSH.sh) - Sends files to a remote server via scp.
+### SSHSend (man libuiSSH.sh) - Sends files to a remote server via scp.
 
 Sends files to a remote server (using -t) or a list of remote servers (using
 -T), placing the file into the provided destination, and collects the response
@@ -641,7 +641,7 @@ into SSH_OUT (STDOUT), SSH_ERR (STDERR), and SSH_RV (return value) variables.
 SSHSend [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_variable>] [-u <user>] <file> ...
 ```
 
-### StartSpinner (libuiSpinner.sh) - Start a progress spinner.
+### StartSpinner (man libuiSpinner.sh) - Start a progress spinner.
 
 Starts a progress spinner that is displayed a space after the current cursor
 position. The spinner should be stopped with the StopSpinner command. An
@@ -654,7 +654,7 @@ would need to be killed manually.)
 StartSpinner [<info_message>]
 ```
 
-### StartTimer (libuiTimer.sh) - Start a timer.
+### StartTimer (man libuiTimer.sh) - Start a timer.
 
 Starts a timer. There is a default timer or, a variable name can be provided to
 support multiple timers.
@@ -663,7 +663,7 @@ support multiple timers.
 StartTimer [<variable_name>]
 ```
 
-### StopSpinner (libuiSpinner.sh) - Stop a progress spinner.
+### StopSpinner (man libuiSpinner.sh) - Stop a progress spinner.
 
 Stops a progress spinner that was started by the StartSpinner command. Note: the
 spinner should also stop when the program ends with the Exit command. (Under
@@ -674,7 +674,7 @@ script and would need to be killed manually.)
 StopSpinner
 ```
 
-### Syslog (libuiSyslog.sh) - Send a message to the system log.
+### Syslog (man libuiSyslog.sh) - Send a message to the system log.
 
 Sends a message with the provided priority to the system log. The default
 priority is "user.notice".
@@ -683,7 +683,7 @@ priority is "user.notice".
 Syslog [-p <priority>] [<message>]
 ```
 
-### Tell (libui.sh) - Display a highlighted message for the user.
+### Tell (man libui.sh) - Display a highlighted message for the user.
 
 Sends a highlighted text message to STDOUT. By default this message is displayed
 in bold white text. The message can also be logged to a log file. Normally Tell
@@ -694,7 +694,7 @@ Newline) option.
 Tell [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
 ```
 
-### \_Trace (libui.sh) - Internal libui trace command.
+### \_Trace (man libui.sh) - Internal libui trace command.
 
 The \_Trace command is an internal libui trace command. It is included here
 because this form should be used in libui mods with the following form:
@@ -703,7 +703,7 @@ because this form should be used in libui mods with the following form:
 ${_M} && _Trace 'Trace message. (%s)' "${var}"
 ```
 
-### Trace (libui.sh) - Runtime trace command.
+### Trace (man libui.sh) - Runtime trace command.
 
 Trace provides debug messages when debugging is enabled with the -X (Xdebug)
 command line option. For this to be effective, it is recommended that the Trace
@@ -715,7 +715,7 @@ the error exists. Trace should be used with the following form:
 Trace 'Trace message. (%s)' "${var}"
 ```
 
-### UsageInfo (libuiInfo.sh) - Display usage information (i.e. help) to the user.
+### UsageInfo (man libuiInfo.sh) - Display usage information (i.e. help) to the user.
 
 Displays usage information, i.e. help information, to the user. This function is
 automatically provided by the libui library with the -H or -h (Help) command
@@ -727,7 +727,7 @@ InfoCallback function if one is available.
 UsageInfo
 ```
 
-### ValidateWorkspace (libuiWorkspace.sh) - Validates and load workspace info.
+### ValidateWorkspace (man libuiWorkspace.sh) - Validate and load workspace info.
 
 A workspace is considered to be the directory that contains one or more (git)
 repositories. This functions loads configuration information and sets
@@ -737,7 +737,7 @@ environment variables that are used by other libui supported commands.
 ValidateWorkspace [-W]
 ```
 
-### Verbose (libui.sh) - Check if the "-V" (Verbose) option flag was used.
+### Verbose (man libui.sh) - Check if in Verbose (-V) mode.
 
 Returns 0 if the "-V" (Verbose) option flag was provided on the command line,
 otherwise it returns 1.
@@ -746,7 +746,7 @@ otherwise it returns 1.
 Verbose
 ```
 
-### Verify (libui.sh) - Asks a yes / no question and returns 0 for yes, 1 for no.
+### Verify (man libui.sh) - Ask a yes/no question and return 0 for yes, 1 for no.
 
 Uses Ask to ask the user a question and waits for a yes / no response. Returns 0
 on a "yes" response and 1 on a "no" response. If a "q" is provided, the main
@@ -756,7 +756,7 @@ script will exit. Note that other Ask command options are also available.
 Verify [-C|-N|-Y] [-d <default>] [-n <variable_name>] [-r <required_regex>] <question_text>
 ```
 
-### Version (libui.sh) - Version information.
+### Version (man libui.sh) - Version information.
 
 When a version number is provided, captures the version information for the
 script. If the -r (Required) option flag is provided, confirms that the libui.sh
@@ -769,7 +769,7 @@ with the usage information provided by the libui library with the -H or -h
 Version [-m] [-r <required_libui_version>] <script_version>
 ```
 
-### WaitSpinner (libuiSpinner.sh) - Start a spinner and wait for background task.
+### WaitSpinner (man libuiSpinner.sh) - Start a spinner and wait for task.
 
 Starts a spinner and waits for the last executed background task to complete.
 
@@ -777,7 +777,7 @@ Starts a spinner and waits for the last executed background task to complete.
 WaitSpinner
 ```
 
-### Warn (libui.sh) - Display a highlighted warning message for the user.
+### Warn (man libui.sh) - Display a highlighted warning message for the user.
 
 Sends a highlighted text message to STDERR. By default this message is displayed
 in black text on a yellow background. The message can also be logged to a log
@@ -787,7 +787,7 @@ file. A return value can provided with the -r (Return Value) option flag.
 Warn [-1..-9|-a|-c] [-l <file_path>] [-r <return_value>] <warning_message>
 ```
 
-### Write (libuiFile.sh) - Write text to a file.
+### Write (man libuiFile.sh) - Write text to a file.
 
 Writes the provided data to a file identified by the provided file ID
 (previously opened with the Open command) or the -f (File) option flag. The
@@ -799,7 +799,7 @@ flags.
 Write [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker>] <data>
 ```
 
-### Yes (libui.sh) - Check if the "-Y" (Yes) option flag was used.
+### Yes (man libui.sh) - Check if in Yes (-Y) mode.
 
 Returns 0 if the "-Y" (Yes) option flag was provided on the command line,
 otherwise it returns 1. The -e (Enable) and the -E (Disable) option flags can be
