@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.2
+Version -r 1.822 -m 1.3
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -37,14 +37,14 @@ LoadMod File
 
 # Validate workspace
 #
-# Syntax: ValidateWorkspace [-W]
+# Syntax: ValidateWorkspace [-w]
 #
 # Example: ValidateWorkspace
 #
 # Result: Configures and verifies the workspace. Sources ~/.workspace if needed.
 #
 # Options:
-#   -W - Changes directory to the workspace (does not return to working dir)
+#   -w - Changes directory to the workspace (does not return to working dir)
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
 # WORKSPACE environment variable will be used. If the WORKSPACE environment
@@ -52,7 +52,7 @@ LoadMod File
 # WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 UICMD+=( 'ValidateWorkspace' )
-ValidateWorkspace () { # [-W]
+ValidateWorkspace () { # [-w]
   ${_S} && ((_cValidateWorkspace++))
   ${_M} && _Trace 'ValidateWorkspace [%s]' "${*}"
 
@@ -62,18 +62,18 @@ ValidateWorkspace () { # [-W]
     ${_M} && _Trace 'ValidateWorkspace error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
-    local _WS_wd=true
+    local _WS_ws=false
 
     ${_M} && _Trace 'Process ValidateWorkspace options. (%s)' "${*}"
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':W' opt
+    while getopts ':w' opt
     do
       case ${opt} in
-        W)
-          ${_M} && _Trace 'Do not return to working directory.'
-          _WS_wd=false
+        w)
+          ${_M} && _Trace 'Remain in workspace directory.'
+          _WS_ws=true
           ;;
 
         *)
@@ -94,7 +94,8 @@ ValidateWorkspace () { # [-W]
     ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
-    ${_WS_wd} || cd "${WORKSPACE}"
+    ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
+    ${_WS_ws} && cd "${WORKSPACE}"
   fi
 
   ${_M} && _Trace 'ValidateWorkspace return. (%s)' 0

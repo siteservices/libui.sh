@@ -92,7 +92,7 @@ InitCallback () {
   Trace 'Program initialization.'
 
   Trace 'Validate workspace. (%s)' "${WORKSPACE}"
-  ValidateWorkspace -W
+  ValidateWorkspace -w
   Tell 'Working in: %s' "${PWD}"
 }
 

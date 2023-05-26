@@ -845,7 +845,7 @@ LibuiPackageList () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'List libui package.'
-  local _Util_files=( $(find . -name '.*.sw*' -prune -o -name 'libui*') )
+  local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -name 'libui*') )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
 
   ${_M} && _Trace 'Files in libui package. (%s)' "${_Util_files[*]}"
@@ -869,7 +869,7 @@ LibuiPackage () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_param}"
-  local _Util_files=( $(find . -name '.*.sw*' -prune -o -name 'libui*') )
+  local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -name 'libui*') )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
   if [[ ".sharp" == "${_Util_param: -6}" ]]

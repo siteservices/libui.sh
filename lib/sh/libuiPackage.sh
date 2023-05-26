@@ -362,7 +362,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       local _Package_tarball
       GetTmp -f _Package_tarball
       ${_M} && _Trace 'Create tar archive. (%s)' "${_Package_files[*]}"
-      Action -e -q 'Create tar archive?' "tar ${_Package_cmd} ${_Package_compression} -cf '${_Package_tarball}' \"\${_Package_files[@]}\""
+      Action -e -q 'Create tar archive?' -i 'Creating tar archive.' "tar ${_Package_cmd} ${_Package_compression} -cf '${_Package_tarball}' \"\${_Package_files[@]}\""
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
@@ -380,15 +380,15 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         local _Package_subdir
         GetTmp -s _Package_subdir
         cd ${_Package_subdir} > /dev/null
-        Action -e -q 'Unpack tar archive?' "tar xf '${_Package_tarball}'"
+        Action -e -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -e -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -e -q "Create shar package header ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         if [[ 'Darwin' == "${OS}" ]]
         then
-          Action -q 'Create shar archive?' "shar \$(find .) >> '${_Package_package}'"
+          Action -q 'Create shar archive?' -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
         else
-          Action -q 'Create shar archive?' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
+          Action -q 'Create shar archive?' -i 'Creating shar archive.' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
@@ -439,7 +439,7 @@ ListPackage () { # <package>
       GetTmp -s _Package_subdir
       cd "${_Package_subdir}" > /dev/null
       ${_M} && _Trace 'Extract shar. (%s)' "${_Package_subdir}"
-      Action -q 'Extract shar.' "sh '${_Package_package}' > /dev/null"
+      Action -q 'Extract shar.' -i 'Extracting shar.' "sh '${_Package_package}' > /dev/null"
       Action -q 'Remove shar?' "rm ${FMFLAGS} '${_Package_package}'"
       _Package_list=( $(ls -A | sed 's|^|./|') )
       cd - > /dev/null

@@ -1,12 +1,13 @@
-# User Interface Support Library for Z Shell and Bash Scripts
+# libui - A User Interface Support Library for Z Shell and Bash Scripts
 
 ## Description
 
-The libui.sh library provides a script execution environment that simplifies
-development of robust scripts with a standardized user interface.  The library
-supports several capabilities ipso facto including script usage, several
-"standard" options that help with debugging, options for alternate execution
-flows (confirmation, no action, verbose, etc.), and color terminal highlighting.
+The libui library provides a script execution environment that simplifies
+development of robust scripts with a consistent user interface.  The library
+inherently provides several capabilities including several "standard" option
+flags that help with debugging, options for alternate execution flows
+(confirmation, no action, verbose, etc.), automatic script usage information,
+and color terminal highlighting.
 
 ## Synopsis
 
@@ -47,12 +48,16 @@ Exit [return_value]
 
 Where return_value is the value to be returned by the main script.
 
+## Documentation
+
+Documentation for the libui library is provided in the share/docs directory.
+
 ## Man Pages
 
 Unix mandoc man pages are included with the User Interface Library and provide
-more complete documentation on the services and capabilities provided.
+more complete documentation on the commands and capabilities provided.
 
-Information on the use of the library is available as a man page: man 3 libui.sh
+Information on the core library is available at: man 3 libui.sh
 
 ## Installation
 
