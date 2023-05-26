@@ -50,7 +50,7 @@ Where return_value is the value to be returned by the main script.
 
 ## Documentation
 
-Documentation for the libui library is provided in the share/docs directory.
+Documentation for the libui library is provided in the share/doc directory.
 
 ## Man Pages
 
