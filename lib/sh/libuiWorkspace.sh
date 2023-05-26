@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.2
+Version -r 1.822 -m 1.3
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -44,7 +44,7 @@ LoadMod File
 # Result: Configures and verifies the workspace. Sources ~/.workspace if needed.
 #
 # Options:
-#   -W - Changes directory to the workspace (does not return to working dir)
+#   -w - Changes directory to the workspace (does not return to working dir)
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
 # WORKSPACE environment variable will be used. If the WORKSPACE environment
@@ -68,7 +68,7 @@ ValidateWorkspace () { # [-w]
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':W' opt
+    while getopts ':w' opt
     do
       case ${opt} in
         w)
@@ -94,6 +94,7 @@ ValidateWorkspace () { # [-w]
     ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
+    ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
     ${_WS_ws} && cd "${WORKSPACE}"
   fi
 

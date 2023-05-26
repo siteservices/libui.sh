@@ -31,7 +31,7 @@
 #####
 
 # version
-Version -r 1.825 1.825
+Version -r 1.826 1.826
 
 # defaults
 unset tests

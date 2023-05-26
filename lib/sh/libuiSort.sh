@@ -58,7 +58,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
   cmpL () { [[ "${2}" < "${1}" ]]; } # lexically descending
   cmpn () { [ "${1}" -lt "${2}" ]; } # numeric ascending
   cmpN () { [ "${2}" -lt "${1}" ]; } # numeric descending
-  cmpp () { local _Sort_l="${1//[!\/]}"; local _Sort_r="${2//[!\/]}"; [[ "${#_Sort_l}" -gt "${#_Sort_r}" ]]; } # depth first
+  cmpp () { local _Sort_l="${1//[!\/]}"; local _Sort_r="${2//[!\/]}"; [[ "${#_Sort_l}" -gt "${#_Sort_r}" ]]; } # depth-first
 
   ${_M} && _Trace 'Process Sort options. (%s)' "${*}"
   local opt
