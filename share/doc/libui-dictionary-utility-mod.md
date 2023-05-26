@@ -1,17 +1,18 @@
-# Addendum Dictionary of Libui Utility Commands
+# Dictionary of Libui Utility Mod Commands
 
-## Libui Mods
+## Libui Mod
 
-Basic libui library functionality can be extended with the following mods:
+The libui utility mod provides libu library utility support functions and is not
+intended for general use:
 
 * Utility (man libuiUtility.sh) - Libui Support Utilities
 
-Man pages are available for the above: man 3 libui{Mod}.sh
+Man page is available for the above: man 3 libuiUtility.sh
 
 Use the following to load a mod prior to use:
 
 ```
-LoadMod <mod_name>
+LoadMod Utility
 ```
 
 ## Libui Utility Commands
