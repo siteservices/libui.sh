@@ -50,6 +50,7 @@ LoadMod User
 export LC_ALL=POSIX
 ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
+_Util_template="${_Util_libuiroot}/share/doc/libui-template"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
 _Util_installer='${d}/lib/sh/libui'
 _Util_groupmode='g+w'
@@ -84,6 +85,7 @@ USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q
   -L  Lockfiles        - Remove leftover lockfiles. (_Util_unlock: false)
   -m  Man Page         - Display man page.
   -M  Update Man Pages - Update man page timestamps to match respective script timestamp. (_Util_updatemp: false)
+  -n  New Script       - Create a new libui script with the provided filename. (_Util_new: false)
   -p  Package          - Create a libui.sh package with the provided filename. (_Util_package: false)
   -R  Reset Caches     - Reset display and user information caches. (_Util_cachereset: false)
   -s  Stats            - Display stats. (_Util_stats: false)
@@ -166,6 +168,7 @@ _LibuiUtilitySetup () {
   AddOption -n _Util_unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
   AddOption -c ManualCallback -k 'Man Page' -d 'Display man page.' m
   AddOption -n _Util_updatemp -f -k 'Update Man Pages' -d 'Update man page timestamps to match respective script timestamp.' M
+  AddOption -n _Util_new -f -k 'New Script' -d 'Create a new libui script with the provided filename.' n
   AddOption -n _Util_package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
   AddOption -n _Util_cachereset -f -k 'Reset Caches' -d 'Reset display and user information caches.' R
   AddOption -n _Util_stats -f -k 'Stats' -d 'Display stats.' s
@@ -339,6 +342,14 @@ EOF
 
     if ${_Util_install} || ${_Util_verify} || ${_Util_update} || ${_Util_unify}
     then
+      ${_M} && _Trace 'Check for multiple actions error.'
+      local _Util_x=0
+      ${_Util_install} && ((_Util_x++))
+      ${_Util_verify} && ((_Util_x++))
+      ${_Util_update} && ((_Util_x++))
+      ${_Util_unify} && ((_Util_x++))
+      ((1 < _Util_x)) && Error 'Only one COMMONROOT action can be perfored at a time.'
+
       ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${_Util_param}"
       [[ -n "${_Util_param}" ]] && COMMONROOT="${_Util_param}"
       ConfirmVar -q 'Please provide a COMMONROOT directory path:' -d COMMONROOT
@@ -1052,6 +1063,41 @@ LibuiUnity () { # [-d|-u|-U|-v]
   return 0
 }
 
+UICMD+=( 'LibuiNew' )
+LibuiNew () {
+  ${_S} && ((_cLibuiNew++))
+  ${_M} && _Trace 'LibuiNew [%s]' "${*}"
+
+  local _Util_rv=0
+
+  [[ -f "${_Util_template}" ]] || Error 'Template libui script file is not available. (%s)' "${_Util_template}"
+
+  if Force || [[ ! -f "${_Util_param}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_param}"
+  then
+    ${_M} && _Trace 'Remove exiting script. (%s)' "${_Util_param}"
+    [[ -f "${_Util_param}" ]] && Action "rm ${FMFLAGS} '${_Util_param}'"
+    ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_param}"
+    [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
+    Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_param}'"
+    Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
+    Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_param}'"
+    Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line descritpion for the script header?'
+    Action -F "sed ${_Util_sedi} -e 's/<SHORT DESCRIPTION HERE>/${ANSWER}/g' '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<REQUIRED HERE>/${LIBUI_VERSION}/g' '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_param}'"
+    Action -F "chmod +x "${_Util_param}""
+    Alert 'New file has been created. (%s)' "${_Util_param}"
+    here=$(tr '[:space:]' '\n' < "${_Util_param}" | grep -c 'HERE'); ((here)) || unset here
+    Tell 'Search for "HERE" and replace%s with new script content.' "${here:+ all ${here}}"
+  fi
+  _Util_rv=${?}
+
+  ${_M} && _Trace 'LibuiNew return. (%s)' "${_Util_rv}"
+  return ${_Util_rv}
+}
+
 #####
 #
 # utility main
@@ -1096,12 +1142,20 @@ _LibuiUtility () {
   elif ${_Util_package}
   then
     LibuiPackage
+  elif ${_Util_new}
+  then
+    LibuiNew
   elif ${_Util_install}
   then
     LibuiInstall
   elif ${_Util_verify} || ${_Util_update} || ${_Util_unify}
   then
-    LibuiUnity $([[ -n "${_Util_vlevel[2]+x}" ]] && printf -- '-d '; ${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U')
+    if [[ -n "${_Util_vlevel[2]+x}" ]]
+    then
+      LibuiUnity -d $(${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U') | less -R
+    else
+      LibuiUnity $(${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U')
+    fi
   else
     ${_M} && _Trace 'Display usage.'
     LoadMod Info

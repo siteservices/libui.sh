@@ -1,0 +1,86 @@
+#!/usr/bin/env libui
+#####
+#
+#	Markdown Less - View markdown files with less.
+#
+#	F Harvell - Sun May 28 09:15:21 EDT 2023
+#
+#####
+#
+# Display a markdown file in xterm using less.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.827 0.0
+
+# load mods
+
+##### configuration
+
+# defaults
+heading1="${Db}${DFm}"
+heading2="${DFm}"
+heading3="${Db}${DFg}"
+heading4="${DFg}"
+code="${DFy}"
+strong="${Db}"
+emphasis="${Dsu}"
+rule=; for i in {1..${COLUMNS}}; do rule+='_'; done
+retval=0
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddParameter -n files -m -r -k 'File' -d 'File to view.'
+
+##### callbacks
+
+# initialization callback
+InitCallback () {
+  Trace 'In user init callback.'
+
+  Trace 'Startup confirmation.'
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Loop through files. (%s)' "${files[*]}"
+for file in "$files[@]"
+do
+  cat "${file}" | \
+      sed -E "s/^[\*_][\*_][\*_][\*_]*$/${rule}/g" | \
+      sed -E "s/^# (.*)$/${heading1}\1${D}/" | \
+      sed -E "s/^## (.*)$/${heading2}\1${D}/" | \
+      sed -E "s/^### (.*)$/${heading3}\1${D}/" | \
+      sed -E "s/^#####* (.*)$/${heading4}\1${D}/" | \
+      sed -E "s/\*\*([^\*]+)\*\*/${strong}\1${D}/g" | \
+      sed -E "s/__([^_]+)__/${strong}\1${D}/g" | \
+      sed -E "s/\*([^\*]+)\*/${emphasis}\1${D}/g" | \
+      sed -E "s/_([^_]+)_/${emphasis}\1${D}/g" | \
+      sed -E "s/\`\`\`([^\']+)\`\`\`/${code}\1${D}/g" | \
+      sed -E "s/([^\`])\`([^\`]+)\`([^\`])/${code}\1\2\3${D}/g" | \
+      sed -E "/^\`\`\`\$/,/^\`\`\`$/{s/\`\`\`//; s/^/    ${code}/; s/$/${D}/;}" | \
+      sed -E "s/^[\*-] (.*)$/  o  \1/g" | \
+      sed -E 's/^>> /|    |    /' | \
+      sed -E 's/^> /|    /' | \
+      sed -E 's/<[^>]*>//g;' | less -R
+done
+
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit "${retval}"

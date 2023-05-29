@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.826 # Thu May 25 21:26:37 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.827 # Sun May 28 11:11:38 EDT 2023
 
 #####
 #
@@ -1041,7 +1041,14 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
     do
       if ${ZSH} && [[ -t 1 ]]
       then
-        vared -p "${_q}" ANSWER
+        if [[ -o SINGLE_LINE_ZLE ]]
+        then
+          vared -p "${_q}" ANSWER
+        else
+          setopt SINGLE_LINE_ZLE
+          vared -p "${_q}" ANSWER
+          unsetopt SINGLE_LINE_ZLE
+        fi
       else
         printf "${_q}"
         [[ -t 1 ]] && read -e ANSWER || read ANSWER

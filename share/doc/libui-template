@@ -1,27 +1,23 @@
 #!/usr/bin/env libui
 #####
 #
-#	{title} - {brief}
+#	<TITLE HERE> - <SHORT DESCRIPTION HERE>
 #
-#	{user} - {timestamp}
-#
-#####
-#
-# {description}
+#	<NAME HERE> - <TIMESTAMP HERE>
 #
 #####
 #
-# {header}
+# <DESCRIPTION HERE>
 #
 #####
 
 ##### libui setup
 
 # script version
-Version -r {required} {version}
+Version -r <REQUIRED HERE> <VERSION HERE>
 
 # load mods
-{modules}
+# <LIBUI MODS HERE>
 
 ##### configuration
 
@@ -31,7 +27,9 @@ GetTmp tmpdir
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
 
-AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show the demo status (i.e. verbosity level).' s
+# <ADD OPTIONS AND PARAMETERS HERE>
+AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s # demo content
+AddParameter -n param -k 'Demo Parameter' -d 'Demo paramter value.' param            # demo content
 
 ##### callbacks
 
@@ -46,9 +44,8 @@ StatusCallback () {
 InfoCallback () {
   Trace 'In user info callback.'
 
-  # <additional script information here>
   cat << EOF
-{description}
+# <ADDITIONAL SCRIPT USER INFORMATION HERE>
 EOF
 }
 
@@ -57,7 +54,7 @@ ExitCallback () {
   Trace 'In user exit callback.'
 
   Trace 'Exit cleanup.'
-  # <exit cleanup actions here>
+  # <EXIT CLEANUP ACTIONS HERE>
 }
 
 # initialization callback
@@ -65,12 +62,12 @@ InitCallback () {
   Trace 'In user init callback.'
 
   Trace 'Startup confirmation.'
-  # <startup confirmation actions here>
+  # <STARTUP CONFIRMATION ACTIONS HERE>
 }
 
 ##### functions
 
-# <support functions here>
+# <SUPPORT FUNCTIONS HERE>
 
 ##### initialization
 
@@ -86,24 +83,22 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
-## <start demo content>
-
-Trace 'Check for show status. (%s)' "${showstatus}"
-if ${showstatus}
-then
-  Tell 'Status level is: %s' "${statuslevel}"
-fi
-
-if Verify 'Exit with success?'
-then
-  Tell 'Returning success.'
-  retval=0
-else
-  Tell 'Returning error.'
-  retval=1
-fi
-
-## <end demo content>
+# <MAIN SCRIPT HERE>
+Trace 'Check for show status. (%s)' "${showstatus}" # demo content
+if ${showstatus}                                    # demo content
+then                                                # demo content
+  Tell 'Status level is: %s' "${statuslevel}"       # demo content
+  Tell 'Paramter value is: %s' "${param}"           # demo content
+fi                                                  # demo content
+                                                    # demo content
+if Verify 'Exit with success?'                      # demo content
+then                                                # demo content
+  Tell 'Returning success.'                         # demo content
+  retval=0                                          # demo content
+else                                                # demo content
+  Tell 'Returning error.'                           # demo content
+  retval=1                                          # demo content
+fi                                                  # demo content
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
 Exit "${retval}"

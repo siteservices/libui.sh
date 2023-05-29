@@ -126,6 +126,44 @@ InitCallback () {
 
 ##### functions
 
+FindModified () {
+  Trace 'Check file modification dates. (%s)' "${srcfiles[*]}"
+  for filepath in "${srcfiles[@]}"
+  do
+    Trace 'Check %s for modification after installation.' "${filepath}"
+    for file in $(find ${src}/${filepath} -name '.*.sw*' -prune -o -type f -print)
+    do
+      Trace 'Check date of %s (%s) vs. %s.' "${file}" "$(date -r ${file} +%s)" "${previnst}"
+      if (($(date -r "${file}" +%s) > ${previnst}))
+      then
+        Tell 'File has been modified after installation: %s' "${file}"
+        modified=true
+      fi
+
+      Trace 'Check if installation metadata file. (%s)' "${file}"
+      if [[ "${src}/${installts}" != "${file}" && "${src}/${manifest}" != "${file}" ]]
+      then
+        Trace 'Check for reference. (%s)' "${refdir}/${file/${src}\//}"
+        if [[ -f "${refdir}/${file/${src}\//}" ]]
+        then
+          Trace 'Check %s against %s.' "${file}" "${refdir}/${file/${src}\//}"
+          Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
+          if ((0 != ${?}))
+          then
+            Tell 'File differs from reference: %s' "${file}"
+            modified=true
+            if ${diff}
+            then
+              Tell "${Dfy}diff %s %s${D}" "${file}" "${refdir}/${file/${src}\//}"
+              Action -W "diff \"${file}\" \"${refdir}/${file/${src}\//}\""
+            fi
+          fi
+        fi
+      fi
+    done
+  done
+}
+
 ##### initialization
 
 # initialize UI
@@ -143,41 +181,12 @@ Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 Trace 'Change directory to source. (%s)' "${src}"
 cd ${src}
 
-Trace 'Check file modification dates. (%s)' "${srcfiles[*]}"
-for filepath in "${srcfiles[@]}"
-do
-  Trace 'Check %s for modification after installation.' "${filepath}"
-  for file in $(find ${src}/${filepath} -name '.*.sw*' -prune -o -type f -print)
-  do
-    Trace 'Check date of %s (%s) vs. %s.' "${file}" "$(date -r ${file} +%s)" "${previnst}"
-    if (($(date -r "${file}" +%s) > ${previnst}))
-    then
-      Tell 'File has been modified after installation: %s' "${file}"
-      modified=true
-    fi
-
-    Trace 'Check if installation metadata file. (%s)' "${file}"
-    if [[ "${src}/${installts}" != "${file}" && "${src}/${manifest}" != "${file}" ]]
-    then
-      Trace 'Check for reference. (%s)' "${refdir}/${file/${src}\//}"
-      if [[ -f "${refdir}/${file/${src}\//}" ]]
-      then
-        Trace 'Check %s against %s.' "${file}" "${refdir}/${file/${src}\//}"
-        Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
-        if ((0 != ${?}))
-        then
-          Tell 'File differs from reference: %s' "${file}"
-          modified=true
-          if ${diff}
-          then
-            Tell "${Dfy}diff %s %s${D}" "${file}" "${refdir}/${file/${src}\//}"
-            Action -W "diff \"${file}\" \"${refdir}/${file/${src}\//}\""
-          fi
-        fi
-      fi
-    fi
-  done
-done
+if ${diff}
+then
+  FindModified | less -R
+else
+  FindModified
+fi
 
 Trace 'Check for modified files. (%s)' "${modified}"
 if ${modified}
