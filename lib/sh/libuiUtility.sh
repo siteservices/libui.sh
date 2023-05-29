@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.825 -m 1.3
+Version -r 1.825 -m 1.4
 
 ##### configuration
 
@@ -75,7 +75,7 @@ GetTmp _Util_tmpdir
 
 # info compare text
 infotext="
-USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q|-V|-Y] [-e <_Util_shells>] ... [-x <_Util_testopt>] ... [-X <level>] [<_Util_param>]
+USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q|-V|-Y] [-e <_Util_shells>] ... [-x <_Util_testopt>] ... [-P <file>] [-X <level>] [<_Util_param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (_Util_config: false)
   -d  Demo             - Provide capabilities demonstration. (_Util_demo: false)
@@ -99,6 +99,7 @@ USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q
   -F  Force            - Force file operations. (force: false)
   -H  Help             - Display usage message. (help: true)
   -N  No Action        - Show operations without performing them. (noaction: false)
+  -P  Profile          - Load configuration profile. (file: )
   -Q  Quiet            - Execute quietly. (quiet: false)
   -V  Version          - Display version information. (version: false)
   -X  XDebug           - Set debug level to specified level. (level: 0)
@@ -139,7 +140,6 @@ _LibuiUtilitySetup () {
   ${_M} && _Trace '_LibuiUtilitySetup [%s]' "${*}"
 
   ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}}"
-  [[ " ${arg[*]} " =~ .*\ -P\ .* ]] && LoadMod Profile
   [[ " ${arg[*]} " =~ .*\ -T\ .* ]] && TERMINAL=true
   [[ " ${arg[*]} " =~ .*\ -x\ *oa\ .* ]] && aopt=true || aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oA\ .* ]] && Aopt=true || Aopt=false
@@ -348,7 +348,7 @@ EOF
       ${_Util_verify} && ((_Util_x++))
       ${_Util_update} && ((_Util_x++))
       ${_Util_unify} && ((_Util_x++))
-      ((1 < _Util_x)) && Error 'Only one COMMONROOT action can be perfored at a time.'
+      ((1 < _Util_x)) && Error 'Only one COMMONROOT action can be performed at a time.'
 
       ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${_Util_param}"
       [[ -n "${_Util_param}" ]] && COMMONROOT="${_Util_param}"
@@ -564,15 +564,16 @@ LibuiConfig () {
 
   local _Util_rv=0
 
-  if Force || [[ ! -f "${_Util_configfile}" ]] || Verify 'Really overwrite libui configuration file %s?' "${_Util_configfile}"
+  if Force || [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite libui configuration file %s?' "${_Util_configfile}"
   then
-    Tell 'Create default config file. (%s)' "${_Util_configfile}"
+    ${_M} && _Trace 'Create default config file. (%s)' "${_Util_configfile}"
     LoadMod File
     Open -1 -c ${_Util_configfile}
     Write -1 "#####${N}#${N}# libui.conf - $(date)${N}#${N}######${N}"
     Write -1 "# use LIBUI_<VAR>=\"\${LIBUI_<VAR>:-<value>}\" to support temporary command line environment changes.${N}"
     Write -1 "$(grep 'LIBUI_' "${LIBUI}" | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_.*:-.*\)}.*$/\1/' | sed 's/}[";].*$//' | sed -E 's/(LIBUI_.*):-(.*)$/\1="${\1:-\2}"/' | sed 's/^/#/' | sort -u)"
     Close -1
+
     Alert 'Config file has been created. (%s)' "${_Util_configfile}"
   fi
   _Util_rv=${?}
@@ -1074,23 +1075,25 @@ LibuiNew () {
 
   if Force || [[ ! -f "${_Util_param}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_param}"
   then
-    ${_M} && _Trace 'Remove exiting script. (%s)' "${_Util_param}"
+    ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_param}"
     [[ -f "${_Util_param}" ]] && Action "rm ${FMFLAGS} '${_Util_param}'"
+
     ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_param}"
     [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
     Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_param}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
     Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_param}'"
-    Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line descritpion for the script header?'
+    Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line description for the script header:'
     Action -F "sed ${_Util_sedi} -e 's/<SHORT DESCRIPTION HERE>/${ANSWER}/g' '${_Util_param}'"
     Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_param}'"
     Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_param}'"
     Action -F "sed ${_Util_sedi} -e 's/<REQUIRED HERE>/${LIBUI_VERSION}/g' '${_Util_param}'"
     Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_param}'"
-    Action -F "chmod +x "${_Util_param}""
+    Action -F "chmod +x '${_Util_param}'"
+
     Alert 'New file has been created. (%s)' "${_Util_param}"
-    here=$(tr '[:space:]' '\n' < "${_Util_param}" | grep -c 'HERE'); ((here)) || unset here
-    Tell 'Search for "HERE" and replace%s with new script content.' "${here:+ all ${here}}"
+    local _Util_here=$(tr '[:space:]' '\n' < "${_Util_param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
+    Tell 'Search for "HERE" and replace%s with new script content.' "${_Util_here:+ all ${_Util_here}}"
   fi
   _Util_rv=${?}
 
@@ -1142,9 +1145,6 @@ _LibuiUtility () {
   elif ${_Util_package}
   then
     LibuiPackage
-  elif ${_Util_new}
-  then
-    LibuiNew
   elif ${_Util_install}
   then
     LibuiInstall
@@ -1156,14 +1156,18 @@ _LibuiUtility () {
     else
       LibuiUnity $(${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U')
     fi
+  elif ${_Util_new}
+  then
+    LibuiNew
   else
     ${_M} && _Trace 'Display usage.'
     LoadMod Info
     UsageInfo
   fi
+  local _Util_rv=${?}
 
-  ${_M} && _Trace '_LibuiUtility return. (%s)' 0
-  return 0
+  ${_M} && _Trace '_LibuiUtility return. (%s)' "${_Util_rv}"
+  return ${_Util_rv}
 }
 
 ${_M} && _Trace 'Setup libui utility functions.'

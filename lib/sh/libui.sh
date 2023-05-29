@@ -1673,7 +1673,6 @@ _init=true
 _initcallback=( )
 _multiuser=false
 _noaction=false
-_profile=false
 _quiet=false
 _requireroot=false
 _xdb=0
@@ -1684,12 +1683,22 @@ Initialize () {
 
   local _a; _a=( "${CMDARGS[@]}" )
   local _i
-  local _p
+  local _p=false
   local _r; [[ -n "${_or}" ]] && _r=( "${_or[@]}" ) || _r=( )
   local _x
 
-  ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
-  ${_profile} && _LoadProfile "${CMDARGS[@]}"
+  ${_T} && _Trace 'Scan for profile. (%s)' "${_a[*]}"
+  for _i in "${_a[@]}"
+  do
+    if ${_p}
+    then
+      _profile="${_i}"
+      ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
+      [[ -f "${_profile}" ]] && source "${_profile}" || Warn 'Profile not found. (%s)' "${_profile}"
+      break
+    fi
+    [[ '-P' == "${_i}" ]] && _p=true
+  done
 
   ${_T} && _Trace 'Process initialize options. (%s)' "${_a[*]}"
   local _o
@@ -1753,7 +1762,8 @@ Initialize () {
         ;;
 
       P)
-        ${_profile} || Error 'To use a profile, please load the Profile mod. (-%s)' "${_o}"
+        ${_T} && _Trace 'Profile. (%s)' "${OPTARG}"
+        _profile="${OPTARG}"
         ;;
 
       Q)

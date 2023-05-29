@@ -23,13 +23,12 @@ Version -r <REQUIRED HERE> <VERSION HERE>
 
 # defaults
 retval=0
-GetTmp tmpdir
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
 
 # <ADD OPTIONS AND PARAMETERS HERE>
 AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s # demo content
-AddParameter -n param -k 'Demo Parameter' -d 'Demo paramter value.' param            # demo content
+AddParameter -n param -k 'Demo Parameter' -d 'Demo parameter value.' param           # demo content
 
 ##### callbacks
 
@@ -44,8 +43,9 @@ StatusCallback () {
 InfoCallback () {
   Trace 'In user info callback.'
 
+  Trace 'Provide usage information.'
   cat << EOF
-# <ADDITIONAL SCRIPT USER INFORMATION HERE>
+<ADDITIONAL SCRIPT USAGE INFORMATION HERE>
 EOF
 }
 
@@ -62,7 +62,7 @@ InitCallback () {
   Trace 'In user init callback.'
 
   Trace 'Startup confirmation.'
-  # <STARTUP CONFIRMATION ACTIONS HERE>
+  # <STARTUP CONFIRMATION HERE>
 }
 
 ##### functions
@@ -88,7 +88,7 @@ Trace 'Check for show status. (%s)' "${showstatus}" # demo content
 if ${showstatus}                                    # demo content
 then                                                # demo content
   Tell 'Status level is: %s' "${statuslevel}"       # demo content
-  Tell 'Paramter value is: %s' "${param}"           # demo content
+  Tell 'Parameter value is: %s' "${param}"          # demo content
 fi                                                  # demo content
                                                     # demo content
 if Verify 'Exit with success?'                      # demo content

@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.11
+Version -r 1.822 1.12
 
 # load mods
 
@@ -181,6 +181,7 @@ Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 Trace 'Change directory to source. (%s)' "${src}"
 cd ${src}
 
+Trace 'Check for diff. (%s)' "${diff}"
 if ${diff}
 then
   FindModified | less -R

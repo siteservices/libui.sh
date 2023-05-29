@@ -46,24 +46,21 @@ UsageInfo () {
   ${_M} && _Trace 'UsageInfo [%s]' "${*}"
 
   # library provided options
-  ${_profile} && _ou+=( 'C' 'F' 'H' 'N' 'P' 'Q' 'V' 'X' 'Y' ) || _ou+=( 'C' 'F' 'H' 'N' 'Q' 'V' 'X' 'Y' )
-  ${_profile} && _ok+=( 'Confirm' 'Force' 'Help' 'No Action' 'Profile' 'Quiet' 'Version' 'XDebug' 'Yes' ) ||
-      _ok+=( 'Confirm' 'Force' 'Help' 'No Action' 'Quiet' 'Version' 'XDebug' 'Yes' )
+  _ou+=( 'C' 'F' 'H' 'N' 'P' 'Q' 'V' 'X' 'Y' )
+  _ok+=( 'Confirm' 'Force' 'Help' 'No Action' 'Profile' 'Quiet' 'Version' 'XDebug' 'Yes' )
   _od+=(
     "Confirm operations before performing them. (confirm: \${_confirm})"
     "Force file operations. (force: \${_force})"
     'Display usage message. (help: true)'
     "Show operations without performing them. (noaction: \${_noaction})"
-  )
-  ${_profile} && _od+=( "Load profile. (file: \${_Profile_f})" )
-  _od+=(
+    "Load configuration profile. (file: \${_profile})"
     "Execute quietly. (quiet: \${_quiet})"
     'Display version information. (version: false)'
     "Set debug level to specified level. (level: \${_xdb})"
     "Provide \"y\" or default answer to asked questions. (yes: \${_yes})"
   )
   _osm+=( false false false false false false false false )
-  _opm+=( false )
+  _opm+=( false false )
 
   {
     local _UsageInfo_d
@@ -91,9 +88,8 @@ UsageInfo () {
       done
       printf ']'
     fi
-    ${_profile} && _opf+=( P ) && _oavar+=( file )
-    _opf+=( X )
-    _oavar+=( level )
+    _opf+=( P X )
+    _oavar+=( file level )
     _UsageInfo_i="${AO}"
     for _UsageInfo_p in "${_opf[@]}"
     do

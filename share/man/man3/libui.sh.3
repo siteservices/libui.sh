@@ -104,6 +104,17 @@ Note: This options is also available as
 No Action
 .Pp
 Show operations without performing them.
+.It Fl P Ar <file>
+Profile
+.Pp
+Load the configuration profile
+.Ar <file> .
+.Pp
+The configuration profile
+.Ar <file>
+is sourced prior to processing any options.
+This allows setting options--by assigning values to the associated
+variables--without using option flags on the command line.
 .It Fl Q
 Quiet
 .Pp
@@ -610,7 +621,7 @@ configuration option prior to calling
 .Sy Initialize
 The enabled script command line option added cannot be one of the
 .Nm
-library provided standard options: C, F, H, h, N, Q, V, X:, Y.
+library provided standard options: C, F, H, h, N, P, Q, V, X:, Y.
 .Ss AddParameter
 The following configuration option enables support for a script command line
 parameter:

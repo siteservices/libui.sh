@@ -10,11 +10,25 @@
 # Display a markdown file in xterm using less.
 #
 #####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
 
 ##### libui setup
 
 # script version
-Version -r 1.827 0.0
+Version -r 1.827 1.0
 
 # load mods
 
@@ -61,10 +75,10 @@ Initialize
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
 Trace 'Loop through files. (%s)' "${files[*]}"
-for file in "$files[@]"
+for file in "${files[@]}"
 do
   cat "${file}" | \
-      sed -E "s/^[\*_][\*_][\*_][\*_]*$/${rule}/g" | \
+      sed -E "s/^[\*_][\*_][\*_][\*_]*$/${rule}/" | \
       sed -E "s/^# (.*)$/${heading1}\1${D}/" | \
       sed -E "s/^## (.*)$/${heading2}\1${D}/" | \
       sed -E "s/^### (.*)$/${heading3}\1${D}/" | \
@@ -73,13 +87,15 @@ do
       sed -E "s/__([^_]+)__/${strong}\1${D}/g" | \
       sed -E "s/\*([^\*]+)\*/${emphasis}\1${D}/g" | \
       sed -E "s/_([^_]+)_/${emphasis}\1${D}/g" | \
-      sed -E "s/\`\`\`([^\']+)\`\`\`/${code}\1${D}/g" | \
+      sed -E "s/\`\`\`([^\`]+)\`\`\`/${code}\1${D}/g" | \
       sed -E "s/([^\`])\`([^\`]+)\`([^\`])/${code}\1\2\3${D}/g" | \
-      sed -E "/^\`\`\`\$/,/^\`\`\`$/{s/\`\`\`//; s/^/    ${code}/; s/$/${D}/;}" | \
-      sed -E "s/^[\*-] (.*)$/  o  \1/g" | \
+      sed -E "/^\`\`\`$/,/^\`\`\`$/{s/\`\`\`//; s/^/    ${code}/; s/$/${D}/;}" | \
+      sed -E "s/^( *)[\*-] (.*)$/\1  o  \2/" | \
+      sed -E 's/^>>>> /|    |    |    |    /' | \
+      sed -E 's/^>>> /|    |    |    /' | \
       sed -E 's/^>> /|    |    /' | \
       sed -E 's/^> /|    /' | \
-      sed -E 's/<[^>]*>//g;' | less -R
+      sed -E 's/<[^>]*>//g' | less -R
 done
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
