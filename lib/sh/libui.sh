@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.826 # Thu May 25 21:26:37 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.827 # Sun May 28 11:11:38 EDT 2023
 
 #####
 #
@@ -1041,7 +1041,14 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
     do
       if ${ZSH} && [[ -t 1 ]]
       then
-        vared -p "${_q}" ANSWER
+        if [[ -o SINGLE_LINE_ZLE ]]
+        then
+          vared -p "${_q}" ANSWER
+        else
+          setopt SINGLE_LINE_ZLE
+          vared -p "${_q}" ANSWER
+          unsetopt SINGLE_LINE_ZLE
+        fi
       else
         printf "${_q}"
         [[ -t 1 ]] && read -e ANSWER || read ANSWER
@@ -1666,7 +1673,6 @@ _init=true
 _initcallback=( )
 _multiuser=false
 _noaction=false
-_profile=false
 _quiet=false
 _requireroot=false
 _xdb=0
@@ -1677,12 +1683,22 @@ Initialize () {
 
   local _a; _a=( "${CMDARGS[@]}" )
   local _i
-  local _p
+  local _p=false
   local _r; [[ -n "${_or}" ]] && _r=( "${_or[@]}" ) || _r=( )
   local _x
 
-  ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
-  ${_profile} && _LoadProfile "${CMDARGS[@]}"
+  ${_T} && _Trace 'Scan for profile. (%s)' "${_a[*]}"
+  for _i in "${_a[@]}"
+  do
+    if ${_p}
+    then
+      _profile="${_i}"
+      ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
+      [[ -f "${_profile}" ]] && source "${_profile}" || Warn 'Profile not found. (%s)' "${_profile}"
+      break
+    fi
+    [[ '-P' == "${_i}" ]] && _p=true
+  done
 
   ${_T} && _Trace 'Process initialize options. (%s)' "${_a[*]}"
   local _o
@@ -1746,7 +1762,8 @@ Initialize () {
         ;;
 
       P)
-        ${_profile} || Error 'To use a profile, please load the Profile mod. (-%s)' "${_o}"
+        ${_T} && _Trace 'Profile. (%s)' "${OPTARG}"
+        _profile="${OPTARG}"
         ;;
 
       Q)

@@ -168,7 +168,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
-    ${_SSH_quiet} || ((0 == SSH_RV)) || Warn '%s' "${SSH_ERR}"
+    ${_SSH_quiet} || ((0 == SSH_RV)) || Tell "${DCaution}%s" "${SSH_ERR}"
   fi
 
   ${_M} && _Trace 'SSHSend return. (%s)' 0
@@ -280,7 +280,7 @@ SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_arr
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
-    ${_SSH_quiet} || ((0 == SSH_RV)) || Warn '%s' "${SSH_ERR}"
+    ${_SSH_quiet} || ((0 == SSH_RV)) || Tell "${DCaution}%s" "${SSH_ERR}"
   fi
 
   ${_M} && _Trace 'SSHExec return. (%s)' "${SSH_RV}"

@@ -31,7 +31,7 @@
 #####
 
 # version
-Version -r 1.826 1.826
+Version -r 1.827 1.827
 
 # defaults
 unset tests
@@ -125,7 +125,7 @@ LibuiValidateTest () {
   ${_Util_debug} && _Terminal
   if ((0 != rv))
   then
-    Warn '>>> Validation failed.'
+    Warn '>>> Validation failed. (%s)' "${rv}"
     ${_Util_debug} && if ! Verify 'Continue?'
     then
       ${_M} && _Trace 'Quit %s. (%s)' "${CMD}" 0
@@ -500,6 +500,21 @@ test_Display () {
   return ${?}
 }
 
+# Profile
+tests+=( 'test_LoadProfile_None' )
+test_LoadProfile_None () {
+  printf '%s\n' "profile_data='Profile data loaded.'" > "${TESTDIR}/test.profile"
+  LibuiPerformTest 'Tell -- "${profile_data}"'
+  LibuiValidateTest ${?} 0 ''
+  return ${?}
+}
+tests+=( "-P '${TESTDIR}/test.profile' test_LoadProfile_File" ) # note: will only work if follows test_LoadProfile_None
+test_LoadProfile_File () {
+  LibuiPerformTest 'Tell -- "${profile_data}"'
+  LibuiValidateTest ${?} 0 'Profile data loaded.'
+  return ${?}
+}
+
 # Contains <array_var> <value>
 tests+=( 'test_Contains_True' )
 test_Contains_True () {
@@ -531,23 +546,6 @@ test_Capture_Success () {
   Action 'Capture so se sr TestFunction'
   LibuiPerformTest "Tell 'rv: %s, OUT: %s, ERR: %s, RV: %s.' '${?}' '${so}' '${se}' '${sr}'"
   LibuiValidateTest ${?} 0 'rv: 0, OUT: Out, ERR: , RV: 0.'
-  return ${?}
-}
-
-# LoadProfile <file_path>
-tests+=( 'test_LoadProfile' )
-test_LoadProfile () {
-  printf '%s\n' "profile_data='Profile data loaded.'" > "${TESTDIR}/test.profile"
-  LoadMod Profile
-  LoadProfile "${TESTDIR}/test.profile"
-  LibuiPerformTest 'Tell -- "${profile_data}"'
-  LibuiValidateTest ${?} 0 'Profile data loaded.'
-  return ${?}
-}
-tests+=( "-P '${TESTDIR}/test.profile' test_LoadProfile_cmdline" ) # note: will only work if follows test_LoadProfile
-test_LoadProfile_cmdline () {
-  LibuiPerformTest 'Tell -- "${profile_data}"'
-  LibuiValidateTest ${?} 0 'Profile data loaded.'
   return ${?}
 }
 

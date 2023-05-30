@@ -1,0 +1,104 @@
+#!/usr/bin/env libui
+#####
+#
+#	<TITLE HERE> - <SHORT DESCRIPTION HERE>
+#
+#	<NAME HERE> - <TIMESTAMP HERE>
+#
+#####
+#
+# <DESCRIPTION HERE>
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r <REQUIRED HERE> <VERSION HERE>
+
+# load mods
+# <LIBUI MODS HERE>
+
+##### configuration
+
+# defaults
+retval=0
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+# <ADD OPTIONS AND PARAMETERS HERE>
+AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s # demo content
+AddParameter -n param -k 'Demo Parameter' -d 'Demo parameter value.' param           # demo content
+
+##### callbacks
+
+# status callback
+statuslevel=0
+StatusCallback () {
+  Trace 'Increment status level.'
+  ((statuslevel++))
+}
+
+# usage information callback
+InfoCallback () {
+  Trace 'In user info callback.'
+
+  Trace 'Provide usage information.'
+  cat << EOF
+<ADDITIONAL SCRIPT USAGE INFORMATION HERE>
+EOF
+}
+
+# exit callback
+ExitCallback () {
+  Trace 'In user exit callback.'
+
+  Trace 'Exit cleanup.'
+  # <EXIT CLEANUP ACTIONS HERE>
+}
+
+# initialization callback
+InitCallback () {
+  Trace 'In user init callback.'
+
+  Trace 'Startup confirmation.'
+  # <STARTUP CONFIRMATION HERE>
+}
+
+##### functions
+
+# <SUPPORT FUNCTIONS HERE>
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+# <MAIN SCRIPT HERE>
+Trace 'Check for show status. (%s)' "${showstatus}" # demo content
+if ${showstatus}                                    # demo content
+then                                                # demo content
+  Tell 'Status level is: %s' "${statuslevel}"       # demo content
+  Tell 'Parameter value is: %s' "${param}"          # demo content
+fi                                                  # demo content
+                                                    # demo content
+if Verify 'Exit with success?'                      # demo content
+then                                                # demo content
+  Tell 'Returning success.'                         # demo content
+  retval=0                                          # demo content
+else                                                # demo content
+  Tell 'Returning error.'                           # demo content
+  retval=1                                          # demo content
+fi                                                  # demo content
+
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit "${retval}"
