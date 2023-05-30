@@ -899,6 +899,6 @@ When using the "#!/usr/bin/env libui" shebang, add the following to your
 
 ```
 if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or 'bash'
+  setfiletype zsh " or setfiletype bash
 endif
 ```

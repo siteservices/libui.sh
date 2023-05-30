@@ -46,7 +46,7 @@
 # Vim note: when using the shebang, add this to your ~/.vim/scripts.vim file:
 #
 #     if getline(1) =~ '^#!/usr/bin/env libui'
-#       setfiletype zsh " or 'bash'
+#       setfiletype zsh " or setfiletype bash
 #     endif
 #
 #####

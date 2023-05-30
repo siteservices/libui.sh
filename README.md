@@ -76,7 +76,7 @@ installation path, a prompt will appear asking for the COMMONROOT directory.
 The `<COMMONROOT>` parameter should be the absolute path for installing the
 libui.sh library files. It is worth noting that the installation will create
 several subdirectories under the provided path including: `lib/sh`, `bin`,
-`share/man/man1`, and `share/man/man3`.
+`share/doc`, `share/man/man1`, and `share/man/man3`.
 
 Alternatively, the libui script may be called directly from within the repo:
 
@@ -88,11 +88,14 @@ lib/sh/libui -i <COMMONROOT>
 
 Once installed, access to the library must be established:
 
-* Add "/private/tmp/tl/lib/sh" to your PATH to access libui and libui.sh.
-* Add "/private/tmp/tl/bin" to your PATH to access the example scripts.
-* Add "/private/tmp/tl/share/man" to your MANPATH to access the man pages.
+* Add "{/path/to}/lib/sh" to your PATH to access libui and libui.sh.
+* Add "{/path/to}/bin" to your PATH to access the example scripts.
+* Add "{/path/to}/share/man" to your MANPATH to access the man pages.
 
-Once added, you can use "man 3 libui.sh" or "libui -m" to view the man page.
+Please note that the above information will be displayed following an install.
+
+Once the MANPATH has been added, you can use "man 3 libui.sh" or "libui -m" to
+view the man page.
 
 ## Notes
 
@@ -106,7 +109,7 @@ When using the "#!/usr/bin/env libui" shebang, add the following to your
 
 ```
 if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or 'bash'
+  setfiletype zsh " or setfiletype bash
 endif
 ```
 
