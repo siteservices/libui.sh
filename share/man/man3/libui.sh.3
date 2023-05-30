@@ -1128,7 +1128,7 @@ command.
 The following command asks the user a question:
 .Bd -ragged -offset 4n
 .Sy Ask
-.Op Fl b Fl C Fl N Fl Y Fl z
+.Op Fl b Fl C Fl E Fl N Fl Y Fl z
 .Op Fl d Ar <default_answer>
 .Op Fl n Ar <variable_name>
 .Op Fl r Ar <required_regex>
@@ -1154,6 +1154,8 @@ Note: Also sets the
 to "yes" if not otherwise set using the
 .Fl d
 option.
+.It Fl E
+Do not echo characters when receiving a response to the question.
 .It Fl d Ar <default_answer>
 Set the default answer to
 .Ar <default_answer> .
@@ -1261,7 +1263,7 @@ The following command validates the contents of a variable with the provided
 name:
 .Bd -ragged -offset 4n
 .Sy ConfirmVar
-.Op Fl A Fl d Fl e Fl f Fl n Fl z
+.Op Fl A Fl d Fl e Fl E Fl f Fl n Fl z
 .Op Fl D Ar <default>
 .Op Fl p Ar <path>
 .Op Fl q Ar <question>
@@ -1293,6 +1295,13 @@ or
 Confirm
 .Ar <variable_name>
 variable contains a path that exists.
+.It Fl E
+Do not echo characters when receiving a response to the question included with
+the
+.Fl q
+or
+.Fl Q
+(Question) option.
 .It Fl f
 Confirm
 .Ar <variable_name>

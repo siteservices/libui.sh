@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.827 # Sun May 28 11:11:38 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.827 # Tue May 30 02:36:37 EDT 2023
 
 #####
 #
@@ -752,11 +752,12 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
 
 # confirm variables
 UICMD+=( 'ConfirmVar' )
-ConfirmVar () { # [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_var>] <variable> ...
+ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_var>] <variable> ...
   ${_S} && ((_cConfirmVar++))
   ${_T} && _Trace 'ConfirmVar [%s]' "${*}"
 
   local _a=false
+  local _c
   local _d
   local _e; ${_init} || _e='-e'
   local _f=false
@@ -772,7 +773,7 @@ ConfirmVar () { # [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <questio
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':AdD:efnP:q:Q:s:S:z' _o
+  while getopts ':AdD:eEfnP:q:Q:s:S:z' _o
   do
     case ${_o} in
       A)
@@ -796,6 +797,11 @@ ConfirmVar () { # [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <questio
         ${_T} && _Trace 'Path exists test.'
         _t='e'
         _m='The path "%s" does not exist. (%s)'
+        ;;
+
+      E)
+        ${_T} && _Trace 'Disable echo.'
+        _c='-E'
         ;;
 
       f)
@@ -861,7 +867,7 @@ ConfirmVar () { # [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <questio
           then
             _f=false
             ${_T} && _Trace 'Ask question. (%s)' "${_q}"
-            eval "Ask -n '${_v}'${_s} ${_p:+-P ${_p}} -d '${_x:-${_d}}' ${_z} '${_q}'"
+            eval "Ask -n '${_v}'${_s} ${_p:+-P ${_p}} -d '${_x:-${_d}}' ${_c} ${_z} '${_q}'"
             _x="${ANSWER}"
             ${_T} && _Trace 'Check if empty and allowed. (%s / %s)' "${_x}" "${_z}"
             [[ -n "${_z}" && -z "${_x}" ]] && break
@@ -895,7 +901,7 @@ ConfirmVar () { # [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <questio
 # ask a question and return a response
 _yes=false
 UICMD+=( 'Ask' )
-Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
+Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
   ${_S} && ((_cAsk++))
   ${_T} && _Trace 'Ask [%s]' "${*}"
 
@@ -903,6 +909,7 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
   local _b
   local _c=false
   local _d="${LIBUI_DEFAULT:-}"; ${_yes} && _d="${_d:-yes}"
+  local _e=true
   local _n
   local _p
   local _r
@@ -912,7 +919,7 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':bCd:n:NP:r:s:S:Yz' _o
+  while getopts ':bCd:En:NP:r:s:S:Yz' _o
   do
     case ${_o} in
       b)
@@ -929,6 +936,11 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
       d)
         ${_T} && _Trace 'Default answer. (%s)' "${OPTARG}"
         _d="${OPTARG}"
+        ;;
+
+      E)
+        ${_T} && _Trace 'Disable echo.'
+        _e=false
         ;;
 
       n)
@@ -1039,19 +1051,27 @@ Ask () { # [-b|-C|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <requi
     ${_T} && _Trace 'Prompt for answer. (%s)' "${_s} ${*}"
     while ${_l}
     do
-      if ${ZSH} && [[ -t 1 ]]
+      if [[ -t 1 ]] && ${_e}
       then
-        if [[ -o SINGLE_LINE_ZLE ]]
+        if ${ZSH}
         then
-          vared -p "${_q}" ANSWER
+          if [[ -o SINGLE_LINE_ZLE ]]
+          then
+            vared -p "${_q}" ANSWER
+          else
+            setopt SINGLE_LINE_ZLE
+            vared -p "${_q}" ANSWER
+            unsetopt SINGLE_LINE_ZLE
+          fi
         else
-          setopt SINGLE_LINE_ZLE
-          vared -p "${_q}" ANSWER
-          unsetopt SINGLE_LINE_ZLE
+          printf "${_q}"
+          read -e ANSWER
         fi
       else
         printf "${_q}"
-        [[ -t 1 ]] && read -e ANSWER || read ANSWER
+        ${_e} || stty -echo
+        read ANSWER
+        ${_e} || stty echo && [[ -t 1 ]] && printf "\n${DCEL}"
       fi
       [[ -n "${_b}" && 'q' == "${ANSWER}" ]] && Error -e -r 9 'Quit requested.'
       if [[ -z "${ANSWER}" ]]

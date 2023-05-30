@@ -13,29 +13,41 @@
 *.new
 *.old
 *.orig
+*.rej
 .\#*
 \#*
 **/Archive/
 **/x/
 
-# editor files
+# editor/ide
 *~
-.*.sw[a-z]
+.cproject
+.idea/
+.metadata
 .netrwhist
-.vscode
+.project
+.settings
+.*.sw[a-z]
+.vscode/
+.wrmakefile
+.wrproject
 Session.vim
 xcuserdata
 
 # c/c++
 *.a
+*.core
 *.d
+*.elf
+*.exe
 *.o
 *.so
+*.vxe
 
 # python
 __pycache__
-*.py[cod
-*$py.class]
+*.py[cod]
+*$py.class
 
 # swift
 *.dSYM
