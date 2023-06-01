@@ -127,6 +127,8 @@ InitCallback () {
 ##### functions
 
 FindModified () {
+  local rv=0
+
   Trace 'Check file modification dates. (%s)' "${srcfiles[*]}"
   for filepath in "${srcfiles[@]}"
   do
@@ -137,7 +139,7 @@ FindModified () {
       if (($(date -r "${file}" +%s) > ${previnst}))
       then
         Tell 'File has been modified after installation: %s' "${file}"
-        modified=true
+        rv=1
       fi
 
       Trace 'Check if installation metadata file. (%s)' "${file}"
@@ -147,11 +149,10 @@ FindModified () {
         if [[ -f "${refdir}/${file/${src}\//}" ]]
         then
           Trace 'Check %s against %s.' "${file}" "${refdir}/${file/${src}\//}"
-          Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
-          if ((0 != ${?}))
+          if ! Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
           then
             Tell 'File differs from reference: %s' "${file}"
-            modified=true
+            rv=1
             if ${diff}
             then
               Tell "${Dfy}diff %s %s${D}" "${file}" "${refdir}/${file/${src}\//}"
@@ -162,6 +163,9 @@ FindModified () {
       fi
     done
   done
+
+  Trace 'FindModified return. (%s)' "${rv}"
+  return ${rv}
 }
 
 ##### initialization
@@ -184,18 +188,26 @@ cd ${src}
 Trace 'Check for diff. (%s)' "${diff}"
 if ${diff}
 then
-  FindModified | less -R
+  if ${ZSH}
+  then
+    FindModified | less -R
+    retval=${pipestatus[1]}
+  else
+    FindModified | less -R
+    retval=${PIPESTATUS[0]}
+  fi
 else
   FindModified
+  retval=${?}
 fi
 
-Trace 'Check for modified files. (%s)' "${modified}"
-if ${modified}
+Trace 'Check for modified files. (%s)' "${retval}"
+if ((retval))
 then
-  ${diff} || Warn 'Check complete, some files were modified.'
+  Warn 'Check complete, some files were modified.'
 else
   Alert 'Check complete, no modified files found.'
 fi
 
-Trace 'Exit %s. (%s)' "${CMD}" 0
-Exit 0
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit ${retval}
