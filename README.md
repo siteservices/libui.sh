@@ -97,9 +97,23 @@ Please note that the above information will be displayed following an install.
 Once the MANPATH has been added, you can use "man 3 libui.sh" or "libui -m" to
 view the man page.
 
+## Creating a Script
+
+The easiest way to create a new script is to use the `libui -n {script}`
+command. This command copies the `libui-template` file from the `share/doc`
+directory, asks a few questions, and creates a new, templated script in the
+location identified by the "{script}" parameter.
+
+The scripts available in the `bin` directory provide several real-world examples
+of libui scripts. Reviewing those scripts is highly recommended.
+
 ## Notes
 
-The provided `<COMMONROOT>` path must be writable by the user performing the
+* The Z shell (zsh) is the preferred shell for libui script development and will
+be selected by default. If zsh is not available, 'libui -i' will change the
+installed `libui/sh/libui` handler to use bash.
+
+* The provided `<COMMONROOT>` path must be writable by the user performing the
 installation.
 
 ## Vim Note

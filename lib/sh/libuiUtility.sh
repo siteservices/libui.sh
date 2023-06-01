@@ -906,23 +906,25 @@ LibuiInstall () {
 
   StartSpinner
 
-  ${_M} && _Trace 'Install libui into %s.' "${COMMONROOT}"
-  _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -name 'libui*') )
-  _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
-  local _Util_file
-  for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
-  do
-    [[ ! -d "${COMMONROOT}/${_Util_file%/*}" ]] && Action -W "mkdir -p '${COMMONROOT}/${_Util_file%/*}'" && \
-        Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file%/*}'"
-    Action "cp ${FMFLAGS} "${_Util_libuiroot%/}/${_Util_file}" '${COMMONROOT}/${_Util_file}'"
-    Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
-  done
+  if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
+  then
+    ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
+    _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -name 'libui*') )
+    _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
+    local _Util_file
+    for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
+    do
+      [[ ! -d "${COMMONROOT}/${_Util_file%/*}" ]] && Action -W "mkdir -p '${COMMONROOT}/${_Util_file%/*}'" && \
+          Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file%/*}'"
+      Action "cp ${FMFLAGS} "${_Util_libuiroot%/}/${_Util_file}" '${COMMONROOT}/${_Util_file}'"
+      Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+    done
 
-  StopSpinner
+    StopSpinner
 
-  Alert 'Installation of libui into %s complete.' "${COMMONROOT}"
-  GetRealPath COMMONROOT
-  cat << EOF
+    Alert 'Installation of libui into %s complete.' "${COMMONROOT}"
+    GetRealPath COMMONROOT
+    cat << EOF
 To use the library, the following should be added to your environment:
 
   * Add "${COMMONROOT}/lib/sh" to your PATH to access libui and libui.sh.
@@ -931,6 +933,19 @@ To use the library, the following should be added to your environment:
 
 Once added, you can use "man 3 libui.sh" or "libui -m" to view the man page.
 EOF
+
+    ${_M} && _Trace 'Check for zsh.'
+    if ${ZSH} && ((${+commands[zsh]})) || command -v zsh &> /dev/null
+    then
+      Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using the Z shell (zsh)."
+    else
+      Warn 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
+      [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
+      Action -F "sed ${_Util_sedi} -e '1s|^#!/bin/zsh|#!/bin/bash|' '${COMMONROOT}/lib/sh/libui'"
+      Action -F "sed ${_Util_sedi} -e '3s|^#!/bin/bash|#!/bin/zsh|' '${COMMONROOT}/lib/sh/libui'"
+      Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using bash."
+    fi
+  fi
 
   ${_M} && _Trace 'LibuiInstall return. (%s)' 0
   return 0

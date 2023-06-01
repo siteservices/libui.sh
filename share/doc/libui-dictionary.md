@@ -157,6 +157,7 @@ variable and can optionally be assigned to a named variable.
 * **-b** - boolean, yes/no response
 * **-C** - only ask when the **-C** (Confirm) command line option flag was used
 * **-d** - default answer
+* **-E** - disable echo on the terminal when asking a question
 * **-n** - variable name to save the answer
 * **-N** - default answer to "no"
 * **-P** - patch to prepend to answer
@@ -167,7 +168,7 @@ variable and can optionally be assigned to a named variable.
 * **-z** - allow an empty answer (empty string)
 
 ```
-Ask [-b|-C|-N|-Y|-z] [-d <default>] [-n <variable_name>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_variable>] <question_text>
+Ask [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <variable_name>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_variable>] <question_text>
 ```
 
 ### Capture (man libui.sh) - Special function to capture output from a command.
@@ -213,6 +214,7 @@ tests currently available include:
 * **-d** - check if the value is a directory
 * **-D** - default answer (provided to Ask when asking question, **-q** | -Q)
 * **-e** - check if the value is a valid path
+* **-E** - disable echo on the terminal when asking a question
 * **-f** - check if the value is a valid file path
 * **-n** - check if the value is not empty (This is the default.)
 * **-P** - path to prepend before checking
@@ -225,7 +227,7 @@ Note: The ConfirmVar command uses the Ask command when asking the question
 provided with the **-q** (Optional Question) or **-Q** (Always Question) option flags.
 
 ```
-ConfirmVar [-A|-d|-e|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_variable>] <variable_name> ...
+ConfirmVar [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_variable>] <variable_name> ...
 ```
 
 ### Contains (man libui.sh) - Utility function to check an array for a value.
