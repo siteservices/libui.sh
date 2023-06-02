@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.827 # Tue May 30 02:36:37 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.828 # Fri Jun  2 01:12:19 EDT 2023
 
 #####
 #
@@ -655,7 +655,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
             then
               ${_confirm} || StartSpinner "${_i}"
             else
-              [[ -n "${_i}" ]] && printf "${DJBL}${DAction}%s${D} ${DCEL}" "${_i}"
+              [[ -n "${_i}" ]] && printf "${DJBL}${DAction}%s${D} ${DCEL}" "${_i}" >&4 # duplicate stderr
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -876,6 +876,8 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
             Verify 'Response invalid (%s). Try again?' "${_x}" && _f=true || break
           fi
         done
+      else
+        [[ -n "${_p}" && -n "${_x}" ]] && _x="${_p%/}/${_x/${_p%\/}\/}"
       fi
 
       ${_T} && _Trace 'Test -%s "%s". (%s)' "${_t}" "${_x}" "${_v}"
@@ -1013,7 +1015,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   else
     _s='%s'
   fi
-  local _q="$(printf "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p}\/}}")"
+  local _q="$(printf "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
   ANSWER=
 
   ((0 < ${_spinner:-0})) && PauseSpinner
@@ -1027,12 +1029,12 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
     then
       for ((_i = 1; _i <= ${#_a}; _i++))
       do
-        printf "%4s. %s${DCEL}\n" ${_i} "${_a[${_i}]/${_p:+${_p}\/}}"
+        printf "%4s. %s${DCEL}\n" ${_i} "${_a[${_i}]/${_p:+${_p%\/}\/}}"
       done
     else
       for _i in "${!_a[@]}"
       do
-        printf "%4s. %s${DCEL}\n" $((_i + 1)) "${_a[${_i}]/${_p:+${_p}\/}}"
+        printf "%4s. %s${DCEL}\n" $((_i + 1)) "${_a[${_i}]/${_p:+${_p%\/}\/}}"
       done
     fi
     printf "${D}${DCEL}\n"
@@ -1091,11 +1093,11 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
             _f=false
             case "${ANSWER}" in
               [0-9]*) # number
-                ANSWER="${_a[$((ANSWER + AO - 1))]}" && _f=true
+                ANSWER="${_p:+${_p%/}/}${_a[$((ANSWER + AO - 1))]/${_p:+${_p%\/}\/}}" && _f=true
                 ;;
 
               *) # nan
-                _t="${_p:+${_p}/}${ANSWER}"
+                _t="${_p:+${_p%/}/}${ANSWER/${_p:+${_p%\/}\/}}"
                 if ${ZSH}
                 then
                   ((${_a[(Ie)${_t}]})) && ANSWER="${_t}" && _f=true
@@ -1449,7 +1451,7 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
     fi
   fi
   [[ -t 2 ]] && printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" >> /dev/stderr || \
-      printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&3 # duplicated stderr
+      printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
 
   ${_T} && _Trace 'Warn return. (%s)' "${_rv}"
   return "${_rv}"
@@ -1568,7 +1570,7 @@ Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_messa
     fi
   fi
   [[ -t 2 ]] && printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" >> /dev/stderr || \
-      printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" | tee -a /dev/stderr >&3 # duplicated stderr
+      printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
 
   ${_T} && _Trace 'Check for exit. (%s)' "${_e}"
   if ${_e}
@@ -1927,7 +1929,7 @@ Initialize () {
     ${_T} && _Trace 'Available option selection values. (%s)' "${_s}"
     if [[ -n "${_s}" ]]
     then
-      ${ZSH} && _ol+=( "-${_p} (${_ok[${_i}]}): ${(j:, :)${_s[@]/${_op[${_i}]}\/}}" ) || _ol+=( "-${_p} (${_ok[${_i}]}): $(printf '%s, ' "${_s[@]/${_op[${_i}]}\/}")" ) # avail values
+      ${ZSH} && _ol+=( "-${_p} (${_ok[${_i}]}): ${(j:, :)${_s[@]/${_op[${_i}]%\/}\/}}" ) || _ol+=( "-${_p} (${_ok[${_i}]}): $(printf '%s, ' "${_s[@]/${_op[${_i}]%\/}\/}")" ) # avail values
 
       ${_om[${_i}]} && eval "_v=( \"\${${_ovar[${_i}]}[@]}\" )" || eval "_v=\"\${${_ovar[${_i}]}}\""
       ${_T} && _Trace 'Option value. (%s)' "${_v}"
@@ -1937,7 +1939,7 @@ Initialize () {
       then
         ${_om[${_i}]} && eval "${_ovar[${_i}]}=( \"${_s[${AO}]}\" )" || eval "${_ovar[${_i}]}=\"${_s[${AO}]}\""
         _d+="${DCaution}CAUTION:${D} Option -${_p} (${_ok[${_i}]}) was defaulted to: ${DConfirm}"
-        [[ -n "${_op[${_i}]}" ]] && _d+="${_s[${AO}]/${_op[${_i}]}\/}${D}.${DCEL}\n" || _d+="${_s[${AO}]}${D}.${DCEL}\n"
+        [[ -n "${_op[${_i}]}" ]] && _d+="${_s[${AO}]/${_op[${_i}]%\/}\/}${D}.${DCEL}\n" || _d+="${_s[${AO}]}${D}.${DCEL}\n"
       fi
 
       ${_T} && _Trace 'Check if required or empty. (%s / %s)' "${_or[${_i}]}" "${_v}"
@@ -1949,7 +1951,7 @@ Initialize () {
           _b=true
           for _t in "${_s[@]}"
           do
-            [[ "${_t/${_op[${_i}]:+${_op[${_i}]}\/}}" == "${_j}" ]] && _b=false && continue 2
+            [[ "${_t}" == "${_j}" || "${_t/${_op[${_i}]:+${_op[${_i}]%\/}\/}}" == "${_j}" ]] && _b=false && continue 2
           done
           ${_b} && Error 'The value provided for -%s (%s) is not an available option value. (%s)' "${_p}" "${_ok[${_i}]}" "${_j}"
         done
@@ -1972,7 +1974,7 @@ Initialize () {
     ${_T} && _Trace 'Available parameter selection values. (%s)' "${_s}"
     if [[ -n "${_s}" ]]
     then
-      ${ZSH} && _pl+=( "${_p}${_pk[${_i}]:+ (${_pk[${_i}]})}: ${(j:, :)${_s[@]/${_pp[${_i}]}\/}}" ) || _pl+=( "${_p}${_pk[${_i}]:+ (${_pk[${_i}]})}: $(printf '%s, ' "${_s[@]/${_pp[${_i}]}\/}")" ) # avail values
+      ${ZSH} && _pl+=( "${_p}${_pk[${_i}]:+ (${_pk[${_i}]})}: ${(j:, :)${_s[@]/${_pp[${_i}]%\/}\/}}" ) || _pl+=( "${_p}${_pk[${_i}]:+ (${_pk[${_i}]})}: $(printf '%s, ' "${_s[@]/${_pp[${_i}]%\/}\/}")" ) # avail values
 
       ${_pm} && ((${#_pvar[@]} + AO - 1 == _i)) && eval "_v=( \"\${${_p}[@]}\" )" || eval "_v=\"\${${_p}}\""
       ${_T} && _Trace 'Parameter value. (%s)' "${_v}"
@@ -1982,7 +1984,7 @@ Initialize () {
       then
         ${_pm} && ((${#_pvar[@]} + AO - 1 == _i)) && eval "${_pvar[${_i}]}=( \"${_s[${AO}]}\" )" || eval "${_pvar[${_i}]}=\"${_s[${AO}]}\""
         _d+="${DCaution}CAUTION:${D} Parameter ${_p}${_pk[${_i}]:+ (${_pk[${_i}]})} was defaulted to: ${DConfirm}"
-        [[ -n "${_pp[${_i}]}" ]] && _d+="${_s[${AO}]/${_pp[${_i}]}\/}${D}.${DCEL}\n" || _d+="${_s[${AO}]}${D}.${DCEL}\n"
+        [[ -n "${_pp[${_i}]}" ]] && _d+="${_s[${AO}]/${_pp[${_i}]%\/}\/}${D}.${DCEL}\n" || _d+="${_s[${AO}]}${D}.${DCEL}\n"
       fi
 
       ${_T} && _Trace 'Check if empty. (%s)' "${_v}"
@@ -1994,7 +1996,7 @@ Initialize () {
           _b=true
           for _t in "${_s[@]}"
           do
-            [[ "${_t/${_pp[${_i}]:+${_pp[${_i}]}\/}}" == "${_j}" ]] && _b=false && continue 2
+            [[ "${_t}" == "${_j}" || "${_t/${_pp[${_i}]:+${_pp[${_i}]%\/}\/}}" == "${_j}" ]] && _b=false && continue 2
           done
           ${_b} && Error 'The value provided for %s%s is not an available parameter value. (%s)' "${_p}" "${_pk[${_i}]:+ (${_pk[${_i}]})}" "${_j}"
         done
@@ -2326,12 +2328,12 @@ LoadMod () { # [-P <path>] <libui_mod_name>
   local _l=true
   if ${ZSH}
   then
-    ((${UIMOD[(Ie)${_m}]})) && _l=false
+    ((${UIMOD[(Ie)libui${_m}.sh]})) && _l=false
   else
     local _c
     for _c in "${UIMOD[@]}"
     do
-      [[ "${_m}" == "${_c}" ]] && _l=false && break
+      [[ "${_m}" == "libui${_c}.sh" ]] && _l=false && break
     done
   fi
   ${_T} && _Trace 'Check if %s libui mod needs to be loaded. (%s)' "${_l}"
@@ -2486,7 +2488,7 @@ CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
-LIBUI="${BASH_SOURCE:-${(%):-%x}}"
+LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
 SHLIBPATH="${SHLIBPATH:-${LIBUI%/*}}/"
 [[ "${PATH}" =~ (.*:|^)"${SHLIBPATH%/}"($|:.*) ]] || PATH="${SHLIBPATH%/}${PATH:+:${PATH}}"
@@ -2573,6 +2575,6 @@ trap 'Error -e -r 143 "Received TERM signal. ($(date))"' TERM #15
 trap '_WINCH' WINCH #28
 
 # duplicate stderr
-exec 3>&2
+exec 4>&2
 
 _Trace 'READY (%s)' "${SHLIBPATH}"

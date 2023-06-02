@@ -487,7 +487,7 @@ _LibuiTest () {
       do
         ${_M} && _Trace 'Test command: %s' "${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}"
         ${_Util_debug} && Tell 'Test command: %s' "${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}"
-        eval "Action ${warn} \"${env} ${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}\" ${log}"
+        eval "Action -s -i 'Performing: ${_Util_test}' ${warn} \"${env} ${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}\" ${log}"
         LibuCheckResults "${_Util_exec}" "${_Util_test}" "${rv}" "${pass}"
         _Util_tr=$((_Util_tr + ${?}))
       done

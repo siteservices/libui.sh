@@ -104,8 +104,22 @@ command. This command copies the `libui-template` file from the `share/doc`
 directory, asks a few questions, and creates a new, templated script in the
 location identified by the "{script}" parameter.
 
+## Next Steps
+
+It is recommended that every user reads through the libui-dictionary.md document
+to get a high-level overview of the currently available commands. Additional
+details on each of the commands and option flags can be found in the associated
+man pages.
+
 The scripts available in the `bin` directory provide several real-world examples
 of libui scripts. Reviewing those scripts is highly recommended.
+
+## Contact and Contributions
+
+The libui user interface library is intended to be a community project. As such,
+if you have a question, find an issue, identify a need, and/or wish to
+contribute, please submit a patch or reach out to fharvell@siteservices.net or
+via github.
 
 ## Notes
 

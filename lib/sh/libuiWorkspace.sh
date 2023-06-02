@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.3
+Version -r 1.822 -m 1.4
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -37,7 +37,7 @@ LoadMod File
 
 # Validate workspace
 #
-# Syntax: ValidateWorkspace [-w]
+# Syntax: ValidateWorkspace [-w|-W]
 #
 # Example: ValidateWorkspace
 #
@@ -45,6 +45,7 @@ LoadMod File
 #
 # Options:
 #   -w - Changes directory to the workspace (does not return to working dir)
+#   -W - Disable warning about not using the current path
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
 # WORKSPACE environment variable will be used. If the WORKSPACE environment
@@ -52,7 +53,7 @@ LoadMod File
 # WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 UICMD+=( 'ValidateWorkspace' )
-ValidateWorkspace () { # [-w]
+ValidateWorkspace () { # [-w|-W]
   ${_S} && ((_cValidateWorkspace++))
   ${_M} && _Trace 'ValidateWorkspace [%s]' "${*}"
 
@@ -62,18 +63,24 @@ ValidateWorkspace () { # [-w]
     ${_M} && _Trace 'ValidateWorkspace error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
+    local _WS_warn=true
     local _WS_ws=false
 
     ${_M} && _Trace 'Process ValidateWorkspace options. (%s)' "${*}"
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':w' opt
+    while getopts ':wW' opt
     do
       case ${opt} in
         w)
           ${_M} && _Trace 'Remain in workspace directory.'
           _WS_ws=true
+          ;;
+
+        W)
+          ${_M} && _Trace 'Disable warning.'
+          _WS_warn=false
           ;;
 
         *)
@@ -91,11 +98,11 @@ ValidateWorkspace () { # [-w]
     fi
     ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
-    ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
+    ${_WS_warn} && ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
     ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
-    ${_WS_ws} && cd "${WORKSPACE}"
+    ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null
   fi
 
   ${_M} && _Trace 'ValidateWorkspace return. (%s)' 0

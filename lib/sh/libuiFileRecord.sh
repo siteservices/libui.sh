@@ -27,12 +27,12 @@
 #
 #####
 #
-# Important note: This libui mod uses file index prefix (_fip) #2. Please be
+# Important note: This libui mod uses file index prefix (_File_ip) #2. Please be
 # aware when building other libui mods that make use of file indexes.
 #
 #####
 
-Version -r 1.822 -m 1.4
+Version -r 1.822 -m 1.5
 
 ${AA} || Error -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHELL}"
 
@@ -59,7 +59,7 @@ RecordOpen () { # [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <
   ${_M} && _Trace 'RecordOpen [%s]' "${*}"
 
   ${_M} && _Trace 'Open record file. (%s)' "${*}"
-  _fip=2 Open "${@}"
+  _File_ip=2 Open "${@}"
 
   return ${?}
 }
@@ -80,7 +80,7 @@ RecordClose () { # [-1..-9] [<file_path>]
   ${_M} && _Trace 'RecordClose [%s]' "${*}"
 
   ${_M} && _Trace 'Close record file. (%s)' "${*}"
-  _fip=2 Close "${@}"
+  _File_ip=2 Close "${@}"
 
   return ${?}
 }
@@ -145,7 +145,7 @@ RecordEntry () { # [-1..-9] [<data_assoc_array>] [<column_array>]
     done
 
     ${_M} && _Trace 'Record _Record_entry. (%s)' "${_Record_entry}"
-    _fip=2 Write "${1}" "${_Record_entry:0:$((${#_Record_entry} - 1))}"
+    _File_ip=2 Write "${1}" "${_Record_entry:0:$((${#_Record_entry} - 1))}"
 
     return ${?}
   fi

@@ -492,6 +492,14 @@ variable.
 .Pp
 Creates, opens, and locks the file "${tmpdir}/log", writes the new entry to the
 file, and then unlocks the file.
+.Sh Notes
+The
+.Nm
+.Xr libui.sh 3
+mod maps the file IDs to file descriptors 10 through 19, with 10
+reserved for
+.Xr libui.sh 3
+internal file operations.
 .Sh SEE ALSO
 .Xr bash 1 ,
 .Xr zsh 1 ,

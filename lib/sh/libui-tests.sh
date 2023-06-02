@@ -31,7 +31,7 @@
 #####
 
 # version
-Version -r 1.827 1.827
+Version -r 1.828 1.828
 
 # defaults
 unset tests
@@ -654,7 +654,7 @@ tests+=( 'test_Action-i' )
 test_Action-i () {
   local t="${TERMINAL}"
   TERMINAL=true
-  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp"'
+  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL} /tmp"
@@ -664,7 +664,7 @@ tests+=( 'test_Action-s-i' )
 test_Action-s-i () {
   local t="${TERMINAL}"
   TERMINAL=true
-  LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp"'
+  LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp" 4>&1'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest -r "${tv}" 0 '/tmp...*'

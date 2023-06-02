@@ -26,7 +26,8 @@ user interface library
 .Sy LoadMod SSH
 .Pp
 .Sy SSHExec
-.Op Fl q Fl v
+.Op Fl d Fl q Fl v
+.Op Fl i Ar <message>
 .Op Fl p Ar <password>
 .Op Fl P Ar <port>
 .Op Fl t Ar <target>
@@ -57,7 +58,8 @@ mod provides the following commands:
 The following command executes a command on a remote system:
 .Bd -ragged -offset 4n
 .Sy SSHExec
-.Op Fl q Fl v
+.Op Fl d Fl q Fl v
+.Op Fl i Ar <message>
 .Op Fl p Ar <password>
 .Op Fl P Ar <port>
 .Op Fl t Ar <target>
@@ -68,6 +70,11 @@ The following command executes a command on a remote system:
 .Pp
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
+.It Fl d
+Enable the display for the command.
+This allocates a tty and passes terminal information to enable display features.
+.It Fl i Ar <message>
+Displays an information message while the command is executing.
 .It Fl p Ar <password>
 The password to use when attempting to ssh into the target system.
 .It Fl P Ar <port>

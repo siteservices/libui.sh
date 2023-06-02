@@ -118,7 +118,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
     fi
 
     ${_M} && _Trace 'Check for flock.'
-    if command -v flock &> /dev/null
+    if ${ZSH} && ((${+commands[flock]})) || command -v flock &> /dev/null
     then
       for _File_l in "${_File_i[@]}"
       do
@@ -379,7 +379,7 @@ GetRealPath () { # [-P] <var_name> [<path_specification>]
   [[ -e "${_File_s}" ]] || Error '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
 
   ${_M} && _Trace 'Check for realpath.'
-  if command -v realpath &> /dev/null
+  if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
   then
     ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
     eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
@@ -611,7 +611,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
 
   _File_fd[${_File_i}]="${_File_f}"
 
-  if command -v flock &> /dev/null
+  if ${ZSH} && ((${+commands[flock]})) || command -v flock &> /dev/null
   then
     ${_M} && _Trace 'Obtain flock %s. (%s)' "${_File_f}" "${_File_n}"
     while ! flock -n ${_File_f}

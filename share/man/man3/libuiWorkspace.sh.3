@@ -40,13 +40,15 @@ The following command verifies the workspace and ensures that the WORKSPACE
 environment variable is set:
 .Bd -ragged -offset 4n
 .Sy ValidateWorkspace
-.Op Fl w
+.Op Fl w Fl W
 .Ed
 .Pp
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
 .It Fl w
 Remain in the workspace directory after validation.
+.It Fl W
+Disable the warning about not using the current path.
 .El
 .Pp
 Checks the WORKSPACE environment variable and, if it is not set, sources the

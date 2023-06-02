@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.2
+Version -r 1.822 -m 1.3
 
 # defaults
 
@@ -75,7 +75,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
   local _SSH_pass
   local _SSH_port
   local _SSH_quiet; Quiet && _SSH_quiet=true || _SSH_quiet=false
-  local _SSH_target; _SSH_target=( )
+  local _SSH_targets; _SSH_targets=( )
   local _SSH_user="${USER}"
   local _SSH_verbose=false
 
@@ -108,12 +108,12 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
 
       t)
         ${_M} && _Trace 'Target. (%s)' "${OPTARG}"
-        _SSH_target+=( "${OPTARG}" )
+        _SSH_targets+=( "${OPTARG}" )
         ;;
 
       T)
         ${_M} && _Trace 'Target variable. (%s)' "${OPTARG}"
-        ${ZSH} && _SSH_target=( "${(P@)OPTARG}" ) || eval "_SSH_target=( \"\${${OPTARG}[@]}\" )"
+        ${ZSH} && _SSH_targets=( "${(P@)OPTARG}" ) || eval "_SSH_targets=( \"\${${OPTARG}[@]}\" )"
         ;;
 
       u)
@@ -134,14 +134,14 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
   done
   shift $((OPTIND - 1))
   [[ -z "${_SSH_dest}" ]] && Error '(SSHSend) No destination provided.'
-  [[ -z "${_SSH_target}" ]] && Error '(SSHSend) No target provided.'
+  [[ -z "${_SSH_targets}" ]] && Error '(SSHSend) No target provided.'
   ((1 > ${#})) && Error '(SSHSend) No file provided.'
 
   ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send file to %s.' "${_SSH_target[*]}"
+  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send file to %s.' "${_SSH_targets[*]}"
 
   local _SSH_file; _SSH_file=( "${@}" )
-  local _SSH_t
+  local _SSH_target
 
   ${_M} && _Trace 'Check for verbose. (%s)' "${verbose}"
   if ${_SSH_verbose}
@@ -152,19 +152,19 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
     GetTmp -f _SSH_tmperr
     GetTmp -f _SSH_tmpout
     SSH_RV=0
-    for _SSH_t in "${_SSH_target[@]}"
+    for _SSH_target in "${_SSH_targets[@]}"
     do
-      ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_t}" "${_SSH_dest}"
-      Action "scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_t}:${_SSH_dest}' 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
+      ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_target}" "${_SSH_dest}"
+      Action "scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}' 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
       ((SSH_RV+=${?}))
     done
     SSH_OUT=$(<"${_SSH_tmpout}")
     SSH_ERR=$(<"${_SSH_tmperr}")
   else
-    for _SSH_t in "${_SSH_target[@]}"
+    for _SSH_target in "${_SSH_targets[@]}"
     do
-      ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_t}" "${_SSH_dest}"
-      Action "Capture SSH_OUT SSH_ERR SSH_RV scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_t}:${_SSH_dest}'"
+      ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_target}" "${_SSH_dest}"
+      Action "Capture SSH_OUT SSH_ERR SSH_RV scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}'"
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
@@ -177,7 +177,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
 
 # Execute Command via SSH (ssh)
 #
-# Syntax: SSHExec [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
+# Syntax: SSHExec [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
 #
 # Example: SSHExec -t alpha ls /tmp
 #
@@ -185,14 +185,16 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
 # response in ${SSH_OUT}, errors in ${SSH_ERR}, and return value in ${SSH_RV}.
 #
 UICMD+=( 'SSHExec' )
-SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
+SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_var>] [-u <user>] <command> ...
   ${_S} && ((_cSSHExec++))
   ${_M} && _Trace 'SSHExec [%s]' "${*}"
 
+  local _SSH_disp
+  local _SSH_info
   local _SSH_pass
   local _SSH_port
   local _SSH_quiet; Quiet && _SSH_quiet=true || _SSH_quiet=false
-  local _SSH_target; _SSH_target=( )
+  local _SSH_targets; _SSH_targets=( )
   local _SSH_user="${USER}"
   local _SSH_verbose=false
 
@@ -200,9 +202,19 @@ SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_arr
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':p:P:qt:T:u:v' opt
+  while getopts ':di:p:P:qt:T:u:v' opt
   do
     case ${opt} in
+      d)
+        ${_M} && _Trace 'Enable display.'
+        _SSH_disp='-t'
+        ;;
+
+      i)
+        ${_M} && _Trace 'Info. (%s)' "${OPTARG}"
+        _SSH_info="${OPTARG}"
+        ;;
+
       p)
         ${_M} && _Trace 'Password. (%s)' "${OPTARG}"
         _SSH_pass="${OPTARG}"
@@ -220,12 +232,12 @@ SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_arr
 
       t)
         ${_M} && _Trace 'Target. (%s)' "${OPTARG}"
-        _SSH_target+=( "${OPTARG}" )
+        _SSH_targets+=( "${OPTARG}" )
         ;;
 
       T)
         ${_M} && _Trace 'Target variable. (%s)' "${OPTARG}"
-        ${ZSH} && _SSH_target=( "${(P@)OPTARG}" ) || eval "_SSH_target=( \"\${${OPTARG}[@]}\" )"
+        ${ZSH} && _SSH_targets=( "${(P@)OPTARG}" ) || eval "_SSH_targets=( \"\${${OPTARG}[@]}\" )"
         ;;
 
       u)
@@ -245,14 +257,14 @@ SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_arr
     esac
   done
   shift $((OPTIND - 1))
-  [[ -z "${_SSH_target}" ]] && Error '(SSHExec) No target provided.'
+  [[ -z "${_SSH_targets}" ]] && Error '(SSHExec) No target provided.'
   ((0 == ${#})) && Error '(SSHExec) No command provided.'
 
   ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send command to %s.' "${_SSH_target[*]}"
+  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send command to %s.' "${_SSH_targets[*]}"
 
   local _SSH_cmd; _SSH_cmd=( "${@}" )
-  local _SSH_t
+  local _SSH_target
 
   ${_M} && _Trace 'Check for verbose. (%s)' "${verbose}"
   SSH_RV=0
@@ -264,19 +276,19 @@ SSHExec () { # [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_arr
     GetTmp -f _SSH_tmpout
     GetTmp -f _SSH_tmperr
     SSH_RV=0
-    for _SSH_t in "${_SSH_target[@]}"
+    for _SSH_target in "${_SSH_targets[@]}"
     do
-      ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_t}" "${_SSH_cmd[*]}"
-      Action -f "Comand failed on ${_SSH_t}: ${_SSH_cmd[*]}" "ssh ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_t}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
+      ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
+      Action -i "${_SSH_info}" -f "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
       ((SSH_RV+=${?}))
     done
     SSH_OUT=$(<"${_SSH_tmpout}")
     SSH_ERR=$(<"${_SSH_tmperr}")
   else
-    for _SSH_t in "${_SSH_target[@]}"
+    for _SSH_target in "${_SSH_targets[@]}"
     do
-      ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_t}" "${_SSH_cmd[*]}"
-      Action -f "Comand failed on ${_SSH_t}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_t}' \"\${_SSH_cmd[@]}\""
+      ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
+      Action -s -i "${_SSH_info}" -f "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
