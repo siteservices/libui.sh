@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.14
+Version -r 1.822 -m 1.15
 
 # defaults
 
@@ -57,7 +57,7 @@ StartSpinner () { # [<info_message>]
       if [[ -t 2 ]] && ! Error
       then
         ${_M} && _Trace 'Display message. (%s)' "${*}"
-        [[ -n "${@}" ]] && printf "${DJBL}${DSpinner}%s${D} ${DCEL}" "${*}"
+        [[ -n "${@}" ]] && printf "${DJBL}${DSpinner}%s${D} ${DCEL}" "${*}" >&4 # duplicate stderr
 
         ${_M} && _Trace 'Starting spinner.'
         local _Spinner_i
@@ -67,7 +67,7 @@ StartSpinner () { # [<info_message>]
           do
             for _Spinner_i in '|' '/' '-' '\'
             do
-              printf " ${DSpinner}%s${D}${DCEL}\b\b" ${_Spinner_i} > /dev/stderr
+              printf " ${DSpinner}%s${D}${DCEL}\b\b" ${_Spinner_i} >&4 # duplicate stderr
               sleep 0.1
             done
           done
@@ -104,7 +104,7 @@ PauseSpinner () {
   then
     ${_M} && _Trace 'Pausing spinner. (%s)' "${_spinner}"
     ((0 < ${_spinner:-0})) && kill -TSTP ${_spinner} &> /dev/null
-    ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" > /dev/stderr
+    ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   fi
   local _Spinner_rv=${?}
 
@@ -133,7 +133,7 @@ ResumeSpinner () {
   if [[ -t 2 ]]
   then
     ${_M} && _Trace 'Resuming spinner. (%s)' "${_spinner}"
-    ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" > /dev/stderr
+    ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
     ((0 < ${_spinner:-0})) && kill -CONT ${_spinner} &> /dev/null
   fi
   local _Spinner_rv=${?}
@@ -160,7 +160,7 @@ StopSpinner () {
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
   ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
-  ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" > /dev/stderr
+  ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   local _Spinner_rv=${?}
 
   ${_M} && _Trace 'StopSpinner return. (%s)' "${_Spinner_rv}"
@@ -201,11 +201,11 @@ WaitSpinner () {
           do
             for _Spinner_i in '|' '/' '-' '\'
             do
-              printf " ${DSpinner}%s${D}${DCEL}\b\b" ${_Spinner_i} > /dev/stderr
+              printf " ${DSpinner}%s${D}${DCEL}\b\b" ${_Spinner_i} >&4 # duplicate stderr
               sleep 0.1
             done
           done
-          printf "${DCEL:-  \b\b}${DJBL}${DCEL}" > /dev/stderr
+          printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
         fi
       fi
     fi
@@ -274,10 +274,10 @@ Sleep () { # [-m "<message>"] [-u <interval>] [<sleep>]
     ${_M} && _Trace 'Verbose sleep. (%s)' "${_Spinner_c}"
     while ((0 < (_Spinner_c-=${_Spinner_u})))
     do
-      printf "${DJBL}${DInfo}${_Spinner_m}${D}${DCEL}" "${_Spinner_c}"
+      printf "${DJBL}${DInfo}${_Spinner_m}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
       sleep ${_Spinner_u}
     done
-    printf "${DJBL}${DCEL}"
+    printf "${DJBL}${DCEL}" >&4 # duplicate stderr
   else
     ${_M} && _Trace 'Quiet sleep. (%s)' "${1:-1}"
     sleep ${1:-1}
@@ -301,7 +301,7 @@ _SpinnerExitCallback () {
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
   ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
-  ! ${_quiet} && [[ -t 2 ]] && printf "${DCEL:-  \b\b}${DJBL}${DCEL}" > /dev/stderr
+  ! ${_quiet} && [[ -t 2 ]] && printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
 }
 
 # register exit callback

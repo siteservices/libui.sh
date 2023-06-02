@@ -2689,6 +2689,11 @@ being executed leaving the temporary directory in place.
 .Sh NOTES
 The
 .Nm
+library duplicates the STDERR file descriptor (2) as file descriptor 4.
+It also uses file descriptor 10 for maintaining statistics and trace log files.
+.Pp
+The
+.Nm
 library is young and under considerable development.
 It is worth tracking the current version to access new features being added.
 .Pp

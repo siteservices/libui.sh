@@ -166,7 +166,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
 
         esac
       else
-        if command -v sort &> /dev/null
+        if ${ZSH} && ((${+commands[sort]})) || command -v sort &> /dev/null
         then
           case "${_Sort_cmp}" in
             cmpa)

@@ -660,6 +660,8 @@ Sends a command to a remote server (using -t) or a list of remote servers (using
 -T) and collects the response into SSH_OUT (STDOUT), SSH_ERR (STDERR), and
 SSH_RV (return value) variables.
 
+* **-d** - enable display output (i.e., open a tty)
+* **-i** - info message to display while executing
 * **-p** - target system password
 * **-P** - target system TCP/IP port
 * **-q** - quiet execution (only capture results, no output display)
@@ -793,6 +795,7 @@ repositories. This functions loads configuration information and sets
 environment variables that are used by other libui supported commands.
 
 * **-w** - remain in the workspace directory after validation
+* **-W** - Disable warning about not using the current path
 
 ```
 ValidateWorkspace [-w]
