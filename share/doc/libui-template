@@ -18,29 +18,33 @@ Version -r <REQUIRED HERE> <VERSION HERE>
 
 # load mods
 # <LIBUI MODS HERE>
+LoadMod File                                                                                        # demo content
 
 ##### configuration
 
 # defaults
+# <DEFAULT VALUES HERE>
+statuslevel=0                                                                                       # demo content
+GetTmp tmpdir                                                                                       # demo content
 retval=0
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
 
 # <ADD OPTIONS AND PARAMETERS HERE>
-AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s # demo content
-AddParameter -n param -k 'Demo Parameter' -d 'Demo parameter value.' param           # demo content
+AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s                # demo content
+AddParameter -n files -m -k 'Files' -d 'Files to be processed.' files                               # demo content
 
 ##### callbacks
 
-# status callback
-statuslevel=0
-StatusCallback () {
-  Trace 'Increment status level.'
-  ((statuslevel++))
-}
+StatusCallback () {                                                                                 # demo content
+  Trace 'Example AddOption callback.'                                                               # demo content
+                                                                                                    # demo content
+  Trace 'Increment status level.'                                                                   # demo content
+  ((statuslevel++))                                                                                 # demo content
+}                                                                                                   # demo content
 
-# usage information callback
 InfoCallback () {
+  # note: this function is optional
   Trace 'In user info callback.'
 
   Trace 'Provide usage information.'
@@ -49,15 +53,14 @@ InfoCallback () {
 EOF
 }
 
-# exit callback
 ExitCallback () {
+  # note: this function is optional
   Trace 'In user exit callback.'
 
   Trace 'Exit cleanup.'
   # <EXIT CLEANUP ACTIONS HERE>
 }
 
-# initialization callback
 InitCallback () {
   Trace 'In user init callback.'
 
@@ -67,7 +70,7 @@ InitCallback () {
 
 ##### functions
 
-# <SUPPORT FUNCTIONS HERE>
+# <MAIN SCRIPT FUNCTIONS HERE>
 
 ##### initialization
 
@@ -84,21 +87,29 @@ Initialize
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
 # <MAIN SCRIPT HERE>
-Trace 'Check for show status. (%s)' "${showstatus}" # demo content
-if ${showstatus}                                    # demo content
-then                                                # demo content
-  Tell 'Status level is: %s' "${statuslevel}"       # demo content
-  Tell 'Parameter value is: %s' "${param}"          # demo content
-fi                                                  # demo content
-                                                    # demo content
-if Verify 'Exit with success?'                      # demo content
-then                                                # demo content
-  Tell 'Returning success.'                         # demo content
-  retval=0                                          # demo content
-else                                                # demo content
-  Tell 'Returning error.'                           # demo content
-  retval=1                                          # demo content
-fi                                                  # demo content
+Trace 'Check for show status. (%s)' "${showstatus}"                                                # demo content
+if ${showstatus}                                                                                   # demo content
+then                                                                                               # demo content
+  Tell 'Status level is: %s' "${statuslevel}"                                                      # demo content
+fi                                                                                                 # demo content
+                                                                                                   # demo content
+Trace 'Process files. (%s)' "${files[*]}"                                                          # demo content
+GetFileList files                                                                                  # demo content
+for file in "${files[@]}"                                                                          # demo content
+do                                                                                                 # demo content
+  printf 'File: %s' "${file}"                                                                      # demo content
+  Action -s -i "Copy file: ${file}" "cp '${file}' '${tmpdir}'"                                     # demo content
+done                                                                                               # demo content
+ls -l "${tmpdir}"                                                                                  # demo content
+                                                                                                   # demo content
+if Verify 'Exit with success?'                                                                     # demo content
+then                                                                                               # demo content
+  Tell 'Returning success.'                                                                        # demo content
+  retval=0                                                                                         # demo content
+else                                                                                               # demo content
+  Tell 'Returning error.'                                                                          # demo content
+  retval=1                                                                                         # demo content
+fi                                                                                                 # demo content
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
 Exit "${retval}"

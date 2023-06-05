@@ -31,6 +31,7 @@
 Version -r 1.827 1.1
 
 # load mods
+LoadMod Files
 
 ##### configuration
 
@@ -51,11 +52,31 @@ AddParameter -n files -m -r -k 'File' -d 'File to view.'
 
 ##### callbacks
 
-# initialization callback
+InfoCallback () {
+  Trace 'In user info callback.'
+
+  Trace 'User info.'
+  cat << EOF
+The mless script provides basic interpretation of markdown in a terminal
+environment using less. Due to the limited terminal environment, mless has
+limited capabilities:
+
+  - supports 4 header levels
+  - supports bold and underlined text
+  - supports unordered lists
+  - supports ordered lists up to 3 digits (ordered lists are not yet renumbered)
+  - removes HTML tags
+  - basic block indents up to 4 levels
+  - basic support for backslash (\\) escapes
+  - does not yet support paragraph rewrapping
+EOF
+}
+
 InitCallback () {
   Trace 'In user init callback.'
 
   Trace 'Startup confirmation.'
+  GetFileList -e files
 }
 
 ##### functions
@@ -91,6 +112,10 @@ do
       sed -E "s/([^\`])\`([^\`]+)\`([^\`])/${code}\1\2\3${D}/g" | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/{s/\`\`\`//; s/^/    ${code}/; s/$/${D}/;}" | \
       sed -E "s/^( *)[\*-] (.*)$/\1  o  \2/" | \
+      sed -E "s/^( *)([0-9])([.) ])(.*)$/\1  \2\3  \4/" | \
+      sed -E "s/^( *)([0-9][0-9])([.) ])(.*)$/\1  \2\3 \4/" | \
+      sed -E "s/^( *)([0-9][0-9][0-9])([.) ])(.*)$/\1  \2\3\4/" | \
+      sed -E "s/^( *)([0-9][0-9][0-9][0-9][0-9]*)([.) ])(.*)$/\1  \2\3 \4/" | \
       sed -E 's/^>>>> /  |    |    |    |  /' | \
       sed -E 's/^>>> /  |    |    |  /' | \
       sed -E 's/^>> /  |    |  /' | \

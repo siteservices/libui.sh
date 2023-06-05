@@ -334,7 +334,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
             fi
           done
         fi
-        if ((0 == ${#_Package_glob[@]})) || [[ ! ${_Package_exclude} =~ .*/.* ]]
+        if [[ 0 -eq ${#_Package_glob[@]} || ! ${_Package_exclude} =~ .*/.* ]]
         then
           if ${ZSH}
           then

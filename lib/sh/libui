@@ -40,7 +40,12 @@ then
   source "${SHLIBPATH%/}/libui.sh" "${1}" "${@:2}"
 
   # execute script
-  [[ -x "${1}" ]] && source "${@}" || Error -e "The provided command is not executable. (${*})"
+  if [[ -f "${1}" ]]
+  then
+    source "${@}"
+  else
+    Error -e "The provided command is not available. (${*})"
+  fi
 else
   # capture parameters for testing
   script=( "${BASH_SOURCE[0]:-${(%):-%x}}" )

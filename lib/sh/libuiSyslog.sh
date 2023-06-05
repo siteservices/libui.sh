@@ -75,14 +75,14 @@ Syslog () { # [-p <priority>] [<message>]
     return ${ERRV}
   else
     local _Syslog_logger="$(command -v logger) -t \"\${CMD}\" -p \"\${_Syslog_p}\" \"\${USER}: \""
-    if ((0 == ${#}))
+    if ((${#}))
     then
+      ${_M} && _Trace 'Log message to syslog. (%s)' "${*}"
+      NoAction && printf '%s %s\n' "${_Syslog_logger}" "${*}" || eval "${_Syslog_logger} '${*}'"
+    else
       ${_M} && _Trace 'Log script command line to syslog. (%s %s)' "${CMD}" "${_clp[*]}"
       NoAction && printf '%s %s %s\n' "${_Syslog_logger}" "${CMD}" "${_clp[*]}" ||
           eval "${_Syslog_logger} ${CMD} '${_clp[*]}'"
-    else
-      ${_M} && _Trace 'Log message to syslog. (%s)' "${*}"
-      NoAction && printf '%s %s\n' "${_Syslog_logger}" "${*}" || eval "${_Syslog_logger} '${*}'"
     fi
 
     return 0
