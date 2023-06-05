@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.8
+Version -r 1.822 -m 1.9
 
 # defaults
 _File_ip=
@@ -90,18 +90,8 @@ Close () { #  [-0|-1..-9] [<file_path>]
     if [[ -z "${_File_i}" ]]
     then
       ${_M} && _Trace 'Check for file path. (%s)' "${*}"
-      if ((0 == ${#}))
+      if ((${#}))
       then
-        if ${ZSH}
-        then
-          for _File_l in "${(@)_File_fd}"
-          do
-            [[ -n "${_File_l}" ]] && _File_i+=( "${_File_fd[(ie)${_File_l}]}" )
-          done
-        else
-          _File_i=( "${!_File_fd[@]}" )
-        fi
-      else
         if ${ZSH}
         then
           for _File_l in "${(@)_File_fp}"
@@ -113,6 +103,16 @@ Close () { #  [-0|-1..-9] [<file_path>]
           do
             [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_l}" )
           done
+        fi
+      else
+        if ${ZSH}
+        then
+          for _File_l in "${(@)_File_fd}"
+          do
+            [[ -n "${_File_l}" ]] && _File_i+=( "${_File_fd[(ie)${_File_l}]}" )
+          done
+        else
+          _File_i=( "${!_File_fd[@]}" )
         fi
       fi
     fi
@@ -224,16 +224,28 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
     esac
   done
   shift $((OPTIND - 1))
-  ((2 > ${#})) && Error -L '(GetFileList) Called without a variable name and file specification.'
+  ((0 < ${#})) || Error -L '(GetFileList) Called without a variable name and file specification.'
 
-  ${_M} && _Trace 'Build file list.'
+  ${_M} && _Trace 'Capture var and spec. (%s)' "${*}"
+  local _File_v="${1}" # var
+  local _File_x
+  shift
+  if ((${#}))
+  then
+    ${_M} && _Trace 'Get spec from args. (%s)' "${*}"
+    _File_x=( "${@}" )
+  else
+    ${_M} && _Trace 'Get spec from var. (%s)' "${_File_v}"
+    ${ZSH} && _File_x=( ${(P)_File_v[@]} ) || eval "_File_x=( \"\${${_File_v}[@]}\" )"
+  fi
+  [[ -z "${_File_x}" ]] && Error '(GetFileList) Called without a file specification.'
+
+  ${_M} && _Trace 'Build file list. (%s)' "${*}"
   local _File_i
   local _File_g
   local _File_l; _File_l=( )
   local _File_s
-  local _File_v="${1}" # var
-  shift
-  for _File_s in "${@}"
+  for _File_s in "${_File_x[@]}"
   do
     if ${ZSH}
     then
@@ -280,11 +292,12 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
       done
     fi
   done
-  ((0 != _File_rv)) && Error '(GetFileList) Unable to obtain file list. (%s)' "${*}"
-  if [[ -z "${_File_l[@]}" ]] && _File_rv=2
+  ((_File_rv)) && Error '(GetFileList) Unable to obtain file list. (%s)' "${*}"
+  if [[ -z "${_File_l[@]}" ]]
   then
     ${_File_e} && Error -r 2 '(GetFileList) No file found. (%s)' "${*}"
     ${_File_w} && Warn -r 2 '(GetFileList) No file found. (%s)' "${*}"
+    _File_rv=2
   fi
 
   local _File_t
@@ -452,11 +465,11 @@ GetTmp () { # [-d|-f|-s] <var_name>
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(GetTmp) Called without a variable name.'
+  ((${#})) || Error -L '(GetTmp) Called without a variable name.'
 
   ${_M} && _Trace 'Check / Create tmp directory. (%s)' "${_tmpdir}"
   [[ -d "${_tmpdir}" ]] || _tmpdir="$(mktemp -q -d "${TMPDIR%/}/${CMD}.XXXXXX")"
-  ((0 != ${?})) && Error '(GetTmp) Unable to create temp dir.'
+  ((${?})) && Error '(GetTmp) Unable to create temp dir.'
   eval "${1}='${_tmpdir}'"
 
   ${_M} && _Trace 'Check for error.'
@@ -469,14 +482,14 @@ GetTmp () { # [-d|-f|-s] <var_name>
     then
       ${_M} && _Trace 'Create tmp file.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q '${_tmpdir}/${CMD}.XXXXXX')\""
-      ((0 != ${?})) && Error '(GetTmp) Unable to create temp file.'
+      ((${?})) && Error '(GetTmp) Unable to create temp file.'
     fi
 
     if ${_s}
     then
       ${_M} && _Trace 'Create tmp subdirectory.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q -d '${_tmpdir}/${CMD}.XXXXXX')\""
-      ((0 != ${?})) && Error '(GetTmp) Unable to create temp subdirectory.'
+      ((${?})) && Error '(GetTmp) Unable to create temp subdirectory.'
     fi
 
     ${_M} && _Trace 'GetTmp return. (%s)' 0
@@ -557,7 +570,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
   done
   shift $((OPTIND - 1))
   [[ -z "${_File_i}" ]] && Error '(Open) No file ID provided.'
-  ((0 == ${#})) && Error -L '(Open) Called without a file path.'
+  ((${#})) || Error -L '(Open) Called without a file path.'
   ((1 < ${#})) && Error -L '(Open) Called with multiple file paths.'
 
   ${ZSH} && integer _File_e || local _File_e
@@ -733,7 +746,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(RemoveFileList) Called without a variable name.'
+  ((${#})) || Error -L '(RemoveFileList) Called without a variable name.'
 
   ${_M} && _Trace 'Check for error.'
   if Error
@@ -757,7 +770,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
           _File_d+=( "${_File_x}" )
         else
           Action "rm ${FMFLAGS} ${_File_f} \"${_File_x}\""
-          ((0 != ${?})) && Error '(RemoveFileList) Unable to remove file. (%s)' "${_File_x}"
+          ((${?})) && Error '(RemoveFileList) Unable to remove file. (%s)' "${_File_x}"
         fi
       done
 
@@ -769,7 +782,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
         for _File_x in "${_File_d[@]}"
         do
           Action "rmdir ${FMFLAGS} ${_File_f} \"${_File_x}\""
-          ((0 != ${?})) && Error '(RemoveFileList) Unable to remove directory. (%s)' "${_File_x}"
+          ((${?})) && Error '(RemoveFileList) Unable to remove directory. (%s)' "${_File_x}"
         done
       fi
 
@@ -849,7 +862,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(Write) Called without data.'
+  ((${#})) || Error -L '(Write) Called without data.'
   [[ -z "${_File_p}" ]] && _File_p="%s${_File_r}"
 
   ${_M} && _Trace -I 'WRITE: %s' "${*}"
@@ -858,7 +871,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
   then
     ${_M} && _Trace 'Write using ID %s to file %s via descriptor %s. (%s)' "${_File_i}" "${_File_fp[${_File_i}]}" "${_File_fd[${_File_i}]}" "${*}"
     printf -- "${_File_p}" "${@}" >&${_File_fd[${_File_i}]}
-    ((0 == ${?})) || Error '(Write) Unable to write to file via file ID. (%s)' "${_File_i}"
+    ((${?})) && Error '(Write) Unable to write to file via file ID. (%s)' "${_File_i}"
   elif [[ -n "${_File_f}" ]]
   then
     ${_M} && _Trace 'Write to file %s. (%s)' "${_File_f}" "${*}"
@@ -869,7 +882,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
       printf -- "${_File_p}" "${@}" >> "${_File_f}"
     fi
     _File_rv=${?}
-    ((0 == ${_File_rv})) || Error '(Write) Unable to write to file. (%s)' "${_File_f}"
+    ((${_File_rv})) && Error '(Write) Unable to write to file. (%s)' "${_File_f}"
   else
     Error -L '(Write) No file ID or file path provided.'
   fi

@@ -123,9 +123,9 @@ LibuiValidateTest () {
   fi
 
   ${_Util_debug} && _Terminal
-  if ((0 != rv))
+  if ((rv))
   then
-    Warn '>>> Validation failed. (%s)' "${rv}"
+    Warn -r 2 '>>> Validation failed. (%s)' "${rv}"
     ${_Util_debug} && if ! Verify 'Continue?'
     then
       ${_M} && _Trace 'Quit %s. (%s)' "${CMD}" 0
@@ -654,7 +654,7 @@ tests+=( 'test_Action-i' )
 test_Action-i () {
   local t="${TERMINAL}"
   TERMINAL=true
-  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
+  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 5>&1'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL} /tmp"
@@ -664,7 +664,7 @@ tests+=( 'test_Action-s-i' )
 test_Action-s-i () {
   local t="${TERMINAL}"
   TERMINAL=true
-  LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp" 4>&1'
+  LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp" 5>&1'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest -r "${tv}" 0 '/tmp...*'
@@ -740,7 +740,7 @@ test_Action_Open_Log () {
   Action -1 "ls -d /tmp"
   Close -1
   LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_Log-a' )
@@ -749,7 +749,7 @@ test_Action_Log-a () {
   Action -l "${lfile}" "ls -d /tmp"
   Action -l "${lfile}" "ls -d /tmp"
   LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "ACTION .*: ls -d /tmp${N}/tmp${N}ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION .*: ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_Log-c' )
@@ -758,7 +758,7 @@ test_Action_Log-c () {
   Action -l "${lfile}" "ls -d /tmp"
   Action -c -l "${lfile}" "ls -d /tmp"
   LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_Log-t' )
@@ -766,7 +766,7 @@ test_Action_Log-t () {
   local lfile; GetTmp -f lfile
   Action -t -l "${lfile}" 'ls -d /tmp'
   LibuiPerformTest "Action -t -l '${lfile}' 'ls -d /tmp'; cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION .*: ls -d /tmp${N}/tmp${N}ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_Log-t-c' )
@@ -774,7 +774,7 @@ test_Action_Log-t-c () {
   local lfile; GetTmp -f lfile
   Action -c -t -l "${lfile}" 'ls -d /tmp'
   LibuiPerformTest "Action -c -t -l '${lfile}' 'ls -d /tmp'; cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_Open_Log-t' )
@@ -784,8 +784,9 @@ test_Action_Open_Log-t () {
   Open -1 -c "${lfile}"
   Action -t -1 'ls -d /tmp'
   LibuiPerformTest "Action -t -1 'ls -d /tmp'; cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION .*: ls -d /tmp${N}/tmp${N}ACTION .*: ls -d /tmp${N}/tmp"
+  local tv=${?}
   Close -1
+  LibuiValidateTest -r ${tv} 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action-1' )
@@ -796,7 +797,7 @@ test_Action-1 () {
   Action -1 "ls -d /tmp"
   Close -1
   LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest -r ${?} 0 "ACTION .*: ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r ${?} 0 "ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action_False' )
@@ -1945,7 +1946,7 @@ test_GetFileList_Error () {
   LibuiPerformTest 'GetFileList rp'
   local tv=${?}
   _exitcleanup=true
-  LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(GetFileList\) Called without a variable name and file specification\."
+  LibuiValidateTest -r "${tv}" 1 "ERROR: \(GetFileList\) Called without a file specification\."
   return ${?}
 }
 tests+=( 'test_GetFileList' )
@@ -3182,7 +3183,7 @@ test_Record () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((0 == ${?})) && Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }
@@ -3210,7 +3211,7 @@ test_Record_1_Param () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((0 == ${?})) && Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }
@@ -3238,7 +3239,7 @@ test_Record_2_Param () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((0 == ${?})) && Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }

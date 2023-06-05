@@ -818,7 +818,7 @@ LibuiUpdateMan () {
   for _Util_file in $(find . -name 'man' -prune -o -name '.*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
-    ${ZSH} && eval "man=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.*(N) )" || \
+    ${ZSH} && eval "_Util_mp=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.*(N) )" || \
         _Util_mp=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.* )
     _Util_mp="${_Util_mp[${AO}]}"
     ${_M} && _Trace 'Check for %s man page. (%s)' "${_Util_file}" "${_Util_mp}"
@@ -1008,7 +1008,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
     then
       ${_M} && _Trace 'Check %s against %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
       Action -W "cmp -s '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'"
-      if ((0 != ${?}))
+      if ((${?}))
       then
         Tell 'File differs: %s -> %s' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
         _Util_different=true

@@ -205,11 +205,11 @@ _SetUserInfo () {
       done
       printf 'export %s\n' "${userinfo[*]}"
     } > "${userdotfile}"
-    if ((0 == ${?}))
+    if ((${?}))
     then
-      Alert 'New user dotfile was installed. (%s)' "${userdotfile}"
-    else
       Warn 'User information was not written to user dotfile. (%s)' "${userdotfile}"
+    else
+      Alert 'New user dotfile was installed. (%s)' "${userdotfile}"
     fi
 
     source "${userdotfile}"

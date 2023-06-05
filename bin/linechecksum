@@ -116,7 +116,7 @@ do
       ((bsum = bsum + sum))
       crc=$(printf '%s' "${line}" | cksum | cut -f 1 -d ' ')
       ((crcsum += crc))
-      ((0 == (lineno - start) % lines)) && Tell "%5d: ${D2}%10d ${D3}%8d ${D5}%10d ${D6}%16d ${D9}| ${D7}%s" ${lineno} ${csum} ${bsum} ${crc} ${crcsum} "${line}"
+      (((lineno - start) % lines)) || Tell "%5d: ${D2}%10d ${D3}%8d ${D5}%10d ${D6}%16d ${D9}| ${D7}%s" ${lineno} ${csum} ${bsum} ${crc} ${crcsum} "${line}"
     fi
 
     # check if end of block

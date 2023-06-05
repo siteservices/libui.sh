@@ -69,46 +69,28 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
-# display current branch
+Trace 'Display current branch.'
 git status -b
 
-# confirm correct branch for reset
-Trace 'Confirm branch.'
 if Verify "Are you sure you want to reset this branch?"
 then
-  # reset branch point to current dev
   Trace 'Reset branch base.'
   Action -q "git reset branch to HEAD" "git reset $(git merge-base origin/dev $(git rev-parse --abbrev-ref HEAD))"
-  ev=${?}
 
-  # add everything back
-  if ((0 == ev))
-  then
-    Trace 'Add changes to branch.'
-    Action "git add -A"
-    ev=${?}
-  fi
+  Trace 'Add changes to branch.'
+  Action -F "git add -A"
 
-  # commit the "new" history
-  if ((0 == ev))
-  then
-    Trace 'Commit changes.'
-    Action "git commit"
-    ev=${?}
-  fi
+  Trace 'Commit changes.'
+  Action -F "git commit"
 
-  # update the remote repository with the new history
-  if ((0 == ev))
+  Trace 'Check for push. (%s)' "${push}"
+  if ${push}
   then
-    Trace 'Check for push. (%s)' "${push}"
-    if ${push}
-    then
-      Trace 'Push commit to Bitbucket.'
-      Action "git push --force"
-      ev=${?}
-    fi
+    Trace 'Push commit to Bitbucket.'
+    Action -F "git push --force"
   fi
 fi
+retval=${?}
 
-Trace 'Exit %s. (%s)' "${CMD}" "${ev}"
-Exit ${ev}
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit ${retval}

@@ -118,7 +118,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L -e '(Sort) Called without a variable name.'
+  ((${#})) || Error -L -e '(Sort) Called without a variable name.'
   [[ -z "${_Sort_cmp}" ]] && _Sort_cmp='cmpl' # default to ASCII ascending
 
   ${_M} && _Trace 'Check for error.'

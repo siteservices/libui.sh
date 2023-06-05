@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.828 # Fri Jun  2 01:12:19 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.828 # Mon Jun  5 00:01:14 EDT 2023
 
 #####
 #
@@ -293,7 +293,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(AddOption) Called without an option.'
+  ((${#})) || Error -L '(AddOption) Called without an option.'
   [[ -z "${_n}" && -z "${_c}" ]] && Error -L '(AddOption) No variable name or callback provided.'
 
   ${_T} && _Trace 'Check for dups. (%s)' "${_opt}"
@@ -655,7 +655,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
             then
               ${_confirm} || StartSpinner "${_i}"
             else
-              [[ -n "${_i}" ]] && printf "${DJBL}${DAction}%s${D} ${DCEL}" "${_i}" >&4 # duplicate stderr
+              [[ -n "${_i}" ]] && printf "${DJBL}${DAction}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -665,7 +665,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
               [[ -z "${_f}" ]] && _p=${_File_ip:-${_File_libui_ip}} && _f=2 && _File_ip=${_p} Open ${_c} "-${_f}" "${_l}"
               ${_T} && _Trace 'Log action. (%s%s)' "${_p}" "${_f}"
               ((_File_libui_ip)) || LoadMod File
-              _File_ip=${_p} Write "-${_f}" "ACTION $(date): ${*}" || Warn 'Unable to log action. (%s)' "${*}"
+              _File_ip=${_p} Write "-${_f}" "ACTION ($(date)): ${*}" || Warn 'Unable to log action. (%s)' "${*}"
 
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
               if ${_t}
@@ -674,10 +674,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
                 then
                   eval "${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
                 else
-                  _l="${_File_fp[((${_p:-0} * 10 + _x + _f))]}"
-                  _File_ip=${_p} Close "-${_f}"
-                  eval "${@} 2>&1 | tee -a '${_l}'${_b}"
-                  _File_ip=${_p} Open "-${_f}" "${_l}"
+                  eval "${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
                   ((0 > _pe)) && ((_pe--))
                 fi
               else
@@ -688,7 +685,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
             then
               ${_T} && _Trace 'Log action. (%s)' "${_l}"
               ((_File_libui_ip)) || LoadMod File
-              Write ${_c} -f "${_l}" "ACTION $(date): ${*}" || Warn 'Unable to log action. (%s)' "${*}"
+              Write ${_c} -f "${_l}" "ACTION ($(date)): ${*}" || Warn 'Unable to log action. (%s)' "${*}"
 
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
               if ${_t}
@@ -714,7 +711,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
             fi
 
             ${_T} && _Trace 'Check return value. (%s)' "${_rv}"
-            if ((0 != _rv))
+            if ((_rv))
             then
               ${_T} && _Trace 'Attempt failed, sleep before retry. (%s / %s)' "${_s}" "${_r}"
               ((0 < _r)) && sleep ${_s}
@@ -725,10 +722,8 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
           ${_multiuser} && ! ${_L} && [[ -n "${_f}" ]] && _File_ip=${_p} Close "-${_f}" && _f=
 
           ${_T} && _Trace 'Check for success. (%s)' "${_rv}"
-          if ((0 == _rv))
+          if ((_rv))
           then
-            _action=true
-          else
             _action=false
             if ${_vdb}
             then
@@ -738,6 +733,8 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
               ${_e} && Error ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
               ${_w} && Warn ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
             fi
+          else
+            _action=true
           fi
         fi
       fi
@@ -843,7 +840,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(ConfirmVar) Called without a variable name.'
+  ((${#})) || Error -L '(ConfirmVar) Called without a variable name.'
 
   local _v
   local _x
@@ -889,7 +886,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
         test -${_t} "${_x}" # must use test
       fi
     fi
-    if ((0 != ${?}))
+    if ((${?}))
     then
       Error ${_e} "${_m}" "${_x}" "${_v}" # _e no quotes
       _rv=1
@@ -993,7 +990,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(Ask) Called without a question.'
+  ((${#})) || Error -L '(Ask) Called without a question.'
   ! ${TERMINAL} && [[ -z "${_d}" ]] && ! ${_z} && Error '(Ask) Question asked without a terminal, no default, and a response required.'
   ! ${_z} && [[ -z "${_d}" && 1 -eq ${#_a[@]} ]] && _d="${_a[${AO}]}"
 
@@ -1021,7 +1018,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   ((0 < ${_spinner:-0})) && PauseSpinner
 
   ${_T} && _Trace 'Check for selection. (%s)' "${#_a[@]}"
-  ${_quiet} || if ((0 != ${#_a[@]}))
+  ${_quiet} || if ((${#_a[@]}))
   then
     printf "${DJBL}${DCEL}${DCES}\n${DOptions}The possible responses are:\n"
     local _i
@@ -1082,7 +1079,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
         break
       else
         ${_T} && _Trace 'Validate answer. (%s)' "${ANSWER}"
-        if ((0 != ${#_a[@]}))
+        if ((${#_a[@]}))
         then
           if [[ -n "${_p}" && "${ANSWER}" =~ .*/.* ]]
           then
@@ -1160,7 +1157,7 @@ AnswerMatches () { # [-r] <answer_match_string>
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(AnswerMatches) Called without a match string.'
+  ((${#})) || Error -L '(AnswerMatches) Called without a match string.'
 
   local _rv=1
   local _m="${*}"
@@ -1332,7 +1329,7 @@ Alert () { # [-1..-9|-a|-c] [-l <file_path>] <message_text>
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(Alert) Called without a message.'
+  ((${#})) || Error -L '(Alert) Called without a message.'
 
   ${_T} && _Trace -I 'ALERT: %s' "${*}"
 
@@ -1416,7 +1413,7 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && Error -L '(Warn) Called without a message.'
+  ((${#})) || Error -L '(Warn) Called without a message.'
 
   ${_T} && _Trace -I 'WARNING: %s' "${*}"
 
@@ -1451,7 +1448,7 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
     fi
   fi
   [[ -t 2 ]] && printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" >> /dev/stderr || \
-      printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
+      printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&5 # duplicate stderr
 
   ${_T} && _Trace 'Warn return. (%s)' "${_rv}"
   return "${_rv}"
@@ -1527,7 +1524,7 @@ Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_messa
     ${_T} && _Trace 'Get error location.'
     if ${ZSH}
     then
-      _i=" in ${funcfiletrace[1]}"
+      _i=" in ${funcfiletrace[2]}"
     else
       _i=( $(caller 1 || caller) )
       _i=" in ${_i[2]:-${_i[1]}}:${_i[0]}"
@@ -1570,7 +1567,7 @@ Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_messa
     fi
   fi
   [[ -t 2 ]] && printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" >> /dev/stderr || \
-      printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
+      printf "${DJBL}${DError}ERROR%s: ${_s}${D}${DCEL}\n" "${_i}" "${@}" | tee -a /dev/stderr >&5 # duplicate stderr
 
   ${_T} && _Trace 'Check for exit. (%s)' "${_e}"
   if ${_e}
@@ -1588,7 +1585,7 @@ UICMD+=( 'Trace' )
 Trace () { # <trace_message>
   ${_S} && ((_cTrace++))
 
-  ((0 == ${#})) && Error -L '(Trace) Called without a message.'
+  ((${#})) || Error -L '(Trace) Called without a message.'
 
   if ${_hdb} || ${_tdb}
   then
@@ -1871,7 +1868,7 @@ Initialize () {
         [[ -n "${_p}" ]] && eval "unset ${_p}; ${_p}='${_a[${AO}]}'"
       fi
 
-      _a=( ${_a[@]:1} )
+      _a=( "${_a[@]:1}" )
     done
   fi
 
@@ -2575,6 +2572,6 @@ trap 'Error -e -r 143 "Received TERM signal. ($(date))"' TERM #15
 trap '_WINCH' WINCH #28
 
 # duplicate stderr
-exec 4>&2
+exec 5>&2
 
 _Trace 'READY (%s)' "${SHLIBPATH}"

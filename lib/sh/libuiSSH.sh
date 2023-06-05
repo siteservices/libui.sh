@@ -258,7 +258,7 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
   done
   shift $((OPTIND - 1))
   [[ -z "${_SSH_targets}" ]] && Error '(SSHExec) No target provided.'
-  ((0 == ${#})) && Error '(SSHExec) No command provided.'
+  ((${#})) || Error '(SSHExec) No command provided.'
 
   ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
   [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send command to %s.' "${_SSH_targets[*]}"
