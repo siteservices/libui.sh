@@ -31,7 +31,7 @@
 #####
 
 # version
-Version -r 1.828 1.828
+Version -r 1.829 1.829
 
 # defaults
 unset tests
@@ -111,14 +111,14 @@ LibuiValidateTest () {
   ${_M} && _Trace 'Validate (initial:%s) (regex:%s): (valid:%s) %s=(test:%s) %s' "${initial}" "${regex}" "${vr}" "${*}" "${tv}" "${input}"
   if ${regex}
   then
-    Tell '\nValidate (regex):\nresult |%d|%s|\n valid |%d|%s|\n' "${tv}" "${input}" "${vr}" "${*}"
+    Tell "\nValidate (regex):\n${D}result |%d|%s|\n valid |%d|%s|\n" "${tv}" "${input}" "${vr}" "${*}"
     [[ "${tv}" -eq "${vr}" && "${input}" =~ ${*} ]] || rv=1 # regex needs to be unquoted
   elif ${initial}
   then
-    Tell '\nValidate (initial):\nresult |%d|%s|\n valid |%d|%s|\n' "${tv}" "${input}" "${vr}" "${*}"
+    Tell "\nValidate (initial):\n${D}result |%d|%s|\n valid |%d|%s|\n" "${tv}" "${input}" "${vr}" "${*}"
     ((tv == vr)) && [[ "${input}" == "${*}"* ]] || rv=1
   else
-    Tell '\nValidate (exact):\nresult |%d|%s|\n valid |%d|%s|\n' "${tv}" "${input}" "${vr}" "${*}"
+    Tell "\nValidate (exact):\n${D}result |%d|%s|\n valid |%d|%s|\n" "${tv}" "${input}" "${vr}" "${*}"
     ((tv == vr)) && [[ "${input}" == "${*}" ]] || rv=1
   fi
 
@@ -225,11 +225,10 @@ LibuiGetDisplayTestValues () {
   TAlarm="${Td}${Tfr}"
   TAlert="${Tb}${TFg}"
   TAnswer="${Td}${Tfy}"
-  TCaution="${Tb}${TFr}"
+  TCaution="${TFm}"
   TConfirm="${Tb}${TFy}"
   TError="${Tbr}${Tb}${TFy}"
-  TInfo="${Tb}${TFm}"
-  TNoAction="${Tfm}"
+  TInfo="${TFc}"
   TOptions="${Tb}"
   TQuestion="${Tb}${TFc}"
   TSpinner="${Tb}${TFc}"
@@ -495,8 +494,8 @@ test_Display () {
   TERMINAL=true
   _Terminal
   TERMINAL="${t}"
-  LibuiPerformTest "printf 'Terminal: ${Db0},${Dbr},${Dbg},${Dby},${Dbb},${Dbm},${Dbc},${Db7},${DB0},${DBr},${DBg},${DBy},${DBb},${DBm},${DBc},${DB7},${Df0},${Dfr},${Dfg},${Dfy},${Dfb},${Dfm},${Dfc},${Df7},${DF0},${DFr},${DFg},${DFy},${DFb},${DFm},${DFc},${DF7},${Db},${Dd},${Dsu},${Deu},${Dr},${Dss},${Des},${D},${D0},${D1},${D2},${D3},${D4},${D5},${D6},${D7},${D8},${D9},${DAction},${DAlarm},${DAlert},${DAnswer},${DCaution},${DConfirm},${DError},${DInfo},${DNoAction},${DOptions},${DQuestion},${DSpinner},${DTell},${DTrace},${DWarn},${D}.'"
-  LibuiValidateTest ${?} 0 "Terminal: ${Tb0},${Tbr},${Tbg},${Tby},${Tbb},${Tbm},${Tbc},${Tb7},${TB0},${TBr},${TBg},${TBy},${TBb},${TBm},${TBc},${TB7},${Tf0},${Tfr},${Tfg},${Tfy},${Tfb},${Tfm},${Tfc},${Tf7},${TF0},${TFr},${TFg},${TFy},${TFb},${TFm},${TFc},${TF7},${Tb},${Td},${Tsu},${Teu},${Tr},${Tss},${Tes},${T},${T0},${T1},${T2},${T3},${T4},${T5},${T6},${T7},${T8},${T9},${TAction},${TAlarm},${TAlert},${TAnswer},${TCaution},${TConfirm},${TError},${TInfo},${TNoAction},${TOptions},${TQuestion},${TSpinner},${TTell},${TTrace},${TWarn},${T}."
+  LibuiPerformTest "printf 'Terminal: ${Db0},${Dbr},${Dbg},${Dby},${Dbb},${Dbm},${Dbc},${Db7},${DB0},${DBr},${DBg},${DBy},${DBb},${DBm},${DBc},${DB7},${Df0},${Dfr},${Dfg},${Dfy},${Dfb},${Dfm},${Dfc},${Df7},${DF0},${DFr},${DFg},${DFy},${DFb},${DFm},${DFc},${DF7},${Db},${Dd},${Dsu},${Deu},${Dr},${Dss},${Des},${D},${D0},${D1},${D2},${D3},${D4},${D5},${D6},${D7},${D8},${D9},${DAction},${DAlarm},${DAlert},${DAnswer},${DCaution},${DConfirm},${DError},${DInfo},${DOptions},${DQuestion},${DSpinner},${DTell},${DTrace},${DWarn},${D}.'"
+  LibuiValidateTest ${?} 0 "Terminal: ${Tb0},${Tbr},${Tbg},${Tby},${Tbb},${Tbm},${Tbc},${Tb7},${TB0},${TBr},${TBg},${TBy},${TBb},${TBm},${TBc},${TB7},${Tf0},${Tfr},${Tfg},${Tfy},${Tfb},${Tfm},${Tfc},${Tf7},${TF0},${TFr},${TFg},${TFy},${TFb},${TFm},${TFc},${TF7},${Tb},${Td},${Tsu},${Teu},${Tr},${Tss},${Tes},${T},${T0},${T1},${T2},${T3},${T4},${T5},${T6},${T7},${T8},${T9},${TAction},${TAlarm},${TAlert},${TAnswer},${TCaution},${TConfirm},${TError},${TInfo},${TOptions},${TQuestion},${TSpinner},${TTell},${TTrace},${TWarn},${T}."
   return ${?}
 }
 
@@ -512,22 +511,6 @@ tests+=( "-P '${TESTDIR}/test.profile' test_LoadProfile_File" ) # note: will onl
 test_LoadProfile_File () {
   LibuiPerformTest 'Tell -- "${profile_data}"'
   LibuiValidateTest ${?} 0 'Profile data loaded.'
-  return ${?}
-}
-
-# Contains <array_var> <value>
-tests+=( 'test_Contains_True' )
-test_Contains_True () {
-  local testarray; testarray=( a b c xxx yyy zzz )
-  LibuiPerformTest 'Contains testarray "b" && printf "Exists." || printf "Does not exist."'
-  LibuiValidateTest ${?} 0 'Exists.'
-  return ${?}
-}
-tests+=( 'test_Contains_False' )
-test_Contains_False () {
-  local testarray; testarray=( a b c xxx yyy zzz )
-  LibuiPerformTest 'Contains testarray "x" && printf "Exists." || printf "Does not exist."'
-  LibuiValidateTest ${?} 0 'Does not exist.'
   return ${?}
 }
 
@@ -549,7 +532,39 @@ test_Capture_Success () {
   return ${?}
 }
 
-# Action [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+# Contains <array_var> <value>
+tests+=( 'test_Contains_True' )
+test_Contains_True () {
+  local testarray; testarray=( a b c xxx yyy zzz )
+  LibuiPerformTest 'Contains testarray "b" && printf "Exists." || printf "Does not exist."'
+  LibuiValidateTest ${?} 0 'Exists.'
+  return ${?}
+}
+tests+=( 'test_Contains_False' )
+test_Contains_False () {
+  local testarray; testarray=( a b c xxx yyy zzz )
+  LibuiPerformTest 'Contains testarray "x" && printf "Exists." || printf "Does not exist."'
+  LibuiValidateTest ${?} 0 'Does not exist.'
+  return ${?}
+}
+
+# Drop <array_var> <value>|<value>:
+tests+=( 'test_Drop' )
+test_Drop () {
+  local testarray; testarray=( -a -b -c xxx yyy zzz )
+  LibuiPerformTest 'Drop testarray "-b" && printf "%s.\n" "${testarray[*]}"'
+  LibuiValidateTest ${?} 0 '-a -c xxx yyy zzz.'
+  return ${?}
+}
+tests+=( 'test_Drop2' )
+test_Drop2 () {
+  local testarray; testarray=( -a -b -c xxx yyy zzz )
+  LibuiPerformTest 'Drop testarray "-c:" && printf "%s.\n" "${testarray[*]}"'
+  LibuiValidateTest ${?} 0 '-a -b yyy zzz.'
+  return ${?}
+}
+
+# Action [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 tests+=( 'test_Action' )
 test_Action () {
   LibuiPerformTest 'Action "ls -d /tmp"'
@@ -1015,7 +1030,7 @@ test_AddParameter_Multiple () {
   return ${?}
 }
 
-# Alert [-1..-9|-a|-c] [-l <file_path>] <message_text>
+# Alert [-1..-9|-a|-c] [-l <file_path>] <message>
 tests+=( 'test_Alert' )
 test_Alert () {
   LibuiPerformTest 'Alert "Test Alert command."'
@@ -1832,9 +1847,20 @@ test_ConfirmVar-f_Empty () {
   return ${?}
 }
 
-# Error [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_message>
+# Error [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <message>
 tests+=( 'test_Error' )
 test_Error () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Error -E "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Error_NoTerm' )
+test_Error_NoTerm () {
   _exitcleanup=false
   LibuiPerformTest 'Error "Test Error command."'
   local tv=${?}
@@ -2332,25 +2358,25 @@ test_NoAction_False () {
 tests+=( 'test_NoAction_True' )
 test_NoAction_True () {
   _noaction=true # set no action
-  LibuiPerformTest 'Action "ls -lad /tmp"'
+  LibuiPerformTest 'Action "ls -lad /tmp" 5>&1'
   LibuiValidateTest ${?} 0 '(No Action) ls -lad /tmp'
   return ${?}
 }
 tests+=( '-N test_NoAction-N' )
 test_NoAction-N () {
-  LibuiPerformTest 'Action "ls -lad /tmp"'
+  LibuiPerformTest 'Action "ls -lad /tmp" 5>&1'
   LibuiValidateTest ${?} 0 '(No Action) ls -lad /tmp'
   return ${?}
 }
 tests+=( '-X 2 -N test_NoAction_Verbose' )
 test_NoAction_Verbose () {
-  LibuiPerformTest 'Action "ls /tmp.tst"'
+  LibuiPerformTest 'Action "ls /tmp.tst" 5>&1'
   LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.tst \(PWD: .*\)'
   return ${?}
 }
 tests+=( '-X 2 -N test_NoAction_Verbose-q' )
 test_NoAction_Verbose-q () {
-  LibuiPerformTest 'Action -q "Test question." "ls /tmp.question"'
+  LibuiPerformTest 'Action -q "Test question." "ls /tmp.question" 5>&1'
   LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.question \(PWD: .*\)'
   return ${?}
 }
@@ -2795,9 +2821,33 @@ test_Syslog_Message-p () {
   return ${?}
 }
 
-# Tell [-1..-9|-a|-c|-n|-N] [-l <file_path>] <message_text>
+# Info [-1..-9|-a|-c|-I|-n|-N] [-l <file_path>] <message>
+tests+=( 'test_Info' )
+test_Info () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Info "Test 1."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}"
+  return ${?}
+}
+
+# Tell [-1..-9|-a|-c|-i|-I|-n|-N] [-l <file_path>] <message>
 tests+=( 'test_Tell' )
 test_Tell () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Tell "Test 1."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Tell_NoTerm' )
+test_Tell_NoTerm () {
   LibuiPerformTest 'Tell "Test 1."; Tell "Test 2."'
   LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
   return ${?}
@@ -2816,18 +2866,18 @@ test_Tell-N () {
   _Terminal
   TERMINAL="${t}"
   LibuiPerformTest 'Tell -N "Test 1."; Tell -N "Test 2."'
-  LibuiValidateTest ${?} 0 "${TJBL}${Tb}Test 1.${T}${TCEL}${TJBL}${TJBL}${Tb}Test 2.${T}${TCEL}${TJBL}"
+  LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1.${T}${TCEL}${TJBL}${TJBL}${TTell}Test 2.${T}${TCEL}${TJBL}"
   return ${?}
 }
-tests+=( 'test_Tell-i' )
-test_Tell-i () {
+tests+=( 'test_Tell-I' )
+test_Tell-I () {
   LibuiGetDisplayTestValues
   local t="${TERMINAL}"
   TERMINAL=true
   _Terminal
   TERMINAL="${t}"
-  LibuiPerformTest 'Tell -n "Test 1. "; Tell -i "Test 2."'
-  LibuiValidateTest ${?} 0 "${TJBL}${Tb}Test 1. ${T}${TCEL}${Tb}Test 2.${T}${TCEL}"
+  LibuiPerformTest 'Tell -n "Test 1. "; Tell -I "Test 2."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1. ${T}${TCEL}${TTell}Test 2.${T}${TCEL}"
   return ${?}
 }
 tests+=( 'test_Tell_Log-a' )
@@ -2860,7 +2910,7 @@ test_Tell-1 () {
   return ${?}
 }
 
-# Trace <debug_message>
+# Trace <message>
 tests+=( 'test_Trace' )
 test_Trace () {
   _hdb=true # set host debug output
@@ -3088,9 +3138,33 @@ test_Local_Hook () {
   return ${?}
 }
 
-# Warn [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
+# Caution [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <message>
+tests+=( 'test_Caution' )
+test_Caution () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Caution "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TCaution}Caution: Test 1.${T}${TCEL}"
+  return ${?}
+}
+
+# Warn [-1..-9|-a|-c|-C] [-l <file_path>] [-r <retval>] <message>
 tests+=( 'test_Warn' )
 test_Warn () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Warn "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TWarn}WARNING: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Warn_NoTerm' )
+test_Warn_NoTerm () {
   LibuiPerformTest 'Warn "Test Warn command."'
   LibuiValidateTest ${?} 1 'WARNING: Test Warn command.'
   return ${?}

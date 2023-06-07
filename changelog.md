@@ -1,5 +1,30 @@
 # Change Log
 
+## v1.829
+
+### New Features
+
+* Added Caution - send a "caution" message to the user (wrapper around Warn -C).
+* Added Drop - drop value from an array.
+* Added Info - send an "info" message to the user (wrapper around Tell -i).
+* Added Tell -i (Info) to send an info message to the user.
+* Added Warn -C (Caution) to send a caution message to the user.
+* Changed ValidateWorkspace warning message to a caution message.
+* Fix tests and add new tests to support new features.
+* Documentation updates.
+
+### Incompatibilities
+
+* Removed the short lived ValidateWorkspace -W (No Warning) option flag.
+* Changed Tell -i (In Place) flag to -I (in Place) to support new Info flag.
+* Removed the ${DNoAction} format. (Replaced with ${DCaution}.)
+
+### Bug Fixes
+
+* Minor changes to stats tracking file format.
+* Minor update to profile handling.
+* Update mless to support escapes outside of code blocks.
+
 ## v1.828
 
 ### New Features

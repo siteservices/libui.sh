@@ -179,6 +179,21 @@ Captures STDOUT, STDERR, and the return value from the executed command string.
 Capture <stdout_variable> <stderr_variable> <rv_variable> <command_string>
 ```
 
+### Caution (man libui.sh) - Display a highlighted caution message for the user.
+
+Sends a highlighted text message to STDERR. By default this message is displayed
+in magenta text. The message can also be logged to a log file. A return value
+can provided with the **-r** (Return Value) option flag.
+
+* **-1..-9** - file id
+* **-a** | **-c** - append to / create log
+* **-l** - log message to file
+* **-r** - use provided return value
+
+```
+Caution [-1..-9|-a|-c] [-l <file_path>] [-r <return_value>] <warning_message>
+```
+
 ### Close (man libuiFile.sh) - Closes a descriptor opened with the Open command.
 
 Closes a file descriptor that was previously opened using the Open command. The
@@ -232,8 +247,8 @@ ConfirmVar [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] 
 
 ### Contains (man libui.sh) - Utility function to check an array for a value.
 
-The Contains command if a value is contained within the array with the provided
-array variable name.
+The Contains command returns 0 if a value is contained within the array with the
+provided array variable name otherwise it returns 1.
 
 ```
 Contains <array_variable> <value>
@@ -277,6 +292,17 @@ installer is a libui script.
 
 ```
 CreatePackage [-a **-l** -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+```
+
+### Drop (man libui.sh) - Utility function to drop a value from an array.
+
+The Drop command removes the provided values from the array with the provided
+array variable name. If the value contains a colon (:) at the end, both the
+provided value and the following value will be removed. This is useful for
+removing option values from an argument list like CMDARGS.
+
+```
+Drop <array_variable> <value>|<value>: ...
 ```
 
 ### Error (man libui.sh) - Display a highlighted error message for the user.
@@ -396,6 +422,22 @@ will exist within the one temporary directory.
 
 ```
 GetTmp [-d|-f|-s] <variable_name>
+```
+
+### Info (man libui.sh) - Display a highlighted info message for the user.
+
+Sends a highlighted text message to STDOUT. By default this message is displayed
+in cyan text. The message can also be logged to a log file.
+
+* **-1..-9** - file id
+* **-a** | **-c** - append to / create log
+* **-I** - display the message "in place", i.e., where the cursor currently is
+* **-l** - log message to file
+* **-n** - do not include a trailing newline
+* **-N** - do not include a trailing linefeed
+
+```
+Info [-1..-9|-a|-c|-I|-n|-N] [-l <file_path>] <message_text>
 ```
 
 ### InfoCallback (man libui-template) - Optional function in main script.
@@ -746,13 +788,14 @@ Newline) option.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
-* **-i** - display the message "in place", i.e., where the cursor currently is
+* **-i** - display the message as an "info" message (see also Info)
+* **-I** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
 * **-n** - do not include a trailing newline
 * **-N** - do not include a trailing linefeed
 
 ```
-Tell [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
+Tell [-1..-9|-a|-c|-i|-I|-n|-N] [-l <file_path>] <message_text>
 ```
 
 ### \_Trace (man libui.sh) - Internal libui trace command.
@@ -795,7 +838,6 @@ repositories. This functions loads configuration information and sets
 environment variables that are used by other libui supported commands.
 
 * **-w** - remain in the workspace directory after validation
-* **-W** - Disable warning about not using the current path
 
 ```
 ValidateWorkspace [-w]
@@ -859,6 +901,7 @@ file. A return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
+* **-C** - display message as a "caution" message (see also Caution)
 * **-l** - log message to file
 * **-r** - use provided return value
 

@@ -65,13 +65,43 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.828 # Mon Jun  5 00:01:14 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.829 # Wed Jun  7 05:59:03 EDT 2023
 
 #####
 #
 # library functions
 #
 #####
+
+# capture stdout, stderr, and rv
+UICMD+=( 'Capture' )
+Capture () { # <stdout_var> <stderr_var> <rv_var> <command_string>
+  ${_S} && ((_cCapture++))
+  ${_T} && _Trace 'Capture [%s]' "${*}"
+
+  local _r="${3}"
+  local _rv
+
+  if ${ZSH}
+  then
+    {
+      IFS=$'\n' read -r -d '' "${1}"
+      IFS=$'\n' read -r -d '' "${2}"
+      (IFS=$'\n' read -r -d '' _rv; return ${_rv})
+    } < <( ( printf '\0%s\0%d\0' "$( ( ( ( { shift 3; "${@}"; printf '%s\n' ${?} 1>&3; } | tr -d '\0' 1>&4 ) 4>&2 2>&1 | tr -d '\0' 1>&4 ) 3>&1 | read x; exit ${x} ) 4>&1 )" ${?} 1>&2 ) 2>&1 )
+  else
+    {
+      IFS=$'\n' read -r -d '' "${1}"
+      IFS=$'\n' read -r -d '' "${2}"
+      (IFS=$'\n' read -r -d '' _rv; return ${_rv})
+    } < <( ( printf '\0%s\0%d\0' "$( ( ( ( { shift 3; "${@}"; printf '%s\n' ${?} 1>&3-; } | tr -d '\0' 1>&4- ) 4>&2- 2>&1- | tr -d '\0' 1>&4- ) 3>&1- | exit "$(cat)" ) 4>&1- )" ${?} 1>&2 ) 2>&1 )
+  fi
+  _rv=${?}
+  eval "${_r}=${_rv}"
+
+  ${_T} && _Trace 'Capture return. (%s)' "${_rv}"
+  return ${_rv}
+}
 
 # value exists in array
 UICMD+=( 'Contains' )
@@ -99,34 +129,36 @@ Contains () { # <array_var> <value>
   return ${_rv}
 }
 
-# capture stdout, stderr, and rv
-UICMD+=( 'Capture' )
-Capture () { # <stdout_var> <stderr_var> <rv_var> <command_string>
-  ${_S} && ((_cCapture++))
-  ${_T} && _Trace 'Capture [%s]' "${*}"
+# drop value from array
+UICMD+=( 'Drop' )
+Drop () { # <array_var> <value>|<value>: ...
+  ${_S} && ((_cDrop++))
+  ${_T} && _Trace 'Drop [%s]' "${*}"
 
-  local _r="${3}"
-  local _rv
+  local _a; ${ZSH} && _a=( "${(P)1[@]}" ) || eval "_a=( \"\${${1}[@]}\" )"
+  local _f=false
+  local _o
+  local _p
+  local _r; _r=( )
 
-  if ${ZSH}
-  then
-    {
-      IFS=$'\n' read -r -d '' "${1}"
-      IFS=$'\n' read -r -d '' "${2}"
-      (IFS=$'\n' read -r -d '' _rv; return ${_rv})
-    } < <( ( printf '\0%s\0%d\0' "$( ( ( ( { shift 3; "${@}"; printf '%s\n' ${?} 1>&3; } | tr -d '\0' 1>&4 ) 4>&2 2>&1 | tr -d '\0' 1>&4 ) 3>&1 | read x; exit ${x} ) 4>&1 )" ${?} 1>&2 ) 2>&1 )
-  else
-    {
-      IFS=$'\n' read -r -d '' "${1}"
-      IFS=$'\n' read -r -d '' "${2}"
-      (IFS=$'\n' read -r -d '' _rv; return ${_rv})
-    } < <( ( printf '\0%s\0%d\0' "$( ( ( ( { shift 3; "${@}"; printf '%s\n' ${?} 1>&3-; } | tr -d '\0' 1>&4- ) 4>&2- 2>&1- | tr -d '\0' 1>&4- ) 3>&1- | exit "$(cat)" ) 4>&1- )" ${?} 1>&2 ) 2>&1 )
-  fi
-  _rv=${?}
+  for _o in "${_a[@]}"
+  do
+    if ${_f}
+    then
+      _f=false
+      continue
+    fi
+    for _p in "${@:1}"
+    do
+      [[ "${_o}:" == "${_p}" ]] && _f=true && continue 2
+      [[ "${_o}" == "${_p}" ]] && continue 2
+    done
+    _r+=( "${_o}" )
+  done
+  eval "${1}=( \"\${_r[@]}\" )"
 
-  ${_T} && _Trace 'Capture return. (%s)' "${_rv}"
-  eval "${_r}=${_rv}"
-  return ${_rv}
+  ${_T} && _Trace 'Drop return. (%s)' 0
+  return 0
 }
 
 # get and check version
@@ -492,7 +524,7 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
 # perform an action
 _action=true
 UICMD+=( 'Action' )
-Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failure_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <message>] [-f <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
   ${_S} && ((_cAction++))
   ${_T} && _Trace 'Action [%s]' "${*}"
 
@@ -637,8 +669,8 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
         if ${_noaction}
         then
           ${_T} && _Trace -I 'NO ACTION: %s' "${*}"
-          ${_vdb} && printf "${DJBL}${DNoAction}(No Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}" || \
-              printf "${DJBL}${DNoAction}(No Action) %s${D}${DCEL}\n" "${*}"
+          ${_vdb} && printf "${DJBL}${DCaution}(No Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}" >&5 || \
+              printf "${DJBL}${DCaution}(No Action) %s${D}${DCEL}\n" "${*}" >&5 # duplicate stderr
           _rv=0
         else
           ${_T} && _Trace 'Check for verbose. (%s)' "${_vdb}"
@@ -655,7 +687,7 @@ Action () { # [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failu
             then
               ${_confirm} || StartSpinner "${_i}"
             else
-              [[ -n "${_i}" ]] && printf "${DJBL}${DAction}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
+              [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -1195,13 +1227,27 @@ Verify () { # [-C|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] <qu
   ${_verify} && return 0 || return 1
 }
 
+# send info message
+UICMD+=( 'Info' )
+Info () { # [-1..-9|-a|-c|-I|-n|-N] [-l <file_path>] <message>
+  ${_S} && ((_cInfo++))
+  ${_T} && _Trace 'Info [%s]' "${*}"
+
+  Tell -i "${@}"
+  local _rv=${?}
+
+  ${_T} && _Trace 'Info return. (%s)' "${_rv}"
+  return ${_rv}
+}
+
 # send user message
 UICMD+=( 'Tell' )
-Tell () { # [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
+Tell () { # [-1..-9|-a|-c|-i|-I|-n|-N] [-l <file_path>] <message>
   ${_S} && ((_cTell++))
   ${_T} && _Trace 'Tell [%s]' "${*}"
 
   local _c
+  local _d="${DTell}"
   local _f
   local _i="${DJBL}"
   local _l
@@ -1211,7 +1257,7 @@ Tell () { # [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':123456789acil:nN' _o
+  while getopts ':123456789aciIl:nN' _o
   do
     case ${_o} in
       [1-9])
@@ -1225,6 +1271,11 @@ Tell () { # [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
         ;;
 
       i)
+        ${_T} && _Trace 'Info.'
+        _d="${DInfo}"
+        ;;
+
+      I)
         ${_T} && _Trace 'In place.'
         _i=
         ;;
@@ -1284,7 +1335,7 @@ Tell () { # [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
       ${_multiuser} && ! ${_L} && _File_ip=${_p} Close "-${_f}"
     fi
   fi
-  ${_quiet} || printf -- "${_i}${DTell}${_s}${D}${DCEL}${_n}" "${@}"
+  ${_quiet} || printf -- "${_i}${_d}${_s}${D}${DCEL}${_n}" "${@}"
 
   ${_T} && _Trace 'Tell return. (%s)' 0
   return 0
@@ -1292,7 +1343,7 @@ Tell () { # [-1..-9|-a|-c|-i|-n|-N] [-l <file_path>] <message_text>
 
 # send user alert
 UICMD+=( 'Alert' )
-Alert () { # [-1..-9|-a|-c] [-l <file_path>] <message_text>
+Alert () { # [-1..-9|-a|-c] [-l <file_path>] <message>
   ${_S} && ((_cAlert++))
   ${_T} && _Trace 'Alert [%s]' "${*}"
 
@@ -1368,13 +1419,27 @@ Alert () { # [-1..-9|-a|-c] [-l <file_path>] <message_text>
   return 0
 }
 
-# send user warning
+# send caution message
+UICMD+=( 'Caution' )
+Caution () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <message>
+  ${_S} && ((_cCaution++))
+  ${_T} && _Trace 'Caution [%s]' "${*}"
+
+  Warn -C "${@}"
+  local _rv=${?}
+
+  ${_T} && _Trace 'Caution return. (%s)' "${_rv}"
+  return ${_rv}
+}
+
+# send warning message
 UICMD+=( 'Warn' )
-Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
+Warn () { # [-1..-9|-a|-c|-C] [-l <file_path>] [-r <retval>] <message>
   ${_S} && ((_cWarn++))
   ${_T} && _Trace 'Warn [%s]' "${*}"
 
   local _c
+  local _d="${DWarn}WARNING"
   local _f
   local _l
   local _rv=1
@@ -1383,7 +1448,7 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':123456789acl:r:' _o
+  while getopts ':123456789acCl:r:' _o
   do
     case ${_o} in
       [1-9])
@@ -1394,6 +1459,11 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
       a|c)
         ${_T} && _Trace 'File mode. (%s)' "${_o}"
         _c="-${_o}"
+        ;;
+
+      C)
+        ${_T} && _Trace 'Caution.'
+        _d="${DCaution}Caution"
         ;;
 
       l)
@@ -1447,8 +1517,8 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
       ${_multiuser} && ! ${_L} && _File_ip=${_p} Close "-${_f}"
     fi
   fi
-  [[ -t 2 ]] && printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" >> /dev/stderr || \
-      printf "${DJBL}${DWarn}WARNING: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&5 # duplicate stderr
+  [[ -t 2 ]] && printf "${DJBL}${_d}: ${_s}${D}${DCEL}\n" "${@}" >> /dev/stderr || \
+      printf "${DJBL}${_d}: ${_s}${D}${DCEL}\n" "${@}" | tee -a /dev/stderr >&5 # duplicate stderr
 
   ${_T} && _Trace 'Warn return. (%s)' "${_rv}"
   return "${_rv}"
@@ -1457,7 +1527,7 @@ Warn () { # [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <warning_message>
 # error handler
 _error=false
 UICMD+=( 'Error' )
-Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_message>
+Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <message>
   ${_S} && ((_cError++))
   ${_T} && _Trace 'Error [%s]' "${*}"
 
@@ -1582,7 +1652,7 @@ Error () { # [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <error_messa
 
 # trace
 UICMD+=( 'Trace' )
-Trace () { # <trace_message>
+Trace () { # <message>
   ${_S} && ((_cTrace++))
 
   ((${#})) || Error -L '(Trace) Called without a message.'
@@ -1598,7 +1668,7 @@ Trace () { # <trace_message>
 # library trace
 typeset -F SECONDS # use zsh to improve profiling
 UICMD+=( '_Trace' )
-_Trace () { # [-I|-u] <trace_message>
+_Trace () { # [-I|-u] <message>
   ${_S} && ((_c_Trace++))
 
   if ${_hdb} || ${_tdb} || ${_udb} || ${_mdb}
@@ -1713,7 +1783,12 @@ Initialize () {
     then
       _profile="${_i}"
       ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
-      [[ -f "${_profile}" ]] && source "${_profile}" || Warn 'Profile not found. (%s)' "${_profile}"
+      if [[ -f "${_profile}" ]]
+      then
+        source "${_profile}"
+      else
+        Warn 'Profile not found. (%s)' "${_profile}"
+      fi
       break
     fi
     [[ '-P' == "${_i}" ]] && _p=true
@@ -2250,9 +2325,9 @@ Exit () { # [<return_value>]
     do
       _l="_l=\${_c${_m}:-0}"
       eval "${_l}"
-      _c+=( "((_c${_m} = _c${_m} + ${_l}))" )
+      _c+=( "((_c${_m}+=${_l}))" )
     done
-    _c+=( "UICMD+=( $(printf '%s ' "${UICMD[@]}"))" )
+    _c+=( "UICMD+=( $(printf "'%s' " "${UICMD[@]}"))" )
 
     ${_T} && _Trace 'Save stats. (%s)' "${_s}"
     ${_multiuser} && _f=1 && _File_ip=${_File_libui_ip} Open -c "-${_f}" "${_s}" && _s=
@@ -2417,11 +2492,10 @@ _Terminal () {
         printf 'DAlarm="${Dd}${Dfr}"\n'
         printf 'DAlert="${Db}${DFg}"\n'
         printf 'DAnswer="${Dd}${Dfy}"\n'
-        printf 'DCaution="${Db}${DFr}"\n'
+        printf 'DCaution="${DFm}"\n'
         printf 'DConfirm="${Db}${DFy}"\n'
         printf 'DError="${Dbr}${Db}${DFy}"\n'
-        printf 'DInfo="${Db}${DFm}"\n'
-        printf 'DNoAction="${Dfm}"\n'
+        printf 'DInfo="${DFc}"\n'
         printf 'DOptions="${Db}"\n'
         printf 'DQuestion="${Db}${DFc}"\n'
         printf 'DSpinner="${Db}${DFc}"\n'

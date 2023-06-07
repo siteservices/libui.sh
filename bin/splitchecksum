@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.11
+Version -r 1.822 1.12
 
 # load mods
 LoadMod File
@@ -115,7 +115,7 @@ do
     Trace 'Sum block. (%s)' "${block}"
     sum=( $(cksum "${block}") )
     ((crcsum += sum[1]))
-    Tell -i "%${w}d: ${D3}%8s ${D5}%10s ${D6}%16s ${D8}%s" ${lineno} ${sum[2]} ${sum[1]} ${crcsum} ${sum[@]:2}
+    Tell -I "%${w}d: ${D3}%8s ${D5}%10s ${D6}%16s ${D8}%s" ${lineno} ${sum[2]} ${sum[1]} ${crcsum} ${sum[@]:2}
   done
   sum=( $(cksum "${dir}/${file##*/}") )
   Tell -- "-%.${t}s %8s %10s %16s %s" '--------------' '--------' '----------' '----------------' '---------------'

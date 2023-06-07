@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 5, 2023
+.Dd June 7, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -993,7 +993,7 @@ If the global
 (No Action) option is used with the main script, display "(No Action)
 .Ar <command_string_to_evaluage>" .
 On color terminals (TTY), this text will be displayed using the
-.Sx ${DNoAction}
+.Sx ${DCaution}
 display format which by default is magenta.
 .El
 .Pp
@@ -1242,6 +1242,23 @@ and the command's return value in a variable with the name provided in
 The
 .Sy Capture
 command also returns the executed command's return value.
+.Ss Caution
+The following command sends a caution message to the user:
+.Bd -ragged -offset 4n
+.Sy Caution
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl l Ar <file_path>
+.Op Fl r Ar <retval>
+.Ar <message>
+.Ed
+.Pp
+Sends a "caution" message to the user using the
+.Sx Warn
+.Fl -C
+command.
+See the
+.Sx Warn
+command for more information.
 .Ss Confirm
 The following command indicates if the
 .Fl C
@@ -1393,6 +1410,21 @@ Returns 0 (true) if the
 .Ar <value>
 exists as an element in the array named
 .Ar <array_variable> .
+.Ss Drop
+The following command is a utility function for dropping a value from an array:
+.Bd -ragged -offset 4n
+.Sy Drop
+.Ar <array_variable>
+.Ar <value>|<value>: ...
+.Ed
+.Pp
+The
+.Sy Drop
+command removes the provided values from the array with the provided array
+variable name.
+If the value contains a colon (:) at the end, both the provided value and the
+following value will be removed.
+This is useful for removing option values from an argument list like CMDARGS.
 .Ss Error
 The following command sends an error message to the user:
 .Bd -ragged -offset 4n
@@ -1506,6 +1538,22 @@ See the
 (Force)
 .Nm
 standard command line option for more information.
+.Ss Info
+The following command sends an info message to the user:
+.Bd -ragged -offset 4n
+.Sy Info
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl i Fl n Fl N
+.Op Fl l Ar <file_path>
+.Ar <message>
+.Ed
+.Pp
+Sends an "info" message to the user using the
+.Sx Tell
+.Fl -i
+command.
+See the
+.Sx Tell
+command for more information.
 .Ss LoadMod
 The following command loads a
 .Nm
@@ -1569,7 +1617,7 @@ standard command line option for more information.
 The following command sends a message to the user:
 .Bd -ragged -offset 4n
 .Sy Tell
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl i Fl n Fl N
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl i Fl n Fl N
 .Op Fl l Ar <file_path>
 .Ar <message>
 .Ed
@@ -1601,6 +1649,8 @@ This option is only applicable when also using the
 .Fl l Ar <file_path>
 (Log File) option.
 .It Fl i
+This option outputs the message as an "info" message using the ${DInfo} format.
+.It Fl I
 .Sy Tell
 in place.
 By default,
@@ -1820,7 +1870,7 @@ sent to STDOUT.
 The following command sends a warning message to the user:
 .Bd -ragged -offset 4n
 .Sy Warn
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl cFl C
 .Op Fl l Ar <file_path>
 .Op Fl r Ar <retval>
 .Ar <message>
@@ -1850,6 +1900,9 @@ This option is only applicable when also using the
 Open the file, removing any existing data before writing
 .Ar <data> .
 This option is only applicable when also using the
+.It Fl C
+This option outputs the message as a "caution" message using the ${DCaution}
+format.
 .Fl l Ar <file_path>
 (Log File) option.
 .It Fl l Ar <file_path>
@@ -2205,15 +2258,13 @@ Alert display format - defaults to bold green text.
 .It Dv ${DAnswer}
 Answer display format - defaults to dim yellow text.
 .It Dv ${DCaution}
-Caution display format - defaults to bold red text.
+Caution display format - defaults to magenta text.
 .It Dv ${DConfirm}
 Confirm display format - defaults to bold yellow text.
 .It Dv ${DError}
 Error display format - defaults to bold yellow text on a red background.
 .It Dv ${DInfo}
 Info display format - defaults to bold magenta text.
-.It Dv ${DNoAction}
-No Action display format - defaults to magenta text.
 .It Dv ${DOptions}
 Options display format - defaults to bold white text.
 .It Dv ${DQuestion}
