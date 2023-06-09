@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.825 -m 1.4
+Version -r 1.829 -m 1.4
 
 ##### configuration
 
@@ -348,14 +348,14 @@ EOF
       ${_Util_verify} && ((_Util_x++))
       ${_Util_update} && ((_Util_x++))
       ${_Util_unify} && ((_Util_x++))
-      ((1 < _Util_x)) && Error 'Only one COMMONROOT action can be performed at a time.'
+      ((1 < _Util_x)) && Tell -E 'Only one COMMONROOT action can be performed at a time.'
 
       ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${_Util_param}"
       [[ -n "${_Util_param}" ]] && COMMONROOT="${_Util_param}"
       ConfirmVar -q 'Please provide a COMMONROOT directory path:' -d COMMONROOT
       if PathMatches "${_Util_libuiroot}" "${COMMONROOT}"
       then
-        Error 'The libui root is COMMONROOT. (%s)' "${COMMONROOT}"
+        Tell -E 'The libui root is COMMONROOT. (%s)' "${COMMONROOT}"
       fi
     elif ${_Util_testing}
     then
@@ -410,7 +410,7 @@ _LibuiTest () {
     ${_Util_debug} && Tell 'Check return value. (%s)' "${_Util_rv}"
     case "${_Util_rv}" in
       0)
-        #${_Util_debug} && ${_Util_pass} && Alert 'Test passed in %s. (%s)' "${_Util_shell}" "${_Util_test}"
+        #${_Util_debug} && ${_Util_pass} && Tell -A 'Test passed in %s. (%s)' "${_Util_shell}" "${_Util_test}"
         ;;
 
       33)
@@ -474,7 +474,7 @@ _LibuiTest () {
           ;;
 
         *)
-          Error 'Invalid test type. (%s)' "${_Util_test}"
+          Tell -E 'Invalid test type. (%s)' "${_Util_test}"
           ;;
 
       esac
@@ -497,12 +497,12 @@ _LibuiTest () {
       ${_M} && _Trace 'Check results. (0 %s %s)' "${cond}" "${_Util_tr}"
       if [ 0 ${cond} "${_Util_tr}" ]
       then
-        Alert 'Test %03d passed in %.4f seconds. (%s)' "${_Util_count}" "${ELAPSED}" "${_Util_test}"
+        Tell -A 'Test %03d passed in %.4f seconds. (%s)' "${_Util_count}" "${ELAPSED}" "${_Util_test}"
       else
         _Util_success=false
         _Util_failedids+=( ${_Util_count} )
         _Util_failedtests+=( ${_Util_test} )
-        Warn 'Test %03d failed. (%s)' "${_Util_count}" "${_Util_test}"
+        Tell -W 'Test %03d failed. (%s)' "${_Util_count}" "${_Util_test}"
         ${_Util_debug} && if ! Verify 'Continue?'
         then
           ${_M} && _Trace 'Quit %s. (%s)' "${CMD}" 0
@@ -521,15 +521,15 @@ _LibuiTest () {
     ${_M} && _Trace 'Check version equivalence. (%s)' "${Version[1]##* }"
     tv="${UIVERSION[-1]##* }"
     ${_M} && _Trace 'Check for test / UI version compatability. (test: %s, libui: %s)' "${tv}" "${LIBUI_VERSION}"
-    ((${tv//.} == ${LIBUI_VERSION//.})) || Warn '%s: Test script and libui versions do not match. (test: %s, libui: %s)' "${CMD}" "${tv}" "${LIBUI_VERSION}"
+    ((${tv//.} == ${LIBUI_VERSION//.})) || Tell -W '%s: Test script and libui versions do not match. (test: %s, libui: %s)' "${CMD}" "${tv}" "${LIBUI_VERSION}"
 
     ${_M} && _Trace 'Test suite results. (%s)' "${_Util_success}"
     ${_M} && _Trace 'Report. (%s)' "${_Util_success}"
     if ${_Util_success}
     then
-      Alert 'Test suite successful. Passed %s tests.' "${#tests[@]}"
+      Tell -A 'Test suite successful. Passed %s tests.' "${#tests[@]}"
     else
-      Error -E 'Test suite not successful.'
+      Tell -E -F 'Test suite not successful.'
       Tell 'Failed %s out of %s tests:' "${#_Util_failedtests[@]}" "${#tests[@]}"
       for ((i = AO; i < $((${#_Util_failedtests[@]} + AO)); i++))
       do
@@ -545,7 +545,7 @@ _LibuiTest () {
       _Util_rv=${?}
     else
       _Terminal
-      Error -e 'Test not available: %s.' "${_Util_tname}"
+      Tell -E -f 'Test not available: %s.' "${_Util_tname}"
       _Util_rv=1
     fi
   fi
@@ -574,7 +574,7 @@ LibuiConfig () {
     Write -1 "$(grep 'LIBUI_' "${LIBUI}" | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_.*:-.*\)}.*$/\1/' | sed 's/}[";].*$//' | sed -E 's/(LIBUI_.*):-(.*)$/\1="${\1:-\2}"/' | sed 's/^/#/' | sort -u)"
     Close -1
 
-    Alert 'Config file has been created. (%s)' "${_Util_configfile}"
+    Tell -A 'Config file has been created. (%s)' "${_Util_configfile}"
   fi
   _Util_rv=${?}
 
@@ -591,54 +591,54 @@ LibuiDemo () {
   then
     Tell 'Available display codes:'
     _Terminal
-    [[ -z "${DCS}" ]] && Warn 'Clear screen (DCS) not defined.' || printf '\t%s\n' 'Clear screen (DCS).'
-    [[ -z "${DCEL}" ]] && Warn 'Clear to end of line (DCEL) not defined.' || printf '\t%s\n' 'Clear to end of line (DCEL).'
-    [[ -z "${DCES}" ]] && Warn 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'Clear to end of screen (DCES).'
-    [[ -z "${DJBL}" ]] && Warn 'Jump to beginning of line (DJBL) not defined.' || printf '\t%s\n' 'Jump to beginning of line (DJBL).'
-    [[ -z "${DJH}" ]] && Warn 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'Jump to home (DJH).'
-    [[ -z "${DRP}" ]] && Warn 'Read cursor position (DRP) not defined.' || printf '\t%s\n' 'Read cursor position (DRP).'
-    [[ -z "${Db0}" ]] && Warn 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Black background (Db0).'
-    [[ -z "${Dbr}" ]] && Warn 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Red background (Dbr).'
-    [[ -z "${Dbg}" ]] && Warn 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Green background(Dbg).'
-    [[ -z "${Dby}" ]] && Warn 'Yellow background (Dby) not defined.' || printf "\t${Dby}%s${D}\n" 'Yellow background (Dby).'
-    [[ -z "${Dbb}" ]] && Warn 'Blue background (Dbb) not defined.' || printf "\t${Dbb}%s${D}\n" 'Blue background (Dbb).'
-    [[ -z "${Dbm}" ]] && Warn 'Magenta background (Dbm) not defined.' || printf "\t${Dbm}%s${D}\n" 'Magenta background (Dbm).'
-    [[ -z "${Dbc}" ]] && Warn 'Cyan background (Dbc) not defined.' || printf "\t${Dbc}%s${D}\n" 'Cyan background (Dbc).'
-    [[ -z "${Db7}" ]] && Warn 'White background (Db7) not defined.' || printf "\t${Db7}%s${D}\n" 'White background (Db7).'
-    [[ -z "${DB0}" ]] && Warn 'Bright black background (DB0) not defined.' || printf "\t${DB0}%s${D}\n" 'Bright black background (DB0).'
-    [[ -z "${DBr}" ]] && Warn 'Bright red background (DBr) not defined.' || printf "\t${DBr}%s${D}\n" 'Bright red background (DBr).'
-    [[ -z "${DBg}" ]] && Warn 'Bright green background (DBg) not defined.' || printf "\t${DBg}%s${D}\n" 'Bright green background (DBg).'
-    [[ -z "${DBy}" ]] && Warn 'Bright yellow background (DBy) not defined.' || printf "\t${DBy}%s${D}\n" 'Bright yellow background (DBy).'
-    [[ -z "${DBb}" ]] && Warn 'Bright blue background (DBb) not defined.' || printf "\t${DBb}%s${D}\n" 'Bright blue background (DBb).'
-    [[ -z "${DBm}" ]] && Warn 'Bright magenta background (DBm) not defined.' || printf "\t${DBm}%s${D}\n" 'Bright magenta background (DBm).'
-    [[ -z "${DBc}" ]] && Warn 'Bright cyan background (DBc) not defined.' || printf "\t${DBc}%s${D}\n" 'Bright cyan background (DBc).'
-    [[ -z "${DB7}" ]] && Warn 'Bright white background (DB7) not defined.' || printf "\t${DB7}%s${D}\n" 'Bright white background (DB7).'
-    [[ -z "${Df0}" ]] && Warn 'Black foreground (Df0) not defined.' || printf "\t${Df0}%s${D}\n" 'Black foreground (Df0).'
-    [[ -z "${Dfr}" ]] && Warn 'Red foreground (Dfr) not defined.' || printf "\t${Dfr}%s${D}\n" 'Red foreground (Dfr).'
-    [[ -z "${Dfg}" ]] && Warn 'Green foreground (Dfg) not defined.' || printf "\t${Dfg}%s${D}\n" 'Green foreground (Dfg).'
-    [[ -z "${Dfy}" ]] && Warn 'Yellow foreground (Dfy) not defined.' || printf "\t${Dfy}%s${D}\n" 'Yellow foreground (Dfy).'
-    [[ -z "${Dfb}" ]] && Warn 'Blue foreground (Dfb) not defined.' || printf "\t${Dfb}%s${D}\n" 'Blue foreground (Dfb).'
-    [[ -z "${Dfm}" ]] && Warn 'Magenta foreground (Dfm) not defined.' || printf "\t${Dfm}%s${D}\n" 'Magenta foreground (Dfm).'
-    [[ -z "${Dfc}" ]] && Warn 'Cyan foreground (Dfc) not defined.' || printf "\t${Dfc}%s${D}\n" 'Cyan foreground (Dfc).'
-    [[ -z "${Df7}" ]] && Warn 'White foreground (Df7) not defined.' || printf "\t${Df7}%s${D}\n" 'White foreground (Df7).'
-    [[ -z "${DF0}" ]] && Warn 'Bright black foreground (DF0) not defined.' || printf "\t${DF0}%s${D}\n" 'Bright black foreground (DF0).'
-    [[ -z "${DFr}" ]] && Warn 'Bright red foreground (DFr) not defined.' || printf "\t${DFr}%s${D}\n" 'Bright red foreground (DFr).'
-    [[ -z "${DFg}" ]] && Warn 'Bright green foreground (DFg) not defined.' || printf "\t${DFg}%s${D}\n" 'Bright green foreground (DFg).'
-    [[ -z "${DFy}" ]] && Warn 'Bright yellow foreground (DFy) not defined.' || printf "\t${DFy}%s${D}\n" 'Bright yellow foreground (DFy).'
-    [[ -z "${DFb}" ]] && Warn 'Bright blue foreground (DFb) not defined.' || printf "\t${DFb}%s${D}\n" 'Bright blue foreground (DFb).'
-    [[ -z "${DFm}" ]] && Warn 'Bright magenta foreground (DFm) not defined.' || printf "\t${DFm}%s${D}\n" 'Bright magenta foreground (DFm).'
-    [[ -z "${DFc}" ]] && Warn 'Bright cyan foreground (DFc) not defined.' || printf "\t${DFc}%s${D}\n" 'Bright cyan foreground (DFc).'
-    [[ -z "${DF7}" ]] && Warn 'Bright white foreground (DF7) not defined.' || printf "\t${DF7}%s${D}\n" 'Bright white foreground (DF7).'
-    [[ -z "${Db}" ]] && Warn 'Bold text (Db) not defined.' || printf "\t${Db}%s${D}\n" 'Bold text (Db).'
-    [[ -z "${Dd}" ]] && Warn 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dim text (Dd).'
-    [[ -z "${Dsu}" ]] && Warn 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Start underline (Dsu).'
-    [[ -z "${Deu}" ]] && Warn 'End underline (Deu) not defined.' || printf "\t${Deu}%s${D}\n" 'End underline (Deu).'
-    [[ -z "${Dr}" ]] && Warn 'Reverse display (Dr) not defined.' || printf "\t${Dr}%s${D}\n" 'Reverse display (Dr).'
-    [[ -z "${Dss}" ]] && Warn 'Start standout text (Dss) not defined.' || printf "\t${Dss}%s${D}\n" 'Start standout text (Dss).'
-    [[ -z "${Des}" ]] && Warn 'End standout text (Des) not defined.' || printf "\t${Des}%s${D}\n" 'End standout text (Des).'
-    [[ -z "${D}" ]] && Warn 'Reset hightlighting (D) not defined.' || printf "\t${D}%s${D}\n" 'Reset hightlighting (D).'
+    [[ -z "${DCS}" ]] && Tell -W 'Clear screen (DCS) not defined.' || printf '\t%s\n' 'Clear screen (DCS).'
+    [[ -z "${DCEL}" ]] && Tell -W 'Clear to end of line (DCEL) not defined.' || printf '\t%s\n' 'Clear to end of line (DCEL).'
+    [[ -z "${DCES}" ]] && Tell -W 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'Clear to end of screen (DCES).'
+    [[ -z "${DJBL}" ]] && Tell -W 'Jump to beginning of line (DJBL) not defined.' || printf '\t%s\n' 'Jump to beginning of line (DJBL).'
+    [[ -z "${DJH}" ]] && Tell -W 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'Jump to home (DJH).'
+    [[ -z "${DRP}" ]] && Tell -W 'Read cursor position (DRP) not defined.' || printf '\t%s\n' 'Read cursor position (DRP).'
+    [[ -z "${Db0}" ]] && Tell -W 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Black background (Db0).'
+    [[ -z "${Dbr}" ]] && Tell -W 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Red background (Dbr).'
+    [[ -z "${Dbg}" ]] && Tell -W 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Green background(Dbg).'
+    [[ -z "${Dby}" ]] && Tell -W 'Yellow background (Dby) not defined.' || printf "\t${Dby}%s${D}\n" 'Yellow background (Dby).'
+    [[ -z "${Dbb}" ]] && Tell -W 'Blue background (Dbb) not defined.' || printf "\t${Dbb}%s${D}\n" 'Blue background (Dbb).'
+    [[ -z "${Dbm}" ]] && Tell -W 'Magenta background (Dbm) not defined.' || printf "\t${Dbm}%s${D}\n" 'Magenta background (Dbm).'
+    [[ -z "${Dbc}" ]] && Tell -W 'Cyan background (Dbc) not defined.' || printf "\t${Dbc}%s${D}\n" 'Cyan background (Dbc).'
+    [[ -z "${Db7}" ]] && Tell -W 'White background (Db7) not defined.' || printf "\t${Db7}%s${D}\n" 'White background (Db7).'
+    [[ -z "${DB0}" ]] && Tell -W 'Bright black background (DB0) not defined.' || printf "\t${DB0}%s${D}\n" 'Bright black background (DB0).'
+    [[ -z "${DBr}" ]] && Tell -W 'Bright red background (DBr) not defined.' || printf "\t${DBr}%s${D}\n" 'Bright red background (DBr).'
+    [[ -z "${DBg}" ]] && Tell -W 'Bright green background (DBg) not defined.' || printf "\t${DBg}%s${D}\n" 'Bright green background (DBg).'
+    [[ -z "${DBy}" ]] && Tell -W 'Bright yellow background (DBy) not defined.' || printf "\t${DBy}%s${D}\n" 'Bright yellow background (DBy).'
+    [[ -z "${DBb}" ]] && Tell -W 'Bright blue background (DBb) not defined.' || printf "\t${DBb}%s${D}\n" 'Bright blue background (DBb).'
+    [[ -z "${DBm}" ]] && Tell -W 'Bright magenta background (DBm) not defined.' || printf "\t${DBm}%s${D}\n" 'Bright magenta background (DBm).'
+    [[ -z "${DBc}" ]] && Tell -W 'Bright cyan background (DBc) not defined.' || printf "\t${DBc}%s${D}\n" 'Bright cyan background (DBc).'
+    [[ -z "${DB7}" ]] && Tell -W 'Bright white background (DB7) not defined.' || printf "\t${DB7}%s${D}\n" 'Bright white background (DB7).'
+    [[ -z "${Df0}" ]] && Tell -W 'Black foreground (Df0) not defined.' || printf "\t${Df0}%s${D}\n" 'Black foreground (Df0).'
+    [[ -z "${Dfr}" ]] && Tell -W 'Red foreground (Dfr) not defined.' || printf "\t${Dfr}%s${D}\n" 'Red foreground (Dfr).'
+    [[ -z "${Dfg}" ]] && Tell -W 'Green foreground (Dfg) not defined.' || printf "\t${Dfg}%s${D}\n" 'Green foreground (Dfg).'
+    [[ -z "${Dfy}" ]] && Tell -W 'Yellow foreground (Dfy) not defined.' || printf "\t${Dfy}%s${D}\n" 'Yellow foreground (Dfy).'
+    [[ -z "${Dfb}" ]] && Tell -W 'Blue foreground (Dfb) not defined.' || printf "\t${Dfb}%s${D}\n" 'Blue foreground (Dfb).'
+    [[ -z "${Dfm}" ]] && Tell -W 'Magenta foreground (Dfm) not defined.' || printf "\t${Dfm}%s${D}\n" 'Magenta foreground (Dfm).'
+    [[ -z "${Dfc}" ]] && Tell -W 'Cyan foreground (Dfc) not defined.' || printf "\t${Dfc}%s${D}\n" 'Cyan foreground (Dfc).'
+    [[ -z "${Df7}" ]] && Tell -W 'White foreground (Df7) not defined.' || printf "\t${Df7}%s${D}\n" 'White foreground (Df7).'
+    [[ -z "${DF0}" ]] && Tell -W 'Bright black foreground (DF0) not defined.' || printf "\t${DF0}%s${D}\n" 'Bright black foreground (DF0).'
+    [[ -z "${DFr}" ]] && Tell -W 'Bright red foreground (DFr) not defined.' || printf "\t${DFr}%s${D}\n" 'Bright red foreground (DFr).'
+    [[ -z "${DFg}" ]] && Tell -W 'Bright green foreground (DFg) not defined.' || printf "\t${DFg}%s${D}\n" 'Bright green foreground (DFg).'
+    [[ -z "${DFy}" ]] && Tell -W 'Bright yellow foreground (DFy) not defined.' || printf "\t${DFy}%s${D}\n" 'Bright yellow foreground (DFy).'
+    [[ -z "${DFb}" ]] && Tell -W 'Bright blue foreground (DFb) not defined.' || printf "\t${DFb}%s${D}\n" 'Bright blue foreground (DFb).'
+    [[ -z "${DFm}" ]] && Tell -W 'Bright magenta foreground (DFm) not defined.' || printf "\t${DFm}%s${D}\n" 'Bright magenta foreground (DFm).'
+    [[ -z "${DFc}" ]] && Tell -W 'Bright cyan foreground (DFc) not defined.' || printf "\t${DFc}%s${D}\n" 'Bright cyan foreground (DFc).'
+    [[ -z "${DF7}" ]] && Tell -W 'Bright white foreground (DF7) not defined.' || printf "\t${DF7}%s${D}\n" 'Bright white foreground (DF7).'
+    [[ -z "${Db}" ]] && Tell -W 'Bold text (Db) not defined.' || printf "\t${Db}%s${D}\n" 'Bold text (Db).'
+    [[ -z "${Dd}" ]] && Tell -W 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dim text (Dd).'
+    [[ -z "${Dsu}" ]] && Tell -W 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Start underline (Dsu).'
+    [[ -z "${Deu}" ]] && Tell -W 'End underline (Deu) not defined.' || printf "\t${Deu}%s${D}\n" 'End underline (Deu).'
+    [[ -z "${Dr}" ]] && Tell -W 'Reverse display (Dr) not defined.' || printf "\t${Dr}%s${D}\n" 'Reverse display (Dr).'
+    [[ -z "${Dss}" ]] && Tell -W 'Start standout text (Dss) not defined.' || printf "\t${Dss}%s${D}\n" 'Start standout text (Dss).'
+    [[ -z "${Des}" ]] && Tell -W 'End standout text (Des) not defined.' || printf "\t${Des}%s${D}\n" 'End standout text (Des).'
+    [[ -z "${D}" ]] && Tell -W 'Reset hightlighting (D) not defined.' || printf "\t${D}%s${D}\n" 'Reset hightlighting (D).'
   else
-    Warn 'Terminal display codes are not available without a terminal.'
+    Tell -W 'Terminal display codes are not available without a terminal.'
   fi
 
   Tell '\nDisplay formats:'
@@ -741,7 +741,7 @@ LibuiResetCaches () {
     then
       ${_M} && _Trace 'Remove stats file %s.' "${_Util_statsfile}"
       Action "rm ${FMFLAGS} '${_Util_statsfile}'"
-      Alert 'Stats file has been removed. (%s)' "${_Util_statsfile}"
+      Tell -A 'Stats file has been removed. (%s)' "${_Util_statsfile}"
     fi
   fi
 
@@ -760,7 +760,7 @@ LibuiResetCaches () {
           Action -q "Really remove ${_Util_file} cache?" "rm ${FMFLAGS} '${_Util_file}'"
         fi
       done
-      Alert 'Cache files have been removed. (%s)' "${cachefiles[*]}"
+      Tell -A 'Cache files have been removed. (%s)' "${cachefiles[*]}"
     fi
   fi
 
@@ -795,7 +795,7 @@ LibuiUnlock () {
         Action -q "Really remove ${_Util_file} lockfile?" "rm ${FMFLAGS} '${_Util_file}'"
       fi
     done
-    Alert 'Lock file(s) have been removed. (%s)' "${_Util_lockfiles[*]}"
+    Tell -A 'Lock file(s) have been removed. (%s)' "${_Util_lockfiles[*]}"
   fi
 
   ${_M} && _Trace 'LibuiUnlock return. (%s)' 0
@@ -841,7 +841,7 @@ LibuiUpdateMan () {
       fi
     fi
   done
-  Alert 'Man page headers are up to date.'
+  Tell -A 'Man page headers are up to date.'
 
   popd > /dev/null
 
@@ -891,7 +891,7 @@ LibuiPackage () {
     [[ ".tarp" == "${_Util_param: -5}" ]] || _Util_param+='.tarp'
     Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_param}'"
   fi
-  Alert 'Creation of libui package complete. (%s)' "${_Util_param}"
+  Tell -A 'Creation of libui package complete. (%s)' "${_Util_param}"
 
   popd > /dev/null
 
@@ -922,7 +922,7 @@ LibuiInstall () {
 
     StopSpinner
 
-    Alert 'Installation of libui into %s complete.' "${COMMONROOT}"
+    Tell -A 'Installation of libui into %s complete.' "${COMMONROOT}"
     GetRealPath COMMONROOT
     cat << EOF
 To use the library, the following should be added to your environment:
@@ -939,7 +939,7 @@ EOF
     then
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using the Z shell (zsh)."
     else
-      Warn 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
+      Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
       [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
       Action -F "sed ${_Util_sedi} -e '1s|^#!/bin/zsh|#!/bin/bash|' '${COMMONROOT}/lib/sh/libui'"
       Action -F "sed ${_Util_sedi} -e '3s|^#!/bin/bash|#!/bin/zsh|' '${COMMONROOT}/lib/sh/libui'"
@@ -991,7 +991,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
         ;;
 
       *)
-        Error -L '(LibuiUnity) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(LibuiUnity) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
@@ -1044,7 +1044,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
         done
         popd > /dev/null
         StopSpinner
-        Alert 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
+        Tell -A 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
       fi
     elif ${_Util_unify}
     then
@@ -1064,13 +1064,13 @@ LibuiUnity () { # [-d|-u|-U|-v]
         done
         popd > /dev/null
         StopSpinner
-        Alert 'Unification with %s environment complete.' "${COMMONROOT}"
+        Tell -A 'Unification with %s environment complete.' "${COMMONROOT}"
       fi
     else
-      Warn 'There are differences. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+      Tell -W 'There are differences. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
     fi
   else
-    Alert 'Verify complete, no file differences. (%s == %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    Tell -A 'Verify complete, no file differences. (%s == %s)' "${COMMONROOT}" "${_Util_libuiroot}"
   fi
 
   popd > /dev/null
@@ -1086,7 +1086,7 @@ LibuiNew () {
 
   local _Util_rv=0
 
-  [[ -f "${_Util_template}" ]] || Error 'Template libui script file is not available. (%s)' "${_Util_template}"
+  [[ -f "${_Util_template}" ]] || Tell -E 'Template libui script file is not available. (%s)' "${_Util_template}"
 
   if Force || [[ ! -f "${_Util_param}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_param}"
   then
@@ -1106,7 +1106,7 @@ LibuiNew () {
     Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_param}'"
     Action -F "chmod +x '${_Util_param}'"
 
-    Alert 'New file has been created. (%s)' "${_Util_param}"
+    Tell -A 'New file has been created. (%s)' "${_Util_param}"
     local _Util_here=$(tr '[:space:]' '\n' < "${_Util_param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
     Tell 'Search for "HERE" and replace%s with new script content.' "${_Util_here:+ all ${_Util_here}}"
   fi

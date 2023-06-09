@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.3
+Version -r 1.829 -m 1.3
 
 # defaults
 
@@ -127,18 +127,18 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
         ;;
 
       *)
-        Error -L '(SSHSend) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(SSHSend) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  [[ -z "${_SSH_dest}" ]] && Error '(SSHSend) No destination provided.'
-  [[ -z "${_SSH_targets}" ]] && Error '(SSHSend) No target provided.'
-  ((1 > ${#})) && Error '(SSHSend) No file provided.'
+  [[ -z "${_SSH_dest}" ]] && Tell -E '(SSHSend) No destination provided.'
+  [[ -z "${_SSH_targets}" ]] && Tell -E '(SSHSend) No target provided.'
+  ((1 > ${#})) && Tell -E '(SSHSend) No file provided.'
 
   ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send file to %s.' "${_SSH_targets[*]}"
+  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Tell -W 'No local SSH ID, password will be required to send file to %s.' "${_SSH_targets[*]}"
 
   local _SSH_file; _SSH_file=( "${@}" )
   local _SSH_target
@@ -251,17 +251,17 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
         ;;
 
       *)
-        Error -L '(SSHExec) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(SSHExec) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  [[ -z "${_SSH_targets}" ]] && Error '(SSHExec) No target provided.'
-  ((${#})) || Error '(SSHExec) No command provided.'
+  [[ -z "${_SSH_targets}" ]] && Tell -E '(SSHExec) No target provided.'
+  ((${#})) || Tell -E '(SSHExec) No command provided.'
 
   ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Warn 'No local SSH ID, password will be required to send command to %s.' "${_SSH_targets[*]}"
+  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Tell -W 'No local SSH ID, password will be required to send command to %s.' "${_SSH_targets[*]}"
 
   local _SSH_cmd; _SSH_cmd=( "${@}" )
   local _SSH_target
@@ -279,7 +279,7 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
-      Action -i "${_SSH_info}" -f "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
+      Action -i "${_SSH_info}" -e "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
       ((SSH_RV+=${?}))
     done
     SSH_OUT=$(<"${_SSH_tmpout}")
@@ -288,7 +288,7 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
-      Action -s -i "${_SSH_info}" -f "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
+      Action -s -i "${_SSH_info}" -e "Comand failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"

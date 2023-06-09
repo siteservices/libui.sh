@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.2
+Version -r 1.829 -m 1.2
 
 # defaults
 _Syslog_default_priority='user.notice'
@@ -61,7 +61,7 @@ Syslog () { # [-p <priority>] [<message>]
         ;;
 
       *)
-        Error -L '(Syslog) Option error. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(Syslog) Option error. (-%s)' "${OPTARG}"
         ;;
 
     esac

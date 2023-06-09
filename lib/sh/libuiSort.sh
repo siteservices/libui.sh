@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.4
+Version -r 1.829 -m 1.4
 
 # defaults
 
@@ -112,13 +112,13 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
         ;;
 
       *)
-        Error -L '(Sort) Option error. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(Sort) Option error. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  ((${#})) || Error -L -e '(Sort) Called without a variable name.'
+  ((${#})) || Tell -E -f -L '(Sort) Called without a variable name.'
   [[ -z "${_Sort_cmp}" ]] && _Sort_cmp='cmpl' # default to ASCII ascending
 
   ${_M} && _Trace 'Check for error.'

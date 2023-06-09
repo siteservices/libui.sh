@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 7, 2023
+.Dd June 9, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -781,8 +781,8 @@ The following command executes a command string under
 library control:
 .Bd -ragged -offset 4n
 .Sy Action
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl e Fl F Fl R Fl s Fl t Fl W
-.Op Fl f Ar <failure_message>
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl f Fl F Fl R Fl s Fl t Fl W
+.Op Fl e Ar <error_message>
 .Op Fl i Ar <info_message>
 .Op Fl l Ar <file_path>
 .Op Fl p Ar <pipe_element>
@@ -818,14 +818,18 @@ This option is only applicable when also using the
 option.
 .It Fl C
 Always confirm the action.
-.It Fl e
+.It Fl e Ar <error_message>
+Provide an error message to display when the execution of the provided
+.Ar <command_string_to_execute>
+completes with a non-zero exit value.
+.It Fl f
 Generate an error on failure.
 .Pp
 Normally, a warning will be generated if the
 .Ar <command_string_to_evaluate>
 fails to execute successfully.
 When using the
-.Fl e
+.Fl f
 option, an error will be generated instead.
 Note: Script execution will stop if an error is generated.
 See the
@@ -836,10 +840,6 @@ Do not perform action if previous action failed.
 Also see the
 .Fl R
 (Reset) option.
-.It Fl f Ar <failure_message>
-Provide a failure message to display when the execution of the provided
-.Ar <command_string_to_execute>
-completes with a non-zero exit value.
 .It Fl i Ar <info_message>
 Provide an info message to display while the
 .Ar <command_string_to_execute>
@@ -1038,65 +1038,19 @@ display format which by default is blue.
 The following command sends an alert message to the user:
 .Bd -ragged -offset 4n
 .Sy Alert
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
 .Op Fl l Ar <file_path>
+.Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
 .Pp
-The command options are as follows:
-.Bl -tag -offset 4n -width 4n
-.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
-The numeric options
-.Fl 1
-through
-.Fl 9
-provide a shorthand to access the file paths associated with a file ID by the
-.Sx Open
-command.
+Sends an "alert" message to the user using the
+.Sx Tell
+.Fl -A
+(Alert) command.
 See the
-.Sx Open
+.Sx Tell
 command for more information.
-.It Fl a
-Open the file, and append
-.Ar <data>
-after any existing data.
-This option is only applicable when also using the
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl c
-Open the file, removing any existing data before writing
-.Ar <data> .
-This option is only applicable when also using the
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl l Ar <file_path>
-The
-.Fl l Ar <file_path>
-(Log File) option provides direct access to the log file provided as
-.Ar <file_path> .
-.Pp
-Important: The use of the
-.Fl l Ar <file_path>
-(Log File) option does not lock the
-.Ar <file_path>
-file for exclusive access.
-If the
-.Ar <file_path>
-file should be locked, the
-.Sx Open
-and
-.Sx Close
-commands should be used before and after the
-.Sy Alert
-command.
-.El
-.Pp
-Display the highlighted
-.Ar <message>
-on STDOUT.
-On color terminals (TTY), this text will be displayed using the
-.Sx ${DAlert}
-display format which by default is green.
 .Ss AnswerMatches
 The following command checks if the last answer to an
 .Sx Ask
@@ -1243,21 +1197,21 @@ The
 .Sy Capture
 command also returns the executed command's return value.
 .Ss Caution
-The following command sends a caution message to the user:
+The following command sends an caution message to the user:
 .Bd -ragged -offset 4n
 .Sy Caution
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
 .Op Fl l Ar <file_path>
-.Op Fl r Ar <retval>
+.Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
 .Pp
 Sends a "caution" message to the user using the
-.Sx Warn
+.Sx Tell
 .Fl -C
-command.
+(Caution) command.
 See the
-.Sx Warn
+.Sx Tell
 command for more information.
 .Ss Confirm
 The following command indicates if the
@@ -1429,88 +1383,19 @@ This is useful for removing option values from an argument list like CMDARGS.
 The following command sends an error message to the user:
 .Bd -ragged -offset 4n
 .Sy Error
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl e Fl E Fl L
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
 .Op Fl l Ar <file_path>
-.Op Fl r Ar <retval>
+.Op Fl r Ar <return_value>
 .Op Ar <message>
 .Ed
 .Pp
-The command options are as follows:
-.Bl -tag -offset 4n -width 4n
-.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
-The numeric options
-.Fl 1
-through
-.Fl 9
-provide a shorthand to access the file paths associated with a file ID by the
-.Sx Open
-command.
+Normally sends an "error" message to the user using the
+.Sx Tell
+.Fl -E
+(Error) command.
 See the
-.Sx Open
+.Sx Tell
 command for more information.
-.It Fl a
-Open the file, and append
-.Ar <data>
-after any existing data.
-This option is only applicable when also using the
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl c
-Open the file, removing any existing data before writing
-.Ar <data> .
-This option is only applicable when also using the
-.It Fl e
-Exit immediately after displaying error message. (Don't wait for initialization
-to complete.)
-.It Fl E
-Do not exit after displaying error message.
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl l Ar <file_path>
-The
-.Fl l Ar <file_path>
-(Log File) option provides direct access to the log file provided as
-.Ar <file_path> .
-.Pp
-Important: The use of the
-.Fl l Ar <file_path>
-(Log File) option does not lock the
-.Ar <file_path>
-file for exclusive access.
-If the
-.Ar <file_path>
-file should be locked, the
-.Sx Open
-and
-.Sx Close
-commands should be used before and after the
-.Sy Error
-command.
-Note: The
-.Sx Close
-command will automatically be called when the script exits.
-.Pp
-.It Fl L
-Always include the location in the script file where the error occurred
-regardless of the global
-.Fl X
-(Xdebug) mode.
-.It Fl r Ar <retval>
-Return
-.Ar <retval>
-from the main script when exiting.
-.El
-.Pp
-Display the highlighted "ERROR:
-.Ar <message> Ns \(dq
-on STDERR and exit the main script.
-On color terminals (TTY), this text will be displayed using the
-.Sx ${DError}
-display format which by default is yellow on a red background.
-.Pp
-If the
-.Fl r
-(Return) option is not provided, return value will be 1.
 .Pp
 If no argument is provided, returns 0 (true) if currently processing within an
 error condition or false (1) if not within an error condition.
@@ -1542,15 +1427,16 @@ standard command line option for more information.
 The following command sends an info message to the user:
 .Bd -ragged -offset 4n
 .Sy Info
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl i Fl n Fl N
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
 .Op Fl l Ar <file_path>
+.Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
 .Pp
 Sends an "info" message to the user using the
 .Sx Tell
-.Fl -i
-command.
+.Fl -I
+(Info) command.
 See the
 .Sx Tell
 command for more information.
@@ -1617,8 +1503,9 @@ standard command line option for more information.
 The following command sends a message to the user:
 .Bd -ragged -offset 4n
 .Sy Tell
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl i Fl n Fl N
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl c Fl C Fl E Fl f Fl F Fl i Fl I Fl L Fl n Fl N Fl W
 .Op Fl l Ar <file_path>
+.Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
 .Pp
@@ -1642,15 +1529,63 @@ after any existing data.
 This option is only applicable when also using the
 .Fl l Ar <file_path>
 (Log File) option.
+.It Fl A
+This option displays the
+.Ar <message>
+as an "alert" message for the user.
+The highlighted
+.Ar <message>
+is displayed on STDOUT.
+On color terminals (TTY), this text will be displayed using the
+If the
+.Fl r
+(Return) option is not provided, the return value will be 0.
+.Sx ${DAlert}
+display format which by default is green.
 .It Fl c
 Open the file, removing any existing data before writing
 .Ar <data> .
 This option is only applicable when also using the
 .Fl l Ar <file_path>
 (Log File) option.
+.It Fl C
+This option displays the
+.Ar <message>
+as a "caution" message for the user.
+The highlighted
+.Ar <message>
+is displayed on STDERR.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DCaution}
+display format which by default is magenta.
+If the
+.Fl r
+(Return) option is not provided, the return value will be 1.
+.It Fl E
+This option displays the
+.Ar <message>
+as an "error" message for the user.
+format.
+The highlighted
+.Ar <message>
+is displayed on STDERR.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DError}
+display format which by default is yellow on a red background.
+Also registers an error within the library that can affect future Actions.
+See the
+.Sx Action
+.Fl -F
+(Skip on Failure)
+and
+.Fl -R
+(Reset Failure)
+options.
+.Pp
+If the
+.Fl r
+(Return) option is not provided, the return value will be 1.
 .It Fl i
-This option outputs the message as an "info" message using the ${DInfo} format.
-.It Fl I
 .Sy Tell
 in place.
 By default,
@@ -1661,6 +1596,19 @@ prior to displaying the
 This option suppresses that escape sequence to effectively display the
 .Ar <message>
 "in place" at the current cursor position.
+.It Fl I
+This option displays the
+.Ar <message>
+as an "info" message for the user.
+The highlighted
+.Ar <message>
+is displayed on STDOUT.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DInfo}
+display format which by default is cyan.
+If the
+.Fl r
+(Return) option is not provided, the return value will be 0.
 .It Fl l Ar <file_path>
 The
 .Fl l Ar <file_path>
@@ -1698,6 +1646,23 @@ to the screen.
 This effectively displays the message and returns the cursor to the first
 column.
 This is useful to display a series of messages to the screen without scrolling.
+.It Fl r Ar <return_value>
+Return
+.Ar <return_value>
+after displaying the message.
+.It Fl W
+This option displays the
+.Ar <message>
+as a "warning" message for the user.
+The highlighted
+.Ar <message>
+is displayed on STDERR.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DWarn}
+display format which by default is black on a yellow background.
+If the
+.Fl r
+(Return) option is not provided, the return value will be 1.
 .El
 .Pp
 Display the highlighted
@@ -1870,78 +1835,19 @@ sent to STDOUT.
 The following command sends a warning message to the user:
 .Bd -ragged -offset 4n
 .Sy Warn
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl cFl C
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
 .Op Fl l Ar <file_path>
-.Op Fl r Ar <retval>
+.Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
 .Pp
-The command options are as follows:
-.Bl -tag -offset 4n -width 4n
-.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
-The numeric options
-.Fl 1
-through
-.Fl 9
-provide a shorthand to access the file paths associated with a file ID by the
-.Sx Open
-command.
+Sends a "warning" message to the user using the
+.Sx Tell
+.Fl -W
+(Warn) command.
 See the
-.Sx Open
+.Sx Tell
 command for more information.
-.It Fl a
-Open the file, and append
-.Ar <data>
-after any existing data.
-This option is only applicable when also using the
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl c
-Open the file, removing any existing data before writing
-.Ar <data> .
-This option is only applicable when also using the
-.It Fl C
-This option outputs the message as a "caution" message using the ${DCaution}
-format.
-.Fl l Ar <file_path>
-(Log File) option.
-.It Fl l Ar <file_path>
-The
-.Fl l Ar <file_path>
-(Log File) option provides direct access to the log file provided as
-.Ar <file_path> .
-.Pp
-Important: The use of the
-.Fl l Ar <file_path>
-(Log File) option does not lock the
-.Ar <file_path>
-file for exclusive access.
-If the
-.Ar <file_path>
-file should be locked, the
-.Sx Open
-and
-.Sx Close
-commands should be used before and after the
-.Sy Warn
-command.
-.It Fl r Ar <retval>
-Return
-.Ar <retval>
-after displaying the message.
-.El
-.Pp
-Display the highlighted "WARNING:
-.Ar <message> Ns \(dq
-on STDERR.
-The
-.Sy Warn
-command will return 0 (true) unless another value is provided using the
-.Fl r Ar <retval>
-option.
-On color terminals (TTY), this text will be displayed using the
-.Sx ${DWarn}
-display format which by default is black on a yellow background.
 .Ss Yes
 The following command indicates if the
 .Fl Y

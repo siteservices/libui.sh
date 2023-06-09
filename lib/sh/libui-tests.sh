@@ -54,10 +54,10 @@ LibuiPerformTest () {
   Tell '\nPerform: %s (Logfile: %s)\nResults:\n-----\n' "${*}" "${TESTDIR}/test.out"
   if ${ZSH}
   then
-    eval "( ${@} )" 2>&1 | tee "${TESTDIR}/test.out"
+    eval "( ${@} )" 5> /dev/null 2>&1 | tee "${TESTDIR}/test.out"
     rv=${pipestatus[${AO}]}
   else
-    eval "( ${@} )" 2>&1 | tee "${TESTDIR}/test.out"
+    eval "( ${@} )" 5> /dev/null 2>&1 | tee "${TESTDIR}/test.out"
     rv=${PIPESTATUS[${AO}]}
   fi
 
@@ -95,7 +95,7 @@ LibuiValidateTest () {
         ;;
 
       *)
-        Error '(validate) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E '(validate) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
@@ -125,14 +125,14 @@ LibuiValidateTest () {
   ${_Util_debug} && _Terminal
   if ((rv))
   then
-    Warn -r 2 '>>> Validation failed. (%s)' "${rv}"
+    Tell -W -r 2 '>>> Validation failed. (%s)' "${rv}"
     ${_Util_debug} && if ! Verify 'Continue?'
     then
       ${_M} && _Trace 'Quit %s. (%s)' "${CMD}" 0
       Exit 2
     fi
   else
-    Alert 'Validation passed.'
+    Tell -A 'Validation passed.'
   fi
 
   ${_M} && _Trace 'LibuiValidateTest return. (%s)' "${rv}"
@@ -257,9 +257,9 @@ LibuiGetDisplayTestValues () {
 #
 #####
 
-# info test
-tests+=( 'test_Info' )
-test_Info () {
+# help test
+tests+=( 'test_Help' )
+test_Help () {
   LibuiPerformTest 'libui -h'
   LibuiValidateTest -i ${?} 2 "${infotext}"
   return ${?}
@@ -564,7 +564,7 @@ test_Drop2 () {
   return ${?}
 }
 
-# Action [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+# Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 tests+=( 'test_Action' )
 test_Action () {
   LibuiPerformTest 'Action "ls -d /tmp"'
@@ -588,7 +588,7 @@ test_Action-r_Bad_Warning () {
 tests+=( 'test_Action-r_Bad_Error' )
 test_Action-r_Bad_Error () {
   retries=4
-  LibuiPerformTest 'Action -e -r 3 "RetryCountdown"'
+  LibuiPerformTest 'Action -f -r 3 "RetryCountdown"'
   LibuiValidateTest ${?} 1 "Bad${N}Bad${N}Bad${N}ERROR: (Action) Failure while evaluating command."
   return ${?}
 }
@@ -604,7 +604,7 @@ tests+=( 'test_Action-r_Verbose_Bad_Error' )
 test_Action-r_Verbose_Bad_Error () {
   _vdb=true
   retries=4
-  LibuiPerformTest 'Action -e -r 3 "RetryCountdown"'
+  LibuiPerformTest 'Action -f -r 3 "RetryCountdown"'
   LibuiValidateTest ${?} 1 "(Action) RetryCountdown (PWD: ${TESTDIR})${N}Bad${N}Bad${N}Bad${N}ERROR: (Action) Failure while evaluating command. (RetryCountdown, PWD: ${TESTDIR})"
   return ${?}
 }
@@ -634,13 +634,13 @@ test_Action_Warning () {
 }
 tests+=( 'test_Action-e' )
 test_Action-e () {
-  LibuiPerformTest 'Action -e "false"'
+  LibuiPerformTest 'Action -f "false"'
   LibuiValidateTest ${?} 1 "ERROR: (Action) Failure while evaluating command."
   return ${?}
 }
-tests+=( 'test_Action-f' )
-test_Action-f () {
-  LibuiPerformTest 'Action -f "Test failure." "false"'
+tests+=( 'test_Action-e' )
+test_Action-e () {
+  LibuiPerformTest 'Action -e "Test failure." "false"'
   LibuiValidateTest ${?} 1 "WARNING: (Action) Test failure."
   return ${?}
 }
@@ -654,14 +654,14 @@ test_Action_Verbose_Warning () {
 tests+=( 'test_Action-e_Verbose' )
 test_Action-e_Verbose () {
   _vdb=true
-  LibuiPerformTest 'Action -e "false"'
+  LibuiPerformTest 'Action -f "false"'
   LibuiValidateTest ${?} 1 "(Action) false (PWD: ${TESTDIR})${N}ERROR: (Action) Failure while evaluating command. (false, PWD: ${TESTDIR})"
   return ${?}
 }
-tests+=( 'test_Action-f_Verbose' )
-test_Action-f_Verbose () {
+tests+=( 'test_Action-e_Verbose' )
+test_Action-e_Verbose () {
   _vdb=true
-  LibuiPerformTest 'Action -f "Test failure." "false"'
+  LibuiPerformTest 'Action -e "Test failure." "false"'
   LibuiValidateTest ${?} 1 "(Action) false (PWD: ${TESTDIR})${N}WARNING: (Action) Test failure. (false, PWD: ${TESTDIR})"
   return ${?}
 }
@@ -801,7 +801,7 @@ test_Action_Open_Log-t () {
   LibuiPerformTest "Action -t -1 'ls -d /tmp'; cat '${lfile}'"
   local tv=${?}
   Close -1
-  LibuiValidateTest -r ${tv} 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r "${tv}" 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 tests+=( 'test_Action-1' )
@@ -1027,43 +1027,6 @@ test_AddParameter_Multiple () {
   LoadMod Info
   LibuiPerformTest 'UsageInfo'
   LibuiValidateTest -r ${?} 2 '.*<_Util_param> *- Parameter: Name of the test to perform, package filename, or COMMONROOT directory\. \(_Util_param: test_AddParameter_Multiple.* two.* three\).*'
-  return ${?}
-}
-
-# Alert [-1..-9|-a|-c] [-l <file_path>] <message>
-tests+=( 'test_Alert' )
-test_Alert () {
-  LibuiPerformTest 'Alert "Test Alert command."'
-  LibuiValidateTest ${?} 0 'Test Alert command.'
-  return ${?}
-}
-tests+=( 'test_Alert_Log-a' )
-test_Alert_Log-a () {
-  local lfile; GetTmp -f lfile
-  Alert -l "${lfile}" "Alert test 1."
-  Alert -l "${lfile}" "Alert test 2."
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ALERT: Alert test 1.${N}ALERT: Alert test 2."
-  return ${?}
-}
-tests+=( 'test_Alert_Log-c' )
-test_Alert_Log-c () {
-  local lfile; GetTmp -f lfile
-  Alert -c -l "${lfile}" "Alert test 1."
-  Alert -c -l "${lfile}" "Alert test 2."
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ALERT: Alert test 2."
-  return ${?}
-}
-tests+=( 'test_Alert-1' )
-test_Alert-1 () {
-  local lfile; GetTmp -f lfile
-  LoadMod File
-  Open -1 -c "${lfile}"
-  Alert -1 "Test Alert log file."
-  Close -1
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ALERT: Test Alert log file."
   return ${?}
 }
 
@@ -1622,7 +1585,7 @@ test_ConfirmVar_Select_Var_Number () {
   LibuiPerformTest 'ConfirmVar -S testlist -q "Test question?" response <<< "2"; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_Select_Value_Text' )
@@ -1633,7 +1596,7 @@ test_ConfirmVar_Select_Value_Text () {
   LibuiPerformTest 'ConfirmVar -s one -s two -s three -q "Test question?" response <<< "two"; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_Default_Select_Var' )
@@ -1645,7 +1608,7 @@ test_ConfirmVar_Default_Select_Var () {
   LibuiPerformTest 'ConfirmVar -S testlist -q "Test question?" -D "three" response <<< ""; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [three] three"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [three] three"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_Single_Select_Value' )
@@ -1656,7 +1619,7 @@ test_ConfirmVar_Single_Select_Value () {
   LibuiPerformTest 'ConfirmVar -s one -q "Test question?" response <<< ""; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. one${N}${N}Test question? [one] one"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}${N}Test question? [one] one"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_File_Select_Value_Text' )
@@ -1669,7 +1632,7 @@ test_ConfirmVar_File_Select_Value_Text () {
   LibuiPerformTest 'ConfirmVar -f -s "${TESTDIR}/listfile-1" -s "${TESTDIR}/listfile 2" -q "Test question?" -P "${TESTDIR}" response <<< "listfile 2"; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. listfile-1${N}   2. listfile 2${N}${N}Test question? [] ${TESTDIR}/listfile 2"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listfile-1${N}   2. listfile 2${N}${N}Test question? [] ${TESTDIR}/listfile 2"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_Dir_Select_Var_Number' )
@@ -1683,7 +1646,7 @@ test_ConfirmVar_Dir_Select_Var_Number () {
   LibuiPerformTest 'ConfirmVar -d -S testlist -q "Test question?" -P "${TESTDIR}" response <<< "2"; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. listdir 2${N}   2. listdir-1${N}${N}Test question? [] ${TESTDIR}/listdir-1"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listdir 2${N}   2. listdir-1${N}${N}Test question? [] ${TESTDIR}/listdir-1"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_File_Select_Alt' )
@@ -1699,7 +1662,7 @@ test_ConfirmVar_File_Select_Alt () {
   LibuiPerformTest 'ConfirmVar -f -S testlist -q "Test question?" -P "${TESTDIR}" response <<< "${TESTDIR}/listdir-1/testfile 1"; printf "%s\n" "${response}"'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest ${tv} 0 "${N}The possible responses are:${N}   1. listfile 2${N}   2. listfile-1${N}${N}Test question? [] ${TESTDIR}/listdir-1/testfile 1"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listfile 2${N}   2. listfile-1${N}${N}Test question? [] ${TESTDIR}/listdir-1/testfile 1"
   return ${?}
 }
 tests+=( 'test_ConfirmVar_Undef' )
@@ -1769,7 +1732,7 @@ test_ConfirmVar-A_AA () {
     LibuiPerformTest 'ConfirmVar -A testvar'
     LibuiValidateTest ${?} 0
   else
-    Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }
@@ -1844,90 +1807,6 @@ test_ConfirmVar-f_Empty () {
   local tv=${?}
   _exitcleanup=true
   LibuiValidateTest "${tv}" 1 "ERROR: The file \"${TESTDIR}/invalid-cvfile\" does not exist. (testvar)"
-  return ${?}
-}
-
-# Error [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <retval>] <message>
-tests+=( 'test_Error' )
-test_Error () {
-  LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
-  LibuiPerformTest 'Error -E "Test 1."'
-  LibuiValidateTest ${?} 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
-  return ${?}
-}
-tests+=( 'test_Error_NoTerm' )
-test_Error_NoTerm () {
-  _exitcleanup=false
-  LibuiPerformTest 'Error "Test Error command."'
-  local tv=${?}
-  _exitcleanup=true
-  LibuiValidateTest "${tv}" 1 "ERROR: Test Error command."
-  return ${?}
-}
-tests+=( 'test_Error-E' )
-test_Error-E () {
-  LibuiPerformTest 'Error -E -r 5 "Test Error -E -r 5 command."'
-  LibuiValidateTest ${?} 5 "ERROR: Test Error -E -r 5 command."
-  return ${?}
-}
-tests+=( 'test_Error-e' )
-test_Error-e () {
-  LibuiPerformTest 'Error -e "Test Error -e command."'
-  LibuiValidateTest ${?} 1 "ERROR: Test Error -e command."
-  return ${?}
-}
-tests+=( 'test_Error-r' )
-test_Error-r () {
-  _exitcleanup=false
-  LibuiPerformTest 'Error -r 5 "Test Error -r 5 command."'
-  local tv=${?}
-  _exitcleanup=true
-  LibuiValidateTest "${tv}" 5 "ERROR: Test Error -r 5 command."
-  return ${?}
-}
-tests+=( 'test_Error_Log-a' )
-test_Error_Log-a () {
-  local lfile; GetTmp -f lfile
-  _exitcleanup=false
-  _init=true
-  Error -l "${lfile}" "Error test 1."
-  Error -l "${lfile}" "Error test 2."
-  _init=false
-  _exitcleanup=true
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ERROR: Error test 1.${N}ERROR: Error test 2."
-  return ${?}
-}
-tests+=( 'test_Error_Log-c' )
-test_Error_Log-c () {
-  local lfile; GetTmp -f lfile
-  _exitcleanup=false
-  _init=true
-  Error -c -l "${lfile}" "Error test 1."
-  Error -c -l "${lfile}" "Error test 2."
-  _init=false
-  _exitcleanup=true
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ERROR: Error test 2."
-  return ${?}
-}
-tests+=( 'test_Error-1' )
-test_Error-1 () {
-  local lfile; GetTmp -f lfile
-  LoadMod File
-  Open -1 -c "${lfile}"
-  _exitcleanup=false
-  _init=true
-  Error -1 "Test Error log file."
-  _init=false
-  _exitcleanup=true
-  Close -1
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "ERROR: Test Error log file."
   return ${?}
 }
 
@@ -2821,20 +2700,7 @@ test_Syslog_Message-p () {
   return ${?}
 }
 
-# Info [-1..-9|-a|-c|-I|-n|-N] [-l <file_path>] <message>
-tests+=( 'test_Info' )
-test_Info () {
-  LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
-  LibuiPerformTest 'Info "Test 1."'
-  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}"
-  return ${?}
-}
-
-# Tell [-1..-9|-a|-c|-i|-I|-n|-N] [-l <file_path>] <message>
+# Tell [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r <return_value>] <message>
 tests+=( 'test_Tell' )
 test_Tell () {
   LibuiGetDisplayTestValues
@@ -2869,14 +2735,14 @@ test_Tell-N () {
   LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1.${T}${TCEL}${TJBL}${TJBL}${TTell}Test 2.${T}${TCEL}${TJBL}"
   return ${?}
 }
-tests+=( 'test_Tell-I' )
-test_Tell-I () {
+tests+=( 'test_Tell-i' )
+test_Tell-i () {
   LibuiGetDisplayTestValues
   local t="${TERMINAL}"
   TERMINAL=true
   _Terminal
   TERMINAL="${t}"
-  LibuiPerformTest 'Tell -n "Test 1. "; Tell -I "Test 2."'
+  LibuiPerformTest 'Tell -n "Test 1. "; Tell -i "Test 2."'
   LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1. ${T}${TCEL}${TTell}Test 2.${T}${TCEL}"
   return ${?}
 }
@@ -2907,6 +2773,145 @@ test_Tell-1 () {
   Close -1
   LibuiPerformTest "cat '${lfile}'"
   LibuiValidateTest ${?} 0 "Test Tell log file."
+  return ${?}
+}
+
+# Alert [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+tests+=( 'test_Alert' )
+test_Alert () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Alert "Test 1."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TAlert}Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Alert_NoTerm' )
+test_Alert_NoTerm () {
+  LibuiPerformTest 'Alert "Test 1."; Alert "Test 2."'
+  LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
+  return ${?}
+}
+
+# Caution [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+tests+=( 'test_Caution' )
+test_Caution () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Caution "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TCaution}CAUTION: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Caution_NoTerm' )
+test_Caution_NoTerm () {
+  LibuiPerformTest 'Caution "Test 1."; Caution "Test 2."'
+  LibuiValidateTest ${?} 1 "CAUTION: Test 1.${N}CAUTION: Test 2."
+  return ${?}
+}
+
+# Error [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+tests+=( 'test_Error' )
+test_Error () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  _exitcleanup=false
+  LibuiPerformTest 'Error -F "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Error_NoTerm' )
+test_Error_NoTerm () {
+  _exitcleanup=false
+  LibuiPerformTest 'Error "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "ERROR: Test 1."
+  return ${?}
+}
+tests+=( 'test_Error-F' )
+test_Error-F () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Error -F "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Error-F_NoTerm' )
+test_Error-F_NoTerm () {
+  LibuiPerformTest 'Error -F "Test 1."; Error -F "Test 2."'
+  LibuiValidateTest ${?} 1 "ERROR: Test 1.${N}ERROR: Test 2."
+  return ${?}
+}
+tests+=( 'test_Error-f' )
+test_Error-f () {
+  LibuiPerformTest 'Error -f "Test 1."'
+  LibuiValidateTest ${?} 1 'ERROR: Test 1.'
+  return ${?}
+}
+tests+=( 'test_Error-r' )
+test_Error-r () {
+  _exitcleanup=false
+  LibuiPerformTest 'Error -r 5 "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 5 'ERROR: Test 1.'
+  return ${?}
+}
+
+# Info [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+tests+=( 'test_Info' )
+test_Info () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Info "Test 1."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Info_NoTerm' )
+test_Info_NoTerm () {
+  LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
+  LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
+  return ${?}
+}
+
+# Warn [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+tests+=( 'test_Warn' )
+test_Warn () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Warn "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TWarn}WARNING: Test 1.${T}${TCEL}"
+  return ${?}
+}
+tests+=( 'test_Warn_NoTerm' )
+test_Warn_NoTerm () {
+  LibuiPerformTest 'Warn "Test 1."; Warn "Test 2."'
+  LibuiValidateTest ${?} 1 "WARNING: Test 1.${N}WARNING: Test 2."
+  return ${?}
+}
+tests+=( 'test_Warn-r' )
+test_Warn-r () {
+  LibuiPerformTest 'Warn -r 5 "Test 1."'
+  LibuiValidateTest ${?} 5 'WARNING: Test 1.'
   return ${?}
 }
 
@@ -3138,73 +3143,6 @@ test_Local_Hook () {
   return ${?}
 }
 
-# Caution [-1..-9|-a|-c] [-l <file_path>] [-r <retval>] <message>
-tests+=( 'test_Caution' )
-test_Caution () {
-  LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
-  LibuiPerformTest 'Caution "Test 1."'
-  LibuiValidateTest ${?} 1 "${TJBL}${TCaution}Caution: Test 1.${T}${TCEL}"
-  return ${?}
-}
-
-# Warn [-1..-9|-a|-c|-C] [-l <file_path>] [-r <retval>] <message>
-tests+=( 'test_Warn' )
-test_Warn () {
-  LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
-  LibuiPerformTest 'Warn "Test 1."'
-  LibuiValidateTest ${?} 1 "${TJBL}${TWarn}WARNING: Test 1.${T}${TCEL}"
-  return ${?}
-}
-tests+=( 'test_Warn_NoTerm' )
-test_Warn_NoTerm () {
-  LibuiPerformTest 'Warn "Test Warn command."'
-  LibuiValidateTest ${?} 1 'WARNING: Test Warn command.'
-  return ${?}
-}
-tests+=( 'test_Warn_Log-a' )
-test_Warn_Log-a () {
-  local lfile; GetTmp -f lfile
-  Warn -l "${lfile}" "Warn test 1."
-  Warn -l "${lfile}" "Warn test 2."
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "WARNING: Warn test 1.${N}WARNING: Warn test 2."
-  return ${?}
-}
-tests+=( 'test_Warn_Log-c' )
-test_Warn_Log-c () {
-  local lfile; GetTmp -f lfile
-  Warn -c -l "${lfile}" "Warn test 1."
-  Warn -c -l "${lfile}" "Warn test 2."
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "WARNING: Warn test 2."
-  return ${?}
-}
-tests+=( 'test_Warn-1' )
-test_Warn-1 () {
-  local lfile; GetTmp -f lfile
-  LoadMod File
-  Open -1 -c "${lfile}"
-  Warn -1 "Test Warn log file."
-  Close -1
-  LibuiPerformTest "cat '${lfile}'"
-  LibuiValidateTest ${?} 0 "WARNING: Test Warn log file."
-  return ${?}
-}
-tests+=( 'test_Warn-r' )
-test_Warn-r () {
-  LibuiPerformTest 'Warn -r 5 "Test Warn -r 5 command."'
-  LibuiValidateTest ${?} 5 'WARNING: Test Warn -r 5 command.'
-  return ${?}
-}
-
 # error processing
 tests+=( 'test_Preinit' )
 test_Preinit () {
@@ -3257,7 +3195,7 @@ test_Record () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }
@@ -3285,7 +3223,7 @@ test_Record_1_Param () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }
@@ -3313,7 +3251,7 @@ test_Record_2_Param () {
     local tv=${?}
     _exitcleanup=true
     LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
-    ((${?})) || Warn -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+    ((${?})) || Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
   fi
   return ${?}
 }

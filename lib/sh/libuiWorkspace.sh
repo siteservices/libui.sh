@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.4
+Version -r 1.829 -m 1.4
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -77,7 +77,7 @@ ValidateWorkspace () { # [-w]
           ;;
 
         *)
-          Error -L '(ValidateWorkspace) Unknown option. (-%s)' "${OPTARG}"
+          Tell -E -f -L '(ValidateWorkspace) Unknown option. (-%s)' "${OPTARG}"
           ;;
 
       esac
@@ -92,7 +92,7 @@ ValidateWorkspace () { # [-w]
     ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
     ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
-        Warn -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
+        Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
     ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
     ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null

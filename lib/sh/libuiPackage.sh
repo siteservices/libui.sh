@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.12
+Version -r 1.829 -m 1.12
 
 # defaults
 
@@ -99,13 +99,13 @@ _CreatePackageHeader () { # [-a -S -T] [-d <description>] [-e <environment_spec>
         ;;
 
       *)
-        Error -L '(_CreatePackageHeader) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(_CreatePackageHeader) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  ((1 != ${#})) && Error -L -e '(_CreatePackageHeader) Invalid parameters. (%s)' "${*}"
+  ((1 != ${#})) && Tell -E -f -L '(_CreatePackageHeader) Invalid parameters. (%s)' "${*}"
   [[ -z "${_Package_srcdir}" ]] && _Package_srcdir="${PWD}"
   [[ -z "${_Package_desc}" ]] && _Package_desc="Self-Extracting ${_Package_srcdir##*/} Package"
 
@@ -261,15 +261,15 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         ;;
 
       *)
-        Error -L '(CreatePackage) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(CreatePackage) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
-  ((1 != ${#})) && Error -L -e '(CreatePackage) Invalid parameters. (%s)' "${*}"
-  ${_Package_sharp} && ${_Package_tarp} && Error -L '(CreatePackage) Choose only one package type. (-s or -t)'
-  ${_Package_sharp} || ${_Package_tarp} || Error -L '(CreatePackage) Please choose a package type. (-s or -t)'
+  ((1 != ${#})) && Tell -E -f -L '(CreatePackage) Invalid parameters. (%s)' "${*}"
+  ${_Package_sharp} && ${_Package_tarp} && Tell -E -f -L '(CreatePackage) Choose only one package type. (-s or -t)'
+  ${_Package_sharp} || ${_Package_tarp} || Tell -E -f -L '(CreatePackage) Please choose a package type. (-s or -t)'
   local _Package_package="${*}"
   [[ -z "${_Package_srcdir}" ]] && _Package_srcdir="${PWD}"
   ConfirmVar -d _Package_srcdir
@@ -292,7 +292,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       ${_M} && _Trace 'Check for existing package. (%s)' "${_Package_package}"
       if [[ -e "${_Package_package}" ]]
       then
-        ${_Package_list} || Error 'The package already exists (%s). Use the force option (-F) to overwrite.' "${_Package_package}"
+        ${_Package_list} || Tell -E 'The package already exists (%s). Use the force option (-F) to overwrite.' "${_Package_package}"
       fi
     fi
 
@@ -302,7 +302,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       ${_M} && _Trace 'Change directory to source. (%s)' "${_Package_srcdir}"
       cd ${_Package_srcdir} > /dev/null
     else
-      Error 'The source directory does not exist. (%s)' "${_Package_srcdir}"
+      Tell -E 'The source directory does not exist. (%s)' "${_Package_srcdir}"
     fi
 
     ${_M} && _Trace 'Check if listing files. (%s)' "${_Package_list}"
@@ -362,7 +362,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       local _Package_tarball
       GetTmp -f _Package_tarball
       ${_M} && _Trace 'Create tar archive. (%s)' "${_Package_files[*]}"
-      Action -e -q 'Create tar archive?' -i 'Creating tar archive.' "tar ${_Package_cmd} ${_Package_compression} -cf '${_Package_tarball}' \"\${_Package_files[@]}\""
+      Action -f -q 'Create tar archive?' -i 'Creating tar archive.' "tar ${_Package_cmd} ${_Package_compression} -cf '${_Package_tarball}' \"\${_Package_files[@]}\""
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
@@ -371,7 +371,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -q "Create tar package header ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create tar package header ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         Action -q 'Append tar archive to package?' "cat '${_Package_tarball}' >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"
@@ -380,10 +380,10 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         local _Package_subdir
         GetTmp -s _Package_subdir
         cd ${_Package_subdir} > /dev/null
-        Action -e -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
-        Action -e -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
+        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -e -q "Create shar package header ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create shar package header ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         if [[ 'Darwin' == "${OS}" ]]
         then
           Action -q 'Create shar archive?' -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
@@ -416,7 +416,7 @@ ListPackage () { # <package>
   local _Package_list
 
   ${_M} && _Trace 'Check package. (%s)' "${1}"
-  [[ -f "${1}" ]] || Error 'No package at path provided. (%s)' "${1}"
+  [[ -f "${1}" ]] || Tell -E 'No package at path provided. (%s)' "${1}"
 
   ${_M} && _Trace 'Check for error.'
   if Error

@@ -44,7 +44,7 @@ then
   then
     source "${@}"
   else
-    Error -e "The provided command is not available. (${*})"
+    Tell -E -f "The provided command is not available. (${*})"
   fi
 else
   # capture parameters for testing

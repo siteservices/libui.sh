@@ -2,36 +2,37 @@
 
 ## v1.829
 
-### New Features
+### New Features / Enhancements
 
-* Added Caution - send a "caution" message to the user (wrapper around Warn -C).
-* Added Drop - drop value from an array.
-* Added Info - send an "info" message to the user (wrapper around Tell -i).
-* Added Tell -i (Info) to send an info message to the user.
-* Added Warn -C (Caution) to send a caution message to the user.
-* Changed ValidateWorkspace warning message to a caution message.
+* Add Drop - drop a value from an array.
+* Add Caution - send a "caution" message to the user (wrapper around Tell -C).
+* Add Info - send an "info" message to the user (wrapper around Tell -I).
+* Add to Tell: -A (Alert) -C (Caution) -E (Error) -I (Info) -W (Warn).
 * Fix tests and add new tests to support new features.
 * Documentation updates.
 
 ### Incompatibilities
 
-* Removed the short lived ValidateWorkspace -W (No Warning) option flag.
-* Changed Tell -i (In Place) flag to -I (in Place) to support new Info flag.
-* Removed the ${DNoAction} format. (Replaced with ${DCaution}.)
+* Change Action -e (Exit on Failure) to -f (Force Exit on Failure).
+* Change Action -f (Failure Message) to -e (Error Message).
+* Change Error -e (Force Exit) to -f (Force Exit).
+* Change Error -E (Do not Exit) to -F (Cancel Exit).
+* Remove the ${DNoAction} format. (No Action now displayed with ${DCaution}.)
 
 ### Bug Fixes
 
+* Consolidate Alert, Caution, Error, Info, Warn into Tell (performance).
+* Change ValidateWorkspace warning message to a caution message.
 * Minor changes to stats tracking file format.
 * Minor update to profile handling.
-* Update mless to support escapes outside of code blocks.
+* Update mless to support escapes only outside of code blocks.
 
 ## v1.828
 
-### New Features
+### New Features / Enhancements
 
 * Add -E (No Echo) option to Ask and ConfirmVar.
 * Add -d (Display) and -i \<message\> (Info) options to SSHExec.
-* Add -W (Disable Warning) option to ValidateWorkspace.
 * Allow GetFileList to work with file spec contained within variable value.
 * Documentation updates.
 

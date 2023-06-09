@@ -41,8 +41,8 @@ warning message on an action failure.
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
 * **-C** - always confirm action
-* **-e** - generate error on failiure
-* **-f** - message to display if failure
+* **-e** - message to display on a non-zero (error) return value
+* **-f** - generate error on failiure
 * **-F** - skip action if prior failure
 * **-i** - message to display while executing (use with **-s** or spinner)
 * **-l** - log output to file
@@ -56,7 +56,7 @@ warning message on an action failure.
 * **-W** - do not generate a warning on failure
 
 ```
-Action [-1..-9|-a|-c|-C|-e|-F|-R|-s|-t|-W] [-i <info_message>] [-f <failure_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 ```
 
 ### AddOption (man libui.sh) - Add command line option flags for the script.
@@ -118,10 +118,17 @@ in green text. The message can also be logged to a log file.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
+* **-n** - do not include a trailing newline
+* **-N** - do not include a trailing linefeed
+* **-r** - use provided return value
 
 ```
-Alert [-1..-9|-a|-c] [-l <file_path>] <message_text>
+Alert [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### AllowRoot (man libuiRoot.sh) - Allow the root user to execute the script.
@@ -187,11 +194,17 @@ can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
+* **-n** - do not include a trailing newline
+* **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
 ```
-Caution [-1..-9|-a|-c] [-l <file_path>] [-r <return_value>] <warning_message>
+Caution [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### Close (man libuiFile.sh) - Closes a descriptor opened with the Open command.
@@ -315,14 +328,17 @@ can be disabled with the **-E** (Disable Exit) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
-* **-e** - generate error message and exit immediately (even during initialization)
-* **-E** - generate error message but do not exit
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
-* **-L** - always include the location in the script
-* **-r** - use the provided return value
+* **-L** - include the location of the message request (see Error command)
+* **-n** - do not include a trailing newline
+* **-N** - do not include a trailing linefeed
+* **-r** - use provided return value
 
 ```
-Error [-1..-9|-a|-c|-e|-E|-L] [-l <file_path>] [-r <return_value>] <error_message>
+Error [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### ExitCallback (man libui-template) - Optional function in main script.
@@ -431,13 +447,17 @@ in cyan text. The message can also be logged to a log file.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
-* **-I** - display the message "in place", i.e., where the cursor currently is
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
 * **-n** - do not include a trailing newline
 * **-N** - do not include a trailing linefeed
+* **-r** - use provided return value
 
 ```
-Info [-1..-9|-a|-c|-I|-n|-N] [-l <file_path>] <message_text>
+Info [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### InfoCallback (man libui-template) - Optional function in main script.
@@ -788,14 +808,22 @@ Newline) option.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
-* **-i** - display the message as an "info" message (see also Info)
-* **-I** - display the message "in place", i.e., where the cursor currently is
+* **-A** - display the message as an "alert" message (see also Alert)
+* **-C** - display the message as a "caution" message (see also Caution)
+* **-E** - display the message as an "Error" message (see also Error)
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
+* **-I** - display the message as an "info" message (see also Info)
 * **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
 * **-n** - do not include a trailing newline
 * **-N** - do not include a trailing linefeed
+* **-r** - use provided return value
+* **-W** - display the message as a "Warning" message (see also Warn)
 
 ```
-Tell [-1..-9|-a|-c|-i|-I|-n|-N] [-l <file_path>] <message_text>
+Tell [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### \_Trace (man libui.sh) - Internal libui trace command.
@@ -901,12 +929,17 @@ file. A return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
-* **-C** - display message as a "caution" message (see also Caution)
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
+* **-n** - do not include a trailing newline
+* **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
 ```
-Warn [-1..-9|-a|-c] [-l <file_path>] [-r <return_value>] <warning_message>
+Warn [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### Write (man libuiFile.sh) - Write text to a file.

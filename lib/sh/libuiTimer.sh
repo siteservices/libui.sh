@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.7
+Version -r 1.829 -m 1.7
 
 # defaults
 command -v bc &> /dev/null && __BC='bc' || __BC='awk "{print $1 - $3}"'
@@ -115,7 +115,7 @@ FormatElapsed () { # [-d]
         ;;
 
       *)
-        Error '(FormatElapsed) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(FormatElapsed) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
