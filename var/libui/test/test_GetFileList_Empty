@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList_Empty
+#
+#####
+
+test_GetFileList_Empty () {
+  LibuiPerformTest "GetFileList testlist '${TESTDIR}/invalid*'"
+  LibuiValidateTest ${?} 2
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PathMatches_Error
+#
+#####
+
+test_PathMatches_Error () {
+  _exitcleanup=false
+  LibuiPerformTest 'PathMatches .'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(PathMatches\) Invalid parameter count\."
+  return ${?}
+}
+
+return 0

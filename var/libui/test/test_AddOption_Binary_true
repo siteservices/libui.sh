@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_Binary_true
+#
+#####
+
+test_AddOption_Binary_true () {
+  LibuiPerformTest 'Tell -- "${binarytf}"'
+  LibuiValidateTest ${?} 0 'true'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x B '
+
+return 0

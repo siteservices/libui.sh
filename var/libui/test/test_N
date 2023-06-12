@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_N
+#
+#####
+
+test_N () {
+  local n=$'\n'
+  LibuiPerformTest 'Tell "|${N}|"'
+  LibuiValidateTest ${?} 0 "|${n}|"
+  return ${?}
+}
+
+return 0

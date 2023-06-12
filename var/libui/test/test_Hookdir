@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Hookdir
+#
+#####
+
+test_Hookdir () {
+  local ldir; GetTmp -s ldir
+  Write -c -f "${ldir}/libui-init" 'printf "Test hookdir init.\\n"'
+  Write -c -f "${ldir}/libui-exit" 'printf "Test hookdir exit.\\n"'
+  LibuiPerformTest "LIBUI_HOOKDIR=\"${ldir}\" libui -x w"
+  LibuiValidateTest ${?} 0 "Test hookdir init.${N}Hello World.${N}Test hookdir exit."
+  return ${?}
+}
+
+return 0

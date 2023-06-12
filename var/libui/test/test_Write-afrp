@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Write-afrp
+#
+#####
+
+test_Write-afrp () {
+  local lfile; GetTmp -f lfile
+  Write -f "${lfile}" -r ' - ' 'Test_Write-afrp 1'
+  Write -a -f "${lfile}" -p 'Test %s.\n' 'Write-afrp 2'
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 'Test_Write-afrp 1 - Test Write-afrp 2.'
+  return ${?}
+}
+
+return 0

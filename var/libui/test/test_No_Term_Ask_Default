@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_Ask_Default
+#
+#####
+
+test_No_Term_Ask_Default () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  Yes -e
+  LibuiPerformTest 'Ask -d "default" "Test Ask with default?"'
+  local tv=${?}
+  Yes -E
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Test Ask with default? [default] default'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CMD
+#
+#####
+
+test_CMD () {
+  LibuiPerformTest 'Tell -- "${CMD}"'
+  LibuiValidateTest ${?} 0 "${script##*/}"
+  return ${?}
+}
+
+return 0

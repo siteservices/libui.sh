@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-rs
+#
+#####
+
+test_Action-rs () {
+  #LoadMod Timer # note: loaded by main
+  retries=2
+  local timer
+  StartTimer timer
+  Action -r 2 -w 1 "RetryCountdown"
+  GetElapsed timer
+  LibuiPerformTest 'Tell "RetryCountdown: %s" "${ELAPSED}"'
+  LibuiValidateTest -r ${?} 0 'RetryCountdown: (1|2).*'
+  return ${?}
+}
+
+return 0

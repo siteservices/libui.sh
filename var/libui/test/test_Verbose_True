@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verbose_True
+#
+#####
+
+test_Verbose_True () {
+  _vdb=true # set verbose debug
+  LibuiPerformTest 'Verbose'
+  local tv=${?}
+  _vdb=false # reset verbose debug
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_IWD
+#
+#####
+
+test_IWD () {
+  LibuiPerformTest 'Tell -- "${IWD}"'
+  LibuiValidateTest ${?} 0 "${_Util_workdir}"
+  return ${?}
+}
+
+return 0

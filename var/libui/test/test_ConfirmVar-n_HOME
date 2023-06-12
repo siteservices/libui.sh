@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-n_HOME
+#
+#####
+
+test_ConfirmVar-n_HOME () {
+  LibuiPerformTest 'ConfirmVar -n HOME'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

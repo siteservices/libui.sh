@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter-s
+#
+#####
+
+test_AddParameter-s () {
+  LibuiPerformTest 'libui -x pA -h'
+  LibuiValidateTest -r ${?} 2 '.*<testparam> *- Test Param: Test parameter A\. \(testparam: \).*'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList_Multiple
+#
+#####
+
+test_GetFileList_Multiple () {
+  Action -W "touch ${TESTDIR}/.listfile-0"
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  Action -W "touch ${TESTDIR}/.listfile-3"
+  LibuiPerformTest "GetFileList -f testlist '${TESTDIR}/.??*' '${TESTDIR}/list*'"
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

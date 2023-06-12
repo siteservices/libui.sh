@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AllowRoot_True
+#
+#####
+
+test_AllowRoot_True () {
+  LibuiPerformTest 'AllowRoot'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x r '
+
+return 0

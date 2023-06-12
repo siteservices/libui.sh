@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetTmp-f_Error
+#
+#####
+
+test_GetTmp-f_Error () {
+  _exitcleanup=false
+  LibuiPerformTest 'GetTmp -f'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(GetTmp\) Called without a variable name\."
+  return ${?}
+}
+
+return 0

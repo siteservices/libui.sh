@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter_Too_Many
+#
+#####
+
+test_AddParameter_Too_Many () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 1 '.*ERROR in .*: \(AddParameter\) Too many parameters provided\. \(too many\).*'
+  return ${?}
+}
+
+# test setup
+_Test_errout=true
+_Test_param+='too many'
+
+return 0

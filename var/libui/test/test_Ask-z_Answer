@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask-z_Answer
+#
+#####
+
+test_Ask-z_Answer () {
+  Ask -z 'Test question?' <<< 'answer'
+  LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
+  LibuiValidateTest ${?} 0 'The answer is: '
+  return ${?}
+}
+
+return 0

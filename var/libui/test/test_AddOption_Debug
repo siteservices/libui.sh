@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_Debug
+#
+#####
+
+test_AddOption_Debug () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*-X *XDebug *- *Set debug level to specified level\. \(level: 2\).*'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X 2 '
+
+return 0

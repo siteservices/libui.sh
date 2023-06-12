@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetTmp-f
+#
+#####
+
+test_GetTmp-f () {
+  local tf
+  _udb=true
+  GetTmp -f tf
+  _udb=false
+  LibuiPerformTest "ls '${tf}'"
+  LibuiValidateTest ${?} 0 "${tf}"
+  return ${?}
+}
+
+return 0

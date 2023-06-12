@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_UIMOD
+#
+#####
+
+test_UIMOD () {
+  #LoadMod Timer # note: loaded by main
+  LibuiPerformTest 'Tell -- "${UIMOD[*]}"'
+  LibuiValidateTest -r ${?} 0 ".*Timer.*"
+  return ${?}
+}
+
+return 0

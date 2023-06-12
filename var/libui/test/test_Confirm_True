@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Confirm_True
+#
+#####
+
+test_Confirm_True () {
+  _confirm=true # set confirm
+  LibuiPerformTest 'Confirm'
+  local tv=${?}
+  _confirm=false # reset confirm
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

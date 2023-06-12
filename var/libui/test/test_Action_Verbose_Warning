@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Verbose_Warning
+#
+#####
+
+test_Action_Verbose_Warning () {
+  _vdb=true
+  LibuiPerformTest 'Action "false"'
+  LibuiValidateTest ${?} 1 "(Action) false (PWD: ${TESTDIR})${N}WARNING: (Action) Failure while evaluating command. (false, PWD: ${TESTDIR})"
+  return ${?}
+}
+
+return 0

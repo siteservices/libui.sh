@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Yes_True
+#
+#####
+
+test_Yes_True () {
+  Yes -e
+  LibuiPerformTest 'Yes'
+  local tv=${?}
+  Yes -E
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

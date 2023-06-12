@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Force_True
+#
+#####
+
+test_Force_True () {
+  _force=true # set force
+  LibuiPerformTest 'Force'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

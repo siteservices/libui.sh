@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CMDPATH
+#
+#####
+
+test_CMDPATH () {
+  LibuiPerformTest 'Tell -- "${CMDPATH}"'
+  LibuiValidateTest ${?} 0 "${script}"
+  return ${?}
+}
+
+return 0

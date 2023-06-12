@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RequireRoot_False
+#
+#####
+
+test_RequireRoot_False () {
+  LoadMod Root
+  LibuiPerformTest 'RequireRoot'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

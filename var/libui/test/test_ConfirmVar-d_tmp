@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-d_tmp
+#
+#####
+
+test_ConfirmVar-d_tmp () {
+  testvar='/tmp'
+  LibuiPerformTest 'ConfirmVar -d testvar'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

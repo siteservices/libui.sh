@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_SHLIBPATH
+#
+#####
+
+test_SHLIBPATH () {
+  lpath=$(command -v libui); lpath="${lpath%/*}"
+  LibuiPerformTest 'Tell -- "${SHLIBPATH}"'
+  LibuiValidateTest ${?} 0 "${lpath}"
+  return ${?}
+}
+
+return 0

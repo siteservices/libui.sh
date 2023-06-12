@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-W
+#
+#####
+
+test_Action-W () {
+  LibuiPerformTest 'Action -W "false"'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

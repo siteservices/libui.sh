@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_default
+#
+#####
+
+test_AddOption_default () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*Option test\. \(o: 0, X\).*'
+  return ${?}
+}
+
+return 0

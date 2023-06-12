@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask_Select_Value_Text
+#
+#####
+
+test_Ask_Select_Value_Text () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  Ask -s one -s two -s three 'Test question?' <<< 'two'
+  TERMINAL="${t}"
+  LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
+  LibuiValidateTest ${?} 0 'The answer is: two'
+  return ${?}
+}
+
+return 0

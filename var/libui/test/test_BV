@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_BV
+#
+#####
+
+test_BV () {
+  local bv="${BASH_VERSION%.*}"; [[ -n "${bv}" ]] && bv="${bv//.}" || bv=0
+  LibuiPerformTest 'Tell -- "${BV}"'
+  LibuiValidateTest ${?} 0 "${bv}"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Multiuser_Ledger_File
+#
+#####
+
+test_Multiuser_Ledger_File () {
+  local lfile; GetTmp -f lfile
+  (LIBUI_LEDGER=true LIBUI_LEDGERFILE="${lfile}" libui -x m -x w)
+  LibuiPerformTest "wc -l '${lfile}'"
+  LibuiValidateTest -r ${?} 0 " *1 *${lfile}"
+  return ${?}
+}
+
+return 0

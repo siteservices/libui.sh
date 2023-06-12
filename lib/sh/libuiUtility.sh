@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.4
+Version -r 1.830 -m 1.5
 
 ##### configuration
 
@@ -45,12 +45,14 @@ LoadMod Sort
 LoadMod Spinner
 LoadMod Timer
 LoadMod User
+LoadMod Test
 
 # defaults
 export LC_ALL=POSIX
 ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
+_Util_testdir="${_Util_libuiroot}/var/libui/test"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
 _Util_installer='${d}/lib/sh/libui'
 _Util_groupmode='g+w'
@@ -58,75 +60,9 @@ _Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
 _Util_configfile="${LIBUI_DOTFILE}/libui.conf"
 _Util_dcprefix="${LIBUI_DOTFILE}/display-"
 _Util_statsfile="${LIBUI_DOTFILE}/stats"
-_Util_failedtests=( )
-_Util_addoptft=false
-_Util_addopttf=false
-_Util_allowroot=false
-_Util_debug=false
-_Util_helloworld=false
-_Util_multiuser=false
-_Util_nolog=false
-_Util_optcnt=0
-_Util_parray=false
-_Util_requireroot=false
-_Util_verify=false
 _Util_workdir="${PWD}"
 GetTmp _Util_tmpdir
 
-# info compare text
-infotext="
-USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q|-V|-Y] [-e <_Util_shells>] ... [-x <_Util_testopt>] ... [-P <file>] [-X <level>] [<_Util_param>]
-
-  -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (_Util_config: false)
-  -d  Demo             - Provide capabilities demonstration. (_Util_demo: false)
-  -e  Execution        - Specify shell for regression testing (otherwise both bash and zsh). (_Util_shells: zsh, bash)
-  -i  Install          - Install libui into provided directory (or COMMONROOT). (_Util_install: false)
-  -l  List             - List files that would be included in a libui package. (_Util_list: false)
-  -L  Lockfiles        - Remove leftover lockfiles. (_Util_unlock: false)
-  -m  Man Page         - Display man page.
-  -M  Update Man Pages - Update man page timestamps to match respective script timestamp. (_Util_updatemp: false)
-  -n  New Script       - Create a new libui script with the provided filename. (_Util_new: false)
-  -p  Package          - Create a libui.sh package with the provided filename. (_Util_package: false)
-  -R  Reset Caches     - Reset display and user information caches. (_Util_cachereset: false)
-  -s  Stats            - Display stats. (_Util_stats: false)
-  -t  Test             - Perform libui regression testing. (_Util_testing: false)
-  -T  (Single) Test    - Perform single test. (_Util_singletest: false)
-  -u  Update           - Update libui in COMMONROOT (or provided directory). (_Util_update: false)
-  -U  Unify            - Unify environment by removing files already in COMMONROOT (or provided directory). (_Util_unify: false)
-  -v  Verify           - Verify libui in COMMONROOT (or provided directory). (_Util_vlevel: )
-  -x  Test Option      - (Only for test.) Set test mode. (_Util_testopt: X)
-  -C  Confirm          - Confirm operations before performing them. (confirm: false)
-  -F  Force            - Force file operations. (force: false)
-  -H  Help             - Display usage message. (help: true)
-  -N  No Action        - Show operations without performing them. (noaction: false)
-  -P  Profile          - Load configuration profile. (file: )
-  -Q  Quiet            - Execute quietly. (quiet: false)
-  -V  Version          - Display version information. (version: false)
-  -X  XDebug           - Set debug level to specified level. (level: 0)
-  -Y  Yes              - Provide \"y\" or default answer to asked questions. (yes: false)
-
-  <_Util_param>        - Parameter: Name of the test to perform, package filename, or COMMONROOT directory. (_Util_param: )
-
-  Available option values:
-    For -e (Execution): zsh, bash
-    For -x (Test Option): b, B, d, m, n, o, oa, oA, os, oS, ov, p, pa, pA, ps, pS, pv, r, R, w, X, aot, one, two, three, four, five
-
-This script provides support functionality for the libui library including
-regression testing, capabilities demonstration, and usage statistics reports.
-
-Current test mode options:
-    AddOption F/T test. (b: false)
-    AddOption T/F test. (B: false)
-    Debug mode (d: false)
-    Multiuser test. (m: false)
-    No log test. (n: false)
-    Option test. (o: 0, X)
-    Parameter array test. (p: false)
-    Root allowed test. (r: false)
-    Root required test. (R: false)
-    Hello World test. (w: false)
-
-"
 
 #####
 #
@@ -139,8 +75,36 @@ _LibuiUtilitySetup () {
   ${_S} && ((_c_LibuiUtilitySetup++))
   ${_M} && _Trace '_LibuiUtilitySetup [%s]' "${*}"
 
+  # defaults
+  debug=false
+  helloworld=false
+  multiparam=false
+  verify=false
+
+  # setup values
+  _Util_addoptft=false
+  _Util_addopttf=false
+  _Util_allowroot=false
+  _Util_multiuser=false
+  _Util_nolog=false
+  _Util_optcnt=0
+  _Util_requireroot=false
+  _Util_terminal=false
+
+  # local variables
+  local aopt
+  local Aopt
+  local popt
+  local sopt
+  local Sopt
+  local vopt
+  local aparam
+  local Aparam
+  local sparam
+  local Sparam
+  local vparam
+
   ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}}"
-  [[ " ${arg[*]} " =~ .*\ -T\ .* ]] && TERMINAL=true
   [[ " ${arg[*]} " =~ .*\ -x\ *oa\ .* ]] && aopt=true || aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oA\ .* ]] && Aopt=true || Aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *os\ .* ]] && sopt=true || sopt=false
@@ -154,51 +118,52 @@ _LibuiUtilitySetup () {
   [[ " ${arg[*]} " =~ .*\ -x\ *m\ .* ]] && LoadMod Multiuser && Multiuser
   [[ " ${arg[*]} " =~ .*\ -x\ *r\ .* ]] && LoadMod Root && AllowRoot
   [[ " ${arg[*]} " =~ .*\ -x\ *R\ .* ]] && LoadMod Root && RequireRoot
-  [[ " ${arg[*]} " =~ .*\ -x\ *p\ .* ]] && popt='-m' # set AddParameter option for testing
+  [[ " ${arg[*]} " =~ .*\ -x\ *t\ .* ]] && TERMINAL=true
+  [[ " ${arg[*]} " =~ .*\ -t\ .* || " ${arg[*]} " =~ .*\ -x\ *p\ .* ]] && popt='-m' # set AddParameter option for testing
   [[ " ${arg[*]} " =~ .*\ -p\ .* ]] && popt='-r' # set AddParameter option for package
 
   ${_M} && _Trace 'Set up utility options.'
   [[ " ${arg[*]} " =~ .*\ -x\ *b\ .* ]] && AddOption -n binaryft -f -k 'Binary F/T' -d '(Only for test.) For testing AddOption -f option.' b
   [[ " ${arg[*]} " =~ .*\ -x\ *B\ .* ]] && AddOption -n binarytf -t -k 'Binary T/F' -d '(Only for test.) For testing AddOption -t option.' B
-  AddOption -n _Util_config -f -k 'Config' -d 'Create default configuration file "${_Util_configfile}".' c
-  AddOption -n _Util_demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
-  AddOption -n _Util_shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
-  AddOption -n _Util_install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
-  AddOption -n _Util_list -f -k 'List' -d 'List files that would be included in a libui package.' l
-  AddOption -n _Util_unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
-  AddOption -c ManualCallback -k 'Man Page' -d 'Display man page.' m
-  AddOption -n _Util_updatemp -f -k 'Update Man Pages' -d 'Update man page timestamps to match respective script timestamp.' M
-  AddOption -n _Util_new -f -k 'New Script' -d 'Create a new libui script with the provided filename.' n
-  AddOption -n _Util_package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
-  AddOption -n _Util_cachereset -f -k 'Reset Caches' -d 'Reset display and user information caches.' R
-  AddOption -n _Util_stats -f -k 'Stats' -d 'Display stats.' s
-  AddOption -n _Util_testing -f -k 'Test' -d 'Perform libui regression testing.' t
-  AddOption -n _Util_singletest -c SingleTestCallback -f -k '(Single) Test' -d 'Perform single test.' T
-  AddOption -n _Util_update -f -k 'Update' -d 'Update libui in COMMONROOT (or provided directory).' u
-  AddOption -n _Util_unify -f -k 'Unify' -d 'Unify environment by removing files already in COMMONROOT (or provided directory).' U
-  AddOption -n _Util_vlevel -c VerifyCallback -m -p true -k 'Verify' -d 'Verify libui in COMMONROOT (or provided directory).' v
-  availopt=( b B d m n o oa oA os oS ov p pa pA ps pS pv r R w X aot one two three four five )
-  _Util_testopt=( X )
-  AddOption -n _Util_testopt -c TestModeCallback -m -S availopt -k 'Test Option' -d '(Only for test.) Set test mode.' x:
+  AddOption -n config -f -k 'Config' -d 'Create default configuration file "${_Util_configfile}".' c
+  AddOption -n demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
+  AddOption -n shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
+  AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
+  AddOption -n list -f -k 'List' -d 'List files that would be included in a libui package.' l
+  AddOption -n unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
+  AddOption -n manpage -c ManualCallback -f -k 'Man Page' -d 'Display man page.' m
+  AddOption -n updateman -f -k 'Update Man Pages' -d 'Update man page timestamps to match respective script timestamp.' M
+  AddOption -n new -f -k 'New Script' -d 'Create a new libui script with the provided filename.' n
+  AddOption -n package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
+  AddOption -n cachereset -f -k 'Reset Caches' -d 'Reset display and user information caches.' R
+  AddOption -n stats -f -k 'Stats' -d 'Display stats.' s
+  AddOption -n testing -f -k 'Test' -d 'Perform libui regression testing.' t
+  AddOption -n singletest -c SingleTestCallback -f -k '(Single) Test' -d 'Perform single test.' T
+  AddOption -n update -f -k 'Update' -d 'Update libui in COMMONROOT (or provided directory).' u
+  AddOption -n unify -f -k 'Unify' -d 'Unify environment by removing files already in COMMONROOT (or provided directory).' U
+  AddOption -n vlevel -c VerifyCallback -m -p true -k 'Verify' -d 'Verify libui in COMMONROOT (or provided directory).' v
+  availopt=( b B d m n o oa oA os oS ov p pa pA ps pS pv r R t w X aot one two three four five )
+  testopt=( X )
+  AddOption -n testopt -c TestModeCallback -m -S availopt -k 'Test Option' -d '(Only for test.) Set test mode.' x:
   testvalues=( x y z )
-  ${aopt} && AddOption -n _Util_opta -s a -a -k 'Test a' -d 'Test option a.' Z:
-  ${Aopt} && AddOption -n _Util_optA -s A -k 'Test A' -d 'Test option A.' Z:
-  ${sopt} && AddOption -n _Util_opts -s a -s b -s c -k 'Test s' -d 'Test option s.' Z:
-  ${Sopt} && AddOption -n _Util_optS -S testvalues -k 'Test S' -d 'Test option S.' Z:
-  ${vopt} && AddOption -n _Util_optv -v ValidCallback -k 'Test v' -d 'Test option v.' Z:
-  ${aparam} && AddParameter -s a -a -k 'Test Param' -d 'Test parameter a.' _Util_testparam
-  ${Aparam} && AddParameter -s A -k 'Test Param' -d 'Test parameter A.' _Util_testparam
-  ${sparam} && AddParameter -s a -s b -s c -k 'Test Param' -d 'Test parameter s.' _Util_testparam
-  ${Sparam} && AddParameter -S testvalues -k 'Test Param' -d 'Test parameter S.' _Util_testparam
-  ${vparam} && AddParameter -v ValidCallback -k 'Test Param' -d 'Test parameter v.' _Util_testparam
-  AddParameter ${popt} -i '' -k 'Parameter' -d 'Name of the test to perform, package filename, or COMMONROOT directory.' _Util_param
+  ${aopt} && AddOption -n opta -s a -a -k 'Test a' -d 'Test option a.' Z:
+  ${Aopt} && AddOption -n optA -s A -k 'Test A' -d 'Test option A.' Z:
+  ${sopt} && AddOption -n opts -s a -s b -s c -k 'Test s' -d 'Test option s.' Z:
+  ${Sopt} && AddOption -n optS -S testvalues -k 'Test S' -d 'Test option S.' Z:
+  ${vopt} && AddOption -n optv -v ValidCallback -k 'Test v' -d 'Test option v.' Z:
+  ${aparam} && AddParameter -s a -a -k 'Test Param' -d 'Test parameter a.' testparam
+  ${Aparam} && AddParameter -s A -k 'Test Param' -d 'Test parameter A.' testparam
+  ${sparam} && AddParameter -s a -s b -s c -k 'Test Param' -d 'Test parameter s.' testparam
+  ${Sparam} && AddParameter -S testvalues -k 'Test Param' -d 'Test parameter S.' testparam
+  ${vparam} && AddParameter -v ValidCallback -k 'Test Param' -d 'Test parameter v.' testparam
+  AddParameter ${popt} -i '' -k 'Parameter' -d 'Name of the test to perform, package filename, or COMMONROOT directory.' param
 
   ##### callbacks
 
   # single test callback
   SingleTestCallback () {
     ${_M} && _Trace 'Set up for single test.'
-    _Util_testing=true
+    testing=true
   }
 
   # test mode callback
@@ -217,7 +182,7 @@ _LibuiUtilitySetup () {
 
       d)
         ${_M} && _Trace 'Set up test debug.'
-        _Util_debug=true
+        debug=true
         ;;
 
       m)
@@ -236,8 +201,8 @@ _LibuiUtilitySetup () {
         ;;
 
       p)
-        ${_M} && _Trace 'Set up parameter array test.'
-        _Util_parray=true
+        ${_M} && _Trace 'Set up multiple parameter test.'
+        multiparam=true
         ;;
 
       r)
@@ -250,9 +215,14 @@ _LibuiUtilitySetup () {
         _Util_requireroot=true
         ;;
 
+      t)
+        ${_M} && _Trace 'Set up terminal test.'
+        _Util_terminal=true
+        ;;
+
       w)
         ${_M} && _Trace 'Set up hello world test.'
-        _Util_helloworld=true
+        helloworld=true
         ;;
 
       *)
@@ -292,14 +262,14 @@ _LibuiUtilitySetup () {
 
   # valid callback
   ValidCallback () {
-    Tell 'Validation test. (v == %s)' "${_Util_optv}${_Util_testparam}"
-    _Util_helloworld=true
+    Tell 'Validation test. (v == %s)' "${optv}${testparam}"
+    helloworld=true
   }
 
   # verify callback
   VerifyCallback () {
     ${_M} && _Trace 'Set up for verify.'
-    _Util_verify=true
+    verify=true
   }
 
   # info callback
@@ -312,71 +282,55 @@ regression testing, capabilities demonstration, and usage statistics reports.
 Current test mode options:
     AddOption F/T test. (b: ${_Util_addoptft})
     AddOption T/F test. (B: ${_Util_addopttf})
-    Debug mode (d: ${_Util_debug})
+    Debug mode (d: ${debug})
     Multiuser test. (m: ${_Util_multiuser})
     No log test. (n: ${_Util_nolog})
-    Option test. (o: ${_Util_optcnt}, ${_Util_testopt[*]})
-    Parameter array test. (p: ${_Util_parray})
+    Option test. (o: ${_Util_optcnt}, ${testopt[*]})
+    Parameter array test. (p: ${multiparam})
     Root allowed test. (r: ${_Util_allowroot})
     Root required test. (R: ${_Util_requireroot})
-    Hello World test. (w: ${_Util_helloworld})
+    Terminal test. (R: ${_Util_terminal})
+    Hello World test. (w: ${helloworld})
 EOF
   }
 
   ExitCallback () {
     ${_M} && _Trace 'In user exit callback.'
 
-    ${_Util_debug} || [[ -n "${_Util_failedtests}" && -n "${_Util_tmpdir}" ]] && Verify 'Delete logs and exit? (%s)' "${_Util_tmpdir}"
+    ${debug} && Verify -r '[yY].*' 'Delete logs and exit? (%s)' "${_Util_tmpdir}"
   }
 
   InitCallback () {
     ${_M} && _Trace 'Program initialization.'
 
-    ${_M} && _Trace 'Get test name. (%s)' "${_Util_parray}"
-    if ${_Util_parray}
-    then
-      _Util_tname="${_Util_param[${AO}]}"
-    else
-      _Util_tname="${_Util_param}"
-    fi
-
-    if ${_Util_install} || ${_Util_verify} || ${_Util_update} || ${_Util_unify}
+    if ${install} || ${verify} || ${update} || ${unify}
     then
       ${_M} && _Trace 'Check for multiple actions error.'
       local _Util_x=0
-      ${_Util_install} && ((_Util_x++))
-      ${_Util_verify} && ((_Util_x++))
-      ${_Util_update} && ((_Util_x++))
-      ${_Util_unify} && ((_Util_x++))
+      ${install} && ((_Util_x++))
+      ${verify} && ((_Util_x++))
+      ${update} && ((_Util_x++))
+      ${unify} && ((_Util_x++))
       ((1 < _Util_x)) && Tell -E 'Only one COMMONROOT action can be performed at a time.'
 
-      ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${_Util_param}"
-      [[ -n "${_Util_param}" ]] && COMMONROOT="${_Util_param}"
+      ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${param}"
+      [[ -n "${param}" ]] && COMMONROOT="${param}"
       ConfirmVar -q 'Please provide a COMMONROOT directory path:' -d COMMONROOT
       if PathMatches "${_Util_libuiroot}" "${COMMONROOT}"
       then
         Tell -E 'The libui root is COMMONROOT. (%s)' "${COMMONROOT}"
       fi
-    elif ${_Util_testing}
+    elif ${testing}
     then
       ${_M} && _Trace 'Set up test directory. (%s)' "${TESTDIR}"
       if [[ -z "${TESTDIR}" ]]
       then
         ${_M} && _Trace 'Initialize TESTDIR.'
         export TESTDIR="${_Util_tmpdir}"
-        ${_Util_debug} && Tell 'Test directory is: %s' "${TESTDIR}"
+        ${debug} && Tell 'Test directory is: %s' "${TESTDIR}"
       fi
       ConfirmVar -d TESTDIR
       pushd "${TESTDIR}" > /dev/null
-
-      ${_M} && _Trace 'Define log. (%s)' "${TESTDIR}/test.log"
-      log=">> \"${TESTDIR}/test.log\" 2>&1; rv=\${?}"
-      if ${ZSH}
-      then
-        ${_Util_debug} && log="2>&1 | tee -a \"${TESTDIR}/test.log\"; rv=\"\${pipestatus[1]}\""
-      else
-        ${_Util_debug} && log="2>&1 | tee -a \"${TESTDIR}/test.log\"; rv=\"\${PIPESTATUS[0]}\""
-      fi
     fi
   }
 }
@@ -387,175 +341,6 @@ EOF
 # libui support functions
 #
 #####
-
-UICMD+=( '_LibuiTest' )
-_LibuiTest () {
-  ${_S} && ((_c_LibuiTest++))
-  ${_M} && _Trace '_LibuiTest [%s]' "${*}"
-
-  local _Util_failedids; _Util_failedids=( )
-  local _Util_rv=0
-  local _Util_success=true
-  local _Util_subopt='-t '
-
-  LibuCheckResults () {
-    ${_M} && _Trace 'LibuCheckResults [%s]' "${*}"
-
-    local _Util_pass="${4}" # pass
-    local _Util_rv="${3}" # return value
-    local _Util_shell="${1}" # shell
-    local _Util_test="${2}" # test
-
-    ${_M} && _Trace 'Check %s.' "${*}"
-    ${_Util_debug} && Tell 'Check return value. (%s)' "${_Util_rv}"
-    case "${_Util_rv}" in
-      0)
-        #${_Util_debug} && ${_Util_pass} && Tell -A 'Test passed in %s. (%s)' "${_Util_shell}" "${_Util_test}"
-        ;;
-
-      33)
-        Tell "${DFy}Associative arrays are not available in this version of %s. (%s)${D}" "${_Util_shell}" "${_Util_test}"
-        _Util_rv=0
-        ;;
-
-      *)
-        ${_Util_pass} && Tell "${DFr}Test failed in %s with %s. (%s)${D}" "${_Util_shell}" "${_Util_rv}" "${_Util_test}"
-        ;;
-
-    esac
-
-    ${_M} && _Trace 'LibuCheckResults return. (%s)' "${_Util_rv}"
-    return ${_Util_rv}
-  }
-
-  ${_M} && _Trace 'Load libui tests.'
-  source "${SHLIBPATH}/libui-tests.sh"
-
-  ${_M} && _Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
-  [[ -n "${_Util_tname}" ]] && Tell '\n=====\nStarted "%s" (%s) in %s with: %s' "${_Util_tname}" "${COUNT}" "${SHELL}" "${CMDLINE[*]}"
-
-  ${_M} && _Trace 'Check for test. (%s)' "${_Util_tname}"
-  if [[ -z "${_Util_tname}" ]]
-  then
-    local _Util_ds="$(date)"
-    local _Util_exec
-    local _Util_test
-    local _Util_tr
-
-    ${_M} && _Trace 'Start log.'
-    Tell 'Test environment:'
-    Version
-    Tell 'Begin libui %s with %s tests on %s. (%s)' "${LIBUI_VERSION}" "${#tests[@]}" "${_Util_ds}" "${_Util_tmpdir}"
-    StartTimer _Util_logtimer
-
-    ${_M} && _Trace 'Check for debug. (%s)' "${_Util_debug}"
-    ${_Util_debug} && _Util_subopt+='-x '
-    ((0 < _xdb)) && _Util_subopt+="-X ${_xdb} "
-
-    ${_M} && _Trace 'Execute tests. (%s)' "${#tests[@]}"
-    _Util_count=1
-    local _Util_count=1
-    for _Util_test in "${tests[@]}"
-    do
-      ${_M} && _Trace 'Prepare test command: %s %s%s.' "${CMD}" "${_Util_subopt}" "${_Util_test}"
-      env="LIBUI_TRACE=false COUNT=${_Util_count}"
-      [[ 'test_Logfile' == "${_Util_test}" ]] && env+=" LIBUI_LOGFILE='${_Util_tmpdir}/logfile.log'"
-      case "${_Util_test}" in
-        *test_*)
-          warn=''
-          cond='-eq'
-          pass=true
-          ;;
-
-        *errout_*)
-          warn='-W'
-          cond='-lt'
-          pass=false
-          ;;
-
-        *)
-          Tell -E 'Invalid test type. (%s)' "${_Util_test}"
-          ;;
-
-      esac
-
-      ${_M} && _Trace 'Execute test. (%s)' "${_Util_test}"
-      ${_Util_debug} && Tell 'Execute test. (%s)' "${_Util_test}"
-      StartTimer _Util_testtimer
-      _Util_tr=0
-      for _Util_exec in "${_Util_shells[@]}"
-      do
-        ${_M} && _Trace 'Test command: %s' "${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}"
-        ${_Util_debug} && Tell 'Test command: %s' "${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}"
-        eval "Action -s -i 'Performing: ${_Util_test}' ${warn} \"${env} ${_Util_exec} ${CMDPATH} ${_Util_subopt}${_Util_test}\" ${log}"
-        LibuCheckResults "${_Util_exec}" "${_Util_test}" "${rv}" "${pass}"
-        _Util_tr=$((_Util_tr + ${?}))
-      done
-      GetElapsed _Util_testtimer
-      ${_Util_debug} && Tell 'Finished test %s in %.4f seconds.' "${_Util_test}" "${ELAPSED}"
-
-      ${_M} && _Trace 'Check results. (0 %s %s)' "${cond}" "${_Util_tr}"
-      if [ 0 ${cond} "${_Util_tr}" ]
-      then
-        Tell -A 'Test %03d passed in %.4f seconds. (%s)' "${_Util_count}" "${ELAPSED}" "${_Util_test}"
-      else
-        _Util_success=false
-        _Util_failedids+=( ${_Util_count} )
-        _Util_failedtests+=( ${_Util_test} )
-        Tell -W 'Test %03d failed. (%s)' "${_Util_count}" "${_Util_test}"
-        ${_Util_debug} && if ! Verify 'Continue?'
-        then
-          ${_M} && _Trace 'Quit %s. (%s)' "${CMD}" 0
-          Exit 2
-        fi
-      fi
-
-      ((_Util_count++))
-    done
-
-    ${_M} && _Trace 'End log.'
-    GetElapsed _Util_logtimer
-    _Util_ds="$(date)"
-    Tell 'Completed %d tests in %.4f seconds on %s.' "${#tests[@]}" "${ELAPSED}" "${_Util_ds}"
-
-    ${_M} && _Trace 'Check version equivalence. (%s)' "${Version[1]##* }"
-    tv="${UIVERSION[-1]##* }"
-    ${_M} && _Trace 'Check for test / UI version compatability. (test: %s, libui: %s)' "${tv}" "${LIBUI_VERSION}"
-    ((${tv//.} == ${LIBUI_VERSION//.})) || Tell -W '%s: Test script and libui versions do not match. (test: %s, libui: %s)' "${CMD}" "${tv}" "${LIBUI_VERSION}"
-
-    ${_M} && _Trace 'Test suite results. (%s)' "${_Util_success}"
-    ${_M} && _Trace 'Report. (%s)' "${_Util_success}"
-    if ${_Util_success}
-    then
-      Tell -A 'Test suite successful. Passed %s tests.' "${#tests[@]}"
-    else
-      Tell -E -F 'Test suite not successful.'
-      Tell 'Failed %s out of %s tests:' "${#_Util_failedtests[@]}" "${#tests[@]}"
-      for ((i = AO; i < $((${#_Util_failedtests[@]} + AO)); i++))
-      do
-        Tell '  %s %s' "${_Util_failedids[${i}]}" "${_Util_failedtests[${i}]}"
-      done
-    fi
-  else
-    ${_M} && _Trace 'Check for test. (%s)' "${_Util_tname}"
-    if declare -f ${_Util_tname} > /dev/null
-    then
-      ${_M} && _Trace 'Execute %s test. (%s)' "${SHELL}" "${_Util_tname}"
-      ${_Util_tname}
-      _Util_rv=${?}
-    else
-      _Terminal
-      Tell -E -f 'Test not available: %s.' "${_Util_tname}"
-      _Util_rv=1
-    fi
-  fi
-
-  ${_M} && _Trace 'Return to prior directory.'
-  popd > /dev/null
-
-  ${_M} && _Trace '_LibuiTest return. (%s)' "${_Util_rv}"
-  return ${_Util_rv}
-}
 
 UICMD+=( 'LibuiConfig' )
 LibuiConfig () {
@@ -779,23 +564,33 @@ LibuiUnlock () {
   local _Util_lockfiles
   local _Util_lockfile
 
+  ${_M} && _Trace 'Get lockfile list. (%s)' "${_Util_lockdir}"
   GetFileList _Util_lockfiles "${_Util_lockdir}/*"
-  ${_M} && _Trace 'Prepare to remove lockfiles. (%s)' "${_Util_lockfiles[*]}"
-  if Verify 'Really remove lockfiles?'
+
+  ${_M} && _Trace 'Check for lockfiles. (%s)' "${#_Util_lockfiles[@]}"
+  ${debug} && Tell 'Lockfiles: %s' "${_Util_lockfiles[*]}"
+  if [[ -n "${_Util_lockfiles}" ]]
   then
-    local _Util_file
-    for _Util_file in "${_Util_lockfiles[@]}"
-    do
-      _Util_lockfile="$(<${_Util_file})"
-      ${_M} && _Trace 'Remove lock file %s.' "${_Util_lockfile}"
-      if [[ -e "${_Util_lockfile}" ]]
-      then
-        Action -q "Really remove ${_Util_lockfile} lockfile?" "rm ${FMFLAGS} '${_Util_lockfile}' '${_Util_file}'"
-      else
-        Action -q "Really remove ${_Util_file} lockfile?" "rm ${FMFLAGS} '${_Util_file}'"
-      fi
-    done
-    Tell -A 'Lock file(s) have been removed. (%s)' "${_Util_lockfiles[*]}"
+    ${_M} && _Trace 'Prepare to remove lockfiles. (%s)' "${_Util_lockfiles[*]}"
+    if Verify 'Really remove %s lockfiles?' "${#_Util_lockfiles[@]}"
+    then
+      ${_M} && _Trace 'Remove lockfiles. (%s)' "${_Util_lockfiles[*]}"
+      local _Util_file
+      for _Util_file in "${_Util_lockfiles[@]}"
+      do
+        _Util_lockfile="$(<${_Util_file})"
+        ${_M} && _Trace 'Remove lockfile %s.' "${_Util_lockfile}"
+        if [[ -e "${_Util_lockfile}" ]]
+        then
+          Action -q "Really remove ${_Util_lockfile} lockfile?" "rm ${FMFLAGS} '${_Util_lockfile}' '${_Util_file}'"
+        else
+          Action -q "Really remove ${_Util_file} lockfile?" "rm ${FMFLAGS} '${_Util_file}'"
+        fi
+      done
+      Tell -A 'Lockfiles have been removed.'
+    fi
+  else
+    Tell -C 'No lockfiles were found.'
   fi
 
   ${_M} && _Trace 'LibuiUnlock return. (%s)' 0
@@ -875,23 +670,51 @@ LibuiPackage () {
   ${_S} && ((_cLibuiPackage++))
   ${_M} && _Trace 'LibuiPackage [%s]' "${*}"
 
-  GetRealPath -P _Util_param
+  local _Util_installenv
+  local _Util_installer
+
+  ${_M} && _Trace 'Process LibuiPackage options. (%s)' "${*}"
+  local opt
+  local OPTIND
+  local OPTARG
+  while getopts ':e:i:' opt
+  do
+    case ${opt} in
+      e)
+        ${_M} && _Trace 'Install environment. (%s)' "${OPTARG}"
+        _Util_installenv="${OPTARG}"
+        ;;
+
+      i)
+        ${_M} && _Trace 'Installer. (%s)' "${OPTARG}"
+        _Util_installer="${OPTARG}"
+        ;;
+
+      *)
+        Tell -E -f -L '(LibuiPackage) Unknown option. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+  local _Util_package="${1}"
+  GetRealPath -P _Util_package
   LoadMod Package
 
   pushd "${_Util_libuiroot}" > /dev/null
 
-  ${_M} && _Trace 'Create libui package. (%s)' "${_Util_param}"
+  ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
   local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -name 'libui*') )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
-  if [[ ".sharp" == "${_Util_param: -6}" ]]
+  if [[ ".sharp" == "${_Util_package: -6}" ]]
   then
-    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_param}'"
+    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   else
-    [[ ".tarp" == "${_Util_param: -5}" ]] || _Util_param+='.tarp'
-    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_param}'"
+    [[ ".tarp" == "${_Util_package: -5}" ]] || _Util_package+='.tarp'
+    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   fi
-  Tell -A 'Creation of libui package complete. (%s)' "${_Util_param}"
+  Tell -A 'Creation of libui package complete. (%s)' "${_Util_package}"
 
   popd > /dev/null
 
@@ -1085,29 +908,51 @@ LibuiNew () {
   ${_M} && _Trace 'LibuiNew [%s]' "${*}"
 
   local _Util_rv=0
+  local _Util_template
+
+  ${_M} && _Trace 'Process LibuiNew options. (%s)' "${*}"
+  local opt
+  local OPTIND
+  local OPTARG
+  while getopts ':t:' opt
+  do
+    case ${opt} in
+      t)
+        ${_M} && _Trace 'Template. (%s)' "${OPTARG}"
+        _Util_template="${OPTARG}"
+        ;;
+
+      *)
+        Tell -E -f -L '(LibuiNew) Unknown option. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+  local _Util_target="${1}"
 
   [[ -f "${_Util_template}" ]] || Tell -E 'Template libui script file is not available. (%s)' "${_Util_template}"
 
-  if Force || [[ ! -f "${_Util_param}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_param}"
+  if Force || [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_target}"
   then
-    ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_param}"
-    [[ -f "${_Util_param}" ]] && Action "rm ${FMFLAGS} '${_Util_param}'"
+    ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_target}"
+    [[ -f "${_Util_target}" ]] && Action "rm ${FMFLAGS} '${_Util_target}'"
 
-    ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_param}"
+    ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_target}"
     [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
-    Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_param}'"
+    Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
-    Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_target}'"
     Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line description for the script header:'
-    Action -F "sed ${_Util_sedi} -e 's/<SHORT DESCRIPTION HERE>/${ANSWER}/g' '${_Util_param}'"
-    Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_param}'"
-    Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_param}'"
-    Action -F "sed ${_Util_sedi} -e 's/<REQUIRED HERE>/${LIBUI_VERSION}/g' '${_Util_param}'"
-    Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_param}'"
-    Action -F "chmod +x '${_Util_param}'"
+    Action -F "sed ${_Util_sedi} -e 's/<SHORT DESCRIPTION HERE>/${ANSWER}/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<REQUIRED HERE>/${LIBUI_VERSION}/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_target}'"
+    Action -F "chmod +x '${_Util_target}'"
 
-    Tell -A 'New file has been created. (%s)' "${_Util_param}"
-    local _Util_here=$(tr '[:space:]' '\n' < "${_Util_param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
+    Tell -A 'New file has been created. (%s)' "${_Util_target}"
+    local _Util_here=$(tr '[:space:]' '\n' < "${param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
     Tell 'Search for "HERE" and replace%s with new script content.' "${_Util_here:+ all ${_Util_here}}"
   fi
   _Util_rv=${?}
@@ -1115,6 +960,7 @@ LibuiNew () {
   ${_M} && _Trace 'LibuiNew return. (%s)' "${_Util_rv}"
   return ${_Util_rv}
 }
+
 
 #####
 #
@@ -1128,52 +974,57 @@ _LibuiUtility () {
   ${_M} && _Trace '_LibuiUtility [%s]' "${*}"
 
   ${_M} && _Trace 'Find operation.'
-  if ${_Util_helloworld}
+  if ${helloworld}
   then
     ${_M} && _Trace 'Display hello world.'
     printf 'Hello World.\n'
     Exit 0
-  elif ${_Util_testing}
+  elif ${testing}
   then
-    _LibuiTest
-  elif ${_Util_config}
+    if ${debug}
+    then
+      LibuiTest -d -t "${_Util_testdir}" "${param[@]}"
+    else
+      LibuiTest -t "${_Util_testdir}" "${param[@]}"
+    fi
+  elif ${config}
   then
     LibuiConfig
-  elif ${_Util_demo}
+  elif ${demo}
   then
     LibuiDemo
-  elif ${_Util_stats}
+  elif ${stats}
   then
     LibuiStats
-  elif ${_Util_cachereset}
+  elif ${cachereset}
   then
     LibuiResetCaches
-  elif ${_Util_unlock}
+  elif ${unlock}
   then
     LibuiUnlock
-  elif ${_Util_updatemp}
+  elif ${updateman}
   then
     LibuiUpdateMan
-  elif ${_Util_list}
+  elif ${list}
   then
     LibuiPackageList
-  elif ${_Util_package}
+  elif ${package}
   then
-    LibuiPackage
-  elif ${_Util_install}
+    LibuiPackage -e "${_Util_installenv}" -i "${_Util_installer}" "${param}"
+  elif ${install}
   then
     LibuiInstall
-  elif ${_Util_verify} || ${_Util_update} || ${_Util_unify}
+  elif ${verify} || ${update} || ${unify}
   then
-    if [[ -n "${_Util_vlevel[2]+x}" ]]
+    if [[ -n "${vlevel[2]+x}" ]]
     then
-      LibuiUnity -d $(${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U') | less -R
+      LibuiUnity -d $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${unify} && printf -- '-U') | less -R
     else
-      LibuiUnity $(${_Util_verify} && printf -- '-v '; ${_Util_update} && printf -- '-u '; ${_Util_unify} && printf -- '-U')
+      LibuiUnity $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${unify} && printf -- '-U')
     fi
-  elif ${_Util_new}
+  elif ${new}
   then
-    LibuiNew
+    LibuiNew -t "${_Util_template}" "${param}"
   else
     ${_M} && _Trace 'Display usage.'
     LoadMod Info

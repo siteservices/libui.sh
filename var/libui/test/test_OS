@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_OS
+#
+#####
+
+test_OS () {
+  local tos="$(uname -s)"
+  [[ "${tos}" =~ .*CYGWIN.* ]] && tos="(${tos}|Windows_NT)"
+  LibuiPerformTest 'Tell -- "${OS}"'
+  LibuiValidateTest -r ${?} 0 "${tos}"
+  return ${?}
+}
+
+return 0

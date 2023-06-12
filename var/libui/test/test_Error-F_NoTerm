@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Error-F_NoTerm
+#
+#####
+
+test_Error-F_NoTerm () {
+  LibuiPerformTest 'Error -F "Test 1."; Error -F "Test 2."'
+  LibuiValidateTest ${?} 1 "ERROR: Test 1.${N}ERROR: Test 2."
+  return ${?}
+}
+
+return 0

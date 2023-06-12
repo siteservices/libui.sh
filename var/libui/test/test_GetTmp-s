@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetTmp-s
+#
+#####
+
+test_GetTmp-s () {
+  local ts
+  GetTmp -s ts
+  LibuiPerformTest "ls -a '${ts}'"
+  LibuiValidateTest ${?} 0 ".${N}.."
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_LIBUI
+#
+#####
+
+test_LIBUI () {
+  LibuiPerformTest 'Tell -- "${LIBUI}"'
+  LibuiValidateTest ${?} 0 "${SHLIBPATH%/}/libui.sh" # FIXME! needs better validation value
+  return ${?}
+}
+
+return 0

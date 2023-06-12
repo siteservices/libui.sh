@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Error-f_Force_Exit
+#
+#####
+
+test_Error-f_Force_Exit () {
+  LibuiPerformTest 'Error -f "Test 1."'
+  LibuiValidateTest ${?} 1 'ERROR: Test 1.'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sort-c
+#
+#####
+
+test_Sort-c () {
+  LoadMod Sort
+  testlist=( OB vF Da h1 9x Ls Eu fx pQ KG Vw lC Tf p6 p9 ha 5V rH Ji AO 6 ZA No dq Vz 7H dP KB rM sx Cp dA ye PE Q8 cr Q9 2A 9T 4n )
+  ${ZSH} || test_cmp () { [ "${2}" \< "${1}" ]; }
+  ${ZSH} && test_cmp () { [[ "${2}" < "${1}" ]]; }
+  LibuiPerformTest 'Sort -c test_cmp testlist; printf "%s\n" "${testlist[*]}"'
+  LibuiValidateTest ${?} 0 'ye vF sx rM rH pQ p9 p6 lC ha h1 fx dq dP dA cr ZA Vz Vw Tf Q9 Q8 PE OB No Ls KG KB Ji Eu Da Cp AO 9x 9T 7H 6 5V 4n 2A'
+  return ${?}
+}
+
+return 0

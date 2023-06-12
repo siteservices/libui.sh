@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-R-F_Failure
+#
+#####
+
+test_Action-R-F_Failure () {
+  Action "ls -d /badpath"
+  LibuiPerformTest 'Action -R -F "ls -d /tmp"'
+  LibuiValidateTest ${?} 0 '/tmp'
+  return ${?}
+}
+
+return 0

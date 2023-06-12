@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter_Validation
+#
+#####
+
+test_AddParameter_Validation () {
+  LibuiPerformTest 'libui -x pv v'
+  LibuiValidateTest -r ${?} 0 '.*Validation test\. \(v == v\).*'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-q
+#
+#####
+
+test_Action-q () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Action -q "Test question?" "ls -d /tmp"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 '/tmp'
+  return ${?}
+}
+
+return 0

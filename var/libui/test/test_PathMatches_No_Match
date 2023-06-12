@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PathMatches_No_Match
+#
+#####
+
+test_PathMatches_No_Match () {
+  local td
+  GetTmp td
+  cd ${td}
+  LibuiPerformTest 'PathMatches / .'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

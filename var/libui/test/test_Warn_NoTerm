@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Warn_NoTerm
+#
+#####
+
+test_Warn_NoTerm () {
+  LibuiPerformTest 'Warn "Test 1."; Warn "Test 2."'
+  LibuiValidateTest ${?} 1 "WARNING: Test 1.${N}WARNING: Test 2."
+  return ${?}
+}
+
+return 0

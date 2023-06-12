@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verbose-X2
+#
+#####
+
+test_Verbose-X2 () {
+  LibuiPerformTest 'Verbose'
+  local tv=${?}
+  _vdb=false # reset verbose debug
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-Y -X 2 '
+
+return 0

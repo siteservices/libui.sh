@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-e_cvfile
+#
+#####
+
+test_ConfirmVar-e_cvfile () {
+  Action -W "touch ${TESTDIR}/cvfile"
+  testvar="${TESTDIR}/cvfile"
+  LibuiPerformTest 'ConfirmVar -e testvar'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

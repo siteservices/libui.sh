@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Y_Yes_Action-Cq
+#
+#####
+
+test_Y_Yes_Action-Cq () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Action -C -q "Yes question?" "ls -d /tmp"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 "(Confirm) Yes question? (y/n) [yes] yes${N}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-Y '
+
+return 0

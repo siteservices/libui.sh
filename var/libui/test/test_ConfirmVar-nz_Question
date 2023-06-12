@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-nz_Question
+#
+#####
+
+test_ConfirmVar-nz_Question () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  ConfirmVar -q 'Test question?' -z -n response <<< ''
+  TERMINAL="${t}"
+  LibuiPerformTest 'Tell "The value is: %s" "${response}"'
+  LibuiValidateTest ${?} 0 'The value is: '
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AllowRoot_False
+#
+#####
+
+test_AllowRoot_False () {
+  LoadMod Root
+  LibuiPerformTest 'AllowRoot'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

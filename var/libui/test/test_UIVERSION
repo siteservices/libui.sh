@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_UIVERSION
+#
+#####
+
+test_UIVERSION () {
+  #LoadMod Timer # note: loaded by main
+  LibuiPerformTest 'Tell -- "${UIVERSION[*]}"'
+  LibuiValidateTest -r ${?} 0 ".*libui\.sh.*"
+  return ${?}
+}
+
+return 0

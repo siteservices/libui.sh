@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Drop
+#
+#####
+
+test_Drop () {
+  local testarray; testarray=( -a -b -c xxx yyy zzz )
+  LibuiPerformTest 'Drop testarray "-b" && printf "%s.\n" "${testarray[*]}"'
+  LibuiValidateTest ${?} 0 '-a -c xxx yyy zzz.'
+  return ${?}
+}
+
+return 0

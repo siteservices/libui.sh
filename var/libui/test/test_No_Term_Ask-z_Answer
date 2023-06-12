@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_Ask-z_Answer
+#
+#####
+
+test_No_Term_Ask-z_Answer () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  Ask -z 'Test question?' <<< 'answer'
+  LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'The answer is: '
+  return ${?}
+}
+
+return 0

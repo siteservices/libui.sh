@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Open-a_Write
+#
+#####
+
+test_Open-a_Write () {
+  local lfile; GetTmp -f lfile
+  LoadMod File
+  Open -1 -a "${lfile}"
+  Write -1 'Test_Open-a_Write'
+  Write -1 'Test_Open-a_Write'
+  Close -1
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 "Test_Open-a_Write${N}Test_Open-a_Write"
+  return ${?}
+}
+
+return 0

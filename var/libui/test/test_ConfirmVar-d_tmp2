@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-d_tmp2
+#
+#####
+
+test_ConfirmVar-d_tmp2 () {
+  testvar='/tmp2'
+  _exitcleanup=false
+  LibuiPerformTest 'ConfirmVar -d testvar'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 'ERROR: The directory "/tmp2" does not exist. (testvar)'
+  return ${?}
+}
+
+return 0

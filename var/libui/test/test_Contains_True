@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Contains_True
+#
+#####
+
+test_Contains_True () {
+  local testarray; testarray=( a b c xxx yyy zzz )
+  LibuiPerformTest 'Contains testarray "b" && printf "Exists." || printf "Does not exist."'
+  LibuiValidateTest ${?} 0 'Exists.'
+  return ${?}
+}
+
+return 0

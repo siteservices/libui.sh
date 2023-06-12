@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RemoveFileList_Recursive
+#
+#####
+
+test_RemoveFileList_Recursive () {
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  Action -W "mkdir -p ${TESTDIR}/listdir-1"
+  Action -W "mkdir -p ${TESTDIR}/listdir\ 2"
+  Action -W "touch ${TESTDIR}/listdir-1/dirfile-1"
+  Action -W "touch ${TESTDIR}/listdir-1/dirfile\ 2"
+  GetFileList -r testlist "${TESTDIR}/list*"
+  LibuiPerformTest 'RemoveFileList testlist'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption-s-a
+#
+#####
+
+test_AddOption-s-a () {
+  LibuiPerformTest 'libui -x oa -h'
+  LibuiValidateTest -r ${?} 2 '.*-Z *Test a *- Test option a\. \(opta: a\).*'
+  return ${?}
+}
+
+return 0

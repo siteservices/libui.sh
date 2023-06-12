@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NoAction_False
+#
+#####
+
+test_NoAction_False () {
+  LibuiPerformTest 'NoAction'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

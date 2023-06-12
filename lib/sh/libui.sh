@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.829 # Fri Jun  9 00:45:32 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.830 # Sat Jun 10 15:41:34 EDT 2023
 
 #####
 #
@@ -2200,7 +2200,7 @@ LoadMod () { # [-P <path>] <libui_mod_name>
   ${_S} && ((_cLoadMod++))
   ${_T} && _Trace 'LoadMod [%s]' "${*}"
 
-  local _p="${SHLIBPATH}"
+  local _p="${SHLIBPATH%/}"
   local _rv=0
 
   ${_T} && _Trace 'Process LoadMod options. (%s)' "${*}"
@@ -2212,7 +2212,7 @@ LoadMod () { # [-P <path>] <libui_mod_name>
     case ${_o} in
       P)
         ${_T} && _Trace 'libui mod path. (%s)' "${OPTARG}"
-        _p="${OPTARG%/}/"
+        _p="${OPTARG%/}"
         ;;
 
       *)
@@ -2234,15 +2234,15 @@ LoadMod () { # [-P <path>] <libui_mod_name>
     local _c
     for _c in "${UIMOD[@]}"
     do
-      [[ "${_m}" == "libui${_c}.sh" ]] && _l=false && break
+      [[ "libui${_m}.sh" == "${_c}" ]] && _l=false && break
     done
   fi
   ${_T} && _Trace 'Check if %s libui mod needs to be loaded. (%s)' "${_l}"
   if ${_l}
   then
     ${_T} && _Trace 'Load libui mod. (%s / %s)' "${_p}" "${_m}"
-    [[ -f "${_p}libui${_m}.sh" ]] || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
-    source "${_p}libui${_m}.sh" "${@}"
+    [[ -f "${_p}/libui${_m}.sh" ]] || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
+    source "${_p}/libui${_m}.sh" "${@}"
   fi
   _rv=${?}
 
@@ -2390,7 +2390,7 @@ CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
-SHLIBPATH="${SHLIBPATH:-${LIBUI%/*}}/"
+SHLIBPATH="${SHLIBPATH:-${LIBUI%/*}}"
 [[ "${PATH}" =~ (.*:|^)"${SHLIBPATH%/}"($|:.*) ]] || PATH="${SHLIBPATH%/}${PATH:+:${PATH}}"
 DOMAIN="${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}"
 [[ 'local' == "${DOMAIN}" ]] && DOMAIN=

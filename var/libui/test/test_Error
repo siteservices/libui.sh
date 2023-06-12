@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Error
+#
+#####
+
+test_Error () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  _exitcleanup=false
+  LibuiPerformTest 'Error -F "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
+  return ${?}
+}
+
+return 0

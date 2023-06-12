@@ -1,0 +1,23 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_d_Bad
+#
+#####
+
+test_GetRealPath_d_Bad () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local rp
+  local td
+  GetTmp td
+  cd ${td}
+  _exitcleanup=false
+  LibuiPerformTest 'GetRealPath -P rp badpath/file'
+  local tv=${?}
+  _exitcleanup=true
+  cd -
+  LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) Invalid path provided. (badpath)"
+  return ${?}
+}
+
+return 0

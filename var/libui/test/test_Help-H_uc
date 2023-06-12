@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Help-H_uc
+#
+#####
+
+test_Help-H_uc () {
+  LibuiPerformTest 'Tell "Test -H help."'
+  LibuiValidateTest ${?} 2
+  return ${?}
+}
+
+# test setup
+_Test_errout=true
+_Test_opt+='-H '
+
+return 0

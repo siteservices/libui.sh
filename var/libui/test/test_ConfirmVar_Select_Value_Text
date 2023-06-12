@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_Select_Value_Text
+#
+#####
+
+test_ConfirmVar_Select_Value_Text () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  LibuiPerformTest 'ConfirmVar -s one -s two -s three -q "Test question?" response <<< "two"; printf "%s\n" "${response}"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
+  return ${?}
+}
+
+return 0

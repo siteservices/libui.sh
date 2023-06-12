@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-r_Good
+#
+#####
+
+test_Action-r_Good () {
+  retries=3
+  LibuiPerformTest 'Action -r 3 "RetryCountdown"'
+  LibuiValidateTest ${?} 0 "Bad${N}Bad${N}Good"
+  return ${?}
+}
+
+return 0

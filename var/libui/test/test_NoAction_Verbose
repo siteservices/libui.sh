@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NoAction_Verbose
+#
+#####
+
+test_NoAction_Verbose () {
+  LibuiPerformTest 'Action "ls /tmp.tst" 5>&1'
+  LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.tst \(PWD: .*\)'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X 2 -N '
+
+return 0

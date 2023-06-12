@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_Dir_Select_Var_Number
+#
+#####
+
+test_ConfirmVar_Dir_Select_Var_Number () {
+  Action -W "mkdir -p ${TESTDIR}/listdir-1"
+  Action -W "mkdir -p ${TESTDIR}/listdir\ 2"
+  GetFileList -d testlist "${TESTDIR}/list*"
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  LibuiPerformTest 'ConfirmVar -d -S testlist -q "Test question?" -P "${TESTDIR}" response <<< "2"; printf "%s\n" "${response}"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listdir 2${N}   2. listdir-1${N}${N}Test question? [] ${TESTDIR}/listdir-1"
+  return ${?}
+}
+
+return 0

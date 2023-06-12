@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_File_Select_Value_Text
+#
+#####
+
+test_ConfirmVar_File_Select_Value_Text () {
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  LibuiPerformTest 'ConfirmVar -f -s "${TESTDIR}/listfile-1" -s "${TESTDIR}/listfile 2" -q "Test question?" -P "${TESTDIR}" response <<< "listfile 2"; printf "%s\n" "${response}"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listfile-1${N}   2. listfile 2${N}${N}Test question? [] ${TESTDIR}/listfile 2"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PathMatches-P_Good
+#
+#####
+
+test_PathMatches-P_Good () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local td
+  GetTmp td
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "touch ${td}/pathdir1/filepath1"
+  Action -W "touch ${td}/pathdir1/filepath2"
+  LibuiPerformTest "PathMatches -P ${mp}${td}/pathdir1/filepath1 ${td}/pathdir1/filepath2"
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

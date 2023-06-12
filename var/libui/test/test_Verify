@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify
+#
+#####
+
+test_Verify () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Verify "Test verify?" <<< "yes"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Test verify? (y/n) [yes] '
+  return ${?}
+}
+
+return 0

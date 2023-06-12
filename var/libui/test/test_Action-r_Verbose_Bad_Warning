@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-r_Verbose_Bad_Warning
+#
+#####
+
+test_Action-r_Verbose_Bad_Warning () {
+  _vdb=true
+  retries=4
+  LibuiPerformTest 'Action -r 3 "RetryCountdown"'
+  LibuiValidateTest ${?} 1 "(Action) RetryCountdown (PWD: ${TESTDIR})${N}Bad${N}Bad${N}Bad${N}WARNING: (Action) Failure while evaluating command. (RetryCountdown, PWD: ${TESTDIR})"
+  return ${?}
+}
+
+return 0

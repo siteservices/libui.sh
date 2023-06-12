@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Warn-r
+#
+#####
+
+test_Warn-r () {
+  LibuiPerformTest 'Warn -r 5 "Test 1."'
+  LibuiValidateTest ${?} 5 'WARNING: Test 1.'
+  return ${?}
+}
+
+return 0

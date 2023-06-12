@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CMDLINE
+#
+#####
+
+test_CMDLINE () {
+  LibuiPerformTest 'Tell -- "${CMDLINE[*]}"'
+  LibuiValidateTest ${?} 0 "${script} ${arg[*]}"
+  return ${?}
+}
+
+return 0

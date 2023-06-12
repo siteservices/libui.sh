@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-Cq
+#
+#####
+
+test_Action-Cq () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Action -C -q "Verify question?" "ls -d /tmp" <<< "yes"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 '(Confirm) Verify question? (y/n) [yes] /tmp'
+  return ${?}
+}
+
+return 0

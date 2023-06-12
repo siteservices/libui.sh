@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Symlink_EndDir
+#
+#####
+
+test_GetRealPath_Symlink_EndDir () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local rp
+  local td
+  GetTmp td
+  Action -W "mkdir -p ${td}/pathdir2"
+  Action -W "mkdir -p ${td}/pathdir2/enddir"
+  Action -W "ln -s ${td}/pathdir2/enddir ${td}/dirlink2"
+  GetRealPath rp ${td}/dirlink2
+  LibuiPerformTest 'Tell -- "${rp}"'
+  LibuiValidateTest ${?} 0 "${mp}${td}/pathdir2/enddir"
+  return ${?}
+}
+
+return 0

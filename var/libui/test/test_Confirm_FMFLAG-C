@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Confirm_FMFLAG-C
+#
+#####
+
+test_Confirm_FMFLAG-C () {
+  LibuiPerformTest 'Tell "Test confirm -C FMFLAGS: %s." "${FMFLAGS}"'
+  LibuiValidateTest ${?} 0 'Test confirm -C FMFLAGS: -i.'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-C '
+
+return 0

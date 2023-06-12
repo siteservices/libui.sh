@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Tell_Log-a
+#
+#####
+
+test_Tell_Log-a () {
+  local lfile; GetTmp -f lfile
+  Tell -l "${lfile}" "Tell test 1."
+  Tell -l "${lfile}" "Tell test 2."
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 "Tell test 1.${N}Tell test 2."
+  return ${?}
+}
+
+return 0

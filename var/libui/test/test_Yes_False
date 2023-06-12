@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Yes_False
+#
+#####
+
+test_Yes_False () {
+  LibuiPerformTest 'Yes'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

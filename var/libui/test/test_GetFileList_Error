@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList_Error
+#
+#####
+
+test_GetFileList_Error () {
+  local rp
+  _exitcleanup=false
+  LibuiPerformTest 'GetFileList rp'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 1 "ERROR: \(GetFileList\) Called without a file specification\."
+  return ${?}
+}
+
+return 0

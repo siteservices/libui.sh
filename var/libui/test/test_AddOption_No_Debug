@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_No_Debug
+#
+#####
+
+test_AddOption_No_Debug () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*-X *XDebug *- *Set debug level to specified level\. \(level: 0\).*'
+  return ${?}
+}
+
+return 0

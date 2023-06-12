@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask_Variable
+#
+#####
+
+test_Ask_Variable () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  Yes -e
+  Ask -d 'default variable' -n testvar 'Test Ask with testvar?'
+  Yes -E
+  TERMINAL="${t}"
+  LibuiPerformTest 'Tell "Test variable: ${testvar}."'
+  LibuiValidateTest ${?} 0 'Test variable: default variable.'
+  return ${?}
+}
+
+return 0

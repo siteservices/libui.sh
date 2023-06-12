@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList_Empty_Error
+#
+#####
+
+test_GetFileList_Empty_Error () {
+  _exitcleanup=false
+  LibuiPerformTest "GetFileList -e testlist '${TESTDIR}/invalid*'"
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 2 "ERROR: \(GetFileList\) No file found\. \(.*\)"
+  return ${?}
+}
+
+return 0
