@@ -1,5 +1,18 @@
 # Change Log
 
+## v1.830
+
+### New Features / Enhancements
+
+* Split tests into individual test files in var/libui/test.
+* Updated libuiUtility mod and created LibuiTest mod.
+* Documentation updates.
+
+### Bug Fixes
+
+* Fix load mod handling in bash.
+* Fix some tests.
+
 ## v1.829
 
 ### New Features / Enhancements

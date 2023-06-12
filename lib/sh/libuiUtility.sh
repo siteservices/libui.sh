@@ -732,7 +732,8 @@ LibuiInstall () {
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
-    _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -name 'libui*') )
+    _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -type f -name 'libui*') )
+    _Util_files+=( $(find "${_Util_libuiroot}/var/libui" -name '.*.sw*' -prune -o -type f) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
