@@ -50,7 +50,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 6.4
+Version -r 1.829 6.4
 
 # load mods
 LoadMod File
@@ -137,7 +137,7 @@ do
     fi
 
     Trace 'Pull repo. (%s)' "${repo}"
-    if Action -i "Pulling latest updates. (${repo})" -f "Pull failure in ${repo}." -q "Pull in ${repo}?" ${mode} -c -l "${tmpdir}/${repo}-pull.log" 'git pull --all'
+    if Action -i "Pulling latest updates. (${repo})" -e "Pull failure in ${repo}." -q "Pull in ${repo}?" ${mode} -c -l "${tmpdir}/${repo}-pull.log" 'git pull --all'
     then
       Trace 'Check if up to date.'
       pullstatus=$(< "${tmpdir}/${repo}-pull.log")

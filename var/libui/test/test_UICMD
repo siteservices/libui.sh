@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_UICMD
+#
+#####
+
+test_UICMD () {
+  #LoadMod Timer # note: loaded by main
+  LibuiPerformTest 'Tell -- "${UICMD[*]}"'
+  LibuiValidateTest -r ${?} 0 ".*StartTimer GetElapsed FormatElapsed.*"
+  return ${?}
+}
+
+return 0

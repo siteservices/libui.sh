@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Current
+#
+#####
+
+test_GetRealPath_Current () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local rp
+  local td
+  GetTmp td
+  cd ${td}
+  GetRealPath rp .
+  cd -
+  LibuiPerformTest 'Tell -- "${rp}"'
+  LibuiValidateTest ${?} 0 "${mp}${td}"
+  return ${?}
+}
+
+return 0

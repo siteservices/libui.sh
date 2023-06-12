@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AA
+#
+#####
+
+test_AA () {
+  local bv="${BASH_VERSION%.*}"; [[ -n "${bv}" ]] && bv="${bv//.}" || bv=0
+  LibuiPerformTest 'Tell -- "${AA}"'
+  local tv=${?}
+  if ${ZSH} || ((40 <= bv))
+  then
+    LibuiValidateTest "${tv}" 0 'true'
+  else
+    LibuiValidateTest "${tv}" 0 'false'
+  fi
+  return ${?}
+}
+
+return 0

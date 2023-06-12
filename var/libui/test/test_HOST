@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_HOST
+#
+#####
+
+test_HOST () {
+  local f="$(/bin/hostname -f 2> /dev/null)"
+  local host; ${ZSH} && host="${(L)f%%\.*}" || host="$(printf '%s\n' "${f%%\.*}" | tr '[:upper:]' '[:lower:]')"
+  host="${host:-$(hostname -s 2> /dev/null)}"
+  host="${host:-$(uname -n 2> /dev/null)}"
+  LibuiPerformTest 'Tell -- "${HOST}"'
+  LibuiValidateTest ${?} 0 "${host}"
+  return ${?}
+}
+
+return 0

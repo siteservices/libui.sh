@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_aot
+#
+#####
+
+test_AddOption_aot () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*Option test\. \(o: 0, aot\).*'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x aot '
+
+return 0

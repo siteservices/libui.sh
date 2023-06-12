@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Symlink_DirFile
+#
+#####
+
+test_GetRealPath_Symlink_DirFile () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local rp
+  local td
+  GetTmp td
+  Action -W "mkdir -p ${td}/pathdir1"
+  Action -W "touch ${td}/pathdir1/filepath2"
+  Action -W "ln -s ${td}/pathdir1 ${td}/dirlink"
+  GetRealPath rp ${td}/dirlink/filepath2
+  LibuiPerformTest 'Tell -- "${rp}"'
+  LibuiValidateTest ${?} 0 "${mp}${td}/pathdir1/filepath2"
+  return ${?}
+}
+
+return 0

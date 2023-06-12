@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Verbose
+#
+#####
+
+test_Action_Verbose () {
+  LibuiPerformTest 'Action "ls -d /tmp"'
+  LibuiValidateTest -r ${?} 0 "\(Action\) ls -d /tmp \(PWD: .*\)${N}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X 2 '
+
+return 0

@@ -1,0 +1,36 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Record_2_Param
+#
+#####
+
+test_Record_2_Param () {
+  if ${AA}
+  then
+    LoadMod FileRecord
+    local lfile; GetTmp -f lfile
+    local ca; ca=( one two three four five )
+    declare -A da
+    da[one]="Test 1"
+    da[two]="Second"
+    da[three]="\$3,333.33"
+    da[four]="\"Test four.\""
+    da[five]="She said, \"five!\""
+    RecordOpen -1 "${lfile}"
+    RecordEntry -1 da ca
+    RecordClose -1
+    LibuiPerformTest "cat '${lfile}'"
+    LibuiValidateTest ${?} 0 'Test 1,Second,"$3,333.33","""Test four.""","She said, ""five!"""'
+  else
+    _exitcleanup=false
+    LibuiPerformTest 'LoadMod FileRecord'
+    local tv=${?}
+    _exitcleanup=true
+    LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(libuiRecord\) Requires associative arrays that .* does not provide\."
+    ((${?})) || Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+  fi
+  return ${?}
+}
+
+return 0

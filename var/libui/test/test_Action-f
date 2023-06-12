@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-f
+#
+#####
+
+test_Action-f () {
+  LibuiPerformTest 'Action -f "false"'
+  LibuiValidateTest ${?} 1 "ERROR: (Action) Failure while evaluating command."
+  return ${?}
+}
+
+return 0

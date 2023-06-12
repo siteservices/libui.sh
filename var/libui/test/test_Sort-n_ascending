@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sort-n_ascending
+#
+#####
+
+test_Sort-n_ascending () {
+  LoadMod Sort
+  testlist=( 37 08 50 25 89 02 83 06 50 37 61 89 38 20 30 92 23 82 70 06 11 51 47 72 45 22 42 87 43 76 76 78 15 10 46 5 91 72 73 64 )
+  LibuiPerformTest 'Sort -n testlist; printf "%s\n" "${testlist[*]}"'
+  LibuiValidateTest ${?} 0 '02 5 06 06 08 10 11 15 20 22 23 25 30 37 37 38 42 43 45 46 47 50 50 51 61 64 70 72 72 73 76 76 78 82 83 87 89 89 91 92'
+  return ${?}
+}
+
+return 0

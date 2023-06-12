@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.5
+Version -r 1.829 -m 1.5
 
 # defaults
 
@@ -64,14 +64,14 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> <date>
         ;;
 
       *)
-        Error -L '(ConvertDate) Unknnown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(ConvertDate) Unknnown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
   done
   shift $((OPTIND - 1))
   local _Date_var=${1}
-  ((2 == ${#})) || Error -L -e '(ConvertDate) Called without a variable name and source date.'
+  ((2 == ${#})) || Tell -E -f -L '(ConvertDate) Called without a variable name and source date.'
   shift
 
   ${_M} && _Trace 'Check for error.'

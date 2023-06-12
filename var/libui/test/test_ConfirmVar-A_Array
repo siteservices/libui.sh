@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-A_Array
+#
+#####
+
+test_ConfirmVar-A_Array () {
+  testvar=( 'test' )
+  _exitcleanup=false
+  LibuiPerformTest 'ConfirmVar -A testvar'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 'ERROR: The variable "testvar" is not an associative array.'
+  return ${?}
+}
+
+return 0

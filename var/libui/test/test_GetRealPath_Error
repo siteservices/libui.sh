@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Error
+#
+#####
+
+test_GetRealPath_Error () {
+  local rp
+  _exitcleanup=false
+  LibuiPerformTest 'GetRealPath rp /usr /bin'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(GetRealPath\) Invalid parameter count\."
+  return ${?}
+}
+
+return 0

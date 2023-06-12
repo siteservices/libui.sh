@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.9
+Version -r 1.829 -m 1.9
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.user}"
@@ -46,7 +46,7 @@ _SetUserInfo () {
   ${_S} && ((_c_SetUserInfo++))
   ${_M} && _Trace '_SetUserInfo [%s]' "${*}"
 
-  ${_quiet} && Error 'User setup required. Please execute without -Q (Quiet) option.'
+  ${_quiet} && Tell -E -f 'User setup required. Please execute without -Q (Quiet) option.'
 
   local _User_entry
   local _User_test
@@ -81,7 +81,7 @@ _SetUserInfo () {
         ;;
 
       *)
-        Error -L '(_SetUserInfo) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(_SetUserInfo) Unknown option. (-%s)' "${OPTARG}"
         ;;
 
     esac
@@ -207,9 +207,9 @@ _SetUserInfo () {
     } > "${userdotfile}"
     if ((${?}))
     then
-      Warn 'User information was not written to user dotfile. (%s)' "${userdotfile}"
+      Tell -W 'User information was not written to user dotfile. (%s)' "${userdotfile}"
     else
-      Alert 'New user dotfile was installed. (%s)' "${userdotfile}"
+      Tell -A 'New user dotfile was installed. (%s)' "${userdotfile}"
     fi
 
     source "${userdotfile}"

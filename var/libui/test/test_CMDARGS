@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CMDARGS
+#
+#####
+
+test_CMDARGS () {
+  LibuiPerformTest 'Tell -- "${CMDARGS[*]}"'
+  LibuiValidateTest ${?} 0 "${arg[*]}"
+  return ${?}
+}
+
+return 0

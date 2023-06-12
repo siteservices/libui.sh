@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify_True
+#
+#####
+
+test_Verify_True () {
+  _verify=true # set verify
+  LibuiPerformTest 'Verify'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

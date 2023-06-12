@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Log-t
+#
+#####
+
+test_Action_Log-t () {
+  local lfile; GetTmp -f lfile
+  Action -t -l "${lfile}" 'ls -d /tmp'
+  LibuiPerformTest "Action -t -l '${lfile}' 'ls -d /tmp'; cat '${lfile}'"
+  LibuiValidateTest -r ${?} 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
+  return ${?}
+}
+
+return 0

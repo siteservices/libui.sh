@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify_Failure
+#
+#####
+
+test_Verify_Failure () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  Verify "Test verify?" <<< "no"
+  TERMINAL="${t}"
+  LibuiPerformTest 'Verify'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

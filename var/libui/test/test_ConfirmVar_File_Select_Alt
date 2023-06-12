@@ -1,0 +1,24 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_File_Select_Alt
+#
+#####
+
+test_ConfirmVar_File_Select_Alt () {
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  Action -W "mkdir -p ${TESTDIR}/listdir-1"
+  Action -W "touch ${TESTDIR}/listdir-1/testfile\ 1"
+  GetFileList -f testlist "${TESTDIR}/list*"
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  LibuiPerformTest 'ConfirmVar -f -S testlist -q "Test question?" -P "${TESTDIR}" response <<< "${TESTDIR}/listdir-1/testfile 1"; printf "%s\n" "${response}"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. listfile 2${N}   2. listfile-1${N}${N}Test question? [] ${TESTDIR}/listdir-1/testfile 1"
+  return ${?}
+}
+
+return 0

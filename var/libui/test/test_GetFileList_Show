@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList_Show
+#
+#####
+
+test_GetFileList_Show () {
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  LibuiPerformTest "GetFileList -f testlist '${TESTDIR}/list*'; Tell -- '%s' \"\${testlist[*]}\""
+  LibuiValidateTest ${?} 0 "${TESTDIR}/listfile 2 ${TESTDIR}/listfile-1"
+  return ${?}
+}
+
+return 0

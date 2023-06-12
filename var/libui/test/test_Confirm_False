@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Confirm_False
+#
+#####
+
+test_Confirm_False () {
+  LibuiPerformTest 'Confirm'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

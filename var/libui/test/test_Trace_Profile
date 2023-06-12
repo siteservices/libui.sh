@@ -1,0 +1,26 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Trace_Profile
+#
+#####
+
+test_Trace_Profile () {
+  _hdb=true # set host debug output
+  _pdb=true # set profile output
+  LibuiPerformTest 'Trace "Test Trace Profile."'
+  local tv=${?}
+  _pdb=false # reset profile output
+  _hdb=false # reset host debug output
+  if ${ZSH}
+  then
+    LibuiValidateTest -r "${tv}" 0 '\+[0-9]+\.[0-9]+:.*TRACE: Test Trace Profile\.'
+    tv=${?}
+  else
+    LibuiValidateTest -r "${tv}" 0 '\+[0-9]+:.*TRACE: Test Trace Profile\.'
+    tv=${?}
+  fi
+  return "${tv}"
+}
+
+return 0

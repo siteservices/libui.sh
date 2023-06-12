@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RemoveFileList-f
+#
+#####
+
+test_RemoveFileList-f () {
+  Action -W "touch ${TESTDIR}/listfile-1"
+  Action -W "touch ${TESTDIR}/listfile\ 2"
+  GetFileList testlist "${TESTDIR}/listfile*"
+  LibuiPerformTest 'RemoveFileList -f testlist'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

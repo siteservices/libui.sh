@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter
+#
+#####
+
+test_AddParameter () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*<param> *- Parameter: Name of the test to perform, package filename, or COMMONROOT directory\. \(param: test_AddParameter\).*'
+  return ${?}
+}
+
+return 0

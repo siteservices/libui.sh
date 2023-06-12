@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_TERMINAL
+#
+#####
+
+test_TERMINAL () {
+  [[ -t 1 ]] && local pass="${TERMINAL:-true}" || local pass="${TERMINAL:-false}"
+  LibuiPerformTest 'Tell -- "${TERMINAL}"'
+  LibuiValidateTest ${?} 0 "${pass}"
+  return ${?}
+}
+
+return 0

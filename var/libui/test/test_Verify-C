@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify-C
+#
+#####
+
+test_Verify-C () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Verify -C "Test verify?"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

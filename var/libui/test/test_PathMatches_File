@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PathMatches_File
+#
+#####
+
+test_PathMatches_File () {
+  local td
+  GetTmp td
+  Action -W "touch ${td}/filepath1"
+  cd ${td}
+  LibuiPerformTest "PathMatches filepath1 ${td}/filepath1"
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

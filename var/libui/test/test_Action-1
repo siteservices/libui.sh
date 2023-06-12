@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-1
+#
+#####
+
+test_Action-1 () {
+  local lfile; GetTmp -f lfile
+  LoadMod File
+  Open -1 -c "${lfile}"
+  Action -1 "ls -d /tmp"
+  Close -1
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest -r ${?} 0 "ACTION \(.*\): ls -d /tmp${N}/tmp"
+  return ${?}
+}
+
+return 0

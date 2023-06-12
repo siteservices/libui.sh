@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sort-A_decending
+#
+#####
+
+test_Sort-A_decending () {
+  LoadMod Sort
+  testlist=( Dd IJ KX Lm yM Ua lp tk Wf QO 7D OR iE m6 ev Lb Dy 4z b8 4l LJ a2 rJ zj 4z EY EY gQ j0 p EQ Ov zh dI UK 5q ji Uw zV E1 )
+  LibuiPerformTest 'Sort -A testlist; printf "%s\n" "${testlist[*]}"'
+  LibuiValidateTest ${?} 0 'zj zh zV yM tk rJ p m6 lp ji j0 iE gQ ev dI b8 a2 Wf Uw Ua UK QO Ov OR Lm Lb LJ KX IJ EY EY EQ E1 Dy Dd 7D 5q 4z 4z 4l'
+  return ${?}
+}
+
+return 0

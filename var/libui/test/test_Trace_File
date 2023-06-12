@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Trace_File
+#
+#####
+
+test_Trace_File () {
+  local lfile; GetTmp -f lfile
+  (LIBUI_TRACE=true LIBUI_TRACEFILE="${lfile}" libui -x w)
+  LibuiPerformTest "grep 'Executed \"/.*/libui -x w\" on ' '${lfile}'"
+  LibuiValidateTest -r ${?} 0 "Executed \"${script} -x w\" on .*"
+  return ${?}
+}
+
+return 0

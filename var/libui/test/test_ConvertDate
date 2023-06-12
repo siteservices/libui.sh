@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConvertDate
+#
+#####
+
+test_ConvertDate () {
+  LoadMod Date
+  local short
+  local td="$(date '+%Y-%m-%d')"
+  ConvertDate short "$(date)"
+  LibuiPerformTest 'Tell "Date: %s" "${short}"'
+  LibuiValidateTest ${?} 0 "Date: ${td}"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_Undef
+#
+#####
+
+test_ConfirmVar_Undef () {
+  unset response
+  _exitcleanup=false
+  LibuiPerformTest 'ConfirmVar response'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 'ERROR: The variable "response" is required but not defined.'
+  return ${?}
+}
+
+return 0

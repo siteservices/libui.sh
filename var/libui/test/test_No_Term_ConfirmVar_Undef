@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_ConfirmVar_Undef
+#
+#####
+
+test_No_Term_ConfirmVar_Undef () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  unset noterm
+  LibuiPerformTest 'ConfirmVar noterm'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 1 'ERROR: The variable "noterm" is required but not defined.'
+  return ${?}
+}
+
+return 0

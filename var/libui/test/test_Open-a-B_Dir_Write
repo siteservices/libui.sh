@@ -1,0 +1,23 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Open-a-B_Dir_Write
+#
+#####
+
+test_Open-a-B_Dir_Write () {
+  local lfile; GetTmp -f lfile
+  local ldir; GetTmp -s ldir
+  LoadMod File
+  Open -1 -a -B "${ldir}" "${lfile}"
+  Write -1 'Test_Open-a-B_Dir_Write 1'
+  Close -1
+  Open -2 -a -B "${ldir}" "${lfile}"
+  Write -2 'Test_Open-a-B_Dir_Write 2'
+  Close -2
+  LibuiPerformTest "ls '${lfile}'*; ls '${ldir}'/*"
+  LibuiValidateTest ${?} 0 "${lfile}${N}${ldir}/${lfile##*/}.0.bz2${N}${ldir}/${lfile##*/}.1.bz2"
+  return ${?}
+}
+
+return 0

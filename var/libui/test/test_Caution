@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Caution
+#
+#####
+
+test_Caution () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Caution "Test 1."'
+  LibuiValidateTest ${?} 1 "${TJBL}${TCaution}CAUTION: Test 1.${T}${TCEL}"
+  return ${?}
+}
+
+return 0

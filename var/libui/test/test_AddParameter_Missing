@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter_Missing
+#
+#####
+
+test_AddParameter_Missing () {
+  LibuiPerformTest 'libui -p'
+  LibuiValidateTest -r ${?} 2 '.*ERROR: Missing parameter\. \(.*\).*'
+  return ${?}
+}
+
+return 0

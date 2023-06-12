@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NoAction_True
+#
+#####
+
+test_NoAction_True () {
+  _noaction=true # set no action
+  LibuiPerformTest 'Action "ls -lad /tmp" 5>&1'
+  LibuiValidateTest ${?} 0 '(No Action) ls -lad /tmp'
+  return ${?}
+}
+
+return 0

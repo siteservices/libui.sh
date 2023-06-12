@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.15
+Version -r 1.829 -m 1.15
 
 # defaults
 
@@ -263,7 +263,7 @@ Sleep () { # [-m "<message>"] [-u <interval>] [<sleep>]
           ;;
 
         *)
-          Error -L '(Sleep) Unknown option. (-%s)' "${OPTARG}"
+          Tell -E -f -L '(Sleep) Unknown option. (-%s)' "${OPTARG}"
           ;;
 
       esac

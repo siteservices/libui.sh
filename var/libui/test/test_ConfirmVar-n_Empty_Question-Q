@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-n_Empty_Question-Q
+#
+#####
+
+test_ConfirmVar-n_Empty_Question-Q () {
+  unset response
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'ConfirmVar -Q "Empty question?" -n response <<< "/tmp"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Empty question? [] '
+  return ${?}
+}
+
+return 0

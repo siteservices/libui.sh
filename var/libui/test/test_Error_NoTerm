@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Error_NoTerm
+#
+#####
+
+test_Error_NoTerm () {
+  _exitcleanup=false
+  LibuiPerformTest 'Error "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "ERROR: Test 1."
+  return ${?}
+}
+
+return 0

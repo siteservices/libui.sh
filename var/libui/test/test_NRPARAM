@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NRPARAM
+#
+#####
+
+test_NRPARAM () {
+  LibuiPerformTest 'Tell -- "${NRPARAM}"'
+  LibuiValidateTest ${?} 0 "1" # assumes normal parameters
+  return ${?}
+}
+
+return 0

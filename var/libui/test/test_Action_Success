@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Success
+#
+#####
+
+test_Action_Success () {
+  Action "ls -d /tmp"
+  LibuiPerformTest 'Action'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RemoveFileList_Error
+#
+#####
+
+test_RemoveFileList_Error () {
+  _exitcleanup=false
+  LibuiPerformTest 'RemoveFileList'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest -r "${tv}" 1 "ERROR in .*: \(RemoveFileList\) Called without a variable name\."
+  return ${?}
+}
+
+return 0

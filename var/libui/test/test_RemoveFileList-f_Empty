@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RemoveFileList-f_Empty
+#
+#####
+
+test_RemoveFileList-f_Empty () {
+  GetFileList testlist "${TESTDIR}/invalid-list*"
+  LibuiPerformTest 'RemoveFileList -f testlist'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

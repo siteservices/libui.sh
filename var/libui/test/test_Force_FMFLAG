@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Force_FMFLAG
+#
+#####
+
+test_Force_FMFLAG () {
+  LibuiPerformTest 'Tell "Test force FMFLAGS: %s." "${FMFLAGS}"'
+  LibuiValidateTest ${?} 0 'Test force FMFLAGS: .'
+  return ${?}
+}
+
+return 0

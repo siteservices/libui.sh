@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddParameter_Multiple
+#
+#####
+
+test_AddParameter_Multiple () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*<param> *- Parameter: Name of the test to perform, package filename, or COMMONROOT directory\. \(param: test_AddParameter_Multiple.* two.* three\).*'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x p '
+_Test_param+='two three'
+
+return 0

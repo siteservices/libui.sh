@@ -1,0 +1,70 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Help
+#
+#####
+
+test_Help () {
+  LibuiPerformTest 'libui -h'
+  LibuiValidateTest -i ${?} 2 "${helptext}"
+  return ${?}
+}
+
+# help compare text
+helptext="
+USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-H|-h|-N|-Q|-V|-Y] [-e <shells>] ... [-x <testopt>] ... [-P <file>] [-X <level>] [<param>]
+
+  -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (config: false)
+  -d  Demo             - Provide capabilities demonstration. (demo: false)
+  -e  Execution        - Specify shell for regression testing (otherwise both bash and zsh). (shells: zsh, bash)
+  -i  Install          - Install libui into provided directory (or COMMONROOT). (install: false)
+  -l  List             - List files that would be included in a libui package. (list: false)
+  -L  Lockfiles        - Remove leftover lockfiles. (unlock: false)
+  -m  Man Page         - Display man page. (manpage: false)
+  -M  Update Man Pages - Update man page timestamps to match respective script timestamp. (updateman: false)
+  -n  New Script       - Create a new libui script with the provided filename. (new: false)
+  -p  Package          - Create a libui.sh package with the provided filename. (package: false)
+  -R  Reset Caches     - Reset display and user information caches. (cachereset: false)
+  -s  Stats            - Display stats. (stats: false)
+  -t  Test             - Perform libui regression testing. (testing: false)
+  -T  (Single) Test    - Perform single test. (singletest: false)
+  -u  Update           - Update libui in COMMONROOT (or provided directory). (update: false)
+  -U  Unify            - Unify environment by removing files already in COMMONROOT (or provided directory). (unify: false)
+  -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
+  -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
+  -C  Confirm          - Confirm operations before performing them. (confirm: false)
+  -F  Force            - Force file operations. (force: false)
+  -H  Help             - Display usage message. (help: true)
+  -N  No Action        - Show operations without performing them. (noaction: false)
+  -P  Profile          - Load configuration profile. (file: )
+  -Q  Quiet            - Execute quietly. (quiet: false)
+  -V  Version          - Display version information. (version: false)
+  -X  XDebug           - Set debug level to specified level. (level: 0)
+  -Y  Yes              - Provide \"y\" or default answer to asked questions. (yes: false)
+
+  <param>              - Parameter: Name of the test to perform, package filename, or COMMONROOT directory. (param: )
+
+  Available option values:
+    For -e (Execution): zsh, bash
+    For -x (Test Option): b, B, d, m, n, o, oa, oA, os, oS, ov, p, pa, pA, ps, pS, pv, r, R, t, w, X, aot, one, two, three, four, five
+
+This script provides support functionality for the libui library including
+regression testing, capabilities demonstration, and usage statistics reports.
+
+Current test mode options:
+    AddOption F/T test. (b: false)
+    AddOption T/F test. (B: false)
+    Debug mode (d: false)
+    Multiuser test. (m: false)
+    No log test. (n: false)
+    Option test. (o: 0, X)
+    Parameter array test. (p: false)
+    Root allowed test. (r: false)
+    Root required test. (R: false)
+    Terminal test. (R: false)
+    Hello World test. (w: false)
+
+"
+
+return 0

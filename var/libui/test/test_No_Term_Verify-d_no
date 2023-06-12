@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_Verify-d_no
+#
+#####
+
+test_No_Term_Verify-d_no () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  LibuiPerformTest 'Verify -d "no" "Test verify?"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 1 'Test verify? (y/n) [no] no'
+  return ${?}
+}
+
+return 0

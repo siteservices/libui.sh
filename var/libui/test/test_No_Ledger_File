@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Ledger_File
+#
+#####
+
+test_No_Ledger_File () {
+  local ldb="${LIBUI_LEDGER:-true}"
+  LibuiPerformTest 'Tell "Test no ledger file. (%s)" "${_ldb}"'
+  LibuiValidateTest ${?} 0 "Test no ledger file. (${ldb})"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x n '
+
+return 0

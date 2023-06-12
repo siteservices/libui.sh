@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AO
+#
+#####
+
+test_AO () {
+  LibuiPerformTest 'Tell -- "${AO}"'
+  local tv=${?}
+  if ${ZSH}
+  then
+    LibuiValidateTest "${tv}" 0 1
+  else
+    LibuiValidateTest "${tv}" 0 0
+  fi
+  return ${?}
+}
+
+return 0

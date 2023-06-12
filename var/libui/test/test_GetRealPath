@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath
+#
+#####
+
+test_GetRealPath () {
+  local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
+  local rp=file
+  local td
+  GetTmp td
+  Action -W "touch ${td}/file"
+  cd ${td}
+  GetRealPath rp
+  cd -
+  LibuiPerformTest 'Tell -- "${rp}"'
+  LibuiValidateTest ${?} 0 "${mp}${td}/file"
+  return ${?}
+}
+
+return 0

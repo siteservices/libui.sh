@@ -1,0 +1,22 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Empty
+#
+#####
+
+test_GetRealPath_Empty () {
+  local rp
+  local td
+  GetTmp td
+  cd ${td}
+  _exitcleanup=false
+  LibuiPerformTest 'GetRealPath rp'
+  local tv=${?}
+  _exitcleanup=true
+  cd -
+  LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) No path provided. (rp)"
+  return ${?}
+}
+
+return 0

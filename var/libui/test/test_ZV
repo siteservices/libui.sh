@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ZV
+#
+#####
+
+test_ZV () {
+  local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0
+  LibuiPerformTest 'Tell -- "${ZV}"'
+  LibuiValidateTest ${?} 0 "${zv}"
+  return ${?}
+}
+
+return 0

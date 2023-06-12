@@ -1,0 +1,23 @@
+#!/usr/bin/env libui
+#####
+#
+# test_C_No_Term_Ask_Confirm_True
+#
+#####
+
+test_C_No_Term_Ask_Confirm_True () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  Yes -e
+  LibuiPerformTest 'Ask -C "Test No Term Ask -C with Confirm true?"'
+  local tv=${?}
+  Yes -E
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Test No Term Ask -C with Confirm true? [yes] yes'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-C '
+
+return 0

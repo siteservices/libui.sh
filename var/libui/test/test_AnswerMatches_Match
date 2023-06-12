@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AnswerMatches_Match
+#
+#####
+
+test_AnswerMatches_Match () {
+  ANSWER='yes'
+  LibuiPerformTest 'AnswerMatches y'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

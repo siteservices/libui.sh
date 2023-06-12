@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test.profile
+#
+#####
+
+test_LoadProfile_File () {
+  LibuiPerformTest 'Tell -- "${profile_data}"'
+  LibuiValidateTest ${?} 0 'Profile data loaded.'
+  return ${?}
+}
+
+# test setup
+_Test_opt+="-P '${TESTDIR}/test.profile' "
+printf '%s\n' "profile_data='Profile data loaded.'" > "${TESTDIR}/test.profile"
+
+return 0

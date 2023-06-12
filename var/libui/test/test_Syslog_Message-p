@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Syslog_Message-p
+#
+#####
+
+test_Syslog_Message-p () {
+  LoadMod Syslog
+  LibuiPerformTest 'Syslog -p user.info "Libui user.info test message."'
+  LibuiValidateTest ${?} 0 ''
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Write-af
+#
+#####
+
+test_Write-af () {
+  local lfile; GetTmp -f lfile
+  Write -a -f "${lfile}" 'Test_Write-af 1'
+  Write -f "${lfile}" 'Test_Write-af 2'
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 "Test_Write-af 1${N}Test_Write-af 2"
+  return ${?}
+}
+
+return 0

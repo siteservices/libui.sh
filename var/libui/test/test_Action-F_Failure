@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-F_Failure
+#
+#####
+
+test_Action-F_Failure () {
+  Action "ls -d /badpath"
+  LibuiPerformTest 'Action -F "ls -d /tmp"'
+  LibuiValidateTest -r ${?} 2 'WARNING: \(Action\) Skipping due to previous failure: .*'
+  return ${?}
+}
+
+return 0

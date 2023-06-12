@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verbose_False
+#
+#####
+
+test_Verbose_False () {
+  LibuiPerformTest 'Verbose'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

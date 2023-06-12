@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Trace
+#
+#####
+
+test_Trace () {
+  _hdb=true # set host debug output
+  LibuiPerformTest 'Trace "Test Trace command."'
+  local tv=${?}
+  _hdb=false # reset host debug output
+  LibuiValidateTest -r "${tv}" 0 '.*Test Trace command.'
+  return ${?}
+}
+
+return 0

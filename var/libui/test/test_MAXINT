@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_MAXINT
+#
+#####
+
+test_MAXINT () {
+  local maxint=9223372036854775807; ((2147483647 > maxint)) && maxint=2147483647
+  LibuiPerformTest 'Tell -- "${MAXINT}"'
+  LibuiValidateTest ${?} 0 "${maxint}"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Logfile
+#
+#####
+
+test_Logfile () {
+  [[ -f "${LIBUI_LOGFILE}" ]] && printf '' > "${LIBUI_LOGFILE}"
+  Action "ls -d /tmp"
+  LibuiPerformTest "cat '${LIBUI_LOGFILE}'"
+  LibuiValidateTest -r ${?} 0 "ACTION .*: ls -d /tmp${N}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_env+="LIBUI_LOGFILE='${TESTDIR}/logfile.log' "
+
+return 0

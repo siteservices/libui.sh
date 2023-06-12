@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-d_Question
+#
+#####
+
+test_ConfirmVar-d_Question () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  unset response
+  LibuiPerformTest "ConfirmVar -q 'Directory question?' -d response <<< '/tmp'"
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Directory question? [] '
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PV
+#
+#####
+
+test_PV () {
+  local pv=true
+  local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0; ${ZSH} && ((53 > zv)) && pv=false
+  LibuiPerformTest 'Tell -- "${PV}"'
+  LibuiValidateTest ${?} 0 "${pv}"
+  return ${?}
+}
+
+return 0

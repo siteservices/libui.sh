@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Pipe_Error
+#
+#####
+
+test_Action_Pipe_Error () {
+  LibuiPerformTest "Action -W -p ${AO} 'false | wc -w'"
+  LibuiValidateTest -r ${?} 1 '\s*0'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath_Bad
+#
+#####
+
+test_GetRealPath_Bad () {
+  local rp
+  _exitcleanup=false
+  LibuiPerformTest 'GetRealPath rp /badpath'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) Invalid path provided. (/badpath)"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask_Yes
+#
+#####
+
+test_Ask_Yes () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  Yes -e
+  LibuiPerformTest 'Ask "Test Ask command?"'
+  Yes -E
+  TERMINAL="${t}"
+  LibuiValidateTest ${?} 0 'Test Ask command? [yes] yes'
+  return ${?}
+}
+
+return 0

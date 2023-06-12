@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Stats_File
+#
+#####
+
+test_No_Stats_File () {
+  local sdb="${LIBUI_STATS:-true}"
+  LibuiPerformTest 'Tell "Test no stats file. (%s)" "${_sdb}"'
+  LibuiValidateTest ${?} 0 "Test no stats file. (${sdb})"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x n '
+
+return 0

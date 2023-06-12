@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-f_Empty
+#
+#####
+
+test_ConfirmVar-f_Empty () {
+  testvar="${TESTDIR}/invalid-cvfile"
+  _exitcleanup=false
+  LibuiPerformTest 'ConfirmVar -f testvar'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "ERROR: The file \"${TESTDIR}/invalid-cvfile\" does not exist. (testvar)"
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Write-cfp
+#
+#####
+
+test_Write-cfp () {
+  local lfile; GetTmp -f lfile
+  Write -c -f "${lfile}" -p 'Test %s.\n' '123'
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 'Test 123.'
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask-b
+#
+#####
+
+test_Ask-b () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Ask -b "Test boolean?" <<< "yes"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Test boolean? (y/n) [] '
+  return ${?}
+}
+
+return 0

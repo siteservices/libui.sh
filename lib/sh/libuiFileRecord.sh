@@ -32,9 +32,9 @@
 #
 #####
 
-Version -r 1.822 -m 1.5
+Version -r 1.829 -m 1.5
 
-${AA} || Error -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHELL}"
+${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHELL}"
 
 # load mods
 LoadMod File

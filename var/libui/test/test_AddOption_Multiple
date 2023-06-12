@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AddOption_Multiple
+#
+#####
+
+test_AddOption_Multiple () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*Option test\. \(o: 0, one two three four five\).*'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x one -x two -x three -x four -x five '
+
+return 0

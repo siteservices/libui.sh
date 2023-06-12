@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Quiet_False_Show
+#
+#####
+
+test_Quiet_False_Show () {
+  LibuiPerformTest 'Tell "Test Quiet Show."'
+  LibuiValidateTest ${?} 0 'Test Quiet Show.'
+  return ${?}
+}
+
+return 0

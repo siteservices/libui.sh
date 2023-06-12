@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Timer
+#
+#####
+
+test_Timer () {
+  #LoadMod Timer # note: loaded by main
+  local timer
+  StartTimer timer
+  sleep 1
+  GetElapsed timer
+  LibuiPerformTest 'Tell "Timed: %s" "${ELAPSED}"'
+  LibuiValidateTest -r ${?} 0 'Timed: (1|2).*'
+  return ${?}
+}
+
+return 0

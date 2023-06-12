@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_C_Confirm_Verify
+#
+#####
+
+test_C_Confirm_Verify () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  LibuiPerformTest 'Verify "Test verify?" <<< "yes"'
+  local tv=${?}
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 0 'Test verify? (y/n) [yes] '
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-C '
+
+return 0

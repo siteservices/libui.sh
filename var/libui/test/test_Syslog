@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Syslog
+#
+#####
+
+test_Syslog () {
+  LoadMod Syslog
+  LibuiPerformTest 'Syslog'
+  LibuiValidateTest ${?} 0 ''
+  return ${?}
+}
+
+return 0

@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.4
+Version -r 1.829 -m 1.4
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -37,7 +37,7 @@ LoadMod File
 
 # Validate workspace
 #
-# Syntax: ValidateWorkspace [-w|-W]
+# Syntax: ValidateWorkspace [-w]
 #
 # Example: ValidateWorkspace
 #
@@ -45,7 +45,6 @@ LoadMod File
 #
 # Options:
 #   -w - Changes directory to the workspace (does not return to working dir)
-#   -W - Disable warning about not using the current path
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
 # WORKSPACE environment variable will be used. If the WORKSPACE environment
@@ -53,7 +52,7 @@ LoadMod File
 # WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 UICMD+=( 'ValidateWorkspace' )
-ValidateWorkspace () { # [-w|-W]
+ValidateWorkspace () { # [-w]
   ${_S} && ((_cValidateWorkspace++))
   ${_M} && _Trace 'ValidateWorkspace [%s]' "${*}"
 
@@ -63,14 +62,13 @@ ValidateWorkspace () { # [-w|-W]
     ${_M} && _Trace 'ValidateWorkspace error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
-    local _WS_warn=true
     local _WS_ws=false
 
     ${_M} && _Trace 'Process ValidateWorkspace options. (%s)' "${*}"
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':wW' opt
+    while getopts ':w' opt
     do
       case ${opt} in
         w)
@@ -78,13 +76,8 @@ ValidateWorkspace () { # [-w|-W]
           _WS_ws=true
           ;;
 
-        W)
-          ${_M} && _Trace 'Disable warning.'
-          _WS_warn=false
-          ;;
-
         *)
-          Error -L '(ValidateWorkspace) Unknown option. (-%s)' "${OPTARG}"
+          Tell -E -f -L '(ValidateWorkspace) Unknown option. (-%s)' "${OPTARG}"
           ;;
 
       esac
@@ -98,8 +91,8 @@ ValidateWorkspace () { # [-w|-W]
     fi
     ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
-    ${_WS_warn} && ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
-        Warn 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
+    ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
+        Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
     ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
     ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null

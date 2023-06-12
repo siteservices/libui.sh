@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_Action-q
+#
+#####
+
+test_No_Term_Action-q () {
+  LibuiPerformTest 'Action -q "Test question?" "ls -d /tmp"'
+  LibuiValidateTest ${?} 0 '/tmp'
+  return ${?}
+}
+
+return 0

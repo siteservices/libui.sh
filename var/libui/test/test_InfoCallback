@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_InfoCallback
+#
+#####
+
+test_InfoCallback () {
+  LoadMod Info
+  LibuiPerformTest 'UsageInfo'
+  LibuiValidateTest -r ${?} 2 '.*Hello World test\..*'
+  return ${?}
+}
+
+return 0

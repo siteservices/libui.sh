@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Quiet_True_Show
+#
+#####
+
+test_Quiet_True_Show () {
+  _quiet=true # set quiet
+  LibuiPerformTest 'Tell "Test Quiet No Show."'
+  local tv=${?}
+  _quiet=false # reset quiet
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

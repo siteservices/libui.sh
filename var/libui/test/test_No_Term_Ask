@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Term_Ask
+#
+#####
+
+test_No_Term_Ask () {
+  local t="${TERMINAL}"
+  TERMINAL=false
+  _exitcleanup=false
+  LibuiPerformTest 'Ask "Test Ask command?"'
+  local tv=${?}
+  _exitcleanup=true
+  TERMINAL="${t}"
+  LibuiValidateTest "${tv}" 1 "ERROR: (Ask) Question asked without a terminal, no default, and a response required."
+  return ${?}
+}
+
+return 0

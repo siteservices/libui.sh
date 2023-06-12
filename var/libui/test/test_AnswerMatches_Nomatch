@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AnswerMatches_Nomatch
+#
+#####
+
+test_AnswerMatches_Nomatch () {
+  ANSWER='no'
+  LibuiPerformTest 'AnswerMatches y'
+  LibuiValidateTest ${?} 1
+  return ${?}
+}
+
+return 0

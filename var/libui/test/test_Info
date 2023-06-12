@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Info
+#
+#####
+
+test_Info () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Info "Test 1."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}"
+  return ${?}
+}
+
+return 0

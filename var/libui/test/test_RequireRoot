@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_RequireRoot
+#
+#####
+
+test_RequireRoot () {
+  LibuiPerformTest 'Tell "Test require root."'
+  LibuiValidateTest ${?} 1 "ERROR: You must be root to execute ${CMD}."
+  return ${?}
+}
+
+# test setup
+_Test_errout=true
+_Test_opt+='-x R '
+
+return 0

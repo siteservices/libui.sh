@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar_Undef_Debug
+#
+#####
+
+test_ConfirmVar_Undef_Debug () {
+  unset response
+  local x=%{_xdb}
+  _xdb=1
+  LibuiPerformTest 'ConfirmVar response'
+  local tv=${?}
+  _xdb="${x}"
+  LibuiValidateTest -r "${tv}" 1 'ERROR in .*: The variable "response" is required but not defined.'
+  return ${?}
+}
+
+return 0

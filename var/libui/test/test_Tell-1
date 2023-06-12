@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Tell-1
+#
+#####
+
+test_Tell-1 () {
+  local lfile; GetTmp -f lfile
+  LoadMod File
+  Open -1 -c "${lfile}"
+  Tell -1 "Test Tell log file."
+  Close -1
+  LibuiPerformTest "cat '${lfile}'"
+  LibuiValidateTest ${?} 0 "Test Tell log file."
+  return ${?}
+}
+
+return 0

@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_No_Trace_File
+#
+#####
+
+test_No_Trace_File () {
+  local tdb="${LIBUI_TRACE:-true}"
+  LibuiPerformTest 'Tell "Test no trace file. (%s)" "${_tdb}"'
+  LibuiValidateTest ${?} 0 "Test no trace file. (${tdb})"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x n '
+
+return 0

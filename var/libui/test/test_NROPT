@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NROPT
+#
+#####
+
+test_NROPT () {
+  ${_Test_debug} && local p=2 || local p=1
+  LibuiPerformTest 'Tell -- "${NROPT}"'
+  LibuiValidateTest ${?} 0 "${p}"
+  return ${?}
+}
+
+return 0

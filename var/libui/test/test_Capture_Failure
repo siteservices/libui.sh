@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Capture_Failure
+#
+#####
+
+test_Capture_Failure () {
+  TestFunction () { printf 'Out\n'; printf 'Err\n' > /dev/stderr; return 5; }
+  Action 'Capture so se sr TestFunction'
+  LibuiPerformTest "Tell 'rv: %s, OUT: %s, ERR: %s, RV: %s.' '${?}' '${so}' '${se}' '${sr}'"
+  LibuiValidateTest ${?} 0 'rv: 5, OUT: Out, ERR: Err, RV: 5.'
+  return ${?}
+}
+
+return 0

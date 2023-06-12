@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Preinit
+#
+#####
+
+test_Preinit () {
+  LibuiPerformTest 'AddOption B'
+  LibuiValidateTest -r ${?} 1 'ERROR .* \(AddOption\) Must be called before Initialize\.'
+  return ${?}
+}
+
+return 0

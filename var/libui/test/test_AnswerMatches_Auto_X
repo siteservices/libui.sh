@@ -1,0 +1,20 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AnswerMatches_Auto_X
+#
+#####
+
+test_AnswerMatches_Auto_X () {
+  local t="${TERMINAL}"
+  TERMINAL=true
+  Yes -e
+  Ask 'Test AnswerMatches X command?'
+  Yes -E
+  TERMINAL="${t}"
+  LibuiPerformTest 'AnswerMatches X'
+  LibuiValidateTest ${?} 1 ''
+  return ${?}
+}
+
+return 0

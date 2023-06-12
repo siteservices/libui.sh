@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ConfirmVar-A_AA
+#
+#####
+
+test_ConfirmVar-A_AA () {
+  if ${AA}
+  then
+    typeset -A testvar
+    testvar['array']='test'
+    LibuiPerformTest 'ConfirmVar -A testvar'
+    LibuiValidateTest ${?} 0
+  else
+    Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHELL}" "${BASH_VERSION}"
+  fi
+  return ${?}
+}
+
+return 0
