@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.15
+Version -r 1.831 -m 1.16
 
 # defaults
 
@@ -57,7 +57,20 @@ StartSpinner () { # [<info_message>]
       if [[ -t 2 ]] && ! Error
       then
         ${_M} && _Trace 'Display message. (%s)' "${*}"
-        [[ -n "${@}" ]] && printf "${DJBL}${DSpinner}%s${D} ${DCEL}" "${*}" >&5 # duplicate stderr
+        local _s
+        ${ZSH} && local _w='.' || local _w='?'
+        if [[ "${1}" =~ (^|[^%])%([^%]|$) ]]
+        then
+          _s="${1}"
+          shift
+        elif [[ "${1}" =~ \\\\${_w} ]]
+        then
+          _s="${1}%s"
+          shift
+        else
+          _s='%s'
+        fi
+        [[ -n "${@}" ]] && printf "${DJBL}${DSpinner}${_s}${D} ${DCEL}" "${@}" >&5 # duplicate stderr
 
         ${_M} && _Trace 'Starting spinner.'
         local _Spinner_i
@@ -224,19 +237,19 @@ WaitSpinner () {
 
 # Display countdown while waiting
 #
-# Syntax: Sleep [-m "<message>"] [-u <interval>] [<sleep>]
+# Syntax: Sleep [-i "<message>"] [-u <interval>] [<sleep>]
 #
-# Example: Sleep -u 5 60
+# Example: Sleep -u 10 60
 #
 # Result: Displays "Waiting 60..." and then counts down while updating the
-# message every 5 seconds until 60 seconds have elapsed.
+# message every 10 seconds until 60 seconds have elapsed.
 #
 # Note: The <message> should include one "%s" to capture the countdown. If
 # <sleep> is not provided, will sleep 1 second. If <interval> is not provided,
 # it will default to 1 second.
 #
 UICMD+=( 'Sleep' )
-Sleep () { # [-m "<message>"] [-u <interval>] [<sleep>]
+Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
   ${_S} && ((_cSleep++))
   ${_M} && _Trace 'Sleep [%s]' "${*}"
 
@@ -244,17 +257,17 @@ Sleep () { # [-m "<message>"] [-u <interval>] [<sleep>]
   if [[ -t 2 ]]
   then
     local _Spinner_u=1
-    local _Spinner_m='Waiting %s...'
+    local _Spinner_i='Waiting %s...'
 
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':m:u:' opt
+    while getopts ':i:u:' opt
     do
       case ${opt} in
-        m)
+        i)
           ${_M} && _Trace 'Message. (%s)' "${OPTARG}"
-          _Spinner_m="${OPTARG}"
+          _Spinner_i="${OPTARG}"
           ;;
 
         u)
@@ -274,7 +287,7 @@ Sleep () { # [-m "<message>"] [-u <interval>] [<sleep>]
     ${_M} && _Trace 'Verbose sleep. (%s)' "${_Spinner_c}"
     while ((0 < (_Spinner_c-=${_Spinner_u})))
     do
-      printf "${DJBL}${DInfo}${_Spinner_m}${D}${DCEL}" "${_Spinner_c}" >&5 # duplicate stderr
+      printf "${DJBL}${DInfo}${_Spinner_i}${D}${DCEL}" "${_Spinner_c}" >&5 # duplicate stderr
       sleep ${_Spinner_u}
     done
     printf "${DJBL}${DCEL}" >&5 # duplicate stderr

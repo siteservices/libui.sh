@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.830 -m 1.5
+Version -r 1.831 -m 1.6
 
 ##### configuration
 
@@ -730,7 +730,7 @@ LibuiInstall () {
   ${_S} && ((_cLibuiInstall++))
   ${_M} && _Trace 'LibuiInstall [%s]' "${*}"
 
-  StartSpinner
+  StartSpinner 'Installing into commonroot "%s".' "${COMMONROOT}"
 
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
@@ -827,6 +827,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
 
   pushd "${_Util_libuiroot}" > /dev/null
 
+  StartSpinner 'Comparing "%s" with commonroot "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
+
   ${_M} && _Trace 'Verify %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
   for _Util_file in $(find . -name '.*.sw*' -prune -o -type f -print)
   do
@@ -848,6 +850,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
     fi
   done
 
+  StopSpinner
+
   ${_M} && _Trace 'Check for different files. (%s)' "${_Util_different}"
   if ${_Util_different}
   then
@@ -857,7 +861,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
       if Verify 'Are you sure you wish to update files in %s from your environment (%s)?' "${COMMONROOT}" "${_Util_libuiroot}"
       then
         ${_M} && _Trace 'Update %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-        StartSpinner
+        StartSpinner 'Updating commonroot "%s".' "${COMMONROOT}"
         pushd "${_Util_libuiroot}" > /dev/null
         for _Util_file in $(find . -name '.*.sw*' -prune -o -type f -print)
         do
@@ -878,7 +882,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
       if Verify 'Are you sure you wish to remove files from %s that exist in %s?' "${_Util_libuiroot}" "${COMMONROOT}"
       then
         ${_M} && _Trace 'Unify user environment with %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
-        StartSpinner
+        StartSpinner 'Unifying with commonroot "%s".' "${COMMONROOT}"
         pushd "${_Util_libuiroot}" > /dev/null
         for _Util_file in $(find . -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
         do

@@ -1,11 +1,25 @@
 # Change Log
 
+## v1.831
+
+### New Features / Enhancements
+
+* Improved information message handling in StartSpinner and Sleep
+
+### Incompatibilities
+
+* Change Sleep -m (Message) to -i (Info Message).
+
+### Bug Fixes
+
+* Fix command typo in libui SSH mod. :)
+
 ## v1.830
 
 ### New Features / Enhancements
 
 * Split tests into individual test files in var/libui/test.
-* Updated libuiUtility mod and created LibuiTest mod.
+* Updated libui Utility mod and created Libui Test mod.
 * Documentation updates.
 
 ### Bug Fixes
@@ -57,7 +71,7 @@
 * Change Spinner output from STDERR to duplicate STDERR file descriptor (5).
 * Redirect Action -i \<message\> (Info) message to duplicate STDERR fd (5).
 * Simplify and fix Action -t (Tee) in bash.
-* Change \_fip to \_File\_ip in FileRecord mod.
+* Change \_fip to \_File\_ip in libui FileRecord mod.
 * Fix LoadMod to prevent reloading mod.
 * Fix Error location in zsh (using funcfiletrace[2]).
 * Update mless to support \\\<, \\\>, and \\\_.

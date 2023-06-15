@@ -36,7 +36,7 @@ user interface library
 .Sy WaitSpinner
 .Pp
 .Sy Sleep
-.Op Fl m Ar <message>
+.Op Fl i Ar <message>
 .Op Fl u Ar <interval>
 .Op Ar <sleep>
 .Sh DESCRIPTION
@@ -155,24 +155,25 @@ The following command displays a countdown message while waiting for time to
 pass:
 .Bd -ragged -offset 4n
 .Sy Sleep
-.Op Fl m Ar "<message>"
+.Op Fl i Ar "<message>"
 .Op Fl u Ar <interval>
 .Op Ar <sleep>
 .Ed
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
-.It Fl m Ar "<message>"
+.It Fl i Ar "<message>"
 Use the
 .Ar "<message>"
 text to display the countdown message.
 The provided
 .Ar "<message>"
-should include one "%s" to mark where the countdown value should be placed.
+should include one "%s" to mark where the countdown value (seconds remaining)
+should be placed.
 The default message if the
-.Fl m
-(Message) option is not provided is, "Waiting %s...".
+.Fl i
+(Info Message) option is not provided is: "Waiting %s...".
 .It Fl u Ar <interval>
-The number of seconds to sleep between updates to the counter.
+The number of seconds to sleep between updates to the message.
 The default is one second if an
 Ar <interval>
 is not provided.

@@ -691,7 +691,8 @@ the remaining seconds and defaults to:
 Waiting %s...
 ```
 
-* **-m** - the message to display (include "%s" to display seconds)
+* **-i** - the message to display in sleep (include "%s" for seconds remaining)
+* **-u** - the number of seconds to sleep between updates to the message
 
 ```
 Sleep [-m "<message>"] [-u <interval>] [<sleep>]
