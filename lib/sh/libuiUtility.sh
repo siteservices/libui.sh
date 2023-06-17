@@ -435,7 +435,6 @@ LibuiDemo () {
   Tell "\t${DConfirm}Confirm format."
   Tell "\t${DError}Error format."
   Tell "\t${DInfo}Info format."
-  Tell "\t${DNoAction}No Action format."
   Tell "\t${DOptions}Options format."
   Tell "\t${DQuestion}Question format."
   Tell "\t${DSpinner}Spinner format."

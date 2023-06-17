@@ -1,4 +1,4 @@
-.\" Manpage for setworkspace {libui tool}
+.\" Manpage for wssetup {libui tool}
 .\" Please contact fharvell@siteservices.net to correct errors or typos.
 .\"
 .\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
@@ -14,13 +14,13 @@
 .\" or in connection with this content or use of the associated files.
 .\"
 .Dd June 5, 2023
-.Dt SETWORKSPACE 1
+.Dt WSSETUP 1
 .Os
 .Sh NAME
-.Nm setworkspace
-.Nd Set up the provided directory as the current workspace.
+.Nm wssetup
+.Nd Set up the provided directory as the current workspace
 .Sh SYNOPSIS
-.Sy setworkspace
+.Sy wssetup
 .Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Ar <workspace>
 .Sh DESCRIPTION
@@ -31,7 +31,7 @@ The
 .Nm
 script can be executed using the following:
 .Bd -ragged -offset 4n
-.Sy setworkspace
+.Sy wssetup
 .Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Ar <workspace>
 .Ed
@@ -62,7 +62,7 @@ or
 (Version),
 .Fl X Ar <level>
 (XDebug
-.Ar <level> ) Ns ,
+.Ar <level> ) ,
 and
 .Fl Y
 (Yes).
@@ -84,7 +84,7 @@ environment variable.
 .Sh EXAMPLES
 Some example uses include:
 .Bd -literal -offset 4n
-.Sy setworkspace path/to/workspace
+.Sy wssetup path/to/workspace
 .Ed
 .Pp
 This creates a .workspace file in the user's home directory that contains shell

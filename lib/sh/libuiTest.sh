@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 1.830 -m 1.830
+Version -r 1.830 -m 1.1
 
 ##### configuration
 
@@ -317,11 +317,6 @@ LibuiTest () {
     GetElapsed _Test_logtimer
     Tell 'Completed %d tests in %.4f seconds on %s.' "${#_Test_tests[@]}" "${ELAPSED}" "$(date)"
 
-    ${_M} && _Trace 'Check version equivalence. (%s)' "${Version[1]##* }"
-    local _Test_version="${UIVERSION[-1]##* }"
-    ${_M} && _Trace 'Check for test / UI version compatability. (test: %s, libui: %s)' "${_Test_version}" "${LIBUI_VERSION}"
-    ((${_Test_version//.} == ${LIBUI_VERSION//.})) || Tell -W '%s: Test script and libui versions do not match. (test: %s, libui: %s)' "${CMD}" "${_Test_version}" "${LIBUI_VERSION}"
-
     ${_M} && _Trace 'Test suite results. (%s)' "${_Test_success}"
     ${_M} && _Trace 'Report. (%s)' "${_Test_success}"
     if ${_Test_success}
@@ -436,10 +431,10 @@ LibuiGetDisplayTestValues () {
   TError="${Tbr}${Tb}${TFy}"
   TInfo="${TFc}"
   TOptions="${Tb}"
-  TQuestion="${Tb}${TFc}"
+  TQuestion="${Tb}${Tsu}"
   TSpinner="${Tb}${TFc}"
   TTell="${Tb}"
-  TTrace="${Tfc}"
+  TTrace="${Td}"
   TWarn="${Tby}${TBy}${Tf0}"
   T0="${T}${Tb}${Tsu}" # display modes
   T1="${T}${Tb}${TFr}"

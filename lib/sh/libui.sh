@@ -1839,7 +1839,7 @@ Initialize () {
       if ${_oa[${_i}]} && [[ -z "${_v}" && 1 -eq ${#_s[@]} ]]
       then
         ${_om[${_i}]} && eval "${_ovar[${_i}]}=( \"${_s[${AO}]}\" )" || eval "${_ovar[${_i}]}=\"${_s[${AO}]}\""
-        _d+="${DCaution}CAUTION:${D} Option -${_p} (${_ok[${_i}]}) was defaulted to: ${DConfirm}"
+        _d+="${DCaution}CAUTION: Option -${_p} (${_ok[${_i}]}) was defaulted to:${D} ${DConfirm}"
         [[ -n "${_op[${_i}]}" ]] && _d+="${_s[${AO}]/${_op[${_i}]%\/}\/}${D}.${DCEL}\n" || _d+="${_s[${AO}]}${D}.${DCEL}\n"
       fi
 
@@ -2326,10 +2326,10 @@ _Terminal () {
         printf 'DError="${Dbr}${Db}${DFy}"\n'
         printf 'DInfo="${DFc}"\n'
         printf 'DOptions="${Db}"\n'
-        printf 'DQuestion="${Db}${DFc}"\n'
+        printf 'DQuestion="${Db}${Dsu}"\n'
         printf 'DSpinner="${Db}${DFc}"\n'
         printf 'DTell="${Db}"\n'
-        printf 'DTrace="${Dfc}"\n'
+        printf 'DTrace="${Dd}"\n'
         printf 'DWarn="${Dby}${DBy}${Df0}"\n'
         printf 'D0="${D}${Db}${Dsu}"\n' # display modes
         printf 'D1="${D}${Db}${DFr}"\n'
