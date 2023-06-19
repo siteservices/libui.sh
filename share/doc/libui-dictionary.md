@@ -8,6 +8,7 @@ Basic libui library functionality can be extended with the following mods:
 * File (man libuiFile.sh) - File Support
 * FileRecord (man libuiFileRecord.sh) - CSV File Records Support
 * Info (man libuiInfo.sh) - Libui Information Utilities
+* Libui (man libuiLibui.sh) - Libui Support Mod (see addendum dictionary)
 * Multiuser (man libuiMultiuser.sh) - Libui Multiuser Support
 * Package (man libuiPackage.sh) - Package Utilities
 * Profile (man libuiProfile.sh) - Profile Configuration File Support
@@ -18,7 +19,7 @@ Basic libui library functionality can be extended with the following mods:
 * Syslog (man libuiSyslog.sh) - System Log Support
 * Timer (man libuiTimer.sh) - Libui Timer Support
 * User (man libuiUser.sh) - Libui User Support
-* Utility (man libuiUtility.sh) - Libui Utilities (see addendum dictionary)
+* Utility (man libuiUtility.sh) - Libui Utilities
 * Workspace (man libuiWorkspace.sh) - Workspace Support
 
 Man pages are available for the above: man 3 libui{Mod}.sh

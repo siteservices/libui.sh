@@ -57,13 +57,13 @@ else
   source "${SHLIBPATH%/}/libui.sh" "${0}" "${@}"
 
   # load mods
-  LoadMod Utility
+  LoadMod Libui
 
   # initialize UI
   Initialize
 
-  # perform utility actions
-  _LibuiUtility
+  # process actions
+  _LibuiProcess
 fi
 
 Exit ${?}

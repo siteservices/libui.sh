@@ -403,9 +403,9 @@ LibuiGetDisplayTestValues () {
     Tf7="$(tput bold; tput setaf 7)" # white
   fi
   Tb0="$(tput setab 0)" # black
-  Tbr="$(tput bold; tput setab 1)" # red
+  Tbr="$(tput setab 1)" # red
   Tbg="$(tput setab 2)" # green
-  Tby="$(tput bold; tput setab 3)" # yellow
+  Tby="$(tput setab 3)" # yellow
   Tbb="$(tput setab 4)" # blue
   Tbm="$(tput setab 5)" # magenta
   Tbc="$(tput setab 6)" # cyan
@@ -425,13 +425,13 @@ LibuiGetDisplayTestValues () {
   TAction="${Tfb}" # display formats
   TAlarm="${Td}${Tfr}"
   TAlert="${Tb}${TFg}"
-  TAnswer="${Td}${Tfy}"
+  TAnswer="${Tfy}"
   TCaution="${TFm}"
   TConfirm="${Tb}${TFy}"
   TError="${Tbr}${Tb}${TFy}"
   TInfo="${TFc}"
   TOptions="${Tb}"
-  TQuestion="${Tb}${Tsu}"
+  TQuestion="${Tfc}${Tsu}"
   TSpinner="${Tb}${TFc}"
   TTell="${Tb}"
   TTrace="${Td}"

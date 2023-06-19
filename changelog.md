@@ -4,7 +4,11 @@
 
 ### New Features / Enhancements
 
-* Improved information message handling in StartSpinner and Sleep
+* Improved information message handling in StartSpinner and Sleep.
+* Adjustments to the display times (Question, Answer, yellow, red).
+* Moved libui tools from LibuiUtility mod to LibuiLibui mod.
+* Moved utility functions from libui.sh to libuiUtility mod.
+* Added MLESSPATH support to mless.
 
 ### Incompatibilities
 
@@ -12,7 +16,8 @@
 
 ### Bug Fixes
 
-* Fix command typo in libui SSH mod. :)
+* Improved backtick (\`) handling in mless.
+* Fix command typo in libui SSH mod.
 
 ## v1.830
 
