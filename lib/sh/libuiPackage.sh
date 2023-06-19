@@ -27,13 +27,13 @@
 #
 #####
 
-Version -r 1.829 -m 1.12
+Version -r 1.831 -m 1.13
 
 # defaults
 
 # Create Self-Extracting Package Header
 #
-# Syntax: _CreatePackageHeader [-a -S -T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+# Syntax: _CreatePackageHeader [-a|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
 #
 # Example: _CreatePackageHeader -T -i '\${d}/path/to/installer' -a package.tarp
 #
@@ -41,7 +41,7 @@ Version -r 1.829 -m 1.12
 # configured to execute "<tempdir>/path/to/installer $@ <archive>" when executed.
 #
 UICMD+=( '_CreatePackageHeader' )
-_CreatePackageHeader () { # [-a -S -T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+_CreatePackageHeader () { # [-a|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
   ${_S} && ((_c_CreatePackageHeader++))
   ${_M} && _Trace '_CreatePackageHeader [%s]' "${*}"
 
@@ -62,7 +62,7 @@ _CreatePackageHeader () { # [-a -S -T] [-d <description>] [-e <environment_spec>
   do
     case ${opt} in
       a)
-        ${_M} && _Trace 'Append archive.'
+        ${_M} && _Trace 'Append archive filename to installer command line.'
         _Package_append=' "${a}"'
         ;;
 
@@ -116,8 +116,7 @@ _CreatePackageHeader () { # [-a -S -T] [-d <description>] [-e <environment_spec>
     return ${ERRV}
   else
     ${_M} && _Trace 'Generate self-extracting package header. (%s)' "${1}"
-(
-cat <<EOF
+    cat <<EOF > "${1}"
 #!/bin/zsh
 #####
 #
@@ -134,7 +133,7 @@ l=\$(head -n 33 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || exit 1
 t="\$(mktemp -d)" || exit 1
 a="\${0##*/}"; a="\${t}/\${a%\\.*}.${_Package_archive}"
 tail -n +34 "\${0}" > "\${a}"
-[ "\${1}" = "-e" ] && mv "\${a}" ./ && rmdir "\${t}" && exit 0
+[ "\${1}" = '-e' ] && mv "\${a}" ./ && rmdir "\${t}" && exit 0
 d="\${t}/a"
 mkdir "\${d}" || exit 1
 cd "\${d}" > /dev/null
@@ -152,7 +151,6 @@ exit 0
 
 ${_Package_null}__PAYLOAD__
 EOF
-) > "${1}"
 
     ${_M} && _Trace '_CreatePackageHeader return. (%s)' 0
     return 0
@@ -161,14 +159,14 @@ EOF
 
 # Create Self-Extracting Package Archive
 #
-# Syntax: CreatePackage [-a -l -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
+# Syntax: CreatePackage [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
 #
 # Example: CreatePackage -f filelist -s ''/source/dir' package.tarp
 #
 # Result: Creates a package.tarp package containing the files in the filelist array from the /source/dir directory.
 #
 UICMD+=( 'CreatePackage' )
-CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
+CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
   ${_S} && ((_cCreatePackage++))
   ${_M} && _Trace 'CreatePackage [%s]' "${*}"
 
@@ -184,16 +182,17 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
   local _Package_sharp=false
   local _Package_tarp=true
   local _Package_compression='-j'
+  local _Package_rv=0
 
   ${_M} && _Trace 'Process CreatePackage options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':ac:d:e:f:h:i:ln:o:s:STx:' opt
+  while getopts ':ac:d:e:f:h:i:ln:No:s:STx:' opt
   do
     case ${opt} in
       a)
-        ${_M} && _Trace 'Append archive.'
+        ${_M} && _Trace 'Append archive filename to installer command line.'
         _Package_append='-a'
         ;;
 
@@ -238,6 +237,12 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         _Package_encoding="${OPTARG}"; [[ "${_Package_encoding:0:1}" == '-' ]] || _Package_encoding="${_Package_encoding:+-${_Package_encoding}}"
         ;;
 
+      N)
+        ${_M} && _Trace 'No package, tarball only.'
+        _Package_sharp=false
+        _Package_tarp=false
+        ;;
+
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
         _Package_srcdir="${OPTARG}"
@@ -268,8 +273,6 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
   done
   shift $((OPTIND - 1))
   ((1 != ${#})) && Tell -E -f -L '(CreatePackage) Invalid parameters. (%s)' "${*}"
-  ${_Package_sharp} && ${_Package_tarp} && Tell -E -f -L '(CreatePackage) Choose only one package type. (-s or -t)'
-  ${_Package_sharp} || ${_Package_tarp} || Tell -E -f -L '(CreatePackage) Please choose a package type. (-s or -t)'
   local _Package_package="${*}"
   [[ -z "${_Package_srcdir}" ]] && _Package_srcdir="${PWD}"
   ConfirmVar -d _Package_srcdir
@@ -284,8 +287,11 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
     if ${_Package_tarp}
     then
       [[ ".tarp" == "${_Package_package: -5}" ]] || _Package_package+='.tarp'
-    else
+    elif ${_Package_sharp}
+    then
       [[ ".sharp" == "${_Package_package: -6}" ]] || _Package_package+='.sharp'
+    else
+      [[ ".tar" == "${_Package_package: -4}" ]] || _Package_package+='.tar'
     fi
     if ! Force
     then
@@ -297,20 +303,18 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
     fi
 
     ${_M} && _Trace 'Check for source directory. (%s)' "${_Package_srcdir}"
-    if [[ -d ${_Package_srcdir} ]]
-    then
-      ${_M} && _Trace 'Change directory to source. (%s)' "${_Package_srcdir}"
-      cd ${_Package_srcdir} > /dev/null
-    else
-      Tell -E 'The source directory does not exist. (%s)' "${_Package_srcdir}"
-    fi
+    [[ -d ${_Package_srcdir} ]] || Tell -E 'The source directory does not exist. (%s)' "${_Package_srcdir}"
+
+    ${_M} && _Trace 'Change directory to source. (%s)' "${_Package_srcdir}"
+    pushd ${_Package_srcdir} > /dev/null
 
     ${_M} && _Trace 'Check if listing files. (%s)' "${_Package_list}"
     if ${_Package_list}
     then
-      ${_M} && _Trace 'List files. (%s)' "${#_Package_files[@]}"
+      ${_M} && _Trace 'Exclude files. (%s)' "${_Package_excludes[*]}"
       local _Package_glob
       local _Package_exclude
+      local _Package_file
       for _Package_exclude in "${_Package_excludes[@]}"
       do
         if ${ZSH}
@@ -323,7 +327,6 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         fi
         if ((0 < ${#_Package_glob[@]}))
         then
-          local _Package_file
           for _Package_file in "${_Package_glob[@]}"
           do
             if ${ZSH}
@@ -344,6 +347,7 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
           fi
         fi
       done
+      ${_M} && _Trace 'List files. (%s)' "${_Package_files[*]}"
       Tell 'Source Directory:'
       printf '  %s\n' "${_Package_srcdir}"
       Tell 'Files Included:'
@@ -366,7 +370,6 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
-      local _Package_rv
       if ${_Package_tarp}
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
@@ -375,11 +378,12 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         Action -q 'Append tar archive to package?' "cat '${_Package_tarball}' >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"
-      else
+      elif ${_Package_sharp}
+      then
         ${_M} && _Trace 'Create shar package: %s' "${_Package_package}"
         local _Package_subdir
         GetTmp -s _Package_subdir
-        cd ${_Package_subdir} > /dev/null
+        pushd ${_Package_subdir} > /dev/null
         Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
@@ -392,8 +396,13 @@ CreatePackage () { # [-a -l -S -T] [-c <compression>] [-d <description>] [-e <en
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
+        popd > /dev/null
+      else
+        ${_M} && _Trace 'Rename tarball: %s' "${_Package_package}"
+        Action -q 'Rename tar archive to package?' "mv ${FMFLAGS} '${_Package_tarball}' '${_Package_package}'"
       fi
     fi
+    popd > /dev/null
 
     ${_M} && _Trace 'CreatePackage return. (%s)' "${_Package_rv}"
     return ${_Package_rv}
@@ -437,12 +446,12 @@ ListPackage () { # <package>
     then
       local _Package_subdir
       GetTmp -s _Package_subdir
-      cd "${_Package_subdir}" > /dev/null
+      pushd "${_Package_subdir}" > /dev/null
       ${_M} && _Trace 'Extract shar. (%s)' "${_Package_subdir}"
       Action -q 'Extract shar.' -i 'Extracting shar.' "sh '${_Package_package}' > /dev/null"
       Action -q 'Remove shar?' "rm ${FMFLAGS} '${_Package_package}'"
       _Package_list=( $(ls -A | sed 's|^|./|') )
-      cd - > /dev/null
+      popd - > /dev/null
     else
       _Package_list=( $(tar tf "${_Package_package}" | sed 's/^\.\///' | sed 's/\/$//'| grep -v '/') )
     fi
