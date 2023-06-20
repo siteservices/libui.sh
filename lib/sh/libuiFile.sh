@@ -329,7 +329,7 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
 
 # Obtain the real, absolute path of the provided path specification
 #
-# Syntax: GetRealPath [-P] <var_name> [<path_specificatio>]
+# Syntax: GetRealPath [-P|-v] <var_name> [<path_specificatio>]
 #
 # Example: GetRealPath -P sourcedir
 #
@@ -338,7 +338,7 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
 # saves the directory path/file name in the variable "sourcedir".
 #
 UICMD+=( 'GetRealPath' )
-GetRealPath () { # [-P] <var_name> [<path_specification>]
+GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
   ${_S} && ((_cGetRealPath++))
   ${_M} && _Trace 'GetRealPath [%s]' "${*}"
 
@@ -346,17 +346,23 @@ GetRealPath () { # [-P] <var_name> [<path_specification>]
   local _File_p=false
   local _File_rv=0
   local _File_s
+  local _File_v=false
 
   ${_M} && _Trace 'Process GetRealPath options. (%s)' "${*}"
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':P' _o
+  while getopts ':Pv' _o
   do
     case ${_o} in
       P)
         ${_M} && _Trace 'Test path.'
         _File_p=true
+        ;;
+
+      v)
+        ${_M} && _Trace 'Validate specification.'
+        _File_v=true
         ;;
 
       *)
@@ -389,30 +395,41 @@ GetRealPath () { # [-P] <var_name> [<path_specification>]
   [[ -z "${_File_s}" ]] && Tell -E '(GetRealPath) No path provided. (%s)' "${1}"
   [[ "${_File_s}" =~ .*/.* ]] || _File_s="${PWD}/${_File_s}"
   ${_File_p} && _File_f="/${_File_s##*/}" && _File_s="${_File_s%/*}" && [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
-  [[ -e "${_File_s}" ]] || Tell -E '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
 
-  ${_M} && _Trace 'Check for realpath.'
-  if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
+  ${_T} && _Trace 'Check for path validation. (%s)' "${_File_v}"
+  if ${_File_v}
   then
-    ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
-    eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
-  else
-    ${_M} && _Trace 'Check for links. (%s)' "${_File_s}"
-    local _File_l="$(readlink "${_File_s}")"
-    _File_s="${_File_l:-${_File_s}}"
-
-    ${_M} && _Trace 'Find directory path. (%s)' "${_File_s}"
-    if [[ -d "${_File_s}" ]]
-    then
-      _File_s="$(cd "${_File_s}" && pwd -P)"
-    else
-      _File_f="/${_File_s##*/}"
-      [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
-      _File_s="$(cd "${_File_s%/*}" && pwd -P)"
-    fi
-
-    ${_M} && _Trace 'Save real path. (%s%s)' "${_File_s}" "${_File_f}"
+    ${_T} && _Trace 'Substitute base magic paths. (%s)' "${_File_s}"
+    [[ "${_File_s:0:1}" == '~' ]] && _File_s="${HOME}${_File_s:1}"
+    [[ "${_File_s:0:1}" == '.' ]] && _File_s="${IWD}${_File_s:1}"
     eval "${1}='${_File_s}${_File_f}'"
+  else
+    ${_T} && _Trace 'Check if path exists. (%s)' "${_File_s}"
+    [[ -e "${_File_s}" ]] || Tell -E '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
+
+    ${_M} && _Trace 'Check for realpath.'
+    if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
+    then
+      ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
+      eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
+    else
+      ${_M} && _Trace 'Check for links. (%s)' "${_File_s}"
+      local _File_l="$(readlink "${_File_s}")"
+      _File_s="${_File_l:-${_File_s}}"
+
+      ${_M} && _Trace 'Find directory path. (%s)' "${_File_s}"
+      if [[ -d "${_File_s}" ]]
+      then
+        _File_s="$(cd "${_File_s}" && pwd -P)"
+      else
+        _File_f="/${_File_s##*/}"
+        [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
+        _File_s="$(cd "${_File_s%/*}" && pwd -P)"
+      fi
+
+      ${_M} && _Trace 'Save real path. (%s%s)' "${_File_s}" "${_File_f}"
+      eval "${1}='${_File_s}${_File_f}'"
+    fi
   fi
 
   ${_M} && _Trace 'GetRealPath return. (%s)' 0

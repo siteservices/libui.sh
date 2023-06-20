@@ -299,13 +299,14 @@ installer is a libui script.
 * **-i** - installer command (included in self-extracting package header)
 * **-l** - generate package contents list instead of creating package
 * **-n** - encoding to use (man 1 shar for details)
+* **-N** - do not create a package, only create a tar archive
 * **-s** - source directory
 * **-S** - create a shar package (.sharp)
 * **-T** - create a tar package (.tarp)
 * **-x** - array variable name containing file list to exclude from package
 
 ```
-CreatePackage [-a **-l** -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+CreatePackage [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
 ```
 
 ### Drop (man libui.sh) - Utility function to drop a value from an array.
@@ -416,9 +417,12 @@ GetFileList [-d|-e|-f|-n|-p|-r|-w] <variable_name> <file_specification> ...
 Gets the absolute path for provided path specification, bypassing any symbolic
 links. With the **-P** (Path) option flag, GetRealPath will only test the directory
 portion of the path, excluding the filename (to support the creation of new
-files).
+files). With the -v (Validate Specification), the variable is updated with a
+valid path, changing an initial "~" to ${HOME} and an initial "." to ${IWD} (the
+initial (starting) working directory).
 
 * **-P** - only check the directory path portion of the provided specification
+* **-v** - only validate path, changing "~" to ${HOME} and "." to ${IWD}
 
 ```
 GetRealPath [-P] <variable_name> [<path_specification>]

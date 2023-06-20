@@ -4,11 +4,12 @@
 
 ### New Features / Enhancements
 
+* Add -v (Validate Specification) to GetRealPath to support creating new paths.
+* Add -N (No package) tarball only support to libui Package mod.
 * Improve information message handling in StartSpinner and Sleep.
 * Adjustments to the display times (Question, Answer, yellow, red).
 * Move libui tools from LibuiUtility mod to LibuiLibui mod.
 * Move utility functions from libui.sh to libuiUtility mod.
-* Add -N (No package) tarball only support to libui Package mod.
 * Add MLESSPATH support to mless.
 * Documentation updates.
 

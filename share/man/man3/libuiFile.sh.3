@@ -35,7 +35,7 @@ user interface library
 .Ar <variable_name> <file_specification> ...
 .Pp
 .Sy GetRealPath
-.Op Fl P
+.Op Fl P Fl v
 .Ar <variable_name> Op Ar <file_specification>
 .Pp
 .Sy GetTmp
@@ -159,7 +159,7 @@ The following command dereferences the provided file specification and returns
 the associated absolute path:
 .Bd -ragged -offset 4n
 .Sy GetRealPath
-.Op Fl P
+.Op Fl P Fl v
 .Ar <variable_name> Op Ar <file_specification>
 .Ed
 .Pp
@@ -172,6 +172,11 @@ Note: The full path, including the filename, is returned in the
 .Ar <variable_name>
 variable.
 This is useful when getting the real path prior to creating the file.
+.It Fl v
+Only validate the path.
+The variable is updated with a valid path, changing an initial "~" to ${HOME}
+and an initial "." to ${IWD} (the initial (starting) working directory).
+This is useful when the path does not exist, but will be created.
 .El
 .Pp
 Set the
