@@ -5,12 +5,14 @@
 ### New Features / Enhancements
 
 * Add -v (Validate Specification) to GetRealPath to support creating new paths.
+* Add -m \<mask\> (Mask) to Open to change default umask when creating a file.
 * Add -N (No package) tarball only support to libui Package mod.
 * Improve information message handling in StartSpinner and Sleep.
 * Adjustments to the display times (Question, Answer, yellow, red).
-* Move libui tools from LibuiUtility mod to LibuiLibui mod.
-* Move utility functions from libui.sh to libuiUtility mod.
+* Move libui application tools from LibuiUtility mod to LibuiLibui mod.
+* Move utility functions from libui.sh to libui Utility mod.
 * Add MLESSPATH support to mless.
+* Tweak UsageInfo help message in libui Info mod.
 * Documentation updates.
 
 ### Incompatibilities
@@ -19,8 +21,11 @@
 
 ### Bug Fixes
 
+* Fix file path handling in AddOption, AddParameter, and ConfirmVar.
+* Fix caution message handling in Open.
 * Fix package listing in libui Package mod.
-* Improved backtick (\`) handling in mless.
+* Combine mkdir and chmod in libui Libui mod.
+* Improved backtick (\`) and horizontal rule handling in mless.
 * Fix command typo in libui SSH mod.
 
 ## v1.830

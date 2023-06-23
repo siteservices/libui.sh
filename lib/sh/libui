@@ -50,6 +50,7 @@ else
   # capture parameters for testing
   script=( "${BASH_SOURCE[0]:-${(%):-%x}}" )
   arg=( "${@}" )
+  wd="${PWD}"
   [[ " ${*} " =~ .*\ -x\ n\ .* ]] && LIBUI_LEDGER='false' && LIBUI_TRACE='false' && LIBUI_STATS='false' # no log
   [[ " ${*} " =~ .*\ -T\ .* ]] && TERMINAL=false # plain ui in single test
 

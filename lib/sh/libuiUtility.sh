@@ -199,7 +199,7 @@ BuildTerminalCache () {
       printf 'DError="${Dbr}${Db}${DFy}"\n'
       printf 'DInfo="${DFc}"\n'
       printf 'DOptions="${Db}"\n'
-      printf 'DQuestion="${Dfc}${Dsu}"\n'
+      printf 'DQuestion="${DFc}${Dsu}"\n'
       printf 'DSpinner="${Db}${DFc}"\n'
       printf 'DTell="${Db}"\n'
       printf 'DTrace="${Dd}"\n'

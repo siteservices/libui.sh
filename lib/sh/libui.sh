@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.831 # Tue Jun 13 01:22:23 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.831 # Fri Jun 23 05:53:26 EDT 2023
 
 #####
 #
@@ -318,8 +318,8 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   _oc+=( "${_c}" ) # callback
   _ov+=( "${_v}" ) # validation callback
   _ok+=( "${_k}" ) # keyword
-  _osv+=( "${_s}" ) # selection var
   _oa+=( "${_a}" ) # autodefault
+  _osv+=( "${_s}" ) # selection var
   [[ -n "${_l}" ]] && eval "_os_${1:0:1}=( \"\${_l[@]}\" )"
 
   ${_T} && _Trace 'Set description. (%s)' "${_d}"
@@ -710,17 +710,14 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
           ${_T} && _Trace 'Check for success. (%s)' "${_rv}"
           if ((_rv))
           then
-            _action=false
             if ${_vdb}
             then
-              ${_e} && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
-              ${_w} && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
+              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
+              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
             else
-              ${_e} && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
-              ${_w} && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
+              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
+              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
             fi
-          else
-            _action=true
           fi
         fi
       fi
@@ -1557,6 +1554,7 @@ Initialize () {
   local _i
   local _p=false
   local _r; [[ -n "${_or}" ]] && _r=( "${_or[@]}" ) || _r=( )
+  local _t
   local _x
 
   ${_T} && _Trace 'Scan for profile. (%s)' "${_a[*]}"
@@ -1595,10 +1593,17 @@ Initialize () {
         then
           ${_T} && _Trace 'Process multiple option value. (%s+=( "%s" ) [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
           [[ ! "${_x}" =~ ${_o} ]] && _x="${_o}" && eval "${_ovar[${_i}]}=( )"
-          eval "${_ovar[${_i}]}+=( \"${_oval[${_i}]}\" )"
+          if [[ -z "${_op[${_i}]}" ]]
+          then
+            eval "${_ovar[${_i}]}+=( \"${_oval[${_i}]}\" )"
+          else
+            eval "${_t}=\"${_oval[${_i}]}\""
+            eval "${_ovar[${_i}]}+=( \"${_op[${_i}]%/}/\${${_t}/${_op[${_i}]%\/}\/}\" )"
+          fi
         else
           ${_T} && _Trace 'Process simple option value. (%s="%s" [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
-          [[ -n "${_oval[${_i}]}" ]] && eval "${_ovar[${_i}]}=\"${_oval[${_i}]}\""
+          [[ -n "${_oval[${_i}]}" ]] && eval "${_ovar[${_i}]}=\"${_oval[${_i}]}\"" && [[ -n "${_op[${_i}]}" ]] && \
+              eval "${_ovar[${_i}]}=\"${_op[${_i}]%/}/\${${_ovar[${_i}]}/\${_op[${_i}]%\/}\/}\""
         fi
 
         ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
@@ -1694,7 +1699,6 @@ Initialize () {
 
   ${_T} && _Trace 'Check for required options. (%s)' "${_r[*]}"
   local _m
-  local _t
   _i=${AO}
   for _t in "${_r[@]}"
   do
@@ -1723,7 +1727,8 @@ Initialize () {
         [[ -n "${_pc[${_i}]}" ]] && eval ${_pc[${_i}]} "${_a[${AO}]}"
 
         ${_T} && _Trace 'Capture value. (%s)' "${_a[${AO}]}"
-        [[ -n "${_p}" ]] && eval "unset ${_p}; ${_p}='${_a[${AO}]}'"
+        [[ -n "${_p}" ]] && \
+            eval "unset ${_p}; ${_p}='${_pp[${_i}]:+${_pp[${_i}]%/}/}${_a[${AO}]/${_pp[${_i}]:+${_pp[${_i}]%\/}\/}}'"
       fi
 
       _a=( "${_a[@]:1}" )
@@ -1744,7 +1749,8 @@ Initialize () {
         eval ${_pc[${_i}]} "${_a[${AO}]}"
 
         ${_T} && _Trace 'Capture value. (%s)' "${_a[${AO}]}"
-        [[ -n "${_p}" ]] && eval "${_p}=( \"\${${_p}[@]}\" '${_a[${AO}]}' )"
+        [[ -n "${_p}" ]] && \
+            eval "${_p}=( \"\${${_p}[@]}\" '${_pp[${_i}]:+${_pp[${_i}]%/}/}${_a[${AO}]/${_pp[${_i}]:+${_pp[${_i}]%\/}\/}}' )"
 
         _a=( ${_a[@]:1} )
       done
@@ -1776,11 +1782,14 @@ Initialize () {
   do
     ${_T} && _Trace 'Call option validation callback. (%s)' "${_ov[${_i}]}"
     [[ -n "${_ov[${_i}]}" ]] && eval "${_ov[${_i}]}"
+
+    ${_T} && _Trace 'Get option selection values. (%s)' "${_p}"
     eval "_s=( \"\${_os_${_p}[@]}\" )" && [[ -z "${_s}" ]] && _s=( )
     if [[ -n "${_osv[${_i}]}" ]]
     then
       ${ZSH} && _s+=( "${(P@)_osv[${_i}]}" ) || eval "_s+=( \"\${${_osv[${_i}]}[@]}\" )"
     fi
+
     ${_T} && _Trace 'Available option selection values. (%s)' "${_s}"
     if [[ -n "${_s}" ]]
     then
@@ -1821,11 +1830,14 @@ Initialize () {
   do
     ${_T} && _Trace 'Call parameter validation callback. (%s)' "${_pv[${_i}]}"
     [[ -n "${_pv[${_i}]}" ]] && eval "${_pv[${_i}]}"
+
+    ${_T} && _Trace 'Get parameter selection values. (%s)' "${_p}"
     eval "_s=( \"\${_ps_${_p}[@]}\" )" && [[ -z "${_s}" ]] && _s=( )
     if [[ -n "${_psv[${_i}]}" ]]
     then
       ${ZSH} && _s+=( "${(P@)_psv[${_i}]}" ) || eval "_s+=( \"\${${_psv[${_i}]}[@]}\" )"
     fi
+
     ${_T} && _Trace 'Available parameter selection values. (%s)' "${_s}"
     if [[ -n "${_s}" ]]
     then

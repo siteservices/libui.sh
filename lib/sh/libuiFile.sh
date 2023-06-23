@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.9
+Version -r 1.831 -m 1.10
 
 # defaults
 _File_ip=
@@ -516,7 +516,7 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
 # Open a file, lock it, and assiciate the path with a file ID
 #
-# Syntax: Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
+# Syntax: Open [-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <timeout>] <file_path>
 #
 # Example: Open -1 -c new_file
 #
@@ -525,13 +525,14 @@ GetTmp () { # [-d|-f|-s] <var_name>
 #
 # open
 UICMD+=( 'Open' )
-Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
+Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <timeout>] <file_path>
   ${_S} && ((_cOpen++))
   ${_M} && _Trace 'Open [(_File_ip="%s") %s]' "${_File_ip}" "${*}"
 
   local _File_b=false
   local _File_c=false
   local _File_i
+  local _File_m
   local _File_t="${LIBUI_LOCKTIMEOUT:-30}"
   local _File_w="${LIBUI_LOCKWARN:-5}"
   local _File_z
@@ -540,7 +541,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':0123456789abB:ct:w:' _o
+  while getopts ':0123456789abB:cm:t:w:' _o
   do
     case ${_o} in
       0)
@@ -567,6 +568,11 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
         ${_M} && _Trace 'Backup path. (%s)' "${OPTARG}"
         _File_b=true
         _File_z="${OPTARG}"
+        ;;
+
+      m)
+        ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
+        _File_m="${OPTARG}"
         ;;
 
       t)
@@ -624,7 +630,9 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
   then
     if ${_File_c}
     then
+      [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
       exec {_File_f}>"${_File_n}"
+      [[ -n "${_File_m}" ]] && umask "${_File_x}"
     else
       exec {_File_f}>>"${_File_n}"
     fi
@@ -632,7 +640,9 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     _File_f=$((_File_i % 10 + 10))
     if ${_File_c}
     then
+      [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
       eval "exec ${_File_f}>'${_File_n}'" || _File_f=
+      [[ -n "${_File_m}" ]] && umask "${_File_x}"
     else
       eval "exec ${_File_f}>>'${_File_n}'" || _File_f=
     fi
@@ -647,8 +657,8 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     while ! flock -n ${_File_f}
     do
       _File_e=$((SECONDS - _File_s))
-      ((_File_t <= _File_e)) && printf "${DInfo}Unable to obtain flock %s. (%s)${D}${DCEL}\n" "${_File_f}" "${_File_n}" >> /dev/stderr && return 1
-      ((_File_w <= _File_e)) && printf "${DInfo}WAIT: Waiting for flock %s. (%s)${D}${DCEL}\n" "${_File_f}" "${_File_n}" >> /dev/stderr && _File_w="${MAXINT}"
+      ((_File_t <= _File_e)) && Tell -C 'Unable to obtain flock %s. (%s)' "${_File_f}" "${_File_n}" && return 1
+      ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for flock %s. (%s)' "${_File_f}" "${_File_n}" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for flock %s. (%s)' "${_File_f}" "${_File_e}"
       sleep "0.1$((RANDOM % 10))"
     done
@@ -657,14 +667,16 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     while ! (set -o noclobber; printf '%s %s\n' "${USER}" ${$} > "${_File_n}.lock") 2> /dev/null
     do
       _File_e=$((SECONDS - _File_s))
-      ((_File_t <= _File_e)) && printf "${DInfo}Unable to create lock file. (%s)${D}${DCEL}\n" "${_File_n}.lock" >> /dev/stderr && return 1
-      ((_File_w <= _File_e)) && printf "${DInfo}WAIT: Waiting for lock file. (%s)${D}\n" "${_File_n}.lock" >> /dev/stderr && _File_w="${MAXINT}"
+      ((_File_t <= _File_e)) && Tell -C 'Unable to create lock file. (%s)' "${_File_n}.lock" && return 1
+      ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for lock file. (%s)' "${_File_n}.lock" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for lock file removal. (%s)' "${_File_e}"
       sleep "0.1$((RANDOM % 10))"
     done
     local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
     [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
+    [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
     printf '%s\n' "${_File_n}.lock" >"${_File_d}/${_File_n##*/}.lock"
+    [[ -n "${_File_m}" ]] && umask "${_File_x}"
   fi
   ${_M} && _Trace 'Save locked file. (%s)' "${_File_n}"
   _File_fp[${_File_i}]="${_File_n}"

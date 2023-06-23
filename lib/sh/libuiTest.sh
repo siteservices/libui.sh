@@ -431,7 +431,7 @@ LibuiGetDisplayTestValues () {
   TError="${Tbr}${Tb}${TFy}"
   TInfo="${TFc}"
   TOptions="${Tb}"
-  TQuestion="${Tfc}${Tsu}"
+  TQuestion="${TFc}${Tsu}"
   TSpinner="${Tb}${TFc}"
   TTell="${Tb}"
   TTrace="${Td}"

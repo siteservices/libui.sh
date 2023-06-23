@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.831 -m 1.6
+Version -r 1.831 -m 1.7
 
 ##### configuration
 
@@ -740,10 +740,10 @@ LibuiInstall () {
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
     do
-      [[ ! -d "${COMMONROOT}/${_Util_file%/*}" ]] && Action -W "mkdir -p '${COMMONROOT}/${_Util_file%/*}'" && \
-          Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file%/*}'"
-      Action "cp ${FMFLAGS} "${_Util_libuiroot%/}/${_Util_file}" '${COMMONROOT}/${_Util_file}'"
-      Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+      [[ ! -d "${COMMONROOT}/${_Util_file%/*}" ]] && \
+          Action -W "mkdir -p -m '${_Util_groupmode}' '${COMMONROOT}/${_Util_file%/*}'"
+      Action "cp ${FMFLAGS} "${_Util_libuiroot%/}/${_Util_file}" '${COMMONROOT}/${_Util_file}'" && \
+          Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
     done
 
     StopSpinner
@@ -868,8 +868,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
           if [[ -f "${COMMONROOT}/${_Util_file}" ]]
           then
             ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-            Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'"
-            Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+            Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && \
+                Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
           fi
         done
         popd > /dev/null

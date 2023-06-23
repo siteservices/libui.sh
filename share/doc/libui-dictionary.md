@@ -567,8 +567,9 @@ Open file descriptors should be closed using the Close command.
 * **-a** | **-c** - append to / create log
 * **-b** - backup the file as the provided filename before opening
 * **-B** - backup the file into the provided directory (10 copies are maintained)
-* **-t** - file lock timeout
-* **-w** - file lock wait warning message interval (displayed when less than -t)
+* **-m** - file creation mask - the umask to use when creating a new file with **-c**
+* **-t** - file lock timeout in seconds (default is 30 seconds)
+* **-w** - file lock wait warning message timeout (default is 5 seconds)
 
 ```
 Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>

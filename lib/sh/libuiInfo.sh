@@ -51,7 +51,7 @@ UsageInfo () {
   _od+=(
     "Confirm operations before performing them. (confirm: \${_confirm})"
     "Force file operations. (force: \${_force})"
-    'Display usage message. (help: true)'
+    'Display usage message, also available with -h. (help: true)'
     "Show operations without performing them. (noaction: \${_noaction})"
     "Load configuration profile. (file: \${_profile})"
     "Execute quietly. (quiet: \${_quiet})"
@@ -73,7 +73,7 @@ UsageInfo () {
     printf "${DCES}\n"
 
     ${_M} && _Trace 'Display sample command line.'
-    _os+=( 'C' 'F' 'H' 'h' 'N' 'Q' 'V' 'Y' )
+    _os+=( 'C' 'F' 'h' 'H' 'N' 'Q' 'V' 'Y' )
     _UsageInfo_i="${AO}"
     printf "${DTell}USAGE: %s " "${CMD}"
     if [[ -n "${_os}" ]]

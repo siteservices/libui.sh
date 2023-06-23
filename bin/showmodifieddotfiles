@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.12
+Version -r 1.831 1.13
 
 # load mods
 
@@ -45,20 +45,22 @@ manifest="${installdir}/manifest"
 previnst=0 # 1970-01-01
 modified=false
 srcfiles=( )
+prune=( "-name '.*.sw?' -prune" )
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
 
 AddOption -n diff -f -k 'Diff' -d 'Display file differences from reference directory.' d
-AddOption -c FastCallback -n fast -k 'Fast' -d 'Perform "fast" diff by skipping .vim directory.' f
 AddOption -n usemanifest -t -k '(No) Manifest' -d 'Do not use manifest. Use all dotfiles in source directory.' M
 AddOption -n refdir -k 'Reference' -d 'The reference directory for the analysis.' r:
 AddOption -n src -i "${HOME}" -k 'Source' -d 'The source directory for the analysis.' s:
+AddOption -c "FastCallback test" -n fasttest -k '(Skip) test' -d 'Perform "fast" diff by skipping test directory.' t
+AddOption -c "FastCallback .vim" -n fastvim -k '(Skip) .vim' -d 'Perform "fast" diff by skipping .vim directory.' v
 
 ##### callbacks
 
 # fast callback
-FastCallback () {
-  fast=( '.vim' )
+FastCallback () { # <prune_dir>
+  prune+=( "-o -name '${1}' -prune" )
 
   return 0
 }
@@ -99,12 +101,6 @@ InitCallback () {
       srcfiles=( $(ls -A1 ${src} | grep '^\.') )
     fi
 
-    Trace 'Remove fast files. (%s)' "${fast[*]}"
-    for file in "${fast[@]}"
-    do
-      srcfiles=( "${(@)srcfiles:#${file}}" )
-    done
-
     Trace 'Check for non-dotfiles in source list. (%s)' "${srcfiles[*]}"
     for file in "${srcfiles[@]}"
     do
@@ -133,7 +129,7 @@ FindModified () {
   for filepath in "${srcfiles[@]}"
   do
     Trace 'Check %s for modification after installation.' "${filepath}"
-    for file in $(find ${src}/${filepath} -name '.*.sw*' -prune -o -type f -print)
+    for file in $(eval "find ${src}/${filepath} ${prune[*]} -o -type f -print")
     do
       Trace 'Check date of %s (%s) vs. %s.' "${file}" "$(date -r ${file} +%s)" "${previnst}"
       if (($(date -r "${file}" +%s) > ${previnst}))
