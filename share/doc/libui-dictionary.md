@@ -8,6 +8,7 @@ Basic libui library functionality can be extended with the following mods:
 * File (man libuiFile.sh) - File Support
 * FileRecord (man libuiFileRecord.sh) - CSV File Records Support
 * Info (man libuiInfo.sh) - Libui Information Utilities
+* Libui (man libuiLibui.sh) - Libui Support Mod (see addendum dictionary)
 * Multiuser (man libuiMultiuser.sh) - Libui Multiuser Support
 * Package (man libuiPackage.sh) - Package Utilities
 * Profile (man libuiProfile.sh) - Profile Configuration File Support
@@ -18,7 +19,7 @@ Basic libui library functionality can be extended with the following mods:
 * Syslog (man libuiSyslog.sh) - System Log Support
 * Timer (man libuiTimer.sh) - Libui Timer Support
 * User (man libuiUser.sh) - Libui User Support
-* Utility (man libuiUtility.sh) - Libui Utilities (see addendum dictionary)
+* Utility (man libuiUtility.sh) - Libui Utilities
 * Workspace (man libuiWorkspace.sh) - Workspace Support
 
 Man pages are available for the above: man 3 libui{Mod}.sh
@@ -298,13 +299,14 @@ installer is a libui script.
 * **-i** - installer command (included in self-extracting package header)
 * **-l** - generate package contents list instead of creating package
 * **-n** - encoding to use (man 1 shar for details)
+* **-N** - do not create a package, only create a tar archive
 * **-s** - source directory
 * **-S** - create a shar package (.sharp)
 * **-T** - create a tar package (.tarp)
 * **-x** - array variable name containing file list to exclude from package
 
 ```
-CreatePackage [-a **-l** -S -T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+CreatePackage [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
 ```
 
 ### Drop (man libui.sh) - Utility function to drop a value from an array.
@@ -415,9 +417,12 @@ GetFileList [-d|-e|-f|-n|-p|-r|-w] <variable_name> <file_specification> ...
 Gets the absolute path for provided path specification, bypassing any symbolic
 links. With the **-P** (Path) option flag, GetRealPath will only test the directory
 portion of the path, excluding the filename (to support the creation of new
-files).
+files). With the -v (Validate Specification), the variable is updated with a
+valid path, changing an initial "~" to ${HOME} and an initial "." to ${IWD} (the
+initial (starting) working directory).
 
 * **-P** - only check the directory path portion of the provided specification
+* **-v** - only validate path, changing "~" to ${HOME} and "." to ${IWD}
 
 ```
 GetRealPath [-P] <variable_name> [<path_specification>]
@@ -562,8 +567,9 @@ Open file descriptors should be closed using the Close command.
 * **-a** | **-c** - append to / create log
 * **-b** - backup the file as the provided filename before opening
 * **-B** - backup the file into the provided directory (10 copies are maintained)
-* **-t** - file lock timeout
-* **-w** - file lock wait warning message interval (displayed when less than -t)
+* **-m** - file creation mask - the umask to use when creating a new file with **-c**
+* **-t** - file lock timeout in seconds (default is 30 seconds)
+* **-w** - file lock wait warning message timeout (default is 5 seconds)
 
 ```
 Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
@@ -691,7 +697,8 @@ the remaining seconds and defaults to:
 Waiting %s...
 ```
 
-* **-m** - the message to display (include "%s" to display seconds)
+* **-i** - the message to display in sleep (include "%s" for seconds remaining)
+* **-u** - the number of seconds to sleep between updates to the message
 
 ```
 Sleep [-m "<message>"] [-u <interval>] [<sleep>]

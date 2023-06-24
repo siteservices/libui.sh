@@ -27,23 +27,26 @@
 #
 #####
 
-Version -r 1.829 -m 1.4
+Version -r 1.831 -m 1.5
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
+_WS_wsenv="${_WS_wsenv:-${HOME}/.wsenv}"
+_WS_wsenvext="${_WS_wsenvext:-.wsenv}"
 
 # load mods
 LoadMod File
 
 # Validate workspace
 #
-# Syntax: ValidateWorkspace [-w]
+# Syntax: ValidateWorkspace [-n|-w]
 #
 # Example: ValidateWorkspace
 #
 # Result: Configures and verifies the workspace. Sources ~/.workspace if needed.
 #
 # Options:
+#   -n - Check workspace but do not make changes (used by setup)
 #   -w - Changes directory to the workspace (does not return to working dir)
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
@@ -52,7 +55,7 @@ LoadMod File
 # WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 UICMD+=( 'ValidateWorkspace' )
-ValidateWorkspace () { # [-w]
+ValidateWorkspace () { # [-n|-w]
   ${_S} && ((_cValidateWorkspace++))
   ${_M} && _Trace 'ValidateWorkspace [%s]' "${*}"
 
@@ -62,15 +65,21 @@ ValidateWorkspace () { # [-w]
     ${_M} && _Trace 'ValidateWorkspace error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
+    local _WS_loadenv=true
     local _WS_ws=false
 
     ${_M} && _Trace 'Process ValidateWorkspace options. (%s)' "${*}"
     local opt
     local OPTIND
     local OPTARG
-    while getopts ':w' opt
+    while getopts ':nw' opt
     do
       case ${opt} in
+        n)
+          ${_M} && _Trace 'For setup.'
+          _WS_loadenv=false
+          ;;
+
         w)
           ${_M} && _Trace 'Remain in workspace directory.'
           _WS_ws=true
@@ -91,8 +100,13 @@ ValidateWorkspace () { # [-w]
     fi
     ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
+    ${_M} && _Trace 'Check if in WORKSPACE. (%s)' "${WORKSPACE##*/}"
     ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
+
+    ${_M} && _Trace 'Load WORKSPACE environment. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+    ${_WS_loadenv} && [[ -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]] && \
+        source "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
 
     ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
     ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null

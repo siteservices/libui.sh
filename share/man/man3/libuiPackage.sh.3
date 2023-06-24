@@ -25,7 +25,7 @@ user interface library
 .Sh SYNOPSIS
 .Sy LoadMod Package
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl a Fl l Fl N Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
 .Sy _CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
@@ -52,7 +52,7 @@ specified
 .Ar <source_directory>
 directory.
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl a Fl l Fl N Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
 When executed, the
 .Sy CreatePackage
@@ -88,7 +88,6 @@ See
 for more information.
 .It Fl d Ar <description>
 Description
-.Pp
 .It Fl e Ar <environment_spec>
 This option is passed through to the
 .Ar <header_command> .
@@ -179,6 +178,10 @@ for more information.
 .Pp
 Note: On macOS, shar is more limited and does not support encoding options.
 This option will be silently ignored.
+.It Fl N
+No Package
+.Pp
+Do not create a package, only create a tar archive.
 .It Fl s Ar <source_directory>
 Source Directory
 .Pp

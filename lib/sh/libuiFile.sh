@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.9
+Version -r 1.831 -m 1.10
 
 # defaults
 _File_ip=
@@ -329,7 +329,7 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
 
 # Obtain the real, absolute path of the provided path specification
 #
-# Syntax: GetRealPath [-P] <var_name> [<path_specificatio>]
+# Syntax: GetRealPath [-P|-v] <var_name> [<path_specificatio>]
 #
 # Example: GetRealPath -P sourcedir
 #
@@ -338,7 +338,7 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
 # saves the directory path/file name in the variable "sourcedir".
 #
 UICMD+=( 'GetRealPath' )
-GetRealPath () { # [-P] <var_name> [<path_specification>]
+GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
   ${_S} && ((_cGetRealPath++))
   ${_M} && _Trace 'GetRealPath [%s]' "${*}"
 
@@ -346,17 +346,23 @@ GetRealPath () { # [-P] <var_name> [<path_specification>]
   local _File_p=false
   local _File_rv=0
   local _File_s
+  local _File_v=false
 
   ${_M} && _Trace 'Process GetRealPath options. (%s)' "${*}"
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':P' _o
+  while getopts ':Pv' _o
   do
     case ${_o} in
       P)
         ${_M} && _Trace 'Test path.'
         _File_p=true
+        ;;
+
+      v)
+        ${_M} && _Trace 'Validate specification.'
+        _File_v=true
         ;;
 
       *)
@@ -389,30 +395,41 @@ GetRealPath () { # [-P] <var_name> [<path_specification>]
   [[ -z "${_File_s}" ]] && Tell -E '(GetRealPath) No path provided. (%s)' "${1}"
   [[ "${_File_s}" =~ .*/.* ]] || _File_s="${PWD}/${_File_s}"
   ${_File_p} && _File_f="/${_File_s##*/}" && _File_s="${_File_s%/*}" && [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
-  [[ -e "${_File_s}" ]] || Tell -E '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
 
-  ${_M} && _Trace 'Check for realpath.'
-  if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
+  ${_T} && _Trace 'Check for path validation. (%s)' "${_File_v}"
+  if ${_File_v}
   then
-    ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
-    eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
-  else
-    ${_M} && _Trace 'Check for links. (%s)' "${_File_s}"
-    local _File_l="$(readlink "${_File_s}")"
-    _File_s="${_File_l:-${_File_s}}"
-
-    ${_M} && _Trace 'Find directory path. (%s)' "${_File_s}"
-    if [[ -d "${_File_s}" ]]
-    then
-      _File_s="$(cd "${_File_s}" && pwd -P)"
-    else
-      _File_f="/${_File_s##*/}"
-      [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
-      _File_s="$(cd "${_File_s%/*}" && pwd -P)"
-    fi
-
-    ${_M} && _Trace 'Save real path. (%s%s)' "${_File_s}" "${_File_f}"
+    ${_T} && _Trace 'Substitute base magic paths. (%s)' "${_File_s}"
+    [[ "${_File_s:0:1}" == '~' ]] && _File_s="${HOME}${_File_s:1}"
+    [[ "${_File_s:0:1}" == '.' ]] && _File_s="${IWD}${_File_s:1}"
     eval "${1}='${_File_s}${_File_f}'"
+  else
+    ${_T} && _Trace 'Check if path exists. (%s)' "${_File_s}"
+    [[ -e "${_File_s}" ]] || Tell -E '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
+
+    ${_M} && _Trace 'Check for realpath.'
+    if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
+    then
+      ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
+      eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
+    else
+      ${_M} && _Trace 'Check for links. (%s)' "${_File_s}"
+      local _File_l="$(readlink "${_File_s}")"
+      _File_s="${_File_l:-${_File_s}}"
+
+      ${_M} && _Trace 'Find directory path. (%s)' "${_File_s}"
+      if [[ -d "${_File_s}" ]]
+      then
+        _File_s="$(cd "${_File_s}" && pwd -P)"
+      else
+        _File_f="/${_File_s##*/}"
+        [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
+        _File_s="$(cd "${_File_s%/*}" && pwd -P)"
+      fi
+
+      ${_M} && _Trace 'Save real path. (%s%s)' "${_File_s}" "${_File_f}"
+      eval "${1}='${_File_s}${_File_f}'"
+    fi
   fi
 
   ${_M} && _Trace 'GetRealPath return. (%s)' 0
@@ -499,7 +516,7 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
 # Open a file, lock it, and assiciate the path with a file ID
 #
-# Syntax: Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
+# Syntax: Open [-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <timeout>] <file_path>
 #
 # Example: Open -1 -c new_file
 #
@@ -508,13 +525,14 @@ GetTmp () { # [-d|-f|-s] <var_name>
 #
 # open
 UICMD+=( 'Open' )
-Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
+Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <timeout>] <file_path>
   ${_S} && ((_cOpen++))
   ${_M} && _Trace 'Open [(_File_ip="%s") %s]' "${_File_ip}" "${*}"
 
   local _File_b=false
   local _File_c=false
   local _File_i
+  local _File_m
   local _File_t="${LIBUI_LOCKTIMEOUT:-30}"
   local _File_w="${LIBUI_LOCKWARN:-5}"
   local _File_z
@@ -523,7 +541,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':0123456789abB:ct:w:' _o
+  while getopts ':0123456789abB:cm:t:w:' _o
   do
     case ${_o} in
       0)
@@ -550,6 +568,11 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
         ${_M} && _Trace 'Backup path. (%s)' "${OPTARG}"
         _File_b=true
         _File_z="${OPTARG}"
+        ;;
+
+      m)
+        ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
+        _File_m="${OPTARG}"
         ;;
 
       t)
@@ -607,7 +630,9 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
   then
     if ${_File_c}
     then
+      [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
       exec {_File_f}>"${_File_n}"
+      [[ -n "${_File_m}" ]] && umask "${_File_x}"
     else
       exec {_File_f}>>"${_File_n}"
     fi
@@ -615,7 +640,9 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     _File_f=$((_File_i % 10 + 10))
     if ${_File_c}
     then
+      [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
       eval "exec ${_File_f}>'${_File_n}'" || _File_f=
+      [[ -n "${_File_m}" ]] && umask "${_File_x}"
     else
       eval "exec ${_File_f}>>'${_File_n}'" || _File_f=
     fi
@@ -630,8 +657,8 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     while ! flock -n ${_File_f}
     do
       _File_e=$((SECONDS - _File_s))
-      ((_File_t <= _File_e)) && printf "${DInfo}Unable to obtain flock %s. (%s)${D}${DCEL}\n" "${_File_f}" "${_File_n}" >> /dev/stderr && return 1
-      ((_File_w <= _File_e)) && printf "${DInfo}WAIT: Waiting for flock %s. (%s)${D}${DCEL}\n" "${_File_f}" "${_File_n}" >> /dev/stderr && _File_w="${MAXINT}"
+      ((_File_t <= _File_e)) && Tell -C 'Unable to obtain flock %s. (%s)' "${_File_f}" "${_File_n}" && return 1
+      ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for flock %s. (%s)' "${_File_f}" "${_File_n}" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for flock %s. (%s)' "${_File_f}" "${_File_e}"
       sleep "0.1$((RANDOM % 10))"
     done
@@ -640,14 +667,16 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <fil
     while ! (set -o noclobber; printf '%s %s\n' "${USER}" ${$} > "${_File_n}.lock") 2> /dev/null
     do
       _File_e=$((SECONDS - _File_s))
-      ((_File_t <= _File_e)) && printf "${DInfo}Unable to create lock file. (%s)${D}${DCEL}\n" "${_File_n}.lock" >> /dev/stderr && return 1
-      ((_File_w <= _File_e)) && printf "${DInfo}WAIT: Waiting for lock file. (%s)${D}\n" "${_File_n}.lock" >> /dev/stderr && _File_w="${MAXINT}"
+      ((_File_t <= _File_e)) && Tell -C 'Unable to create lock file. (%s)' "${_File_n}.lock" && return 1
+      ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for lock file. (%s)' "${_File_n}.lock" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for lock file removal. (%s)' "${_File_e}"
       sleep "0.1$((RANDOM % 10))"
     done
     local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
     [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
+    [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
     printf '%s\n' "${_File_n}.lock" >"${_File_d}/${_File_n##*/}.lock"
+    [[ -n "${_File_m}" ]] && umask "${_File_x}"
   fi
   ${_M} && _Trace 'Save locked file. (%s)' "${_File_n}"
   _File_fp[${_File_i}]="${_File_n}"

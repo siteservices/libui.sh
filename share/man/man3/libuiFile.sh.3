@@ -35,7 +35,7 @@ user interface library
 .Ar <variable_name> <file_specification> ...
 .Pp
 .Sy GetRealPath
-.Op Fl P
+.Op Fl P Fl v
 .Ar <variable_name> Op Ar <file_specification>
 .Pp
 .Sy GetTmp
@@ -45,6 +45,9 @@ user interface library
 .Sy Open
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
 .Op Fl B Ar <path>
+.Op Fl m Ar <mask>
+.Op Fl t Ar <lock_timeout>
+.Op Fl w Ar <lock_warning_timeout>
 .Ar <file_path> ...
 .Pp
 .Sy PathMatches
@@ -159,7 +162,7 @@ The following command dereferences the provided file specification and returns
 the associated absolute path:
 .Bd -ragged -offset 4n
 .Sy GetRealPath
-.Op Fl P
+.Op Fl P Fl v
 .Ar <variable_name> Op Ar <file_specification>
 .Ed
 .Pp
@@ -172,6 +175,11 @@ Note: The full path, including the filename, is returned in the
 .Ar <variable_name>
 variable.
 This is useful when getting the real path prior to creating the file.
+.It Fl v
+Only validate the path.
+The variable is updated with a valid path, changing an initial "~" to ${HOME}
+and an initial "." to ${IWD} (the initial (starting) working directory).
+This is useful when the path does not exist, but will be created.
 .El
 .Pp
 Set the
@@ -239,6 +247,9 @@ file path:
 .Sy Open
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
 .Op Fl B Ar <path>
+.Op Fl m Ar <mask>
+.Op Fl t Ar <lock_timeout>
+.Op Fl w Ar <lock_warning_timeout>
 .Ar <file_path> ...
 .Ed
 .Pp
@@ -282,6 +293,41 @@ the same directory as the
 file.
 .It Fl c
 Open the file, removing any existing data.
+.It Fl m Ar <mask>
+Use
+.Ar <mask>
+to set the umask when creating a new file using the
+.Fl c
+(Create) file option.
+See
+.Xr umask 1
+for more information about the available
+.Sy umask
+options.
+.It Fl t Ar <lock_timeout>
+Use
+.Ar <lock_timeout>
+as the time in seconds to wait for an exclusive access lock on
+.Ar <path> .
+The script will display a caution message if the exclusive access lock cannot be
+obtained.
+The
+.Xr libui.sh 3
+default timeout can be changed by setting the environment variable
+.Ev LIBUI_LOCKTIMEOUT .
+The default wait time is 30 seconds.
+  local _File_w="${LIBUI_LOCKWARN:-5}"
+.It Fl w Ar <lock_warning_timeout>
+Use
+.Ar <lock_warning_timeout>
+as the wait time in seconds before displaying a caution message to the user that
+the script is waiting for an exclusive access lock on
+.Ar <path> .
+The
+.Xr libui.sh 3
+default wait time can be changed by setting the environment variable
+.Ev LIBUI_LOCKWARN .
+The default wait time is 5 seconds.
 .El
 .Pp
 Opens the
