@@ -5,10 +5,10 @@
 ### New Features / Enhancements
 
 * Add -v (Validate Specification) to GetRealPath to support creating new paths.
-* Add -m \<mask\> (Mask) to Open to change default umask when creating a file.
-* Add -N (No package) tarball only support to libui Package mod.
+* Add -m \<mask\> (Mask) to Open to change the default umask when creating a file.
+* Add -N (No Package) tarball only support to libui Package mod.
 * Improve information message handling in StartSpinner and Sleep.
-* Adjustments to the display times (Question, Answer, yellow, red).
+* Adjustments to the display themes (Question, Answer, yellow, red).
 * Move libui application tools from LibuiUtility mod to LibuiLibui mod.
 * Move utility functions from libui.sh to libui Utility mod.
 * Add MLESSPATH support to mless.
@@ -74,12 +74,12 @@
 
 * Add -E (No Echo) option to Ask and ConfirmVar.
 * Add -d (Display) and -i \<message\> (Info) options to SSHExec.
-* Allow GetFileList to work with file spec contained within variable value.
+* Allow GetFileList to work with a file spec contained within the variable value.
 * Documentation updates.
 
 ### Bug Fixes
 
-* Fix parameter capture. (Add quotes to prevent multi-word split in bash.)
+* Fix parameter capture. (Add quotes to prevent a multi-word split in bash.)
 * Fix -P \<path\> (Path) handling in AddOption, ConfirmVar, and Ask.
 * Change duplicate STDERR file descriptor from 3 to 5. (Capture uses 3 and 4.)
 * Change Spinner output from STDERR to duplicate STDERR file descriptor (5).
