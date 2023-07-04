@@ -27,9 +27,10 @@
 #
 #####
 
-Version -r 1.829 -m 1.3
+Version -r 1.831 -m 1.4
 
 # defaults
+_SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
 
 # Is Target
 #
@@ -155,7 +156,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_target}" "${_SSH_dest}"
-      Action "scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}' 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
+      Action "scp -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}' 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
       ((SSH_RV+=${?}))
     done
     SSH_OUT=$(<"${_SSH_tmpout}")
@@ -164,7 +165,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_target}" "${_SSH_dest}"
-      Action "Capture SSH_OUT SSH_ERR SSH_RV scp ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}'"
+      Action "Capture SSH_OUT SSH_ERR SSH_RV scp -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}'"
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
@@ -279,7 +280,7 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
-      Action -i "${_SSH_info}" -e "Command failed on ${_SSH_target}: ${_SSH_cmd[*]}" "ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
+      Action -i "${_SSH_info}" -e "Command failed on ${_SSH_target}: ${_SSH_cmd[*]}" "ssh -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\" 2> >(tee -a '${_SSH_tmperr}') 1> >(tee -a '${_SSH_tmpout}')"
       ((SSH_RV+=${?}))
     done
     SSH_OUT=$(<"${_SSH_tmpout}")
@@ -288,7 +289,7 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
     for _SSH_target in "${_SSH_targets[@]}"
     do
       ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
-      Action -s -i "${_SSH_info}" -e "Command failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
+      Action -s -i "${_SSH_info}" -e "Command failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
     done
     ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"

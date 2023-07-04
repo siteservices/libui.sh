@@ -28,7 +28,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.829 1.3
+Version -r 1.831 1.4
 
 # load mods
 LoadMod File
@@ -36,6 +36,10 @@ LoadMod File
 ##### configuration
 
 # defaults
+MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.env/share/doc"
+${ZSH} && docpath=( "${(@s[:])MLESSPATH}" ) || IFS=: docpath=( ${MLESSPATH} )
+width=${COLUMNS:-80}
+rule=; for i in {1..$((width - 1))}; do rule+='_'; done
 heading1="${Db}${DFm}"
 heading2="${DFm}"
 heading3="${Db}${DFg}"
@@ -43,9 +47,6 @@ heading4="${DFg}"
 code="${DFy}"
 strong="${Db}"
 emphasis="${Dsu}"
-MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.env/share/doc"
-${ZSH} && docpath=( "${(@s[:])MLESSPATH}" ) || IFS=: docpath=( ${MLESSPATH} )
-rule=; for i in {1..${COLUMNS}}; do rule+='_'; done
 retval=0
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
@@ -101,7 +102,7 @@ InitCallback () {
       done
     fi
   fi
-  files=( "${mdfiles[@]}" )
+  [[ -n "${mdfiles[@]}" ]] && files=( "${mdfiles[@]}" ) || Error 'File not found.'
 }
 
 ##### functions
@@ -126,11 +127,11 @@ do
   Trace 'Display file. (%s)' "${file}"
   cat "${file}" | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/!{
-        s/^ {0,3}[\*_\-] *[\*_\-] *[\*_\-] *[\*_\-]* *$/${rule}/;
-        s/^# (.*)$/${heading1}\1${D}/;
-        s/^## (.*)$/${heading2}\1${D}/;
-        s/^### (.*)$/${heading3}\1${D}/;
-        s/^#####* (.*)$/${heading4}\1${D}/;
+        s/^\s{0,3}[\*_\-]\s*[\*_\-]\s*[\*_\-]\s*[\*_\-]*\s*$/${rule}/;
+        s/^#\s(.*)$/${heading1}\1${D}/;
+        s/^##\s(.*)$/${heading2}\1${D}/;
+        s/^###\s(.*)$/${heading3}\1${D}/;
+        s/^#####*\s(.*)$/${heading4}\1${D}/;
         s/\*\*([^\*]+)\*\*/${strong}\1${D}/g;
         s/__([^_]+)__/${strong}\1${D}/g;
         s/\*([^\*]+)\*/${emphasis}\1${D}/g;
@@ -138,19 +139,18 @@ do
         s/\`\`\`([^\`]+)\`\`\`/${code}\1${D}/g;
         s/(^|[^\`])\`([^\`]+)\`([^\`]|$)/\1${code}\2${D}\3/g;
         s/(^|[^\\])<[^>]*([^\\])>/\1/g;
-        s/^( *)[\*-] (.*)$/\1  o  \2/;
-        s/^( *)([0-9])([.) ])(.*)$/\1  \2\3  \4/;
-        s/^( *)([0-9][0-9])([.) ])(.*)$/\1  \2\3 \4/;
-        s/^( *)([0-9][0-9][0-9])([.) ])(.*)$/\1  \2\3\4/;
-        s/^( *)([0-9][0-9][0-9][0-9][0-9]*)([.) ])(.*)$/\1  \2\3 \4/;
-        s/^>>>> /  |    |    |    |  /;
-        s/^>>> /  |    |    |  /;
-        s/^>> /  |    |  /;
-        s/^> /  |  /;
+        s/^(\s*)[\*+\-]\s(.*)$/\1  o  \2/;
+        s/^>>>>\s/  |  |  |  |  /;
+        s/^>>>\s/  |  |  |  /;
+        s/^>>\s/  |  |  /;
+        s/^>\s/  |  /;
       }" | \
-      sed -E "/^\`\`\`$/,/^\`\`\`$/{s/\`\`\`//; s/^/    ${code}/; s/$/${D}/;}" | \
+      sed -E "/^\`\`\`$/,/^\`\`\`$/{/\`\`\`/d; s/^/    ${code}/; s/$/${D}/;}" | \
       sed -E 's/\\\\/\\/g' | \
       sed -E 's/\\([^\\])/\1/g' | \
+      sed -E '/^\s*[0-9]{1,9}[.)]/,/^\s*$/{s/^(\s*)([0-9]{1,9})([.)])(.*)$/\1  .\2\3  \4/;}' | \
+      awk 'BEGIN { i = 1 } /^\s*\.[0-9]{1,9}[\.\)]/ { if (sub(/\.[0-9]{1,9}/, i++, $0)) print $0; next } { i = 1; print }' | \
+      awk "BEGIN { cols = ${width} - 1; line = \"\" } { if (/^(\s|$)/) { if (length(line) > 0) { print line } line = \$0; if (/^\s*$/) { printf \"\n\" } } else { for (i = 1; i <= NF; i++) { if (length(line) > 0) { if (length(line) + length(\$i) < cols) { line = (line \" \" \$i) } else { print line; line = \$i } } else { line = \$i } } } } END { if ( length(line) > 0 ) printf \"%s\", line }" | \
       less -R
 done
 

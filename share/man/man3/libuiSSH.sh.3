@@ -149,6 +149,10 @@ and
 options are used, the
 .Fl T
 (Target Variable) option must be provided first.
+.Pp
+Connection timeouts are limited to the value provided in the
+.Ev LIBUI_SSHTIMEOUT
+environment variable and defaults to 30 seconds.
 .Ss SSHSend
 The following command executes a command on a remote system:
 .Bd -ragged -offset 4n
@@ -256,6 +260,10 @@ and
 options are used, the
 .Fl T
 (Target Variable) option must be provided first.
+.Pp
+Connection timeouts are limited to the value provided in the
+.Ev LIBUI_SSHTIMEOUT
+environment variable and defaults to 30 seconds.
 .Sh VARIABLES
 Normally, the command is executed on the remote server, the results are
 captured, and then the results are displayed.
@@ -268,6 +276,10 @@ variable.
 Error messages, if generated, are provided in the
 .Sy SSH_ERR
 variable.
+.Pp
+Connection timeouts are limited to the value provided in the
+.Ev LIBUI_SSHTIMEOUT
+environment variable and defaults to 30 seconds.
 .Sh EXAMPLES
 Some examples include:
 .Bd -literal -offset 4n

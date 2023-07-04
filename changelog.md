@@ -1,5 +1,22 @@
 # Change Log
 
+## v1.832
+
+### New Features / Enhancements
+
+* Add LIBUI_SSHTIMEOUT environment variable support to libui SSH mod.
+* Add word wrapping to mless and improve ordered list processing.
+* Change Action retry wait default from 0 to 1 second.
+* Documentation updates.
+
+### Bug Fixes
+
+* Add mless no file found error message.
+
+### Known Issues
+
+* Word wrapping in mless does not ignore terminal effects.
+
 ## v1.831
 
 ### New Features / Enhancements

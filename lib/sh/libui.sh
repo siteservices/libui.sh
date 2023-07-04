@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.831 # Fri Jun 23 05:53:26 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.832 # Mon Jul  3 00:58:03 EDT 2023
 
 #####
 #
@@ -496,7 +496,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   local _q
   local _r=1
   local _rv=1
-  local _s=0
+  local _s=1
   local _t=false
   local _v=${_confirm}
   local _w=true
