@@ -7,7 +7,7 @@
 
 test_Action-r_Good () {
   retries=3
-  LibuiPerformTest 'Action -r 3 "RetryCountdown"'
+  LibuiPerformTest 'Action -r 3 -w 0 "RetryCountdown"'
   LibuiValidateTest ${?} 0 "Bad${N}Bad${N}Good"
   return ${?}
 }

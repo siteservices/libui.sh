@@ -108,7 +108,7 @@ do
   for block in "${blocks[@]}"
   do
     Trace 'Print line number.'
-    Tell -n "%${w}d - " ${lineno}
+    Tell -N "%${w}d - " ${lineno}
     ((lineno += split))
     ((lineno > ${counts[1]})) && lineno=${counts[1]}
 

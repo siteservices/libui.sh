@@ -31,7 +31,7 @@ user interface library
 .Op Ar <file_path>
 .Pp
 .Sy GetFileList
-.Op Fl d Fl e Fl f Fl n Fl p Fl r Fl w
+.Op Fl d Fl e Fl f Fl h Fl n Fl p Fl r Fl w
 .Ar <variable_name> <file_specification> ...
 .Pp
 .Sy GetRealPath
@@ -120,7 +120,7 @@ The following command assigns a listing of the files matching the provided file
 specification to the named array variable:
 .Bd -ragged -offset 4n
 .Sy GetFileList
-.Op Fl d Fl e Fl f Fl n Fl p Fl r Fl w
+.Op Fl d Fl e Fl f Fl h Fl n Fl p Fl r Fl w
 .Ar <variable_name> <file_specification> ...
 .Ed
 .Pp
@@ -132,6 +132,8 @@ Match directories only.
 Generate an error when the pattern matches nothing.
 .It Fl f
 Match files only.
+.It Fl h
+Perform a recursive search including hidden subdirectories.
 .It Fl n
 Return only filenames.
 This is useful when getting a list from a directory other than the current
@@ -139,7 +141,7 @@ directory.
 .It Fl p
 Return only paths, i.e., only the path portion without any filenames.
 .It Fl r
-Perform a recursive expansion, i.e., include selected subdirectories.
+Perform a recursive search, i.e., include selected subdirectories.
 .It Fl w
 Generate a warning when the pattern matches nothing.
 .El
@@ -151,6 +153,9 @@ array variable to a list of the files specified by
 More than one
 .Ar <file_specification>
 can be provided.
+The collection of paths can optionally be recursive.
+Recursive searches only search non-hidden subdirectories unless the -h (Hidden
+Recursive Search) option flag is used.
 .Pp
 Note:
 .Sy GetFileList

@@ -4,18 +4,33 @@
 
 ### New Features / Enhancements
 
-* Add LIBUI_SSHTIMEOUT environment variable support to libui SSH mod.
+* Add new -P 'simple text archive package' to libui Package mod.
+* Added new 'star' command to create and extract simple text only file archives.
 * Add word wrapping to mless and improve ordered list processing.
+* Add LIBUI_SSHTIMEOUT environment variable support to libui SSH mod.
+* Add -h (Hidden Directory Recursion) to GetFileList.
 * Change Action retry wait default from 0 to 1 second.
-* Documentation updates.
+* Output Action debug information in both wait and verbose debug modes.
+* Action passes TERMINAL state as an environment variable.
+* Info (Tell -I) no longer outputs message if TERMINAL is not true.
+* Documentation and text updates.
 
 ### Bug Fixes
 
+* Fix GetFileList recursive list handling.
+* Remove "INFO" from Tell -I (Info) output message.
 * Add mless no file found error message.
+* Update Workspace handling.
+* Correctly send SSHExec error messages to STDOUT.
 
 ### Known Issues
 
 * Word wrapping in mless does not ignore terminal effects.
+
+### Incompatibilities
+
+* Swap Tell -n/-N to be -N (No newline) and -n (No Linefeed).
+* Changed createpackage option flags (-f to -a, -t to -f).
 
 ## v1.831
 

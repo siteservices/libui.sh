@@ -25,9 +25,9 @@ user interface library
 .Sh SYNOPSIS
 .Sy LoadMod Package
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl N Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl a Fl l Fl N Fl P Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
-.Sy _CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl a Fl P Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 .Sy ListPackage Ar <package>
 .Sh DESCRIPTION
@@ -52,7 +52,7 @@ specified
 .Ar <source_directory>
 directory.
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl N Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl a Fl l Fl N Fl P Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
 When executed, the
 .Sy CreatePackage
@@ -192,10 +192,19 @@ This option is also passed through to the
 See the
 .Sx _CreatePackageHeader
 command for more information.
+.It Fl P
+Simple Text Archive Package
+.Pp
+A simple text archive package (.starp) will be created.
+This option is also passed through to the
+.Ar <header_command> .
+See the
+.Sx _CreatePackageHeader
+command for more information.
 .It Fl S
 Sharp
 .Pp
-A shar archive package will be created.
+A shar archive package (.sharp) will be created.
 This option is also passed through to the
 .Ar <header_command> .
 See the
@@ -204,7 +213,7 @@ command for more information.
 .It Fl T
 Tarp
 .Pp
-A tar archive package will be created.
+A tar archive package (.tarp) will be created.
 This option is also passed through to the
 .Ar <header_command> .
 See the
@@ -229,7 +238,8 @@ of the package to be created.
 If the
 .Ar <package_filename>
 does not include an extension, one will be added, based upon the package type
-generated (i.e. .tarp for a tar package and .sharp for a shar package).
+generated (i.e. .tarp for a tar package, .sharp for a shar package, and .starp
+for a simple text archive package).
 If no output
 .Ar <package_filename>
 is provided, the file name will be the same as the
@@ -256,7 +266,7 @@ names.
 .Ss _CreatePackageHeader
 The _CreatePackageHeader command.
 .Pp
-.Sy _CreatePackageHeader Oo Fl a Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl a Fl P Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 When executed, the
 .Sy _CreatePackageHeader
@@ -340,6 +350,10 @@ Note: The contents of the parent directory containing the installation program
 will be available in the temporary installation directory and relative to the
 .Ar <source_directory>
 root.
+.It Fl P
+Simple Text Archive Package
+.Pp
+A simple text archive archive package (.starp) will be created.
 .It Fl s Ar <source_directory>
 Source Directory
 .Pp
@@ -348,11 +362,11 @@ If omitted, the current working directory will be used as the source directory.
 .It Fl S
 Sharp
 .Pp
-A shar archive package will be created.
+A shar archive package (.sharp) will be created.
 .It Fl T
 Tarp
 .Pp
-A tar archive package will be created.
+A tar archive package (.tarp) will be created.
 This is the default format if neither
 .Fl S
 (Sharp) or
@@ -367,7 +381,8 @@ of the package to be created.
 If the
 .Ar <package_filename>
 does not include an extension, one will be added, based upon the package type
-generated (i.e. .tarp for a tar package and .sharp for a shar package).
+generated (i.e. .tarp for a tar package, .sharp for a shar package, and
+.starp for a simple text archive package).
 If no output
 .Ar <package_filename>
 is provided, the file name will be the same as the
@@ -421,6 +436,7 @@ the installer from the root of the extracted package.
 .Sh SEE ALSO
 .Xr bash 1 ,
 .Xr shar 1 ,
+.Xr star 1 ,
 .Xr tar 1 ,
 .Xr zsh 1 ,
 .Xr libui.sh 3

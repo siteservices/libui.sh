@@ -237,6 +237,8 @@ LibuiTest () {
     ${_M} && _Trace 'Execute tests. (%s)' "${#_Test_tests[@]}"
     for _Test_test in "${_Test_tests[@]}"
     do
+      Tell -I -N 'Running test %s: (%s)...' "${_Test_count}" "${_Test_test}"
+
       ${_M} && _Trace 'Prepare for test %s: (%s)' "${_Test_count}" "${_Test_test}"
       _Test_env="LIBUI_TRACE=false COUNT=${_Test_count} "
       _Test_opt='-T '

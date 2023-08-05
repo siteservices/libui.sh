@@ -27,13 +27,13 @@
 #
 #####
 
-Version -r 1.831 -m 1.13
+Version -r 1.831 -m 1.14
 
 # defaults
 
 # Create Self-Extracting Package Header
 #
-# Syntax: _CreatePackageHeader [-a|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+# Syntax: _CreatePackageHeader [-a|-P|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
 #
 # Example: _CreatePackageHeader -T -i '\${d}/path/to/installer' -a package.tarp
 #
@@ -41,7 +41,7 @@ Version -r 1.831 -m 1.13
 # configured to execute "<tempdir>/path/to/installer $@ <archive>" when executed.
 #
 UICMD+=( '_CreatePackageHeader' )
-_CreatePackageHeader () { # [-a|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
+_CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_spec>] [-i <installer>] [-s <source_directory>] <package_filename>
   ${_S} && ((_c_CreatePackageHeader++))
   ${_M} && _Trace '_CreatePackageHeader [%s]' "${*}"
 
@@ -58,7 +58,7 @@ _CreatePackageHeader () { # [-a|-S|-T] [-d <description>] [-e <environment_spec>
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':ad:e:i:s:ST' opt
+  while getopts ':ad:e:i:Ps:ST' opt
   do
     case ${opt} in
       a)
@@ -79,6 +79,12 @@ _CreatePackageHeader () { # [-a|-S|-T] [-d <description>] [-e <environment_spec>
       i)
         ${_M} && _Trace 'Installer path. (%s)' "${OPTARG}"
         _Package_installer="${OPTARG}"
+        ;;
+
+      P)
+        ${_M} && _Trace 'Make shar.'
+        _Package_archive='star'
+        _Package_unarchive='star -x'
         ;;
 
       s)
@@ -159,14 +165,14 @@ EOF
 
 # Create Self-Extracting Package Archive
 #
-# Syntax: CreatePackage [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
+# Syntax: CreatePackage [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
 #
 # Example: CreatePackage -f filelist -s ''/source/dir' package.tarp
 #
 # Result: Creates a package.tarp package containing the files in the filelist array from the /source/dir directory.
 #
 UICMD+=( 'CreatePackage' )
-CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
+CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
   ${_S} && ((_cCreatePackage++))
   ${_M} && _Trace 'CreatePackage [%s]' "${*}"
 
@@ -180,6 +186,7 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
   local _Package_list=false
   local _Package_encoding='-T'
   local _Package_sharp=false
+  local _Package_starp=false
   local _Package_tarp=true
   local _Package_compression='-j'
   local _Package_rv=0
@@ -188,7 +195,7 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':ac:d:e:f:h:i:ln:No:s:STx:' opt
+  while getopts ':ac:d:e:f:h:i:ln:No:Ps:STx:' opt
   do
     case ${opt} in
       a)
@@ -240,6 +247,14 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
       N)
         ${_M} && _Trace 'No package, tarball only.'
         _Package_sharp=false
+        _Package_starp=false
+        _Package_tarp=false
+        ;;
+
+      P)
+        ${_M} && _Trace 'Make star package.'
+        _Package_sharp=false
+        _Package_starp=true
         _Package_tarp=false
         ;;
 
@@ -249,14 +264,16 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
         ;;
 
       S)
-        ${_M} && _Trace 'Make shar.'
+        ${_M} && _Trace 'Make shar package.'
         _Package_sharp=true
+        _Package_starp=false
         _Package_tarp=false
         ;;
 
       T)
-        ${_M} && _Trace 'Make tar.'
+        ${_M} && _Trace 'Make tar package.'
         _Package_sharp=false
+        _Package_starp=false
         _Package_tarp=true
         ;;
 
@@ -290,6 +307,9 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
     elif ${_Package_sharp}
     then
       [[ ".sharp" == "${_Package_package: -6}" ]] || _Package_package+='.sharp'
+    elif ${_Package_starp}
+    then
+      [[ ".starp" == "${_Package_package: -6}" ]] || _Package_package+='.starp'
     else
       [[ ".tar" == "${_Package_package: -4}" ]] || _Package_package+='.tar'
     fi
@@ -337,15 +357,15 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
             fi
           done
         fi
-        if [[ 0 -eq ${#_Package_glob[@]} || ! ${_Package_exclude} =~ .*/.* ]]
-        then
-          if ${ZSH}
-          then
-            _Package_excludes=( "${(@)_Package_excludes:#${_Package_exclude}}" )
-          else
-            _Package_excludes=( "${_Package_excludes[@]/${_Package_exclude}}" )
-          fi
-        fi
+#        if [[ 0 -eq ${#_Package_glob[@]} || ! ${_Package_exclude} =~ .*/.* ]]
+#        then
+#          if ${ZSH}
+#          then
+#            _Package_excludes=( "${(@)_Package_excludes:#${_Package_exclude}}" )
+#          else
+#            _Package_excludes=( "${_Package_excludes[@]/${_Package_exclude}}" )
+#          fi
+#        fi
       done
       ${_M} && _Trace 'List files. (%s)' "${_Package_files[*]}"
       Tell 'Source Directory:'
@@ -374,8 +394,8 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create tar package header ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
-        Action -q 'Append tar archive to package?' "cat '${_Package_tarball}' >> '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -q "Append tar archive to package ${_Package_package}?" "cat '${_Package_tarball}' >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"
       elif ${_Package_sharp}
@@ -387,15 +407,29 @@ CreatePackage () { # [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e 
         Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create shar package header ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         if [[ 'Darwin' == "${OS}" ]]
         then
-          Action -q 'Create shar archive?' -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
+          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
         else
-          Action -q 'Create shar archive?' -i 'Creating shar archive.' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
+          Action -q "Create shar package archive for ${_Package_package}?" -i 'Creating shar archive.' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
+        popd > /dev/null
+      elif ${_Package_starp}
+      then
+        ${_M} && _Trace 'Create star package: %s' "${_Package_package}"
+        local _Package_subdir
+        GetTmp -s _Package_subdir
+        pushd ${_Package_subdir} > /dev/null
+        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
+        [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive.' "star -c . >> '${_Package_package}'"
+        _Package_rv=${?}
+        ${_M} && _Trace 'Created starp package: %s' "${_Package_package}"
         popd > /dev/null
       else
         ${_M} && _Trace 'Rename tarball: %s' "${_Package_package}"

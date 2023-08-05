@@ -56,9 +56,7 @@ AddParameter -n files -m -r -k 'File' -d 'File to view.'
 ##### callbacks
 
 InfoCallback () {
-  Trace 'In user info callback.'
-
-  Trace 'User info.'
+  Trace 'Usage info.'
   cat << EOF
 The mless script provides basic interpretation of markdown in a terminal
 environment using less. Due to the limited terminal environment, mless has

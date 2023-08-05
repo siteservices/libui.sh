@@ -47,7 +47,7 @@ InfoCallback () {
   # note: this function is optional
   Trace 'In user info callback.'
 
-  Trace 'Provide usage information.'
+  Trace 'Usage information.'
   cat << EOF
 <ADDITIONAL SCRIPT USAGE INFORMATION HERE>
 EOF
@@ -64,7 +64,7 @@ ExitCallback () {
 InitCallback () {
   Trace 'In user init callback.'
 
-  Trace 'Startup confirmation.'
+  Trace 'Confirm and initialize environment.'
   # <STARTUP CONFIRMATION HERE>
 }
 
