@@ -12,7 +12,7 @@ test_RemoveFileList_Recursive () {
   Action -W "mkdir -p ${TESTDIR}/listdir\ 2"
   Action -W "touch ${TESTDIR}/listdir-1/dirfile-1"
   Action -W "touch ${TESTDIR}/listdir-1/dirfile\ 2"
-  GetFileList -r testlist "${TESTDIR}/list*"
+  GetFileList -h testlist "${TESTDIR}/list*"
   LibuiPerformTest 'RemoveFileList testlist'
   LibuiValidateTest ${?} 0
   return ${?}

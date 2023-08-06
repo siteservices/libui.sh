@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Tell-n_No_Linefeed
+#
+#####
+
+test_Tell-n_No_Linefeed () {
+  LibuiGetDisplayTestValues
+  local t="${TERMINAL}"
+  TERMINAL=true
+  _Terminal
+  TERMINAL="${t}"
+  LibuiPerformTest 'Tell -n "Test 1."; Tell -n "Test 2."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1.${T}${TCEL}${TJBL}${TJBL}${TTell}Test 2.${T}${TCEL}${TJBL}"
+  return ${?}
+}
+
+return 0

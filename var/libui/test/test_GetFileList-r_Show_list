@@ -1,11 +1,11 @@
 #!/usr/bin/env libui
 #####
 #
-# test_GetFileList-r_Show
+# test_GetFileList-r_Show_list
 #
 #####
 
-test_GetFileList-r_Show () {
+test_GetFileList-r_Show_list () {
   Action -W "mkdir -p ${TESTDIR}/list"
   Action -W "touch ${TESTDIR}/list/listfile-1"
   Action -W "touch ${TESTDIR}/list/listfile\ 2"
@@ -14,8 +14,8 @@ test_GetFileList-r_Show () {
   Action -W "touch ${TESTDIR}/list/listdir-1/dirfile-1"
   Action -W "touch ${TESTDIR}/list/listdir-1/dirfile\ 2"
   Action -W "touch ${TESTDIR}/list/listdir-1/testfile\ 1"
-  LibuiPerformTest "cd '${TESTDIR}/list'; GetFileList -r testlist '.'; Tell -- '%s' \"\${testlist[*]}\""
-  LibuiValidateTest ${?} 0 ". ./listdir 2 ./listdir-1 ./listfile 2 ./listfile-1 ./listdir-1/dirfile 2 ./listdir-1/dirfile-1 ./listdir-1/testfile 1"
+  LibuiPerformTest "GetFileList -r testlist '${TESTDIR}/list/list*'; Tell -- '%s' \"\${testlist[*]}\""
+  LibuiValidateTest ${?} 0 "${TESTDIR}/list/listdir 2 ${TESTDIR}/list/listdir-1 ${TESTDIR}/list/listfile 2 ${TESTDIR}/list/listfile-1 ${TESTDIR}/list/listdir-1/dirfile 2 ${TESTDIR}/list/listdir-1/dirfile-1 ${TESTDIR}/list/listdir-1/testfile 1"
   return ${?}
 }
 

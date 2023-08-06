@@ -6,12 +6,13 @@
 #####
 
 test_GetFileList-d-p () {
-  Action -W "touch ${TESTDIR}/listfile-1"
-  Action -W "touch ${TESTDIR}/listfile\ 2"
-  Action -W "mkdir -p ${TESTDIR}/listdir-1"
-  Action -W "mkdir -p ${TESTDIR}/listdir\ 2"
-  LibuiPerformTest "GetFileList -d -p testlist '${TESTDIR}/list*'; Tell -- '%s' \"\${testlist[*]}\""
-  LibuiValidateTest ${?} 0 "${TESTDIR}"
+  Action -W "mkdir -p ${TESTDIR}/list"
+  Action -W "touch ${TESTDIR}/list/listfile-1"
+  Action -W "touch ${TESTDIR}/list/listfile\ 2"
+  Action -W "mkdir -p ${TESTDIR}/list/listdir-1"
+  Action -W "mkdir -p ${TESTDIR}/list/listdir\ 2"
+  LibuiPerformTest "GetFileList -d -p testlist '${TESTDIR}/list/list*'; Tell -- '%s' \"\${testlist[*]}\""
+  LibuiValidateTest ${?} 0 "${TESTDIR}/list"
   return ${?}
 }
 
