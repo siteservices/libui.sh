@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.831 -m 1.6
+Version -r 1.832 -m 1.6
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"

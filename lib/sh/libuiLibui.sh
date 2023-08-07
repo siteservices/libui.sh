@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.831 -m 1.7
+Version -r 1.832 -m 1.8
 
 ##### configuration
 
@@ -954,8 +954,8 @@ LibuiNew () {
     Action -F "sed ${_Util_sedi} -e 's/<SHORT DESCRIPTION HERE>/${ANSWER}/g' '${_Util_target}'"
     Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_target}'"
     Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_target}'"
-    Action -F "sed ${_Util_sedi} -e 's/<REQUIRED HERE>/${LIBUI_VERSION}/g' '${_Util_target}'"
-    Action -F "sed ${_Util_sedi} -e 's/<VERSION HERE>/0.0/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<REQUIRED LIBUI HERE>/${LIBUI_VERSION}/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<SCRIPT VERSION HERE>/0.0/g' '${_Util_target}'"
     Action -F "chmod +x '${_Util_target}'"
 
     Tell -A 'New file has been created. (%s)' "${_Util_target}"

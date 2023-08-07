@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 1.830 -m 1.1
+Version -r 1.832 -m 1.2
 
 ##### configuration
 
