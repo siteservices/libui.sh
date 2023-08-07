@@ -152,7 +152,7 @@ Version () { # [-m] [-r <required_libui_version>] <script_version>
   ((0 == ${#})) && _Trace 'Display versions. (%s)' "${UIVERSION[*]}" && printf '%s %s\n' "${UIVERSION[@]}" && return 0
 
   [[ -n ${_r} && ${LIBUI_VERSION//.} -ge ${_r//.} ]] || \
-      Tell -E -f '%s requires libui.sh version %s. Please update libui.sh.' "${_s##*/}" "${LIBUI_VERSION}"
+      Tell -E -f '%s requires libui.sh version %s. Please update libui.sh.' "${_s##*/}" "${_r}"
 
   UIVERSION+=( "${_s##*/}" "${1}" )
   ${_m} && UIMOD+=( "${_s##*/}" )

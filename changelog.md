@@ -5,7 +5,8 @@
 ### New Features / Enhancements
 
 * Add new -P 'simple text archive package' to libui Package mod.
-* Added new 'star' command to create and extract simple text only file archives.
+* Add 'star' command to create and extract simple text only file archives.
+* Add 'createpackage' command to create self-extracting packages.
 * Add word wrapping to mless and improve ordered list processing.
 * Add LIBUI_SSHTIMEOUT environment variable support to libui SSH mod.
 * Add -h (Hidden Directory Recursion) to GetFileList.
@@ -22,6 +23,7 @@
 * Add mless no file found error message.
 * Update Workspace handling.
 * Correctly send SSHExec error messages to STDOUT.
+* Fix version in required libui message.
 
 ### Known Issues
 

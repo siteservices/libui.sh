@@ -44,7 +44,7 @@ StatusCallback () {                                                             
 }                                                                                                   # demo content
 
 InfoCallback () {
-  # note: this function is optional
+  # note: this function is optional                                                                 # demo content
   Trace 'In user info callback.'
 
   Trace 'Usage information.'
@@ -54,7 +54,7 @@ EOF
 }
 
 ExitCallback () {
-  # note: this function is optional
+  # note: this function is optional                                                                 # demo content
   Trace 'In user exit callback.'
 
   Trace 'Exit cleanup.'
@@ -62,9 +62,10 @@ ExitCallback () {
 }
 
 InitCallback () {
+  # note: this function is recommended                                                              # demo content
   Trace 'In user init callback.'
 
-  Trace 'Confirm and initialize environment.'
+  Trace 'Confirm and initialize environment.'                                                       # demo content
   # <STARTUP CONFIRMATION HERE>
 }
 
