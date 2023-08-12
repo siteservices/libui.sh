@@ -23,6 +23,7 @@
 .Sy updatevimpackages
 .Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl b Ar <branch>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Sh DESCRIPTION
@@ -31,20 +32,6 @@ update the vim package files in the .vim directory.
 The script searches for the vim packages in the .vim directory and then attempts
 to perform a git pull on the same directories in the WORKSPACE directory.
 .Pp
-The WORKSPACE directory needs to be the path above the git repositories.
-If
-.Ar <WORKSPACE>
-is not provided, the path provided in the
-.Ev WORKSPACE
-environment variable will be used.
-If the
-.Ev WORKSPACE
-environment variable is not defined, the ~/.workspace file will be sourced (to
-define
-.Ev WORKSPACE Ns ).
-If the ~/.workspace file does not exist, the current working directory will be
-used.
-.Pp
 The
 .Nm
 script can be executed using the following:
@@ -52,6 +39,7 @@ script can be executed using the following:
 .Sy updatevimpackages
 .Op Fl s Fl v Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl b Ar <branch>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Ed
@@ -62,12 +50,15 @@ Available command line options are:
 Status
 .Pp
 Display repo status.
-.It Op Ar <WORKSPACE>
+.It Ar <WORKSPACE>
 The workspace directory.
 .Pp
-If the workspace directory is not provided, the path provided in the
+The WORKSPACE directory needs to be the path above the git repositories.
+If
+.Ar <WORKSPACE>
+is not provided, the path provided in the
 .Ev WORKSPACE
-environment variable is used.
+environment variable will be used.
 If the
 .Ev WORKSPACE
 environment variable is not defined, the ~/.workspace file will be sourced (to
@@ -93,6 +84,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V

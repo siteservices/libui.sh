@@ -26,6 +26,7 @@
 .Op Fl i Ar <interval>
 .Op Fl l Ar <lines>
 .Op Fl s Ar <start_line>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Ar <File> ...
 .Sh DESCRIPTION
@@ -59,6 +60,7 @@ script can be executed using the following:
 .Op Fl i Ar <block_size>
 .Op Fl l Ar <skip_lines>
 .Op Fl s Ar <start_line>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Ar <File> ...
 .Ed
@@ -103,6 +105,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V

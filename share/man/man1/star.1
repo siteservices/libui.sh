@@ -1,0 +1,150 @@
+.\" Manpage for star {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd August 11, 2023
+.Dt STAR 1
+.Os
+.Sh NAME
+.Nm star
+.Nd Manage simple archives of text only files
+.Sh SYNOPSIS
+.Sy star
+.Op Fl c Fl x Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl f Ar <filename>
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
+.Op Ar <filepath>
+.Sh DESCRIPTION
+Manages simple text only file archives where the files are concatenated
+together with a separator line containing the filename and directory and file
+permissions.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy star
+.Op Fl c Fl x Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl f Ar <filename>
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
+.Op Ar <filepath>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl c
+Create
+.Pp
+Create a new archive from the provided
+.Ar <filepath> .
+.Pp
+Note: If any files in the provided
+.Ar <filepath>
+are identified as non-text, they are skipped.
+.It Fl f Ar <filename>
+Archive Filename
+.Pp
+The filename for the archive.
+.Pp
+If no filename is provided or if the filename "-" is provided, the archive
+content will be directed to STDOUT.
+.Pp
+Note: When creating an archive, if a filename is provided but does not have an
+extension, a ".star" extension will be added.
+.It Fl x
+Extract
+.Pp
+Extract files from the archive into the provided
+.Ar <filepath> .
+.It Ar <filepath>
+File Path
+.Pp
+When used with
+.Fl c
+(Create), the file path should contain the files to be archived.
+When used with
+.Fl x
+(Extract), the file path is the destination for the extracted files.
+.Pp
+Note: If the
+.Ar <filepath>
+is not provided, the current working directory (i.e., ".") will be used.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl P Ar <file>
+(Load Profile),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The script will create or read from the file provided with the
+.Fl f Ar <filename>
+option flag.
+The script will collect, with the
+.Fl c
+(Crate) option flag, or create, with the
+.Fl x
+(Extract) option flag, files from the directory provided with the
+.Ar <filepath>
+parameter.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy star -c -f /tmp/keep .
+.Ed
+.Pp
+Creates an archive named "keep.star" in the /tmp directory with the text files
+contained in the current directory.
+.Sh SEE ALSO
+.Xr createpackage 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

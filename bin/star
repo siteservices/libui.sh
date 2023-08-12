@@ -7,7 +7,7 @@
 #
 #####
 #
-# Manages simple archives of text only files concatinated with the separation
+# Manages simple archives of text only files concatenated with the separation
 # line (with no leading / trailing whitespace):
 #
 #     ===== file:<filename>:<dir permissions>:<file permissions>:file =====

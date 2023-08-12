@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.7
+Version -r 1.832 1.5
 
 # load mods
 LoadMod File
@@ -39,9 +39,6 @@ LoadMod Package
 ##### configuration
 
 # defaults
-installenv='SHLIBPATH="${d}/.env/lib/sh"'
-installdir='var/installed'
-installts="${installdir}/date"
 files=( )
 excludes=(
   '.*.sw?'
@@ -49,7 +46,6 @@ excludes=(
   '.DS_Store'
   '.git'
   '.gitignore'
-  "${installdir}"
 )
 GetTmp tmpdir
 GetTmp -f tmpfile
@@ -60,11 +56,11 @@ AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to pac
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
 [[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -i '-T' -k 'Encoding' -d 'Shar encoding format option.' e:
 AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
-AddOption -n installer -i '.installpackage' -k 'Installer' -d 'Package installer path relative to install directory.' i:
+AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
+AddOption -n installenv -k 'Install Env' -d 'Installer command line environment.' I:
 AddOption -n listfiles -f -k 'List Files' -d 'List files to package.' l
 AddOption -n manifest -k 'Manifest' -d 'Manifest file location.' m:
-AddOption -n ptype -i tarp -s tarp -s sharp -s starp -k 'Package' -d 'Package type.' p:
-AddOption -n update -f -k 'Update' -d 'Update the installation timestamp.' u
+AddOption -n pkgtype -i tarp -s tarp -s sharp -s starp -k 'Package' -d 'Package type.' p:
 AddOption -n excludes -m -k 'Exclude' -d 'Exclude files matching provided pattern from package.' x:
 AddParameter -i "${PWD}" -k 'Source ' -d 'Create package from source directory.' sourcedir
 
@@ -81,6 +77,10 @@ Files may be excluded using the -x (Exclude) option flag.
 
 If the provided package filename is a directory, a new file will be created in
 that directory with a name folowing: "<sourcedir>-<YYMMDD>.<pkgtype>".
+
+When extracting, if the installer is contained within the package, you can
+access it using "\${d}/<installer>", where the "\${d}" is a copy of the package
+directory and "<installer>" is the path to the installer in that directory.
 EOF
 }
 
@@ -111,7 +111,7 @@ InitCallback () {
   then
     package="${package}/${sourcedir##*/}-$(date +%Y%m%d)"
   fi
-  case "${ptype}" in
+  case "${pkgtype}" in
     sharp)
       Trace 'Files to include in shar package. (%s)' "${#files[@]}"
       [[ ".sharp" == "${package: -6}" ]] || package+='.sharp'
@@ -160,21 +160,21 @@ then
   Trace 'List files. (%s)' "${#files[*]}"
   Action -q 'Generate file list?' "CreatePackage -l -f files -x excludes ${sourcedir}"
 else
-  Trace 'Find package type. (%s)' "${ptype}"
-  case "${ptype}" in
+  Trace 'Find package type. (%s)' "${pkgtype}"
+  case "${pkgtype}" in
     sharp)
       Trace 'Files to include in shar package. (%s)' "${#files[@]}"
-      Action -s -q 'Create shar package archive?' "CreatePackage -S -n '${encoding}' -f files -x excludes -d 'Self-Extracting shar package.' -e '${installenv}' -i '\${d}/${installer}' -a -s '${sourcedir}' '${package}'"
+      Action -s -q 'Create shar package archive?' "CreatePackage -S -n '${encoding}' -f files -x excludes -d 'Self-Extracting shar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
       ;;
 
     starp)
       Trace 'Files to include in star package. (%s)' "${#files[@]}"
-      Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -e '${installenv}' -i '\${d}/${installer}' -a -s '${sourcedir}' '${package}'"
+      Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -e '${installenv}' -i '${installer:-star -x -f}' -a -s '${sourcedir}' '${package}'"
       ;;
 
     tarp)
       Trace 'Files to include in tar package. (%s)' "${#files[@]}"
-      Action -s -q 'Create tar package archive?' "CreatePackage -T -c '${compression}' -f files -x excludes -d 'Self-Extracting tar package.' -e '${installenv}' -i '\${d}/${installer}' -a -s '${sourcedir}' '${package}'"
+      Action -s -q 'Create tar package archive?' "CreatePackage -T -c '${compression}' -f files -x excludes -d 'Self-Extracting tar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
       ;;
 
     *)
@@ -187,18 +187,6 @@ else
   if [[ 0 -eq ${?} && -f "${package}" ]]
   then
     Alert 'Created package: %s' "${package}"
-
-    Trace 'Check if updating installed timestamp. (%s)' "${update}"
-    if "${update}"
-    then
-      Trace 'Update install timestamp.'
-      if [[ -d "${sourcedir}/${installts##*/}" ]]
-      then
-        Write -c -f "${sourcedir}/${installts}" "$(date +%s)"
-      else
-        Error 'Unable to update install timestamp. (%s)' "${sourcedir}/${installts}"
-      fi
-    fi
   else
     Error 'Unable to create package. (%s)' "${package}"
   fi

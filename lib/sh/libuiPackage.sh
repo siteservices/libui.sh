@@ -49,7 +49,7 @@ _CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_sp
   local _Package_archive='tar'
   local _Package_desc
   local _Package_env
-  local _Package_installer="./installer"
+  local _Package_installer='\${d}/.installer'
   local _Package_null
   local _Package_srcdir
   local _Package_unarchive='tar xf'
@@ -68,28 +68,28 @@ _CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_sp
 
       d)
         ${_M} && _Trace 'Description. (%s)' "${OPTARG}"
-        _Package_desc="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_desc="${OPTARG}"
         ;;
 
       e)
         ${_M} && _Trace 'Environment variables. (%s)' "${OPTARG}"
-        _Package_env="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_env="${OPTARG}"
         ;;
 
       i)
         ${_M} && _Trace 'Installer path. (%s)' "${OPTARG}"
-        _Package_installer="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_installer="${OPTARG}"
         ;;
 
       P)
-        ${_M} && _Trace 'Make shar.'
+        ${_M} && _Trace 'Make star.'
         _Package_archive='star'
-        _Package_unarchive='star -x'
+        _Package_unarchive='star -x -f'
         ;;
 
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
-        _Package_srcdir="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_srcdir="${OPTARG}"
         ;;
 
       S)
@@ -133,12 +133,12 @@ _CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_sp
 # use -e to extract archive file
 #####
 # find payload
-l=\$(head -n 33 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || exit 1
+l=\$(head -n 32 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || exit 1
 
 # extract installer
 t="\$(mktemp -d)" || exit 1
 a="\${0##*/}"; a="\${t}/\${a%\\.*}.${_Package_archive}"
-tail -n +34 "\${0}" > "\${a}"
+tail -n +33 "\${0}" > "\${a}"
 [ "\${1}" = '-e' ] && mv "\${a}" ./ && rmdir "\${t}" && exit 0
 d="\${t}/a"
 mkdir "\${d}" || exit 1
@@ -148,8 +148,7 @@ cd - > /dev/null
 
 # run installer
 sh="\${ZSH_NAME:t}"; sh=\${sh:-bash}
-[ 0 -eq \${#} ] && set -- -h
-${_Package_env:+${_Package_env} }\${sh} ${_Package_installer} \${@}${_Package_append}
+${_Package_env:+${_Package_env} }${_Package_installer} \${@}${_Package_append}
 
 # done
 rm -rf "\${t}"
@@ -205,18 +204,18 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
 
       c)
         ${_M} && _Trace 'Compression. (%s)' "${OPTARG}"
-        _Package_compression="${OPTARG}"; [[ "${_Package_compression:0:1}" == '-' ]] || \
+        [[ -n "${OPTARG}" ]] && _Package_compression="${OPTARG}" && [[ "${_Package_compression:0:1}" != '-' ]] && \
             _Package_compression="${_Package_compression:+-${_Package_compression}}"
         ;;
 
       d)
         ${_M} && _Trace 'Description. (%s)' "${OPTARG}"
-        _Package_desc="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_desc="${OPTARG}"
         ;;
 
       e)
         ${_M} && _Trace 'Environment variable. (%s)' "${OPTARG}"
-        _Package_env="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_env="${OPTARG}"
         ;;
 
       f)
@@ -226,12 +225,12 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
 
       h)
         ${_M} && _Trace 'Header function / command name. (%s)' "${OPTARG}"
-        _Package_header="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_header="${OPTARG}"
         ;;
 
       i)
         ${_M} && _Trace 'Installer file path. (%s)' "${OPTARG}"
-        _Package_installer="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_installer="${OPTARG}"
         ;;
 
       l)
@@ -241,7 +240,8 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
 
       n)
         ${_M} && _Trace 'Encoding. (%s)' "${OPTARG}"
-        _Package_encoding="${OPTARG}"; [[ "${_Package_encoding:0:1}" == '-' ]] || _Package_encoding="${_Package_encoding:+-${_Package_encoding}}"
+        [[ -n "${OPTARG}" ]] && _Package_encoding="${OPTARG}" && [[ "${_Package_encoding:0:1}" != '-' ]] && \
+            _Package_encoding="${_Package_encoding:+-${_Package_encoding}}"
         ;;
 
       N)
@@ -260,7 +260,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
 
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
-        _Package_srcdir="${OPTARG}"
+        [[ -n "${OPTARG}" ]] && _Package_srcdir="${OPTARG}"
         ;;
 
       S)
@@ -426,7 +426,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
         Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -P -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive.' "star -c . >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created starp package: %s' "${_Package_package}"

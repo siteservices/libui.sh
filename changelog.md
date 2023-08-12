@@ -14,6 +14,10 @@
 * Output Action debug information in both wait and verbose debug modes.
 * Action passes TERMINAL state as an environment variable.
 * Info (Tell -I) no longer outputs message if TERMINAL is not true.
+* Improve libui package and install support and performance.
+* Remove test support installation from default libui -i (install)
+* Add new -I (install with tests) option flag to libui.
+* Add man pages for createpackage, mless, and star.
 * Documentation and text updates.
 
 ### Bug Fixes
@@ -24,6 +28,7 @@
 * Update Workspace handling.
 * Correctly send SSHExec error messages to STDOUT.
 * Fix version in required libui message.
+* Fix option handling in libui Package mod.
 
 ### Known Issues
 

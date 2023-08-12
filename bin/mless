@@ -60,16 +60,15 @@ InfoCallback () {
   cat << EOF
 The mless script provides basic interpretation of markdown in a terminal
 environment using less. Due to the limited terminal environment, mless has
-limited capabilities:
+limited capabilities including:
 
-  - supports 4 header levels
-  - supports bold and underlined text
-  - supports unordered lists
-  - supports ordered lists up to 3 digits (ordered lists are not yet renumbered)
-  - removes HTML tags
-  - basic block indents up to 4 levels
-  - basic support for backslash (\\) escapes
-  - does not yet support paragraph rewrapping
+  - Support for emphasis and underlined text
+  - Support for unordered lists
+  - Basic support for ordered lists (up to 3 digits)
+  - Basic support for block indents (up to 4 levels)
+  - Basic support for headers (up to 4 levels)
+  - Basic support for backslash (\\) escapes
+  - Removing (without supporting) HTML tags
 EOF
 }
 

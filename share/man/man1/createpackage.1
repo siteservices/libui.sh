@@ -1,0 +1,236 @@
+.\" Manpage for createpackage {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd August 11, 2023
+.Dt CREATEPACKAGE 1
+.Os
+.Sh NAME
+.Nm createpackage
+.Nd Creates self-extracting archive packages
+.Sh SYNOPSIS
+.Sy createpackage
+.Op Fl l Fl u Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl a Ar <add_file> ...
+.Op Fl c Ar <compression>
+.Op Fl e Ar <encoding>
+.Op Fl f Ar <package>
+.Op Fl i Ar <installer>
+.Op Fl I Ar <install_environment>
+.Op Fl m Ar <manifest>
+.Op Fl p Ar <package_type>
+.Op Fl x Ar <exclude_pattern> ...
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
+.Op Ar <source_directory>
+.Sh DESCRIPTION
+Creates a self-extracting archive package using one of three base archive types:
+.Bl -bullet -offset 4n -width 4n
+.It
+tar - Tape Archive (using the tar command)
+.It
+shar - Shell Archive (using the shar command)
+.It
+star - Simple Text Archive (using the star command)
+.El
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy createpackage
+.Op Fl l Fl u Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl a Ar <add_file> ...
+.Op Fl c Ar <compression>
+.Op Fl e Ar <encoding>
+.Op Fl f Ar <package>
+.Op Fl i Ar <installer>
+.Op Fl I Ar <install_environment>
+.Op Fl m Ar <manifest>
+.Op Fl p Ar <package_type>
+.Op Fl x Ar <exclude_pattern> ...
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
+.Op Ar <source_directory>
+.Ed
+.Pp
+Available command line options are:
+.Bl -tag -offset 4n -width 4n
+.It Fl a Ar <add_file>
+Add File
+.Pp
+Used to add additional files to the package archive.
+Adds the provided
+.Ar <add_file>
+file.
+.It Fl c Ar <compression>
+Compression
+.Pp
+The compression argument to use with the archive tool.
+This is only relevant for the tar archiver.
+The default is "-j" which requests bzip2 compression.
+.It Fl e Ar <encoding>
+Encoding
+.Pp
+The encoding argument to be used with the archive tool.
+This is only relevant for the shar archiver.
+The default is "-T" which requests text encoding.
+Note: The shar archiver will uuencode non-text files and text files with lines
+longer than 200 characters.
+Please see the
+.Xr shar 1
+command for more details.
+.It Fl f Ar <package>
+Package Filename
+.Pp
+The filename for the package.
+.Pp
+Note: When creating an archive, if the filename provided does not have an
+extension, a ".tarp", ".sharp", or a ".starp" extension will be added, depending
+upon the package type selected with the
+.Fl p
+(Package Type) option flag.
+.It Fl i Ar <installer>
+Installer
+.Pp
+Execute the program at the
+.Ar <installer>
+path provided.
+The path should be relative to the
+.Ar <source_directory> .
+When the archive is unpacked prior to install, a mirror of the source directory
+will be created in a temporary directory.
+The installer will be executed in that location.
+.It Fl l
+List Files
+.Pp
+List the root directories to be included in the package.
+.It Fl I Ar <install_environment>
+Install Environment
+.Pp
+Include the provided
+.Ar <install_environment>
+string on the commmand line prior before the installer command.
+This enables the creation of environment variables, etc. for use by the
+installer.
+.It Fl m Ar <manifest>
+Manifest File
+.Pp
+Use the contents of the file at the
+.Ar <manifest>
+path as the listing of root directories to include in the package.
+.It Fl p Ar <package_type>
+Package Type
+.Pp
+Defines the package type.
+The available package types are "sharp", "starp", and "tarp".
+The types define the base archive format used within the package.
+The "sharp" type uses the shell archive (shar) archiver.
+The "starp" type uses the simple text archive (shar) archiver.
+The "tarp" type uses the tape archive (tar) archiver.
+The default is the "tarp" package type as it provides the most robust archive
+format, however, it does generate binary packages.
+The ".sharp" and ".starp" formats create text packages, uuencoded, and
+clear-text, respectfully.
+Please note that the ".starp" format only supports text files.
+See the
+.Xr shar 1 ,
+.Xr star 1 ,
+and
+.Xr tar 1
+commands for more information on the base archives.
+.It Fl x Ar <exclude_pattern> ...
+Exclude
+.Pp
+Filename patterns that will be excluded from the package archive.
+The patterns follow the rules defined by the "tar" application.
+(The "tar" application is always used to collect the package files prior to the
+creation of the final base archive for the package.)
+See the
+.Xr tar 1
+command for more information on the exclude patterns.
+.It Ar <source_directory>
+Source Directory
+.Pp
+.Pp
+When used with
+The source directory should contain the files to be archived.
+.El
+.Ss STANDARD OPTIONS
+This script was built using the
+.Xr libui.sh 3
+user interface library.
+Standard command line options provided by the
+.Xr libui.sh 3
+library are:
+.Fl C
+(Confirm),
+.Fl F
+(Force),
+.Fl H
+or
+.Fl h
+(Help),
+.Fl N
+(No Action),
+.Fl P Ar <file>
+(Load Profile),
+.Fl Q
+(Quiet),
+.Fl V
+(Version),
+.Fl X Ar <level>
+(XDebug
+.Ar <level> ) ,
+and
+.Fl Y
+(Yes).
+Please see
+.Xr libui.sh 3
+for more information.
+.Pp
+Note: Option value defaults can be obtained by executing with the
+.Fl H
+or
+.Fl h
+(Help) option.
+.Sh FILES
+The script will create or read from the file provided with the
+.Fl f Ar <filename>
+option flag.
+The script will collect, with the
+.Fl c
+(Crate) option flag, or create, with the
+.Fl x
+(Extract) option flag, files from the directory provided with the
+.Ar <filepath>
+parameter.
+.Sh EXAMPLES
+Some example uses include:
+.Bd -literal -offset 4n
+.Sy createpackage -c -f /tmp/keep .
+.Ed
+.Pp
+Creates an archive named "keep.star" in the /tmp directory with the text files
+contained in the current directory.
+.Sh SEE ALSO
+.Xr shar 1 ,
+.Xr star 1 ,
+.Xr tar 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

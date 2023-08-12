@@ -52,9 +52,10 @@ export LC_ALL=POSIX
 ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
-_Util_testdir="${_Util_libuiroot}/var/libui/test"
+_Util_libuitest="${_Util_libuiroot}/var/libui/test"
+_Util_libuivar="${_Util_libuiroot}/var/libui"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
-_Util_installer='${d}/lib/sh/libui'
+_Util_installer='${sh} ${d}/lib/sh/libui'
 _Util_groupmode='g+w'
 _Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
 _Util_configfile="${LIBUI_DOTFILE}/libui.conf"
@@ -129,6 +130,7 @@ _LibuiSetup () {
   AddOption -n demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
   AddOption -n shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
   AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
+  AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' I
   AddOption -n list -f -k 'List' -d 'List files that would be included in a libui package.' l
   AddOption -n unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
   AddOption -n manpage -c ManualCallback -f -k 'Man Page' -d 'Display man page.' m
@@ -302,6 +304,8 @@ EOF
 
   InitCallback () {
     ${_M} && _Trace 'Program initialization.'
+
+    ${installtests} && install=true
 
     if ${install} || ${verify} || ${update} || ${unify}
     then
@@ -652,7 +656,7 @@ LibuiPackageList () {
 
   ${_M} && _Trace 'List libui package.'
   local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -type f -name 'libui*') )
-  _Util_files+=( $(find ./var/libui -name '.*.sw*' -prune -o -type f) )
+  [[ -d "${_Util_libuivar}" ]] && _Util_files+=( $(find ./${_Util_libuivar#${_Util_libuiroot}} -name '.*.sw*' -prune -o -type f) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
 
   ${_M} && _Trace 'Files in libui package. (%s)' "${_Util_files[*]}"
@@ -705,13 +709,16 @@ LibuiPackage () {
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
   local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -type f -name 'libui*') )
-  _Util_files+=( $(find ./var/libui -name '.*.sw*' -prune -o -type f) )
+  [[ -d "${_Util_libuivar}" ]] && _Util_files+=( $(find ./${_Util_libuivar#${_Util_libuiroot}} -name '.*.sw*' -prune -o -type f) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
 
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
   if [[ ".sharp" == "${_Util_package: -6}" ]]
   then
     Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+  elif [[ ".starp" == "${_Util_package: -6}" ]]
+  then
+    Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   else
     [[ ".tarp" == "${_Util_package: -5}" ]] || _Util_package+='.tarp'
     Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
@@ -735,7 +742,8 @@ LibuiInstall () {
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
     _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -type f -name 'libui*') )
-    _Util_files+=( $(find "${_Util_libuiroot}/var/libui" -name '.*.sw*' -prune -o -type f) )
+    ${installtests} && [[ -d "${_Util_libuivar}" ]] && \
+        _Util_files+=( $(find "${_Util_libuivar}" -name '.*.sw*' -prune -o -type f) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
@@ -783,8 +791,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
   ${_M} && _Trace 'LibuiUnity [%s]' "${*}"
 
   local _Util_diff=false
-  local _Util_different=false
   local _Util_file
+  local _Util_list; _Util_list=( )
   local _Util_unify=false
   local _Util_update=false
   local _Util_verify=true
@@ -835,11 +843,10 @@ LibuiUnity () { # [-d|-u|-U|-v]
     if [[ -f "${COMMONROOT}/${_Util_file}" ]]
     then
       ${_M} && _Trace 'Check %s against %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-      Action -W "cmp -s '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'"
-      if ((${?}))
+      if ! Action -W "cmp -s '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'"
       then
         Tell 'File differs: %s -> %s' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-        _Util_different=true
+        _Util_list+=( "${_Util_file}" )
         if ${_Util_diff}
         then
           Tell "${Dfy}diff %s %s${D}" "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
@@ -851,8 +858,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
 
   StopSpinner
 
-  ${_M} && _Trace 'Check for different files. (%s)' "${_Util_different}"
-  if ${_Util_different}
+  ${_M} && _Trace 'Check for different files. (%s)' "${#_Util_list[@]}"
+  if [[ -n "${_Util_list}" ]]
   then
     ${_M} && _Trace 'Check for update or unify. (%s / %s)' "${_Util_update}" "${_Util_unify}"
     if ${_Util_update}
@@ -862,9 +869,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
         ${_M} && _Trace 'Update %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
         StartSpinner 'Updating commonroot "%s".' "${COMMONROOT}"
         pushd "${_Util_libuiroot}" > /dev/null
-        for _Util_file in $(find . -name '.*.sw*' -prune -o -type f -print)
+        for _Util_file in "${_Util_list[@]}"
         do
-          _Util_file="${_Util_file#./}"
           if [[ -f "${COMMONROOT}/${_Util_file}" ]]
           then
             ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
@@ -990,9 +996,9 @@ _LibuiProcess () {
   then
     if ${debug}
     then
-      LibuiTest -d -t "${_Util_testdir}" "${param[@]}"
+      LibuiTest -d -t "${_Util_libuitest}" "${param[@]}"
     else
-      LibuiTest -t "${_Util_testdir}" "${param[@]}"
+      LibuiTest -t "${_Util_libuitest}" "${param[@]}"
     fi
   elif ${config}
   then

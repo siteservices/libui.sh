@@ -24,6 +24,7 @@
 .Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl r Ar <reference_directory>
 .Op Fl s Ar <source_directory>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Sh DESCRIPTION
 Used to list dotfiles that have been modified since being installed.
@@ -39,6 +40,7 @@ script can be executed using the following:
 .Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl r Ar <reference_directory>
 .Op Fl s Ar <source_directory>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Ed
 .Pp
@@ -98,6 +100,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V
