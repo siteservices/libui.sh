@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.829 1.12
+Version -r 1.832 1.13
 
 # load mods
 LoadMod File
@@ -108,7 +108,7 @@ do
   for block in "${blocks[@]}"
   do
     Trace 'Print line number.'
-    Tell -n "%${w}d - " ${lineno}
+    Tell -N "%${w}d - " ${lineno}
     ((lineno += split))
     ((lineno > ${counts[1]})) && lineno=${counts[1]}
 

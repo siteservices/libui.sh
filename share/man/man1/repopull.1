@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 10, 2023
+.Dd June 24, 2023
 .Dt REPOPULL 1
 .Os
 .Sh NAME
@@ -24,6 +24,7 @@
 .Op Fl c Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl b Ar <branch>
 .Op Fl m Ar <branch>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Sh DESCRIPTION
@@ -60,6 +61,7 @@ script can be executed using the following:
 .Op Fl c Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl b Ar <branch>
 .Op Fl m Ar <branch>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Ed
@@ -113,6 +115,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V

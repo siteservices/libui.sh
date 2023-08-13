@@ -7,7 +7,7 @@
 
 test_Action-r_Bad_Warning () {
   retries=4
-  LibuiPerformTest 'Action -r 3 "RetryCountdown"'
+  LibuiPerformTest 'Action -r 3 -w 0.1 "RetryCountdown"'
   LibuiValidateTest ${?} 1 "Bad${N}Bad${N}Bad${N}WARNING: (Action) Failure while evaluating command."
   return ${?}
 }

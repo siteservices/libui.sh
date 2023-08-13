@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetRealPath-v_HomeDir
+#
+#####
+
+test_GetRealPath-v_HomeDir () {
+  local mp="${HOME}/non-exsiting"
+  local rp='~/non-exsiting'
+  GetRealPath -v rp
+  LibuiPerformTest 'Tell -- "${rp}"'
+  LibuiValidateTest ${?} 0 "${mp}"
+  return ${?}
+}
+
+return 0

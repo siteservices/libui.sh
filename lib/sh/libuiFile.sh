@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.831 -m 1.10
+Version -r 1.832 -m 1.11
 
 # defaults
 _File_ip=
@@ -162,24 +162,101 @@ Close () { #  [-0|-1..-9] [<file_path>]
 # directory and its subdirectories.
 #
 UICMD+=( 'GetFileList' )
-GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
+GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
   ${_S} && ((_cGetFileList++))
   ${_M} && _Trace 'GetFileList [%s]' "${*}"
 
   local _File_d=false
   local _File_e=false
   local _File_f=false
+  local _File_g
+  local _File_h=false
+  local _File_i
+  local _File_l; _File_l=( )
   local _File_n=false
   local _File_p=false
-  local _File_r="${MAXINT}"
+  local _File_r=false
+  local _File_s
   local _File_w=false
-  local _File_rv=1
+  local _File_rv=0
+
+  ZshSubdirFileList () { # <subdir>
+    ${_M} && _Trace 'ZshSubdirFileList [%s]' "${*}"
+    local _File_rv;
+    local _File_i;
+    local _File_s="${*}";
+    local _File_z; _File_z=(  )
+
+    ${_M} && _Trace 'Obtain list. (%s)' "${_File_s}"
+    eval "_File_l+=( ${_File_s/ /\\ }(N${_File_g}) )"
+    ((_File_rv+=${?}))
+    ${_M} && _Trace 'Subdir %s list: %s' "${_File_s}" "${_File_l[*]}"
+
+    ${_M} && _Trace 'Check for recursive. (%s)' "${_File_r}"
+    if ${_File_r}
+    then
+      eval "_File_z=( ${_File_s/ /\\ }(N/) )"
+      ${_M} && _Trace 'Subdirs: %s' "${_File_z[*]}"
+      for _File_i in "${_File_z[@]}"
+      do
+        ${_M} && _Trace 'Process subdir: %s' "${_File_i}"
+        ${_File_h} && ZshSubdirFileList "${_File_i}/.*"
+        ZshSubdirFileList "${_File_i}/*"
+        ((_File_rv+=${?}))
+      done
+    fi
+
+    ${_M} && _Trace 'ZshSubdirFileList return. (%s)' "${_File_rv}"
+    return ${_File_rv}
+  }
+
+  BashSubdirFileList () { # <subdir>
+    ${_M} && _Trace 'BashSubdirFileList [%s]' "${*}"
+    local _File_rv;
+    local _File_i;
+    local _File_s="${*}";
+    local _File_z; _File_z=(  )
+
+
+    ${_M} && _Trace 'Obtain list. (%s)' "${_File_s}"
+    eval "_File_z=( ${_File_s/ /\\ } )"
+    ((_File_rv+=${?}))
+    if ${_File_f} || ${_File_d}
+    then
+      for _File_i in "${_File_z[@]}"
+      do
+        ${_File_f} && [[ -f "${_File_i}" ]] && _File_l+=( "${_File_i}" )
+        ${_File_d} && [[ -d "${_File_i}" ]] && _File_l+=( "${_File_i}" )
+      done
+    else
+      _File_l+=( "${_File_z[@]}" )
+    fi
+    ${_M} && _Trace 'Subdir %s list: %s' "${_File_s}" "${_File_l[*]}"
+
+    ${_M} && _Trace 'Check for recursive. (%s)' "${_File_r}"
+    if ${_File_r}
+    then
+      for _File_i in "${_File_z[@]}"
+      do
+        if [[ -d "${_File_i}" ]]
+        then
+          ${_M} && _Trace 'Process subdir: %s' "${_File_i}"
+          ${_File_h} && BashSubdirFileList "${_File_i}/.*!(.|..)"
+          BashSubdirFileList "${_File_i}/*"
+          ((_File_rv+=${?}))
+        fi
+      done
+    fi
+
+    ${_M} && _Trace 'BashSubdirFileList return. (%s)' "${_File_rv}"
+    return ${_File_rv}
+  }
 
   ${_M} && _Trace 'Process GetFileList options. (%s)' "${*}"
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':defnprw' _o
+  while getopts ':defhnprw' _o
   do
     case ${_o} in
       d)
@@ -197,6 +274,12 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
         _File_f=true
         ;;
 
+      h)
+        ${_M} && _Trace 'Recursive search with hidden directories.'
+        _File_h=true
+        _File_r=true
+        ;;
+
       n)
         ${_M} && _Trace 'Return names.'
         _File_n=true
@@ -208,8 +291,8 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
         ;;
 
       r)
-        ${_M} && _Trace 'Recursive file search.'
-        _File_r=0 # continue search
+        ${_M} && _Trace 'Recursive search.'
+        _File_r=true
         ;;
 
       w)
@@ -240,56 +323,23 @@ GetFileList () { # [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification> ...
   fi
   [[ -z "${_File_x}" ]] && Tell -E '(GetFileList) Called without a file specification.'
 
-  ${_M} && _Trace 'Build file list. (%s)' "${*}"
-  local _File_i
-  local _File_g
-  local _File_l; _File_l=( )
-  local _File_s
+  ${_M} && _Trace 'Build file list. (%s)' "${_File_x[*]}"
+  ${_File_d} && _File_g='/'
+  ${_File_f} && _File_g='.'
   for _File_s in "${_File_x[@]}"
   do
+    ${_M} && _Trace 'Process file specification. (%s)' "${_File_s}"
     if ${ZSH}
     then
-      _File_g='N'
-      ${_File_d} && _File_g+='/'
-      ${_File_f} && _File_g+='.'
-      eval "_File_l+=( ${_File_s/ /\\ }(${_File_g}) )"
-      _File_rv=${?}
-      while ((${#_File_l[@]} > _File_r))
-      do
-        _File_r=${#_File_l[@]}
-        _File_s+='/*'
-        eval "_File_l+=( ${_File_s/ /\\ }(${_File_g}) )"
-      done
+      ZshSubdirFileList "${_File_s}"
+      ((_File_rv+=${?}))
     else
-      eval "_File_g=( ${_File_s/ /\\ } )"
-      _File_rv=${?}
-      if ${_File_f} || ${_File_d}
-      then
-        for _File_i in "${_File_g[@]}"
-        do
-          ${_File_d} && [[ -d "${_File_i}" ]] && _File_l+=( "${_File_i}" )
-          ${_File_f} && [[ -f "${_File_i}" ]] && _File_l+=( "${_File_i}" )
-        done
-      else
-        [[ "${*}" == "${_File_g[*]}" ]] || _File_l+=( "${_File_g[@]}" )
-      fi
-      while ((${#_File_l[@]} > _File_r))
-      do
-        _File_r=${#_File_l[@]}
-        _File_s+='/*'
-        eval "_File_g=( ${_File_s/ /\\ } )"
-        _File_rv=${?}
-        if ${_File_f} || ${_File_d}
-        then
-          for _File_i in "${_File_g[@]}"
-          do
-            ${_File_d} && [[ -d "${_File_i}" ]] && _File_l+=( "${_File_i}" )
-            ${_File_f} && [[ -f "${_File_i}" ]] && _File_l+=( "${_File_i}" )
-          done
-        else
-          [[ "${_File_s}" == "${_File_g}" ]] || _File_l+=( "${_File_g[@]}" )
-        fi
-      done
+      local _File_b=$(shopt -p extglob nullglob)
+      shopt -s extglob
+      shopt -s nullglob
+      BashSubdirFileList "${_File_s}"
+      ((_File_rv+=${?}))
+      eval "${_File_b}"
     fi
   done
   ((_File_rv)) && Tell -E '(GetFileList) Unable to obtain file list. (%s)' "${*}"

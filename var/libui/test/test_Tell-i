@@ -11,7 +11,7 @@ test_Tell-i () {
   TERMINAL=true
   _Terminal
   TERMINAL="${t}"
-  LibuiPerformTest 'Tell -n "Test 1. "; Tell -i "Test 2."'
+  LibuiPerformTest 'Tell -N "Test 1. "; Tell -i "Test 2."'
   LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1. ${T}${TCEL}${TTell}Test 2.${T}${TCEL}"
   return ${?}
 }

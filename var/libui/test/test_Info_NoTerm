@@ -7,7 +7,7 @@
 
 test_Info_NoTerm () {
   LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
-  LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
+  LibuiValidateTest ${?} 0
   return ${?}
 }
 

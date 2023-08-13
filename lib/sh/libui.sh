@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.831 # Fri Jun 23 05:53:26 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.832 # Sat Aug 12 14:10:41 EDT 2023
 
 #####
 #
@@ -152,7 +152,7 @@ Version () { # [-m] [-r <required_libui_version>] <script_version>
   ((0 == ${#})) && _Trace 'Display versions. (%s)' "${UIVERSION[*]}" && printf '%s %s\n' "${UIVERSION[@]}" && return 0
 
   [[ -n ${_r} && ${LIBUI_VERSION//.} -ge ${_r//.} ]] || \
-      Tell -E -f '%s requires libui.sh version %s. Please update libui.sh.' "${_s##*/}" "${LIBUI_VERSION}"
+      Tell -E -f '%s requires libui.sh version %s. Please update libui.sh.' "${_s##*/}" "${_r}"
 
   UIVERSION+=( "${_s##*/}" "${1}" )
   ${_m} && UIMOD+=( "${_s##*/}" )
@@ -496,7 +496,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   local _q
   local _r=1
   local _rv=1
-  local _s=0
+  local _s=1
   local _t=false
   local _v=${_confirm}
   local _w=true
@@ -658,9 +658,9 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
               then
                 if ${ZSH}
                 then
-                  eval "${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
+                  eval "TERMINAL=${TERMINAL} ${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
                 else
-                  eval "${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
+                  eval "TERMINAL=${TERMINAL} ${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
                   ((0 > _pe)) && ((_pe--))
                 fi
               else
@@ -676,14 +676,14 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
               if ${_t}
               then
-                eval "${@} 2>&1 | tee -a '${_l}'${_b}"
+                eval "TERMINAL=${TERMINAL} ${@} 2>&1 | tee -a '${_l}'${_b}"
                 ((0 > _pe)) && ((_pe--))
               else
-                eval "${@}${_b}" >> "${_l}" 2>&1
+                eval "TERMINAL=${TERMINAL} ${@}${_b}" >> "${_l}" 2>&1
               fi
             else
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
-              eval "${@}${_b}"
+              eval "TERMINAL=${TERMINAL} ${@}${_b}"
             fi
 
             ${_m} && StopSpinner
@@ -710,7 +710,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
           ${_T} && _Trace 'Check for success. (%s)' "${_rv}"
           if ((_rv))
           then
-            if ${_vdb}
+            if ${_wdb} || ${_vdb}
             then
               ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
               ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
@@ -1253,8 +1253,8 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
 
       I)
         ${_T} && _Trace 'Info.'
+        ${TERMINAL} || return 0 # only if on a terminal
         _d="${DInfo}"
-        _t='INFO'
         ;;
 
       l)
@@ -1268,13 +1268,13 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
         ;;
 
       n)
-        ${_T} && _Trace 'No newline.'
-        _n=
+        ${_T} && _Trace 'No linefeed.'
+        _n="${DJBL}"
         ;;
 
       N)
-        ${_T} && _Trace 'No linefeed.'
-        _n="${DJBL}"
+        ${_T} && _Trace 'No newline.'
+        _n=
         ;;
 
       r)

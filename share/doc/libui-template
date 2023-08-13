@@ -14,7 +14,7 @@
 ##### libui setup
 
 # script version
-Version -r <REQUIRED HERE> <VERSION HERE>
+Version -r <REQUIRED LIBUI HERE> <SCRIPT VERSION HERE>
 
 # load mods
 # <LIBUI MODS HERE>
@@ -44,17 +44,17 @@ StatusCallback () {                                                             
 }                                                                                                   # demo content
 
 InfoCallback () {
-  # note: this function is optional
+  # note: this function is optional                                                                 # demo content
   Trace 'In user info callback.'
 
-  Trace 'Provide usage information.'
+  Trace 'Usage information.'
   cat << EOF
 <ADDITIONAL SCRIPT USAGE INFORMATION HERE>
 EOF
 }
 
 ExitCallback () {
-  # note: this function is optional
+  # note: this function is optional                                                                 # demo content
   Trace 'In user exit callback.'
 
   Trace 'Exit cleanup.'
@@ -62,9 +62,10 @@ ExitCallback () {
 }
 
 InitCallback () {
+  # note: this function is recommended                                                              # demo content
   Trace 'In user init callback.'
 
-  Trace 'Startup confirmation.'
+  Trace 'Confirm and initialize environment.'                                                       # demo content
   # <STARTUP CONFIRMATION HERE>
 }
 

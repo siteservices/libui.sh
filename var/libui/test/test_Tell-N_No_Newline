@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Tell-N_No_Newline
+#
+#####
+
+test_Tell-N_No_Newline () {
+  LibuiPerformTest 'Tell -N "Test 1."; Tell -N "Test 2."'
+  LibuiValidateTest ${?} 0 'Test 1.Test 2.'
+  return ${?}
+}
+
+return 0

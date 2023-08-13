@@ -1,4 +1,4 @@
-.\" Manpage for splitchecksum {libui tool}
+.\" Manpage for mless {libui tool}
 .\" Please contact fharvell@siteservices.net to correct errors or typos.
 .\"
 .\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
@@ -13,58 +13,71 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 6, 2023
-.Dt SPLITCHECKSUM 1
+.Dd August 12, 2023
+.Dt STAR 1
 .Os
 .Sh NAME
-.Nm splitchecksum
-.Nd Split file(s) and display a checksum for each split
+.Nm mless
+.Nd Display markdown files from a command line in a terminal
 .Sh SYNOPSIS
-.Sy splitchecksum
+.Sy mless
 .Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl s Ar <split_size>
 .Op Fl P Ar <file>
 .Op Fl X Ar <level>
-.Ar <file> ...
+.Op Ar <filepath> ...
 .Sh DESCRIPTION
-Used to split each of the files provided and display a CRC32 checksum for each
-split.
-Also provides a CRC32 checksum for the entire file.
-If multiple files are provided, each file is separately split and displayed in a
-separate block.
-.Pp
-Example output:
-.Bd -literal
-     Lines        CRC32 Sum      CRC32    Bytes Filename
----------- ---------------- ---------- -------- ---------------
-  0 -  50:       2144400426 2144400426     1374 splitchecksum-aa
- 50 - 100:       4091816874 1947416448      957 splitchecksum-ab
-100 - 130:       5813064636 1721247762     1077 splitchecksum-ac
----------- ---------------- ---------- -------- ---------------
-      130:       5813064636 2526214123     3408 /home/fharvell/.env/bin/splitchecksum
-.Ed
+Attempts to display markdown text files using color highlighting in XTERM-color
+terminal displays using less.
+Due to the limited terminal environment, mless has limited capabilities
+including:
+.Bl -bullet -offset 4n
+.It
+Support for emphasis and underlined text
+.It
+Support for unordered lists
+.It
+Basic support for ordered lists (up to 3 digits)
+.It
+Basic support for block indents (up to 4 levels)
+.It
+Basic support for headers (up to 4 levels)
+.It
+Basic support for backslash (\\) escapes
+.It
+Removing (without supporting) HTML tags
+.El
 .Pp
 The
 .Nm
 script can be executed using the following:
 .Bd -ragged -offset 4n
-.Sy splitchecksum
-.Op Fl l Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl s Ar <split_size>
+.Sy mless
+.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
 .Op Fl P Ar <file>
 .Op Fl X Ar <level>
-.Ar <file> ...
+.Op Ar <filepath>
 .Ed
 .Pp
 Available command line options are:
 .Bl -tag -offset 4n -width 4n
-.It Fl s Ar <split_size>
-Split Size
+.It Ar <filepath> ...
+File Path
 .Pp
-Specify the size (number of lines) of each split.
-The default is 100 lines.
-.It Ar <file>
-The name of the file(s) to be processed.
+The files to display.
+Each file is interpreted and displayed using the "less" application.
+If the filepath provided is not found, the script will attempt to find the file
+by first adding a ".md" extension, and then searching through the directories in
+the
+.Ev MLESSPATH
+environment variable.
+.Pp
+See
+.Xr less 1
+for more information.
+.Pp
+Note: If the
+.Ar <filepath>
+is not provided, STDIN will be used.
 .El
 .Ss STANDARD OPTIONS
 This script was built using the
@@ -105,28 +118,32 @@ or
 .Fl h
 (Help) option.
 .Sh FILES
-The script creates a temporary directory (via GetTmp) where the splits are
-saved.
-The temporary directory should be removed upon exit.
-Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
-being executed leaving the temporary directory in place.
+If no files are found using the provided
+.Ar <filepath>
+parameter, the script will attempt to find the file by first adding a ".md"
+extension, and then searching through the directories in the
+.Ev MLESSPATH
+environment variable.
+The paths in the
+.Ev MLESSPATH
+environment variable should be separated using colons (:).
 .Sh EXAMPLES
 Some example uses include:
 .Bd -literal -offset 4n
-.Sy splitchecksum path/to/file
+.Sy mless /tmp/keep
 .Ed
 .Pp
-This splits path/to/file into one block and provides the checksum and a whole
-file checksum.
-Note: The checksums will be the same.
+Interprets and displays the file named keep (or keep.md) in the /tmp directory.
 .Bd -literal -offset 4n
-.Sy splitchecksum \-s 100 path/to/file
+.Sy mless libui-dictionary
 .Ed
 .Pp
-This splits path/to/file into block of 100 lines each and provides the checksum
-for each split and a whole file checksum.
+Interprets and displays the file named libui-dictionary (or libui-dictionary.md)
+in the current directory or in a directory listed in the
+.Ev MLESSPATH
+environment variable.
 .Sh SEE ALSO
-.Xr linechecksum 1 ,
+.Xr less 1 ,
 .Xr libui.sh 3
 .Sh AUTHORS
 .An F Harvell

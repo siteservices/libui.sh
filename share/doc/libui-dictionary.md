@@ -300,13 +300,14 @@ installer is a libui script.
 * **-l** - generate package contents list instead of creating package
 * **-n** - encoding to use (man 1 shar for details)
 * **-N** - do not create a package, only create a tar archive
+* **-P** - create a 'simple text archive' package (.starp)
 * **-s** - source directory
 * **-S** - create a shar package (.sharp)
 * **-T** - create a tar package (.tarp)
 * **-x** - array variable name containing file list to exclude from package
 
 ```
-CreatePackage [-a|-l|-N|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+CreatePackage [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
 ```
 
 ### Drop (man libui.sh) - Utility function to drop a value from an array.
@@ -397,15 +398,18 @@ GetElapsed [<variable_name>]
 
 Collects the file paths associated with the provided file specification and
 loads them into an array variable with the provided variable name. The
-collection of paths can optionally be recursive. The file specification can be
-further refined with the option flags to limit the array results to:
+collection of paths can optionally be recursive. Recursive searches only search
+non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is
+used. The file specification can be further refined with the option flags to
+limit the array results to:
 
 * **-d** - directories only
 * **-e** - generate an error if the list collected is empty
 * **-f** - files only
+* **-h** - perform a recursive directory search including hidden directories
 * **-n** - return filenames only
 * **-p** - directory paths only
-* **-r** - perform a recursive search starting at the provided directory and below
+* **-r** - perform a recursive directory search
 * **-w** - generate a warning if the list collected is empty
 
 ```

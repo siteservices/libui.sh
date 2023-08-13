@@ -34,7 +34,7 @@
 # build shell libary path
 [[ -z "${SHLIBPATH}" ]] && SHLIBPATH="${BASH_SOURCE[0]}" && SHLIBPATH="${SHLIBPATH:-${(%):-%N}}" && SHLIBPATH="${SHLIBPATH%/*}"
 
-if [[ "${1:0:1}" != '-' ]]
+if [[ 0 < ${#} && "${1:0:1}" != '-' ]]
 then
   # load libui.sh
   source "${SHLIBPATH%/}/libui.sh" "${1}" "${@:2}"

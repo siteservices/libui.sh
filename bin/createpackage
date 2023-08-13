@@ -1,0 +1,196 @@
+#!/usr/bin/env libui
+#####
+#
+#	Create Package
+#
+#	F Harvell - Wed Feb 16 19:59:57 EST 2022
+#
+#####
+#
+# Used to create a self-extracting package from a file list.
+#
+# Man page available for this script: man 1 createpackage
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.832 1.5
+
+# load mods
+LoadMod File
+LoadMod Package
+
+##### configuration
+
+# defaults
+files=( )
+excludes=(
+  '.*.sw?'
+  '*.pyc'
+  '.DS_Store'
+  '.git'
+  '.gitignore'
+)
+GetTmp tmpdir
+GetTmp -f tmpfile
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
+AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
+[[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -i '-T' -k 'Encoding' -d 'Shar encoding format option.' e:
+AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
+AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
+AddOption -n installenv -k 'Install Env' -d 'Installer command line environment.' I:
+AddOption -n listfiles -f -k 'List Files' -d 'List files to package.' l
+AddOption -n manifest -k 'Manifest' -d 'Manifest file location.' m:
+AddOption -n pkgtype -i tarp -s tarp -s sharp -s starp -k 'Package' -d 'Package type.' p:
+AddOption -n excludes -m -k 'Exclude' -d 'Exclude files matching provided pattern from package.' x:
+AddParameter -i "${PWD}" -k 'Source ' -d 'Create package from source directory.' sourcedir
+
+##### callbacks
+
+InfoCallback () {
+  Trace 'Usage info.'
+  cat << EOF
+The ${CMD} script creates a package with files from the source directory.
+
+The files in the package will be based upon the contents of the manifest. If no
+manifest file is provided, all files in the source directory will be selected.
+Files may be excluded using the -x (Exclude) option flag.
+
+If the provided package filename is a directory, a new file will be created in
+that directory with a name folowing: "<sourcedir>-<YYMMDD>.<pkgtype>".
+
+When extracting, if the installer is contained within the package, you can
+access it using "\${d}/<installer>", where the "\${d}" is a copy of the package
+directory and "<installer>" is the path to the installer in that directory.
+EOF
+}
+
+InitCallback () {
+  Trace 'Program initialization.'
+
+  ConfirmVar -q 'Please provide a source directory path:' -d sourcedir
+
+  Trace 'Check if using manifest. (%s)' "${manifest}"
+  if [[ -n "${manifest}" ]]
+  then
+    Trace 'Check for existing manifest. (%s)' "${manifest}"
+    if [[ -f "${manifest}" ]]
+    then
+      files+=( $(grep -v '^\s*\(#\|$\)' "${manifest}") )
+    else
+      Error 'The source directory does not have a manifest file. (%s)' "${manifest}"
+    fi
+  else
+    files+=( $(ls -A1 "${sourcedir}") )
+  fi
+
+  Trace 'Build package filename. (%s)' "${package}"
+  if [[ -z "${package}" ]]
+  then
+    package="${sourcedir##*/}-$(date +%Y%m%d)"
+  elif [[ -d "${package}" ]]
+  then
+    package="${package}/${sourcedir##*/}-$(date +%Y%m%d)"
+  fi
+  case "${pkgtype}" in
+    sharp)
+      Trace 'Files to include in shar package. (%s)' "${#files[@]}"
+      [[ ".sharp" == "${package: -6}" ]] || package+='.sharp'
+      ;;
+
+    starp)
+      Trace 'Files to include in star package. (%s)' "${#files[@]}"
+      [[ ".starp" == "${package: -6}" ]] || package+='.starp'
+      ;;
+
+    tarp)
+      Trace 'Files to include in tar package. (%s)' "${#files[@]}"
+      [[ ".tarp" == "${package: -5}" ]] || package+='.tarp'
+      ;;
+
+    *)
+      Error 'Invalid package type provided. (%s)' "${OPTARG}"
+      ;;
+
+  esac
+
+  Trace 'Check for existing package. (%s)' "${package}"
+  ! Force && [[ -n "${package}" && -f "${package}" ]] && \
+      Error 'Package already exists. Use -F (Force) to overwrite.'
+}
+
+##### functions
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Check if listing files. (%s)' "${listfiles}"
+if ${listfiles}
+then
+  Trace 'List files. (%s)' "${#files[*]}"
+  Action -q 'Generate file list?' "CreatePackage -l -f files -x excludes ${sourcedir}"
+else
+  Trace 'Find package type. (%s)' "${pkgtype}"
+  case "${pkgtype}" in
+    sharp)
+      Trace 'Files to include in shar package. (%s)' "${#files[@]}"
+      Action -s -q 'Create shar package archive?' "CreatePackage -S -n '${encoding}' -f files -x excludes -d 'Self-Extracting shar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
+      ;;
+
+    starp)
+      Trace 'Files to include in star package. (%s)' "${#files[@]}"
+      Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -e '${installenv}' -i '${installer:-star -x -f}' -a -s '${sourcedir}' '${package}'"
+      ;;
+
+    tarp)
+      Trace 'Files to include in tar package. (%s)' "${#files[@]}"
+      Action -s -q 'Create tar package archive?' "CreatePackage -T -c '${compression}' -f files -x excludes -d 'Self-Extracting tar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
+      ;;
+
+    *)
+      Error 'Invalid package type requested. (%s)' "${OPTARG}"
+      ;;
+
+  esac
+
+  Trace 'Check for package. (%s)' "${package}"
+  if [[ 0 -eq ${?} && -f "${package}" ]]
+  then
+    Alert 'Created package: %s' "${package}"
+  else
+    Error 'Unable to create package. (%s)' "${package}"
+  fi
+fi
+
+Trace 'Exit %s. (%s)' "${CMD}" 0
+Exit 0

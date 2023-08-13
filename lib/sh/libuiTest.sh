@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 1.830 -m 1.1
+Version -r 1.832 -m 1.2
 
 ##### configuration
 
@@ -237,6 +237,8 @@ LibuiTest () {
     ${_M} && _Trace 'Execute tests. (%s)' "${#_Test_tests[@]}"
     for _Test_test in "${_Test_tests[@]}"
     do
+      Tell -I -N 'Preparing test %s: (%s)...' "${_Test_count}" "${_Test_test}"
+
       ${_M} && _Trace 'Prepare for test %s: (%s)' "${_Test_count}" "${_Test_test}"
       _Test_env="LIBUI_TRACE=false COUNT=${_Test_count} "
       _Test_opt='-T '
@@ -267,9 +269,11 @@ LibuiTest () {
       StartTimer _Test_testtimer
       for _Test_shell in "${shells[@]}"
       do
+        Tell -I -N 'Running test %s: (%s)...' "${_Test_count}" "${_Test_test}"
+
         ${_M} && _Trace 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
         ${_Test_debug} && Tell 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
-        eval "Action -W -s -i 'Performing: ${_Test_test}' ${_Test_warn} \"${_Test_env}${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}\" ${_Test_log}"
+        eval "Action -W -s ${_Test_warn} \"${_Test_env}${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}\" ${_Test_log}"
 
 
         ${_M} && _Trace 'Check return value. (%s)' "${_Test_result}"

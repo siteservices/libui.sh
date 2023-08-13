@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 5, 2023
+.Dd August 6, 2023
 .Dt WSSETUP 1
 .Os
 .Sh NAME
@@ -22,6 +22,8 @@
 .Sh SYNOPSIS
 .Sy wssetup
 .Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
 .Ar <workspace>
 .Sh DESCRIPTION
 Used to create a ~/.workspace file containing the information necessary to set
@@ -33,6 +35,8 @@ script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy wssetup
 .Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl P Ar <file>
+.Op Fl X Ar <level>
 .Ar <workspace>
 .Ed
 .Pp
@@ -56,6 +60,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V

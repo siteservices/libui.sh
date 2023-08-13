@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.831 1.13
+Version -r 1.832 1.14
 
 # load mods
 
@@ -43,7 +43,6 @@ installdir=".env/var/installed"
 installts="${installdir}/date"
 manifest="${installdir}/manifest"
 previnst=0 # 1970-01-01
-modified=false
 srcfiles=( )
 prune=( "-name '.*.sw?' -prune" )
 
@@ -123,7 +122,7 @@ InitCallback () {
 ##### functions
 
 FindModified () {
-  local rv=0
+  local modified=false
 
   Trace 'Check file modification dates. (%s)' "${srcfiles[*]}"
   for filepath in "${srcfiles[@]}"
@@ -135,7 +134,7 @@ FindModified () {
       if (($(date -r "${file}" +%s) > ${previnst}))
       then
         Tell 'File has been modified after installation: %s' "${file}"
-        rv=1
+        modified=true
       fi
 
       Trace 'Check if installation metadata file. (%s)' "${file}"
@@ -148,7 +147,7 @@ FindModified () {
           if ! Action -W "cmp -s \"${file}\" \"${refdir}/${file/${src}\//}\""
           then
             Tell 'File differs from reference: %s' "${file}"
-            rv=1
+            modified=true
             if ${diff}
             then
               Tell "${Dfy}diff %s %s${D}" "${file}" "${refdir}/${file/${src}\//}"
@@ -159,6 +158,15 @@ FindModified () {
       fi
     done
   done
+
+  Trace 'Check if modified. (%s)' "${modified}"
+  if ${modified}
+  then
+    Warn 'Check complete, some files were modified.'
+  else
+    Alert 'Check complete, no modified files found.'
+  fi
+  local rv=${?}
 
   Trace 'FindModified return. (%s)' "${rv}"
   return ${rv}
@@ -186,23 +194,15 @@ if ${diff}
 then
   if ${ZSH}
   then
-    FindModified | less -R
+    FindModified 2>&1 | less -R
     retval=${pipestatus[1]}
   else
-    FindModified | less -R
+    FindModified 2>&1 | less -R
     retval=${PIPESTATUS[0]}
   fi
 else
   FindModified
   retval=${?}
-fi
-
-Trace 'Check for modified files. (%s)' "${retval}"
-if ((retval))
-then
-  Warn 'Check complete, some files were modified.'
-else
-  Alert 'Check complete, no modified files found.'
 fi
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"

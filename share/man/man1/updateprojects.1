@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 5, 2023
+.Dd June 24, 2023
 .Dt UPDATEPROJECTS 1
 .Os
 .Sh NAME
@@ -21,39 +21,23 @@
 .Nd Update git repos inside the WORKSPACE directory and execute the .buildrecipe
 script to rebuild the project.
 .Sh SYNOPSIS
-.Sy repopull
+.Sy updateprojects
 .Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl b Ar <branch>
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Sh DESCRIPTION
-Used to issue an (optional) "git checkout branch", "git pull", and (optional)
-git merge branch in each repository in the WORKSPACE directory.
-The script searches for the vim packages in the .vim directory and then attempts
-to perform a git pull on the same directories in the WORKSPACE directory.
-.Pp
-The WORKSPACE directory needs to be the path above the git repositories.
-.Pp
-If
-.Ar <WORKSPACE>
-is not provided, the path provided in the
-.Ev WORKSPACE
-environment variable will be used.
-If the
-.Ev WORKSPACE
-environment variable is not defined, the ~/.workspace file will be sourced (to
-define
-.Ev WORKSPACE Ns ).
-If the ~/.workspace file does not exist, the current working directory will be
-used.
+Updates any projects in the WORKSPACE directory that have .buildrecipe files.
+The projects are updated by performing a "git pull" and then sourcing and
+executing the contents of the .buildrecipe file.
 .Pp
 The
 .Nm
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy updateprojects
-.Op Fl s Fl v Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl b Ar <branch>
+.Op Fl s Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <WORKSPACE>
 .Ed
@@ -63,13 +47,17 @@ Available command line options are:
 .It Fl s
 Status
 .Pp
-Display repo status.
-.It Op Ar <WORKSPACE>
+Display repo status using "git status".
+.It Ar <WORKSPACE>
 The workspace directory.
 .Pp
-If the workspace directory is not provided, the path provided in the
+The WORKSPACE directory needs to be the path above the project git repositories.
+.Pp
+If
+.Ar <WORKSPACE>
+is not provided, the path provided in the
 .Ev WORKSPACE
-environment variable is used.
+environment variable will be used.
 If the
 .Ev WORKSPACE
 environment variable is not defined, the ~/.workspace file will be sourced (to
@@ -95,6 +83,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V
@@ -119,13 +109,10 @@ The ~/.workspace file is sourced if the
 .Ev WORKSPACE
 variable is not defined.
 .Pp
-The script searches for the vim packages in the .vim directory and then attempts
-to perform a git pull on the same directories in the WORKSPACE directory.
-.Pp
-The script creates a temporary directory (via GetTmp) that should be removed
-upon exit.
-Certain circumstances (e.g. some crashes) may prevent the cleanup handler from
-being executed leaving the temporary directory in place.
+The script searches for repos in the WORKSPACE directory that contain
+a .buildrecipe file.
+For each such repo, the script performs a "git pull" and then sources and
+executes the contents of the .buildrecipe file.
 .Sh EXAMPLES
 Some example uses include:
 .Bd -literal -offset 4n

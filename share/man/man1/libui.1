@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd June 10, 2023
+.Dd August 9, 2023
 .Dt LIBUI 1
 .Os
 .Sh NAME
@@ -24,8 +24,9 @@
 library utility actions
 .Sh SYNOPSIS
 .Sy libui
-.Op Fl c Fl d Fl i Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
+.Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
 .Op Fl e Ar shell ...
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <parameter>
 .Sh DESCRIPTION
@@ -98,8 +99,9 @@ The
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy libui
-.Op Fl c Fl d Fl i Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
+.Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl C Fl F Fl h Fl H Fl N Fl Q Fl V Fl Y
 .Op Fl e Ar <shell> ...
+.Op Fl P Ar <file>
 .Op Fl X Ar <level>
 .Op Ar <parameter>
 .Ed
@@ -131,11 +133,11 @@ Note: the
 .Xr libui.sh 3
 library was only designed to work with the Z shell and Bash shells.
 .It Fl i
-Install
+Install (without tests)
 .Pp
-Install
+Install the
 .Xr libui.sh 3
-"package" into the directory specified by
+utility files (without tests) into the directory specified by
 .Ar <parameter> ,
 if provided, or into the directory path from the
 .Ev COMMONROOT
@@ -158,6 +160,26 @@ and
 library utility will be installed in the lib/sh subdirectory.
 Man pages will be installed into the share/man/man1 and share/man/man3
 subdirectories.
+.Pp
+Note:
+This option is also available when installing from a libui created package.
+When used, it performs an install but does not create a new package.
+.It Fl I
+Install (with tests)
+.Pp
+Install the
+.Xr libui.sh 3
+utility files (with tests).
+This is the same installation as performed when using the
+.Fl i
+(Install) option.
+Please see the
+.Sx Fl i
+(Install) option for more details.
+.Pp
+Note:
+This option is also available when installing from a libui created package.
+When used, it performs an install but does not create a new package.
 .It Fl l
 List
 .Pp
@@ -316,6 +338,8 @@ or
 (Help),
 .Fl N
 (No Action),
+.Fl P Ar <file>
+(Load Profile),
 .Fl Q
 (Quiet),
 .Fl V

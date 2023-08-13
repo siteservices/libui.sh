@@ -1,0 +1,247 @@
+#!/usr/bin/env libui
+#####
+#
+#	Simple Text File Archiver - Manage simple archives of text only files.
+#
+#	F Harvell - Tue Jul 25 16:26:03 EDT 2023
+#
+#####
+#
+# Manages simple archives of text only files concatenated with the separation
+# line (with no leading / trailing whitespace):
+#
+#     ===== file:<filename>:<dir permissions>:<file permissions>:file =====
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+##### libui setup
+
+# script version
+Version -r 1.832 1.1
+
+# load mods
+LoadMod File
+LoadMod Spinner
+
+##### configuration
+
+# defaults
+separatorfmt='===== file:%s:%s:%s:file =====\n'
+separatorregex='^===== file:([^:]*):([^:]*):([^:]*):file =====$'
+groupmode='g+w'
+retval=0
+
+##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+
+AddOption -n create -f -k 'Create' -d 'Create archive.' c
+AddOption -n archive -k 'File' -d 'Archive file path.' f:
+AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
+AddParameter -n filepath -i "${PWD}" -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
+
+##### callbacks
+
+InfoCallback () {
+  Trace 'In user info callback.'
+
+  Trace 'Usage information.'
+  cat << EOF
+Manages simple text only file archives.
+EOF
+}
+
+ExitCallback () {
+  Trace 'In user exit callback.'
+
+  Trace 'Exit cleanup.'
+}
+
+InitCallback () {
+  Trace 'In user init callback.'
+
+  ConfirmVar -d filepath
+
+  Trace 'Check for filename extension. (%s)' "${archive}"
+  local period='\.' # fix for bash / zsh
+  if [[ -n "${archive}" && ! "${archive##*/}" =~ ${period} ]]
+  then
+    archive+='.star'
+  fi
+
+  Trace 'Check for existing archive. (%s)' "${archive}"
+  ${create} && ! Force && [[ -n "${archive}" && -f "${archive}" ]] && \
+      Error 'Archive already exists. Use -F (Force) to overwrite.'
+}
+
+##### functions
+
+CreateArchive () { # archive
+  Trace 'Start CreateArchive. (%s)' "${*}"
+  local archive="${*}"
+  local dirperms
+  local file
+  local files
+  local fileperms
+  local rv=0
+
+  Trace 'Get file listing. (%s)' "${PWD}"
+  GetFileList -h -f files .
+
+  Trace 'Open archive file descriptor. (%s)' "${archive}"
+  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  then
+    exec 9>&1
+  else
+    exec 9> "${archive}"
+  fi
+
+  Trace 'Process files. (%s)' "${files[*]}"
+  for file in "${files[@]}"
+  do
+    if [[ ! $(file -i "${file}") =~ .*(text|empty).* ]]
+    then
+      Caution 'File may not be text. Skipping. (%s)' "${file}"
+      continue
+    fi
+    dirperms="$(stat -c '%a' "${file%/*}")"
+    fileperms="$(stat -c '%a' "${file}")"
+    printf "${separatorfmt}" "${file}" "${dirperms}" "${fileperms}"
+    if [[ -s "${file}" ]]
+    then
+      cat "${file}"
+      [[ "$(tail -c 1 "${file}")" == '' ]] || printf '\n'
+    fi
+  done >&9
+  ((rv+=${?}))
+
+  Trace 'Cleanup.'
+  exec 9>&-
+
+  Trace 'CreateArchive return. (%s)' "${rv}"
+  return ${rv}
+}
+
+ExtractArchive () { # archive
+  Trace 'Start ExtractArchive. (%s)' "${*}"
+  local archive="${*}"
+  local fileinfo
+  local line
+  local rv=0
+
+  Trace 'Open archive file descriptor. (%s)' "${archive}"
+  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  then
+    exec 8<&0
+  else
+    exec 8< "${archive}"
+  fi
+
+  Trace 'Find initial separator.'
+  while IFS= read -r line
+  do
+    [[ "${line}" =~ ${separatorregex} ]] && break
+  done <&8
+  ((rv+=${?}))
+
+  Trace 'Process files.'
+  while true
+  do
+    Trace 'Check for current file. (%s)' "${fileinfo[((AO + 1))]}"
+    if [[ -n "${fileinfo[((AO + 1))]%/*}" ]]
+    then
+      Trace 'Set permissions. (%s)' "${fileinfo[((AO + 3))]}"
+      Action "chmod '${fileinfo[((AO + 3))]}' '${fileinfo[((AO + 1))]}'" || return 1
+      Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'" || return 1
+
+      Trace 'Close file. (%s)' "${fileinfo[((AO + 1))]}"
+      exec 9>&-
+    fi
+
+    Trace 'Process file info. (%s)' "${line}"
+    [[ -z "${line}" ]] && break
+    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
+
+    Trace 'Process directory. (%s)' "${fileinfo[((AO + 1))]%/*}"
+    if [[ ! -d "${fileinfo[((AO + 1))]%/*}" ]]
+    then
+      Action "mkdir -p -m '${fileinfo[((AO + 2))]}' '${fileinfo[((AO + 1))]%/*}'" || return 1
+      Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]%/*}'" || return 1
+    fi
+
+    Trace 'Create new file. (%s)' "${fileinfo[((AO + 1))]}"
+    exec 9> "${fileinfo[((AO + 1))]}"
+
+    Trace 'Copy until separator.'
+    while IFS= read -r line
+    do
+      [[ "${line}" =~ ${separatorregex} ]] && break
+      printf '%s\n' "${line}"
+    done <&8 >&9
+    ((rv+=${?}))
+  done
+
+  Trace 'ExtractArchive return. (%s)' "${rv}"
+  return ${rv}
+}
+
+##### initialization
+
+# initialize UI
+Initialize
+
+
+#####
+#
+# main program
+#
+#####
+
+Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Check for create. (%s)' "${create}"
+if ${create}
+then
+  Trace 'Change directory to source. (%s)' "${filepath}"
+  cd "${filepath}"
+
+  Trace 'Create archive. (%s)' "${archive}"
+  if ! CreateArchive "${archive}"
+  then
+    Warn 'Archive creation failed.'
+  fi
+
+  Trace 'Cleanup.'
+  cd -
+fi
+
+Trace 'Check for extract. (%s)' "${extract}"
+if ${extract}
+then
+  Trace 'Change directory to target. (%s)' "${filepath}"
+  cd "${filepath}"
+
+  Trace 'Extract archive. (%s)' "${archive}"
+  if ! ExtractArchive "${archive}"
+  then
+    Warn 'Archive extraction failed.'
+  fi
+
+  Trace 'Cleanup.'
+  cd -
+fi
+
+Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
+Exit "${retval}"

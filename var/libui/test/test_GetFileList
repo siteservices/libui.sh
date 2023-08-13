@@ -6,9 +6,10 @@
 #####
 
 test_GetFileList () {
-  Action -W "touch ${TESTDIR}/listfile-1"
-  Action -W "touch ${TESTDIR}/listfile\ 2"
-  LibuiPerformTest "GetFileList testlist '${TESTDIR}/list*'"
+  Action -W "mkdir -p ${TESTDIR}/list"
+  Action -W "touch ${TESTDIR}/list/listfile-1"
+  Action -W "touch ${TESTDIR}/list/listfile\ 2"
+  LibuiPerformTest "GetFileList testlist '${TESTDIR}/list/list*'"
   LibuiValidateTest ${?} 0
   return ${?}
 }
