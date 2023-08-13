@@ -13,7 +13,7 @@
 * Change Action retry wait default from 0 to 1 second.
 * Output Action debug information in both wait and verbose debug modes.
 * Action passes TERMINAL state as an environment variable.
-* Info (Tell -I) no longer outputs message if TERMINAL is not true.
+* Info (Tell -I) does not generate message if TERMINAL is not true.
 * Improve libui package and install support and performance.
 * Remove test support installation from default libui -i (install)
 * Add new -I (install with tests) option flag to libui.
@@ -23,7 +23,7 @@
 ### Bug Fixes
 
 * Fix GetFileList recursive list handling.
-* Remove "INFO" from Tell -I (Info) output message.
+* Remove "INFO:" from Tell -I (Info) output message.
 * Add mless no file found error message.
 * Update Workspace handling.
 * Correctly send SSHExec error messages to STDOUT.

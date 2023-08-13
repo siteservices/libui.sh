@@ -13,12 +13,13 @@ test_Help () {
 
 # help compare text
 helptext="
-USAGE: libui [-c|-d|-i|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-h|-H|-N|-Q|-V|-Y] [-e <shells>] ... [-x <testopt>] ... [-P <file>] [-X <level>] [<param>]
+USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-h|-H|-N|-Q|-V|-Y] [-e <shells>] ... [-x <testopt>] ... [-P <file>] [-X <level>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (config: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
   -e  Execution        - Specify shell for regression testing (otherwise both bash and zsh). (shells: zsh, bash)
   -i  Install          - Install libui into provided directory (or COMMONROOT). (install: false)
+  -I  Install Tests    - Install libui and tests into provided directory (or COMMONROOT). (installtests: false)
   -l  List             - List files that would be included in a libui package. (list: false)
   -L  Lockfiles        - Remove leftover lockfiles. (unlock: false)
   -m  Man Page         - Display man page. (manpage: false)
