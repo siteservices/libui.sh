@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.831 -m 1.16
+Version -r 1.831 -m 1.17
 
 # defaults
 
@@ -54,7 +54,7 @@ StartSpinner () { # [<info_message>]
     if ((0 == ${_spinner:-0}))
     then
       ${_M} && _Trace 'Check for terminal.'
-      if [[ -t 2 ]] && ! Error
+      if ${TERMINAL} && ! Error
       then
         ${_M} && _Trace 'Display message. (%s)' "${*}"
         local _s
@@ -113,7 +113,7 @@ PauseSpinner () {
   ${_M} && _Trace 'PauseSpinner [%s]' "${*}"
 
   ${_M} && _Trace 'Check for terminal.'
-  if [[ -t 2 ]]
+  if ${TERMINAL}
   then
     ${_M} && _Trace 'Pausing spinner. (%s)' "${_spinner}"
     ((0 < ${_spinner:-0})) && kill -TSTP ${_spinner} &> /dev/null
@@ -143,7 +143,7 @@ ResumeSpinner () {
   ${_M} && _Trace 'ResumeSpinner [%s]' "${*}"
 
   ${_M} && _Trace 'Check for terminal.'
-  if [[ -t 2 ]]
+  if ${TERMINAL}
   then
     ${_M} && _Trace 'Resuming spinner. (%s)' "${_spinner}"
     ${_quiet} || printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&5 # duplicate stderr
@@ -206,7 +206,7 @@ WaitSpinner () {
       if ((0 == ${_spinner:-0}))
       then
         ${_M} && _Trace 'Check for terminal.'
-        if [[ -t 2 ]]
+        if ${TERMINAL}
         then
           ${_M} && _Trace 'Starting spinner. (%s)' "${_Spinner_pid}"
           local _Spinner_i
@@ -254,7 +254,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
   ${_M} && _Trace 'Sleep [%s]' "${*}"
 
   ${_M} && _Trace 'Check for terminal.'
-  if [[ -t 2 ]]
+  if ${TERMINAL}
   then
     local _Spinner_u=1
     local _Spinner_i='Waiting %s...'
@@ -314,7 +314,7 @@ _SpinnerExitCallback () {
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
   ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
-  ! ${_quiet} && [[ -t 2 ]] && printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&5 # duplicate stderr
+  ! ${_quiet} && ${TERMINAL} && printf "${DCEL:-  \b\b}${DJBL}${DCEL}" >&5 # duplicate stderr
 }
 
 # register exit callback

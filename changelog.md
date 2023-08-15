@@ -1,5 +1,22 @@
 # Change Log
 
+## v1.833
+
+### New Features / Enhancements
+
+* Add signature to star archive format for validation.
+* Improve messaging in package scripts.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix file handling in star.
+* Update terminal handling for messages in libui Spinner mod.
+
+### Incompatibilities
+
+* Changed createpackage option flag (-I to -E).
+
 ## v1.832
 
 ### New Features / Enhancements
@@ -13,12 +30,12 @@
 * Change Action retry wait default from 0 to 1 second.
 * Output Action debug information in both wait and verbose debug modes.
 * Action passes TERMINAL state as an environment variable.
-* Info (Tell -I) does not generate message if TERMINAL is not true.
+* Info (Tell -I) no longer generates message if TERMINAL is not true.
 * Improve libui package and install support and performance.
 * Remove test support installation from default libui -i (install)
 * Add new -I (install with tests) option flag to libui.
 * Add man pages for createpackage, mless, and star.
-* Documentation and text updates.
+* Update documentation and text.
 
 ### Bug Fixes
 
@@ -52,7 +69,7 @@
 * Move utility functions from libui.sh to libui Utility mod.
 * Add MLESSPATH support to mless.
 * Tweak UsageInfo help message in libui Info mod.
-* Documentation updates.
+* Update documentation.
 
 ### Incompatibilities
 
@@ -73,7 +90,7 @@
 
 * Split tests into individual test files in var/libui/test.
 * Updated libui Utility mod and created Libui Test mod.
-* Documentation updates.
+* Update documentation.
 
 ### Bug Fixes
 
@@ -89,7 +106,7 @@
 * Add Info - send an "info" message to the user (wrapper around Tell -I).
 * Add to Tell: -A (Alert) -C (Caution) -E (Error) -I (Info) -W (Warn).
 * Fix tests and add new tests to support new features.
-* Documentation updates.
+* Update documentation.
 
 ### Incompatibilities
 
@@ -114,7 +131,7 @@
 * Add -E (No Echo) option to Ask and ConfirmVar.
 * Add -d (Display) and -i \<message\> (Info) options to SSHExec.
 * Allow GetFileList to work with a file spec contained within the variable value.
-* Documentation updates.
+* Update documentation.
 
 ### Bug Fixes
 

@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.14
+Version -r 1.832 -m 1.15
 
 # defaults
 
@@ -132,18 +132,21 @@ _CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_sp
 #
 # use -e to extract archive file
 #####
-# find payload
-l=\$(head -n 32 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || exit 1
+
+# startup
+printf 'Preparing...'
+error () { printf 'Self-extract failure.\n'; exit 1; }
+l=\$(head -n 35 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || error
 
 # extract installer
-t="\$(mktemp -d)" || exit 1
+t="\$(mktemp -d)" || error
 a="\${0##*/}"; a="\${t}/\${a%\\.*}.${_Package_archive}"
-tail -n +33 "\${0}" > "\${a}"
+tail -n +36 "\${0}" > "\${a}"
 [ "\${1}" = '-e' ] && mv "\${a}" ./ && rmdir "\${t}" && exit 0
 d="\${t}/a"
-mkdir "\${d}" || exit 1
+mkdir "\${d}" || error
 cd "\${d}" > /dev/null
-${_Package_unarchive} "\${a}" 2>&1 > /dev/null || exit 1
+${_Package_unarchive} "\${a}" 2>&1 > /dev/null || error
 cd - > /dev/null
 
 # run installer

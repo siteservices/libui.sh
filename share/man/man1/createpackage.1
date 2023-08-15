@@ -25,9 +25,9 @@
 .Op Fl a Ar <add_file> ...
 .Op Fl c Ar <compression>
 .Op Fl e Ar <encoding>
+.Op Fl E Ar <install_environment>
 .Op Fl f Ar <package>
 .Op Fl i Ar <installer>
-.Op Fl I Ar <install_environment>
 .Op Fl m Ar <manifest>
 .Op Fl p Ar <package_type>
 .Op Fl x Ar <exclude_pattern> ...
@@ -54,9 +54,9 @@ script can be executed using the following:
 .Op Fl a Ar <add_file> ...
 .Op Fl c Ar <compression>
 .Op Fl e Ar <encoding>
+.Op Fl E Ar <install_environment>
 .Op Fl f Ar <package>
 .Op Fl i Ar <installer>
-.Op Fl I Ar <install_environment>
 .Op Fl m Ar <manifest>
 .Op Fl p Ar <package_type>
 .Op Fl x Ar <exclude_pattern> ...
@@ -91,6 +91,14 @@ longer than 200 characters.
 Please see the
 .Xr shar 1
 command for more details.
+.It Fl E Ar <install_environment>
+Install Environment
+.Pp
+Include the provided
+.Ar <install_environment>
+string on the commmand line prior before the installer command.
+This enables the creation of environment variables, etc. for use by the
+installer.
 .It Fl f Ar <package>
 Package Filename
 .Pp
@@ -116,14 +124,6 @@ The installer will be executed in that location.
 List Files
 .Pp
 List the root directories to be included in the package.
-.It Fl I Ar <install_environment>
-Install Environment
-.Pp
-Include the provided
-.Ar <install_environment>
-string on the commmand line prior before the installer command.
-This enables the creation of environment variables, etc. for use by the
-installer.
 .It Fl m Ar <manifest>
 Manifest File
 .Pp
