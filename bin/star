@@ -31,11 +31,10 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.1
+Version -r 1.832 1.2
 
 # load mods
 LoadMod File
-LoadMod Spinner
 
 ##### configuration
 
@@ -44,13 +43,15 @@ separatorfmt='===== file:%s:%s:%s:file =====\n'
 separatorregex='^===== file:([^:]*):([^:]*):([^:]*):file =====$'
 groupmode='g+w'
 retval=0
+GetTmp tmpdir
+sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
 
 ##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
 
 AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
-AddParameter -n filepath -i "${PWD}" -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
+AddParameter -n paths -m -i "." -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
 
 ##### callbacks
 
@@ -72,43 +73,54 @@ ExitCallback () {
 InitCallback () {
   Trace 'In user init callback.'
 
-  ConfirmVar -d filepath
-
-  Trace 'Check for filename extension. (%s)' "${archive}"
-  local period='\.' # fix for bash / zsh
-  if [[ -n "${archive}" && ! "${archive##*/}" =~ ${period} ]]
+  Trace 'Check for create. (%s)' "${create}"
+  if ${create}
   then
-    archive+='.star'
+    Trace 'Check for filename extension. (%s)' "${archive}"
+    local period='\.' # fix for bash / zsh
+    if [[ -n "${archive}" && ! "${archive##*/}" =~ ${period} ]]
+    then
+      archive+='.star'
+    fi
+
+    Trace 'Check for existing archive. (%s)' "${archive}"
+    ! Force && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -F (Force) to overwrite.'
   fi
 
-  Trace 'Check for existing archive. (%s)' "${archive}"
-  ${create} && ! Force && [[ -n "${archive}" && -f "${archive}" ]] && \
-      Error 'Archive already exists. Use -F (Force) to overwrite.'
+  Trace 'Check for extract. (%s)' "${extract}"
+  if ${extract}
+  then
+    Trace 'Check paths count. (%s)' "${#paths[@]}"
+    ((1 == ${#paths[@]})) || Error 'Only one target allowed.'
+
+    Trace 'Get real archive path. (%s)' "${archive}"
+    GetRealPath archive
+  fi
 }
 
 ##### functions
 
-CreateArchive () { # archive
+CreateArchive () { # <archive> <files> ...
   Trace 'Start CreateArchive. (%s)' "${*}"
-  local archive="${*}"
+  local archive="${1}"; shift
   local dirperms
   local file
-  local files
+  local files; files=( )
   local fileperms
+  local list
   local rv=0
+  local tmp
 
-  Trace 'Get file listing. (%s)' "${PWD}"
-  GetFileList -h -f files .
-
-  Trace 'Open archive file descriptor. (%s)' "${archive}"
-  if [[ -z "${archive}" || '-' == "${archive}" ]]
-  then
-    exec 9>&1
-  else
-    exec 9> "${archive}"
-  fi
+  Trace 'Get file listing. (%s)' "${*}"
+  for file in "${@}"
+  do
+    Trace 'Get file listing. (%s)' "${PWD}"
+    GetFileList -h -f list "${file}"
+    [[ -n "${list}" ]] && files+=( "${list[@]}" ) || Warn 'File not found. (%s)' "${file}"
+  done
 
   Trace 'Process files. (%s)' "${files[*]}"
+  GetTmp -f tmp
   for file in "${files[@]}"
   do
     if [[ ! $(file -i "${file}") =~ .*(text|empty).* ]]
@@ -124,24 +136,36 @@ CreateArchive () { # archive
       cat "${file}"
       [[ "$(tail -c 1 "${file}")" == '' ]] || printf '\n'
     fi
-  done >&9
+  done > "${tmp}"
   ((rv+=${?}))
 
-  Trace 'Cleanup.'
+  Trace 'Sign archive. (%s)' "${tmp}"
+  ${sign} "${tmp}" | cut -d ' ' -f 1 >> "${tmp}"
+  ((rv+=${?}))
+
+  Trace 'Write archive. (%s)' "${archive}"
+  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  then
+    exec 9>&1
+  else
+    exec 9> "${archive}"
+  fi
+  cat "${tmp}" >&9
   exec 9>&-
 
   Trace 'CreateArchive return. (%s)' "${rv}"
   return ${rv}
 }
 
-ExtractArchive () { # archive
+ExtractArchive () { # <archive>
   Trace 'Start ExtractArchive. (%s)' "${*}"
   local archive="${*}"
+  local file
   local fileinfo
   local line
   local rv=0
 
-  Trace 'Open archive file descriptor. (%s)' "${archive}"
+  Trace 'Open archive file descriptor. (%s)' "${file}"
   if [[ -z "${archive}" || '-' == "${archive}" ]]
   then
     exec 8<&0
@@ -149,14 +173,21 @@ ExtractArchive () { # archive
     exec 8< "${archive}"
   fi
 
+  Trace 'Validate archive. (%s)' "${archive}"
+  GetTmp -f file
+  head -n -1 <&8 > "${file}"
+  [[ $(tail -1 "${archive}") == $(${sign} "${file}" | cut -d ' ' -f 1) ]] || \
+      Error 'Unable to extract files, archive is corrupt.'
+
   Trace 'Find initial separator.'
+  exec 8< "${file}"
   while IFS= read -r line
   do
     [[ "${line}" =~ ${separatorregex} ]] && break
   done <&8
   ((rv+=${?}))
 
-  Trace 'Process files.'
+  Trace 'Extract files.'
   while true
   do
     Trace 'Check for current file. (%s)' "${fileinfo[((AO + 1))]}"
@@ -192,6 +223,7 @@ ExtractArchive () { # archive
     done <&8 >&9
     ((rv+=${?}))
   done
+  exec 8<&-
 
   Trace 'ExtractArchive return. (%s)' "${rv}"
   return ${rv}
@@ -214,32 +246,22 @@ Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 Trace 'Check for create. (%s)' "${create}"
 if ${create}
 then
-  Trace 'Change directory to source. (%s)' "${filepath}"
-  cd "${filepath}"
-
   Trace 'Create archive. (%s)' "${archive}"
-  if ! CreateArchive "${archive}"
+  if ! CreateArchive "${archive}" "${paths[@]}"
   then
     Warn 'Archive creation failed.'
   fi
-
-  Trace 'Cleanup.'
-  cd -
 fi
 
 Trace 'Check for extract. (%s)' "${extract}"
 if ${extract}
 then
-  Trace 'Change directory to target. (%s)' "${filepath}"
-  cd "${filepath}"
-
   Trace 'Extract archive. (%s)' "${archive}"
+  cd "${paths[${AO}]}"
   if ! ExtractArchive "${archive}"
   then
     Warn 'Archive extraction failed.'
   fi
-
-  Trace 'Cleanup.'
   cd -
 fi
 

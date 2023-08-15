@@ -55,9 +55,9 @@ GetTmp -f tmpfile
 AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
 [[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -i '-T' -k 'Encoding' -d 'Shar encoding format option.' e:
+AddOption -n installenv -k 'Environment' -d 'Installer command line environment.' E:
 AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
 AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
-AddOption -n installenv -k 'Install Env' -d 'Installer command line environment.' I:
 AddOption -n listfiles -f -k 'List Files' -d 'List files to package.' l
 AddOption -n manifest -k 'Manifest' -d 'Manifest file location.' m:
 AddOption -n pkgtype -i tarp -s tarp -s sharp -s starp -k 'Package' -d 'Package type.' p:
