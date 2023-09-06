@@ -46,7 +46,7 @@ retval=0
 GetTmp tmpdir
 sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
@@ -84,7 +84,7 @@ InitCallback () {
     fi
 
     Trace 'Check for existing archive. (%s)' "${archive}"
-    ! Force && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -F (Force) to overwrite.'
+    ! Force && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -XF (Force) to overwrite.'
   fi
 
   Trace 'Check for extract. (%s)' "${extract}"

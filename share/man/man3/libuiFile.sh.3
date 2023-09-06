@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 6, 2023
+.Dd September 5, 2023
 .Dt LIBUIFILE.SH 3
 .Os
 .Sh NAME
@@ -27,6 +27,10 @@ user interface library
 .Sy LoadMod File
 .Pp
 .Sy Close
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <file_path>
+.Pp
+.Sy Flush
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
 .Op Ar <file_path>
 .Pp
@@ -115,6 +119,43 @@ Note: The
 .Sy Close
 command is executed (with no parameters) during exit to unlock / close all open
 files.
+.Ss Flush
+The following command flushes the file ID associated with a file by the
+.Sx Open
+command:
+.Bd -ragged -offset 4n
+.Sy Flush
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+.Op Ar <file_path>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9
+The numeric options
+.Fl 1
+through
+.Fl 9
+provide a shorthand to associate a file ID with a file path.
+.El
+.Pp
+Flushes output to the
+.Ar <file_path>
+associated with a file ID by the
+.Sx Open
+command.
+(See the
+.Sx Open
+command for more information.)
+Flushing is achieved by closing the associated file descriptor and then
+reopening the file with the same file descriptor.
+Note: Flushing should only be required when using both
+.Sx Write
+and other, non-libui commands to write to the same file.
+It also appears to only be required when using the Bash shell.
+.Pp
+The Flush command works with either a numeric file ID option or a
+.Ar <file_path> .
 .Ss GetFileList
 The following command assigns a listing of the files matching the provided file
 specification to the named array variable:

@@ -1,0 +1,24 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Verbose_Open_Log
+#
+#####
+
+test_Action_Verbose_Open_Log () {
+  local lfile; GetTmp -f lfile
+  LoadMod File
+  Open -1 -c "${lfile}"
+  Action -1 'ls -d /tmp'
+  Action -1 'ls -d /tmp'
+  LibuiPerformTest "cat '${lfile}'"
+  local tv=${?}
+  Close -1
+  LibuiValidateTest -r "${tv}" 0 "ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X2 '
+
+return 0

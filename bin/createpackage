@@ -50,7 +50,7 @@ excludes=(
 GetTmp tmpdir
 GetTmp -f tmpfile
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
@@ -135,7 +135,7 @@ InitCallback () {
 
   Trace 'Check for existing package. (%s)' "${package}"
   ! Force && [[ -n "${package}" && -f "${package}" ]] && \
-      Error 'Package already exists. Use -F (Force) to overwrite.'
+      Error 'Package already exists. Use -XF (Force) to overwrite.'
 }
 
 ##### functions

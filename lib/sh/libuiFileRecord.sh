@@ -9,7 +9,7 @@
 #
 # Provides record-based file utility commands.
 #
-# Man page available for this module: man 3 libuiFileRecord.sh
+# Man page available for this mod: man 3 libuiFileRecord.sh
 #
 #####
 #

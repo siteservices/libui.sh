@@ -9,7 +9,7 @@
 #
 # Provides root user account access utility commands.
 #
-# Man page available for this module: man 3 libuiRoot.sh
+# Man page available for this mod: man 3 libuiRoot.sh
 #
 #####
 #

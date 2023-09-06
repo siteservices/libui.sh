@@ -49,7 +49,7 @@ strong="${Db}"
 emphasis="${Dsu}"
 retval=0
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddParameter -n files -m -r -k 'File' -d 'File to view.'
 

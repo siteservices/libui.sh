@@ -16,6 +16,6 @@ test_Y_C_Yes_No_Term_Verify-C () {
 }
 
 # test setup
-_Test_opt+='-Y -C '
+_Test_opt+='-X Y -X C '
 
 return 0

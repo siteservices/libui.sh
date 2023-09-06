@@ -9,7 +9,7 @@
 #
 # Provides multiuser utility commands.
 #
-# Man page available for this module: man 3 libuiMultiuser.sh
+# Man page available for this mod: man 3 libuiMultiuser.sh
 #
 #####
 #

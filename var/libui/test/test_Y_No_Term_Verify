@@ -16,6 +16,6 @@ test_Y_No_Term_Verify () {
 }
 
 # test setup
-_Test_opt+='-Y '
+_Test_opt+='-X Y '
 
 return 0

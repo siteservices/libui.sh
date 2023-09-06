@@ -46,7 +46,7 @@ previnst=0 # 1970-01-01
 srcfiles=( )
 prune=( "-name '.*.sw?' -prune" )
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n diff -f -k 'Diff' -d 'Display file differences from reference directory.' d
 AddOption -n usemanifest -t -k '(No) Manifest' -d 'Do not use manifest. Use all dotfiles in source directory.' M

@@ -208,14 +208,14 @@ can provided with the **-r** (Return Value) option flag.
 Caution [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
-### Close (man libuiFile.sh) - Closes a descriptor opened with the Open command.
+### Close (man libuiFile.sh) - Closes a file ID opened with the Open command.
 
-Closes a file descriptor that was previously opened using the Open command. The
-library will automatically close any open file descriptors when the Exit command
-is used to exit the script. The library uses shorthand flags **-1** through **-9** when
-accessing the file descriptors in a libui library command. Please note that the
--0 file descriptor flag is a reserved flag for library use only. It is also
-possible to close using the file path.
+Closes a file ID that was previously opened using the Open command. The library
+will automatically close any open file ID when the Exit command is used to exit
+the script. The library uses shorthand flags **-1** through **-9** when accessing
+the file ID in a libui library command. Please note that the -0 file ID flag is
+a reserved flag for library use only. It is also possible to close using the
+file path.
 
 * **-1..-9** - file id
 
@@ -363,6 +363,20 @@ return value from the last executed command.
 
 ```
 Exit [<return_value>]
+```
+
+### Flush (man libuiFile.sh) - Flushes a file ID opened with the Open command.
+
+Flushes a file ID that was previously opened using the Open command. This is
+accomplished by closing and re-opening the associated file ID. The library uses
+shorthand flags **-1** through **-9** when accessing the file ID in a libui library
+command. Please note that the -0 file ID flag is a reserved flag for library use
+only. It is also possible to flush using the file path.
+
+* **-1..-9** - file id
+
+```
+Close [-1..-9] [<file_path>]
 ```
 
 ### Force (man libui.sh) - Check if in Force (-F) mode.
@@ -526,7 +540,7 @@ The libui library supports mods that add new and/or change existing
 functionality. This command loads a mod for use. It normally loads from the
 SHLIBPATH but another path can be provided using the **-P** (Path) option flag.
 
-* **-P** - load module from the provided directory (otherwise use SHLIBPATH)
+* **-P** - load mod from the provided directory (otherwise use SHLIBPATH)
 
 ```
 LoadMod [-P <path>] <libui_mod_name>
@@ -559,13 +573,13 @@ otherwise it returns 1.
 NoAction
 ```
 
-### Open (man libuiFile.sh) - Open a file descriptor for use within the script.
+### Open (man libuiFile.sh) - Open a file ID for use within the script.
 
 The libui library supports file locking, enables file access shorthand, and can
-automatically back up files through the Open command. The file descriptor to use
-should be passed to the Open command and are restricted between 1 and 9. Please
-note that the **-0** file descriptor flag is a reserved flag for library use only.
-Open file descriptors should be closed using the Close command.
+automatically back up files through the Open command. The file ID to use should
+be passed to the Open command and are restricted between 1 and 9. Please note
+that the **-0** file ID flag is a reserved flag for library use only. Open file IDs
+should be closed using the Close command.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -610,15 +624,14 @@ otherwise it returns 1.
 Quiet
 ```
 
-### RecordClose (man libuiFileRecord.sh) - Close descriptor opened by RecordOpen.
+### RecordClose (man libuiFileRecord.sh) - Close file IDs opened by RecordOpen.
 
-Closes a file descriptor that was previously opened using the RecordOpen
-command. The library will automatically close any open file descriptors when the
-Exit command is used to exit the script. The library uses shorthand flags -1
-through **-9** when accessing the file descriptors in a libui library command.
-Please note that the **-0** file descriptor flag is a reserved flag for library use
-only. It is also possible to close using the file path. Note: Uses the same
-parameters as the Close command.
+Closes a file ID that was previously opened using the RecordOpen command. The
+library will automatically close any open file ID when the Exit command is used
+to exit the script. The library uses shorthand flags -1 through **-9** when
+accessing the file ID in a libui library command. Please note that the **-0** file
+ID flag is a reserved flag for library use only. It is also possible to close
+using the file path. Note: Uses the same parameters as the Close command.
 
 * **-1..-9** - file id
 
@@ -639,14 +652,14 @@ associative array should use the same names as are included in the column array.
 RecordEntry [-1..-9] [<data_assoc_array>] [<column_array>]
 ```
 
-### RecordOpen (man libuiFileRecord.sh) - Open a record-based file descriptor.
+### RecordOpen (man libuiFileRecord.sh) - Open a record-based file ID.
 
 The libui library supports file locking, enables file access shorthand, and can
-automatically back up files through the Open command. The file descriptor to use
-should be passed to the Open command and are restricted between 1 and 9. Please
-note that the **-0** file descriptor flag is a reserved flag for library use only.
-Open file descriptors should be closed using the Close command. Note: Uses the
-same parameters as the Open command.
+automatically back up files through the Open command. The file ID to use should
+be passed to the Open command and are restricted between 1 and 9. Please note
+that the **-0** file ID flag is a reserved flag for library use only. Open file IDs
+should be closed using the Close command. Note: Uses the same parameters as the
+Open command.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -895,14 +908,15 @@ Verbose
 
 Uses Ask to ask the user a question and waits for a yes / no response. Returns 0
 on a "yes" response and 1 on a "no" response. If a "q" is provided, the main
-script will exit. Note that other Ask command options are also available.
+script will exit. The default answer is "yes". Note that other Ask command
+options are also available.
 
 * **-C** - only ask when the **-C** (Confirm) command line option flag was used
-* **-d** - default answer
+* **-d** - set default answer to argument
 * **-n** - variable name to save the answer
-* **-N** - default answer to "no"
+* **-N** - set default answer to "no"
 * **-r** - regular expression that the answer must match
-* **-Y** - default answer to "yes"
+* **-Y** - set default answer to "yes"
 
 ```
 Verify [-C|-N|-Y] [-d <default>] [-n <variable_name>] [-r <required_regex>] <question_text>

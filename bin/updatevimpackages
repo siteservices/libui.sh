@@ -53,7 +53,7 @@ GetTmp tmpdir
 failure=false
 processed=false
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n gitstatus -f -k "Status" -d "Display repo git status." s
 AddParameter -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
@@ -95,7 +95,6 @@ Initialize
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
 Trace 'Process vim package directory list. (%s)' "${#vimpackdirs[@]}"
-Verbose && mode='-t' || mode='-s'
 for packdir in "${vimpackdirs[@]}"
 do
   Trace 'Change directory. (%s)' "${packdir}"
@@ -113,7 +112,7 @@ do
       Verbose && Tell '========== %s' "${package}"
 
       Trace 'Pull latest updates. (%s)' "${package}"
-      Action -i "Pulling latest updates. (${package})" ${mode} -c -l "${tmpdir}/${package}-pull.log" 'git pull --all'
+      Action -i "Pulling latest updates. (${package})" -c -l "${tmpdir}/${package}-pull.log" 'git pull --all'
 
       Trace 'Check if getting status. (%s)' "${gitstatus}"
       if ${gitstatus}

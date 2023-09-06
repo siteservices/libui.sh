@@ -17,6 +17,6 @@ test_Ask_Confirm_True () {
 }
 
 # test setup
-_Test_opt+='-C '
+_Test_opt+='-X C '
 
 return 0

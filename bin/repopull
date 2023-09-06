@@ -67,7 +67,7 @@ GetTmp tmpdir
 # source repo information
 [[ -f "${mapfile}" ]] && source "${mapfile}"
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n branch -k 'Branch' -d 'Specify the branch to check out.' b:
 AddOption -n clean -f -k 'Clean' -d 'Clean the repo by removing files and resetting to HEAD.' c
@@ -112,7 +112,7 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
-Verbose && mode='-t' && Tell '\nUpdate repos.' || mode='-s'
+Verbose && Tell '\nUpdate repos.'
 GetFileList -e repos '*/.git'
 Trace 'Process project repos. (%s)' "${repos[*]}"
 for git in "${repos[@]}"
@@ -132,12 +132,12 @@ do
     if ${clean}
     then
       Trace 'Cleaning repo. (%s)' "${repo}"
-      Action -C -i "Reset repo. (${repo})" -q "Really reset ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-reset.log" 'git reset --hard' && updated=true
-      Action -C -i "Clean repo. (${repo})" -q "Really clean ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-clean.log" 'git clean -dfx' && updated=true
+      Action -C -i "Reset repo. (${repo})" -q "Really reset ${repo} repo?" -c -l "${tmpdir}/${repo}-reset.log" 'git reset --hard' && updated=true
+      Action -C -i "Clean repo. (${repo})" -q "Really clean ${repo} repo?" -c -l "${tmpdir}/${repo}-clean.log" 'git clean -dfx' && updated=true
     fi
 
     Trace 'Pull repo. (%s)' "${repo}"
-    if Action -i "Pulling latest updates. (${repo})" -e "Pull failure in ${repo}." -q "Pull in ${repo}?" ${mode} -c -l "${tmpdir}/${repo}-pull.log" 'git pull --all'
+    if Action -i "Pulling latest updates. (${repo})" -e "Pull failure in ${repo}." -q "Pull in ${repo}?" -c -l "${tmpdir}/${repo}-pull.log" 'git pull --all'
     then
       Trace 'Check if up to date.'
       pullstatus=$(< "${tmpdir}/${repo}-pull.log")
@@ -158,7 +158,7 @@ do
           if git branch --all | grep "${branch}" &> /dev/null
           then
             Trace 'Check out branch. (%s)' "${branch}"
-            Action -i "Check out branch. (${branch})" -q "Check out ${branch}?" ${mode} -c -l "${tmpdir}/${branch//\//-}-checkout.log" "git checkout '${branch}'" && updated=true
+            Action -i "Check out branch. (${branch})" -q "Check out ${branch}?" -c -l "${tmpdir}/${branch//\//-}-checkout.log" "git checkout '${branch}'" && updated=true
           fi
         fi
       else
@@ -169,7 +169,7 @@ do
           if git branch --all | grep "${branchmap[${repo}]}" &> /dev/null
           then
             Trace 'Check out %s branch. (%s)' "${mapfile}" "${branchmap[${repo}]}"
-            Action -i "Check out branch. (${branchmap[${repo}]})" -q "Check out ${branchmap[${repo}]}?" ${mode} -c -l "${tmpdir}/${branchmap[${repo}]}-checkout.log" "git checkout '${branchmap[${repo}]}'" && updated=true
+            Action -i "Check out branch. (${branchmap[${repo}]})" -q "Check out ${branchmap[${repo}]}?" -c -l "${tmpdir}/${branchmap[${repo}]}-checkout.log" "git checkout '${branchmap[${repo}]}'" && updated=true
           fi
         fi
       fi
@@ -190,7 +190,7 @@ do
           if git branch --all | grep "${merge}" &> /dev/null
           then
             Trace 'Merge branch. (%s)' "${merge}"
-            Action -i "Merge branch into current. (${merge} -> ${current})" -q "Merge ${merge} into ${current}?" ${mode} -c -l "${tmpdir}/${merge}-merge.log" "git merge 'origin/${merge}'" && updated=true
+            Action -i "Merge branch into current. (${merge} -> ${current})" -q "Merge ${merge} into ${current}?" -c -l "${tmpdir}/${merge}-merge.log" "git merge 'origin/${merge}'" && updated=true
           fi
         fi
       else
@@ -201,7 +201,7 @@ do
           if git branch --all | grep "${branchmap[${repo}]}" &> /dev/null
           then
             Trace 'Merge %s branch. (%s)' "${mapfile}" "${branchmap[${repo}]}"
-            Action -i "Merge branch into current. (${branchmap[${repo}]} -> ${current})" -q "Merge ${branchmap[${repo}]} into ${current}?" ${mode} -c -l "${tmpdir}/${branchmap[${repo}]}-merge.log" "git merge 'origin/${branchmap[${repo}]}'" && updated=true
+            Action -i "Merge branch into current. (${branchmap[${repo}]} -> ${current})" -q "Merge ${branchmap[${repo}]} into ${current}?" -c -l "${tmpdir}/${branchmap[${repo}]}-merge.log" "git merge 'origin/${branchmap[${repo}]}'" && updated=true
           fi
         fi
       fi
@@ -241,8 +241,8 @@ do
     Trace 'Update repo submodules. (%s)' "${repo}"
     pushd ${repo} > /dev/null
     Verbose && Tell -- '---------- %s submodules' "${repo}"
-    Action -i "Update submodule. (${repo})" -q "Update submodule in ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-submodule-update.log" 'git submodule update'
-    #Action -i "Update submodule. (${repo})" -q "Update submodule in ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-submodule-update.log" 'git submodule update --remote'
+    Action -i "Update submodule. (${repo})" -q "Update submodule in ${repo} repo?" -c -l "${tmpdir}/${repo}-submodule-update.log" 'git submodule update'
+    #Action -i "Update submodule. (${repo})" -q "Update submodule in ${repo} repo?" -c -l "${tmpdir}/${repo}-submodule-update.log" 'git submodule update --remote'
 
     Trace 'Check if up to date.'
     updatestatus=$(grep -v 'ACTION' "${tmpdir}/${repo}-submodule-update.log" | wc -l)
@@ -252,8 +252,8 @@ do
     if ${clean}
     then
       Trace 'Cleaning submodule.'
-      Action -C -i "Reset submodule. (${repo})" -q "Really reset submodule in ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-submodule-reset.log" 'git submodule reset --hard' && updated=true
-      Action -C -i "Clean submodule. (${repo})" -q "Really clean submodule in ${repo} repo?" ${mode} -c -l "${tmpdir}/${repo}-submodule-clean.log" 'git submodule clean -dfx' && updated=true
+      Action -C -i "Reset submodule. (${repo})" -q "Really reset submodule in ${repo} repo?" -c -l "${tmpdir}/${repo}-submodule-reset.log" 'git submodule reset --hard' && updated=true
+      Action -C -i "Clean submodule. (${repo})" -q "Really clean submodule in ${repo} repo?" -c -l "${tmpdir}/${repo}-submodule-clean.log" 'git submodule clean -dfx' && updated=true
     fi
 
     if ${updated}

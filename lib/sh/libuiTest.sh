@@ -11,7 +11,7 @@
 #
 # Provides libui test commands.
 #
-# Man page available for this module: man 3 libuiTest.sh
+# Man page available for this mod: man 3 libuiTest.sh
 #
 #####
 #
@@ -230,6 +230,7 @@ LibuiTest () {
 
     ${_M} && _Trace 'Start session log.'
     Tell 'Test environment:'
+    printf '%s\n' "${SHLIBPATH}"
     Version
     Tell 'Begin libui %s with %s tests on %s. (%s)' "${LIBUI_VERSION}" "${#_Test_tests[@]}" "$(date)" "${TESTDIR}"
     StartTimer _Test_logtimer

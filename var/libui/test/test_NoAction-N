@@ -12,6 +12,6 @@ test_NoAction-N () {
 }
 
 # test setup
-_Test_opt+='-N '
+_Test_opt+='-X N '
 
 return 0

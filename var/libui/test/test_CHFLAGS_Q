@@ -1,20 +1,21 @@
 #!/usr/bin/env libui
 #####
 #
-# test_CHFLAGS_Y
+# test_CHFLAGS_Q
 #
 #####
 
-test_CHFLAGS_Y () {
+test_CHFLAGS_Q () {
   local tflags
   [[ "${arg[*]}" =~ .*-X\ *[0-9].* ]] && tflags+='-X [0-9] '
-  tflags+='-X [yY] '
+  tflags+='-X [qQ] '
+  _quiet=false # turn off quiet
   LibuiPerformTest 'Tell -- "${CHFLAGS}"'
   LibuiValidateTest -r ${?} 0 ".*${tflags}.*"
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X Y '
+_Test_opt+='-X Q '
 
 return 0

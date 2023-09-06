@@ -40,7 +40,7 @@ LoadMod File
 # defaults
 GetTmp tmpdir
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n split -i 100 -k 'Lines' -d 'Specify the number of lines to include in each split.' s:
 AddParameter -r -m -d 'The path of each file to be checked.' files

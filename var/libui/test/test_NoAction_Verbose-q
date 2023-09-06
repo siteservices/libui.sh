@@ -12,6 +12,6 @@ test_NoAction_Verbose-q () {
 }
 
 # test setup
-_Test_opt+='-X 2 -N '
+_Test_opt+='-X 2 -X N '
 
 return 0

@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 6, 2023
+.Dd August 21, 2023
 .Dt WSSETUP 1
 .Os
 .Sh NAME
@@ -21,9 +21,8 @@
 .Nd Set up the provided directory as the current workspace
 .Sh SYNOPSIS
 .Sy wssetup
-.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl P Ar <file>
-.Op Fl X Ar <level>
+.Op Fl h Fl H
+.Op Fl X Ar <option>
 .Ar <workspace>
 .Sh DESCRIPTION
 Used to create a ~/.workspace file containing the information necessary to set
@@ -34,9 +33,8 @@ The
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy wssetup
-.Op Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
-.Op Fl P Ar <file>
-.Op Fl X Ar <level>
+.Op Fl h Fl H
+.Op Fl X Ar <option>
 .Ar <workspace>
 .Ed
 .Pp
@@ -50,36 +48,23 @@ user interface library.
 Standard command line options provided by the
 .Xr libui.sh 3
 library are:
-.Fl C
-(Confirm),
-.Fl F
-(Force),
-.Fl H
-or
 .Fl h
-(Help),
-.Fl N
-(No Action),
-.Fl P Ar <file>
-(Load Profile),
-.Fl Q
-(Quiet),
-.Fl V
-(Version),
-.Fl X Ar <level>
-(XDebug
-.Ar <level> ) ,
-and
-.Fl Y
-(Yes).
+or
+.Fl H
+(Help) and
+.Fl X Ar <option>
+(XOption).
+XOptions include Confirm, Force, NoAction, Quiet, Version, and Yes.
+They are enabled using the first letter of the option (lower or upper case) as
+.Ar <option> .
 Please see
 .Xr libui.sh 3
 for more information.
 .Pp
 Note: Option value defaults can be obtained by executing with the
-.Fl H
-or
 .Fl h
+or
+.Fl H
 (Help) option.
 .Sh FILES
 The script creates a .workspace file in the user's home directory.

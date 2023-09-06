@@ -9,7 +9,7 @@
 #
 # Provides workspace, i.e., directory containing git repos, utility commands.
 #
-# Man page available for this module: man 3 libuiWorkspace.sh
+# Man page available for this mod: man 3 libuiWorkspace.sh
 #
 #####
 #

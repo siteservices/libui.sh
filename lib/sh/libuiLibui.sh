@@ -11,11 +11,11 @@
 #
 # Provides libui utility commands.
 #
-# Man page available for this module: man 3 libuiLibui.sh
+# Man page available for this mod: man 3 libuiLibui.sh
 #
 #####
 #
-# IMPORTANT: This module does a lot of white box manipulation of the libui.sh
+# IMPORTANT: This mod does a lot of white box manipulation of the libui.sh
 # internals and should not be used as a model for libui.sh Mod development.
 #
 #####
@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.8
+Version -r 1.834 -m 1.9
 
 ##### configuration
 
@@ -52,7 +52,7 @@ export LC_ALL=POSIX
 ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
-_Util_libuitest="${_Util_libuiroot}/var/libui/test"
+_Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/var/libui/test}"
 _Util_libuivar="${_Util_libuiroot}/var/libui"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
 _Util_installer='${sh} ${d}/lib/sh/libui'
@@ -861,52 +861,54 @@ LibuiUnity () { # [-d|-u|-U|-v]
   ${_M} && _Trace 'Check for different files. (%s)' "${#_Util_list[@]}"
   if [[ -n "${_Util_list}" ]]
   then
-    ${_M} && _Trace 'Check for update or unify. (%s / %s)' "${_Util_update}" "${_Util_unify}"
-    if ${_Util_update}
+    ${_M} && _Trace 'Check for update. (%s)' "${_Util_update}"
+    if ${_Util_update} && Verify 'Are you sure you wish to update files in %s from your environment (%s)?' "${COMMONROOT}" "${_Util_libuiroot}"
     then
-      if Verify 'Are you sure you wish to update files in %s from your environment (%s)?' "${COMMONROOT}" "${_Util_libuiroot}"
-      then
-        ${_M} && _Trace 'Update %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-        StartSpinner 'Updating commonroot "%s".' "${COMMONROOT}"
-        pushd "${_Util_libuiroot}" > /dev/null
-        for _Util_file in "${_Util_list[@]}"
-        do
-          if [[ -f "${COMMONROOT}/${_Util_file}" ]]
-          then
-            ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-            Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && \
-                Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
-          fi
-        done
-        popd > /dev/null
-        StopSpinner
-        Tell -A 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
-      fi
-    elif ${_Util_unify}
-    then
-      if Verify 'Are you sure you wish to remove files from %s that exist in %s?' "${_Util_libuiroot}" "${COMMONROOT}"
-      then
-        ${_M} && _Trace 'Unify user environment with %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
-        StartSpinner 'Unifying with commonroot "%s".' "${COMMONROOT}"
-        pushd "${_Util_libuiroot}" > /dev/null
-        for _Util_file in $(find . -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
-        do
-          _Util_file="${_Util_file#./}"
-          if [[ -f "${COMMONROOT}/${_Util_file}" ]]
-          then
-            ${_M} && _Trace 'Remove %s.' "${_Util_libuiroot}/${_Util_file}"
-            Action -q "The file ${COMMONROOT}/${_Util_file} exists, remove from ${_Util_libuiroot}? (y/n)" "rm ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}'"
-          fi
-        done
-        popd > /dev/null
-        StopSpinner
-        Tell -A 'Unification with %s environment complete.' "${COMMONROOT}"
-      fi
+      StartSpinner 'Updating commonroot "%s".' "${COMMONROOT}"
+
+      ${_M} && _Trace 'Update %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
+      pushd "${_Util_libuiroot}" > /dev/null
+      for _Util_file in "${_Util_list[@]}"
+      do
+        if [[ -f "${COMMONROOT}/${_Util_file}" ]]
+        then
+          ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
+          Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+        fi
+      done
+      popd > /dev/null
+
+      StopSpinner
+
+      Tell -A 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
     else
-      Tell -W 'There are differences. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+      Tell -C 'Local files and commonroot files are different. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
     fi
   else
     Tell -A 'Verify complete, no file differences. (%s == %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+  fi
+
+  ${_M} && _Trace 'Check for unify. (%s)' "${_Util_unify}"
+  if ${_Util_unify} && Verify 'Are you sure you wish to remove files from %s that exist in %s?' "${_Util_libuiroot}" "${COMMONROOT}"
+  then
+    StartSpinner 'Unifying with commonroot "%s".' "${COMMONROOT}"
+
+    ${_M} && _Trace 'Unify user environment with %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    pushd "${_Util_libuiroot}" > /dev/null
+    for _Util_file in $(find . -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
+    do
+      _Util_file="${_Util_file#./}"
+      if [[ -f "${COMMONROOT}/${_Util_file}" ]]
+      then
+        ${_M} && _Trace 'Remove %s.' "${_Util_libuiroot}/${_Util_file}"
+        Action -q "The file ${COMMONROOT}/${_Util_file} exists, remove from ${_Util_libuiroot}? (y/n)" "rm ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}'"
+      fi
+    done
+    popd > /dev/null
+
+    StopSpinner
+
+    Tell -A 'Unification with %s environment complete.' "${COMMONROOT}"
   fi
 
   popd > /dev/null

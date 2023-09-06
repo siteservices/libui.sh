@@ -40,7 +40,7 @@ LoadMod File
 # defaults
 GetTmp tmpdir
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n end -i ${MAXINT} -k 'End' -d 'The line number to end output.' e:
 AddOption -n iterate -i 40 -k 'Iterate' -d 'The number of lines in each iterative block.' i:

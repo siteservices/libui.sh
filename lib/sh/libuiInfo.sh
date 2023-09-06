@@ -9,7 +9,7 @@
 #
 # Provides libui info utility commands.
 #
-# Man page available for this module: man 3 libuiInfo.sh
+# Man page available for this mod: man 3 libuiInfo.sh
 #
 #####
 #
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.4
+Version -r 1.834 -m 1.5
 
 # defaults
 
@@ -46,21 +46,14 @@ UsageInfo () {
   ${_M} && _Trace 'UsageInfo [%s]' "${*}"
 
   # library provided options
-  _ou+=( 'C' 'F' 'H' 'N' 'P' 'Q' 'V' 'X' 'Y' )
-  _ok+=( 'Confirm' 'Force' 'Help' 'No Action' 'Profile' 'Quiet' 'Version' 'XDebug' 'Yes' )
+  _ou+=( 'H' 'X' )
+  _ok+=( 'Help' 'XOption' )
   _od+=(
-    "Confirm operations before performing them. (confirm: \${_confirm})"
-    "Force file operations. (force: \${_force})"
     'Display usage message, also available with -h. (help: true)'
-    "Show operations without performing them. (noaction: \${_noaction})"
-    "Load configuration profile. (file: \${_profile})"
-    "Execute quietly. (quiet: \${_quiet})"
-    'Display version information. (version: false)'
-    "Set debug level to specified level. (level: \${_xdb})"
-    "Provide \"y\" or default answer to asked questions. (yes: \${_yes})"
+    "XOption info. (level: \${_xdb}, confirm: ${_confirm}, force: ${_force}, noaction: ${_noaction}, quiet: ${_quiet}, yes: ${_yes}, profile: ${_profile})"
   )
-  _osm+=( false false false false false false false false )
-  _opm+=( false false )
+  _osm+=( false false )
+  _opm+=( false )
 
   {
     local _UsageInfo_d
@@ -73,7 +66,7 @@ UsageInfo () {
     printf "${DCES}\n"
 
     ${_M} && _Trace 'Display sample command line.'
-    _os+=( 'C' 'F' 'h' 'H' 'N' 'Q' 'V' 'Y' )
+    _os+=( 'h' 'H' )
     _UsageInfo_i="${AO}"
     printf "${DTell}USAGE: %s " "${CMD}"
     if [[ -n "${_os}" ]]
@@ -88,7 +81,7 @@ UsageInfo () {
       done
       printf ']'
     fi
-    _opf+=( P X )
+    _opf+=( X )
     _oavar+=( file level )
     _UsageInfo_i="${AO}"
     for _UsageInfo_p in "${_opf[@]}"
@@ -130,6 +123,31 @@ UsageInfo () {
       printf '%s\n' "${_UsageInfo_d}"
       ((_UsageInfo_i++))
     done
+
+    ${_M} && _Trace 'Display debug help options. (%s)' "${_help}"
+    if ${_help}
+    then
+      cat << EOF
+        0 - No debug actions.
+        1 - Verify before executing Exit handlers.
+        2 - Verbose actions.
+        3 - Local debugging.
+        5 - Profile with a timestamp in trace messages.
+        6 - Context debugging with file / function / line in trace messages.
+        7 - Remote debugging.
+        8 - Mod debugging.
+        9 - Library internals debugging.
+        c - Confirm Actions before performing them.
+        f - Force Actions.
+        h - Display this debug help.
+        n - Show but do not perform Actions.
+        q - Quiet operation.
+        v - Version information.
+        y - Answer all question with the default or "yes".
+        <file> - Profile configuration file to load.
+EOF
+    fi
+
     printf '\n'
 
     ${_M} && _Trace 'Display parameters.'

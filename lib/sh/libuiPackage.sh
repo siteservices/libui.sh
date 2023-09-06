@@ -9,7 +9,7 @@
 #
 # Provides self-extracting package utility commands.
 #
-# Man page available for this module: man 3 libuiPackage.sh
+# Man page available for this mod: man 3 libuiPackage.sh
 #
 #####
 #
@@ -321,7 +321,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
       ${_M} && _Trace 'Check for existing package. (%s)' "${_Package_package}"
       if [[ -e "${_Package_package}" ]]
       then
-        ${_Package_list} || Tell -E 'The package already exists (%s). Use the force option (-F) to overwrite.' "${_Package_package}"
+        ${_Package_list} || Tell -E 'The package already exists (%s). Use -XF (Force) to overwrite.' "${_Package_package}"
       fi
     fi
 

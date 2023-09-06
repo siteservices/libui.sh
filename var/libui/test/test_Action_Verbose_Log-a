@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action_Verbose_Log-a
+#
+#####
+
+test_Action_Verbose_Log-a () {
+  local lfile; GetTmp -f lfile
+  LibuiPerformTest "Action -l '${lfile}' 'ls -d /tmp'; cat '${lfile}'"
+  LibuiValidateTest -r ${?} 0 "\(Action\) ls -d /tmp \(PWD: .*\)${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X2 '
+
+return 0

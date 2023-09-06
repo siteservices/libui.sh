@@ -28,7 +28,7 @@ statuslevel=0                                                                   
 GetTmp tmpdir                                                                                       # demo content
 retval=0
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 # <ADD OPTIONS AND PARAMETERS HERE>
 AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s                # demo content
