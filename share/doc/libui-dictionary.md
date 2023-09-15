@@ -466,7 +466,8 @@ GetTmp [-d|-f|-s] <variable_name>
 ### Info (man libui.sh) - Display a highlighted info message for the user.
 
 Sends a highlighted text message to STDOUT. By default this message is displayed
-in cyan text. The message can also be logged to a log file.
+in cyan text and does not include a trailing newline. The message can also be
+logged to a log file.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -475,12 +476,11 @@ in cyan text. The message can also be logged to a log file.
 * **-i** - display the message "in place", i.e., where the cursor currently is
 * **-l** - log message to file
 * **-L** - include the location of the message request (see Error command)
-* **-n** - do not include a trailing newline
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
 ```
-Info [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+Info [-1..-9|-a|-c|-f|-F|-i|-L|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### InfoCallback (man libui-template) - Optional function in main script.

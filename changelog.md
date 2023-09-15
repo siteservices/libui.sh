@@ -12,6 +12,7 @@
 * Split libui install options in to -i (Install) and -I (Install with Tests).
 * Add error exit wait for reviewing temp files / logs (if GetTmp is used).
 * Remove spurious "Working in" message from wssetup.
+* Add progress messages and -v (Verbose) to star.
 * Add and update regression tests.
 * Update documentation.
 
@@ -29,6 +30,7 @@
 * Most libui options changed to XOptions: Confirm, Force, NoAction, Quiet, Yes.
 * Change libui -P \<file\> (Profile) option to a "-X \<file\>" profile XOption.
 * Change SHELL to include full path to shell instead of just the name.
+* Info is now "Tell -I -n" and no longer generates a trailing newline.
 
 ## v1.833
 

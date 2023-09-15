@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Thu Sep 14 23:10:16 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Fri Sep 15 00:09:24 EDT 2023
 
 #####
 #
@@ -1414,7 +1414,7 @@ Info () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>
   ${_S} && ((_cInfo++))
   ${_T} && _Trace 'Info [%s]' "${*}"
 
-  Tell -I "${@}"
+  Tell -I -n "${@}"
   local _rv=${?}
 
   ${_T} && _Trace 'Info return. (%s)' "${_rv}"
