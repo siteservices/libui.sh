@@ -6,7 +6,7 @@
 #####
 
 test_SHELL () {
-  ${ZSH} && local sh="${ZSH_NAME:t}" || local sh="$([[ -n "${BASH_VERSION}" ]] && printf 'bash' || printf 'sh')"
+  ${ZSH} && local sh="${commands[zsh]}" || local sh="${BASH:-sh}"
   LibuiPerformTest 'Tell -- "${SHELL}"'
   LibuiValidateTest ${?} 0 "${sh}"
   return ${?}

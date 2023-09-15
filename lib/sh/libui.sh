@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Mon Sep  4 23:04:36 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Thu Sep 14 23:10:16 EDT 2023
 
 #####
 #
@@ -2298,7 +2298,7 @@ LIBUI_DOTFILE="${LIBUI_DOTFILE:-${HOME}/.libui}"
 
 # defaults
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_DOTFILE}/hook}"
-ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${ZSH_NAME:t}" || SHELL="${BASH_VERSION:+bash}"
+ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${commands[zsh]}" || SHELL="${BASH:-sh}"
 BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
 ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"

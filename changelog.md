@@ -21,12 +21,14 @@
 * Improve libui SSH mod "no ssh keys, password may be needed" report test.
 * Improve Trace location reporting.
 * Fix libui unify processing.
+* Tweak mless to remove double blank lines.
 
 ### Incompatibilities
 
 * Change Action -t (Tee Log) from True / False flag to replacement for -l (Log).
 * Most libui options changed to XOptions: Confirm, Force, NoAction, Quiet, Yes.
 * Change libui -P \<file\> (Profile) option to a "-X \<file\>" profile XOption.
+* Change SHELL to include full path to shell instead of just the name.
 
 ## v1.833
 

@@ -119,8 +119,13 @@ Close () { #  [-0|-1..-9] [<file_path>]
       if [[ -n "${_File_fd[${_File_l}]}" ]]
       then
         ${_M} && _Trace 'Remove flock. (%s)' "${_File_fd[${_File_l}]}"
+        if ${ZSH}
+        then
+          eval "exec {${_File_fd[${_File_l}]}}>&-"
+        else
+          eval "exec ${_File_fd[${_File_l}]}>&-"
+        fi
         flock -u "${_File_fd[${_File_l}]}" && ${_M} && _Trace 'Unlocked. (%s)' "${_File_fd[${_File_l}]}"
-        ${ZSH} && eval "exec {${_File_fd[${_File_l}]}}>&-" || eval "exec ${_File_fd[${_File_l}]}>&-"
         unset "_File_fp[${_File_l}]"
         unset "_File_fd[${_File_l}]"
       fi
@@ -132,9 +137,14 @@ Close () { #  [-0|-1..-9] [<file_path>]
       if [[ -n "${_File_fd[${_File_l}]}" ]]
       then
         ${_M} && _Trace 'Remove lock file. (%s)'  "${_File_fp[${_File_l}]}.lock"
+        if ${ZSH}
+        then
+          eval "exec {${_File_fd[${_File_l}]}}>&-"
+        else
+          eval "exec ${_File_fd[${_File_l}]}>&-"
+        fi
         rm -f "${_File_fp[${_File_l}]}.lock" && ${_M} && _Trace 'Lock file removed. (%s)' "${_File_fp[${_File_l}]}.lock"
         [[ -e "${_File_d}/${_File_fp[${_File_l}]##*/}.lock" ]] && rm -f "${_File_d}/${_File_fp[${_File_l}]##*/}.lock"
-        ${ZSH} && eval "exec {${_File_fd[${_File_l}]}}>&-" || eval "exec ${_File_fd[${_File_l}]}>&-"
         unset "_File_fp[${_File_l}]"
         unset "_File_fd[${_File_l}]"
       fi

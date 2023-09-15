@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.6
+Version -r 1.834 -m 1.7
 
 # defaults
 _WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
@@ -87,23 +87,28 @@ ValidateWorkspace () { # [-n|-w]
   done
   shift $((OPTIND - 1))
 
-  ${_M} && _Trace 'Validate WORKSPACE. (%s)' "${WORKSPACE}"
+  ${_M} && _Trace 'Check WORKSPACE. (%s)' "${WORKSPACE}"
   if [[ -z "${WORKSPACE}" ]]
   then
     [[ -f "${_WS_wsfile}" ]] && source "${_WS_wsfile}" || WORKSPACE="${PWD}"
   fi
-  ConfirmVar -q 'Please provide the workspace directory:' -d WORKSPACE && GetRealPath WORKSPACE
 
-  ${_M} && _Trace 'Check if in WORKSPACE. (%s)' "${WORKSPACE##*/}"
-  ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
-      Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
+  ${_M} && _Trace 'Validate WORKSPACE. (%s)' "${WORKSPACE}"
+  if [[ -n "${WORKSPACE}" ]]
+  then
+    ConfirmVar -d WORKSPACE && GetRealPath WORKSPACE
 
-  ${_M} && _Trace 'Load WORKSPACE environment. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
-  ${_WS_loadenv} && [[ -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]] && \
-      source "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+    ${_M} && _Trace 'Check if in WORKSPACE. (%s)' "${WORKSPACE##*/}"
+    ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
+        Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
-  ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
-  ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null
+    ${_M} && _Trace 'Load WORKSPACE environment. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+    ${_WS_loadenv} && [[ -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]] && \
+        source "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+
+    ${_M} && _Trace 'Remain in workspace. (%s)' "${_WS_ws}"
+    ${_WS_ws} && cd "${WORKSPACE}" &> /dev/null
+  fi
 
   ${_M} && _Trace 'ValidateWorkspace return. (%s)' 0
   return 0
