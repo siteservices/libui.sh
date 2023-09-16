@@ -9,7 +9,7 @@
 #
 # Provides file utility commands.
 #
-# Man page available for this module: man 3 libuiFile.sh
+# Man page available for this mod: man 3 libuiFile.sh
 #
 #####
 #
@@ -78,78 +78,175 @@ Close () { #  [-0|-1..-9] [<file_path>]
   ((0 < ${#})) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Close) Called with a file ID and a file path.'
   ((1 < ${#})) && Tell -E -f -L '(Close) Called with multiple file paths.'
 
-  ${_M} && _Trace 'Check for error.'
-  if Error
-  then
-    ${_M} && _Trace 'Close error return. (%s)' "${ERRV}"
-    return ${ERRV}
-  else
-    local _File_l
+  local _File_l
 
-    ${_M} && _Trace 'Check for file ID. (%s)' "${_File_i}"
-    if [[ -z "${_File_i}" ]]
+  ${_M} && _Trace 'Check for file ID. (%s)' "${_File_i}"
+  if [[ -z "${_File_i}" ]]
+  then
+    ${_M} && _Trace 'Check for file path. (%s)' "${*}"
+    if ((${#}))
     then
-      ${_M} && _Trace 'Check for file path. (%s)' "${*}"
-      if ((${#}))
+      if ${ZSH}
       then
-        if ${ZSH}
-        then
-          for _File_l in "${(@)_File_fp}"
-          do
-            [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_fp[(ie)${_File_l}]}" )
-          done
-        else
-          for _File_l in "${!_File_fp[@]}"
-          do
-            [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_l}" )
-          done
-        fi
+        for _File_l in "${(@)_File_fp}"
+        do
+          [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_fp[(ie)${_File_l}]}" )
+        done
       else
-        if ${ZSH}
-        then
-          for _File_l in "${(@)_File_fd}"
-          do
-            [[ -n "${_File_l}" ]] && _File_i+=( "${_File_fd[(ie)${_File_l}]}" )
-          done
-        else
-          _File_i=( "${!_File_fd[@]}" )
-        fi
+        for _File_l in "${!_File_fp[@]}"
+        do
+          [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_l}" )
+        done
+      fi
+    else
+      if ${ZSH}
+      then
+        for _File_l in "${(@)_File_fd}"
+        do
+          [[ -n "${_File_l}" ]] && _File_i+=( "${_File_fd[(ie)${_File_l}]}" )
+        done
+      else
+        _File_i=( "${!_File_fd[@]}" )
       fi
     fi
-
-    ${_M} && _Trace 'Check for flock.'
-    if ${ZSH} && ((${+commands[flock]})) || command -v flock &> /dev/null
-    then
-      for _File_l in "${_File_i[@]}"
-      do
-        if [[ -n "${_File_l}" ]]
-        then
-          ${_M} && _Trace 'Remove flock. (%s)' "${_File_fd[${_File_l}]}"
-          [[ -n "${_File_fd[${_File_l}]}" ]] && flock -u "${_File_fd[${_File_l}]}" && \
-              ${_M} && _Trace 'Unlocked. (%s)' "${_File_fd[${_File_l}]}"
-          unset "_File_fp[${_File_l}]"
-          unset "_File_fd[${_File_l}]"
-        fi
-      done
-    else
-      local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
-      for _File_l in "${_File_i[@]}"
-      do
-        if [[ -n "${_File_l}" ]]
-        then
-          ${_M} && _Trace 'Remove lock file. (%s)'  "${_File_fp[${_File_l}]}.lock"
-          [[ -n "${_File_fp[${_File_l}]}" ]] && rm -f "${_File_fp[${_File_l}]}.lock" && \
-              ${_M} && _Trace 'Lock file removed. (%s)' "${_File_fp[${_File_l}]}.lock"
-          [[ -e "${_File_d}/${_File_fp[${_File_l}]##*/}.lock" ]] && rm -f "${_File_d}/${_File_fp[${_File_l}]##*/}.lock"
-          unset "_File_fp[${_File_l}]"
-          unset "_File_fd[${_File_l}]"
-        fi
-      done
-    fi
-
-    ${_M} && _Trace 'Close return. (%s)' 0
-    return 0
   fi
+
+  ${_M} && _Trace 'Check for flock.'
+  if ${ZSH} && ((${+commands[flock]})) || command -v flock &> /dev/null
+  then
+    for _File_l in "${_File_i[@]}"
+    do
+      if [[ -n "${_File_fd[${_File_l}]}" ]]
+      then
+        ${_M} && _Trace 'Remove flock. (%s)' "${_File_fd[${_File_l}]}"
+        if ${ZSH}
+        then
+          eval "exec {${_File_fd[${_File_l}]}}>&-"
+        else
+          eval "exec ${_File_fd[${_File_l}]}>&-"
+        fi
+        flock -u "${_File_fd[${_File_l}]}" && ${_M} && _Trace 'Unlocked. (%s)' "${_File_fd[${_File_l}]}"
+        unset "_File_fp[${_File_l}]"
+        unset "_File_fd[${_File_l}]"
+      fi
+    done
+  else
+    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
+    for _File_l in "${_File_i[@]}"
+    do
+      if [[ -n "${_File_fd[${_File_l}]}" ]]
+      then
+        ${_M} && _Trace 'Remove lock file. (%s)'  "${_File_fp[${_File_l}]}.lock"
+        if ${ZSH}
+        then
+          eval "exec {${_File_fd[${_File_l}]}}>&-"
+        else
+          eval "exec ${_File_fd[${_File_l}]}>&-"
+        fi
+        rm -f "${_File_fp[${_File_l}]}.lock" && ${_M} && _Trace 'Lock file removed. (%s)' "${_File_fp[${_File_l}]}.lock"
+        [[ -e "${_File_d}/${_File_fp[${_File_l}]##*/}.lock" ]] && rm -f "${_File_d}/${_File_fp[${_File_l}]##*/}.lock"
+        unset "_File_fp[${_File_l}]"
+        unset "_File_fd[${_File_l}]"
+      fi
+    done
+  fi
+
+  ${_M} && _Trace 'Close return. (%s)' 0
+  return 0
+}
+
+# Flush one (or more) open file IDs
+#
+# Syntax: Flush [-1..-9] [<filep_path>]
+#
+# Example: Flush -1
+#
+# Result: the file descriptor associated with the file ID is closed / reopened.
+#
+UICMD+=( 'Flush' )
+Flush () { #  [-0|-1..-9] [<file_path>]
+  ${_S} && ((_cFlush++))
+  ${_M} && _Trace 'Flush [(_File_ip="%s") %s]' "${_File_ip}" "${*}"
+
+  local _File_i; _File_i=( )
+
+  ${_M} && _Trace 'Process Flush options. (%s)' "${*}"
+  local _o
+  local OPTIND
+  local OPTARG
+  while getopts ':0123456789' _o
+  do
+    case ${_o} in
+      0)
+        ${_M} && _Trace 'File ID. (10)'
+        _File_i+=( 10 )
+        ;;
+
+      [1-9])
+        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_o}"
+        _File_i+=( "${_File_ip}${_o}" )
+        ;;
+
+      *)
+        Tell -E -f -L '(Flush) Option error. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+  ((0 < ${#})) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Flush) Called with a file ID and a file path.'
+  ((1 < ${#})) && Tell -E -f -L '(Flush) Called with multiple file paths.'
+
+  local _File_l
+
+  ${_M} && _Trace 'Check for file ID. (%s)' "${_File_i}"
+  if [[ -z "${_File_i}" ]]
+  then
+    ${_M} && _Trace 'Check for file path. (%s)' "${*}"
+    if ((${#}))
+    then
+      if ${ZSH}
+      then
+        for _File_l in "${(@)_File_fp}"
+        do
+          [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_fp[(ie)${_File_l}]}" )
+        done
+      else
+        for _File_l in "${!_File_fp[@]}"
+        do
+          [[ -n "${_File_l}" && "${1}" == "${_File_fp[${_File_l}]}" ]] && _File_i+=( "${_File_l}" )
+        done
+      fi
+    else
+      if ${ZSH}
+      then
+        for _File_l in "${(@)_File_fd}"
+        do
+          [[ -n "${_File_l}" ]] && _File_i+=( "${_File_fd[(ie)${_File_l}]}" )
+        done
+      else
+        _File_i=( "${!_File_fd[@]}" )
+      fi
+    fi
+  fi
+
+  for _File_l in "${_File_i[@]}"
+  do
+    if [[ -n "${_File_l}" ]]
+    then
+      if ${ZSH}
+      then
+        eval "exec {${_File_fd[${_File_l}]}}>&-"
+        eval "exec {${_File_fd[${_File_l}]}}>>'${_File_fp[${_File_l}]}'"
+      else
+        eval "exec ${_File_fd[${_File_l}]}>&-"
+        eval "exec ${_File_fd[${_File_l}]}>>'${_File_fp[${_File_l}]}'"
+      fi
+    fi
+  done
+
+  ${_M} && _Trace 'Flush return. (%s)' 0
+  return 0
 }
 
 # Get a file listing and load it into the array variable with the provided name

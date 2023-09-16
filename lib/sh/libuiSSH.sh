@@ -9,7 +9,7 @@
 #
 # Provides secure shell (ssh) utility commands.
 #
-# Man page available for this module: man 3 libuiSSH.sh
+# Man page available for this mod: man 3 libuiSSH.sh
 #
 #####
 #
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.5
+Version -r 1.833 -m 1.6
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
@@ -138,8 +138,11 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
   [[ -z "${_SSH_targets}" ]] && Tell -E '(SSHSend) No target provided.'
   ((1 > ${#})) && Tell -E '(SSHSend) No file provided.'
 
-  ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Tell -W 'No local SSH ID, password will be required to send file to %s.' "${_SSH_targets[*]}"
+  ${_M} && _Trace 'Check for SSH keys.'
+  local _SSH_id
+  GetFileList _SSH_id "${HOME}/.ssh/*.pub"
+  ((${#_SSH_id[@]})) || Warn 'No local SSH ID exists. Password will be required to send commands.'
+
 
   local _SSH_file; _SSH_file=( "${@}" )
   local _SSH_target

@@ -28,7 +28,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.5
+Version -r 1.834 1.6
 
 # load mods
 LoadMod File
@@ -49,7 +49,7 @@ strong="${Db}"
 emphasis="${Dsu}"
 retval=0
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddParameter -n files -m -r -k 'File' -d 'File to view.'
 
@@ -62,13 +62,14 @@ The mless script provides basic interpretation of markdown in a terminal
 environment using less. Due to the limited terminal environment, mless has
 limited capabilities including:
 
+  - Basic support for headers (up to 4 levels)
   - Support for emphasis and underlined text
   - Support for unordered lists
   - Basic support for ordered lists (up to 3 digits)
   - Basic support for block indents (up to 4 levels)
-  - Basic support for headers (up to 4 levels)
   - Basic support for backslash (\\) escapes
   - Removing (without supporting) HTML tags
+  - Removing doubled blank lines
 EOF
 }
 
@@ -125,10 +126,10 @@ do
   cat "${file}" | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/!{
         s/^\s{0,3}[\*_\-]\s*[\*_\-]\s*[\*_\-]\s*[\*_\-]*\s*$/${rule}/;
-        s/^#\s(.*)$/${heading1}\1${D}/;
-        s/^##\s(.*)$/${heading2}\1${D}/;
-        s/^###\s(.*)$/${heading3}\1${D}/;
-        s/^#####*\s(.*)$/${heading4}\1${D}/;
+        s/^#\s(.*)$/${heading1}\1${D}\n/;
+        s/^##\s(.*)$/${heading2}\1${D}\n/;
+        s/^###\s(.*)$/${heading3}\1${D}\n/;
+        s/^#####*\s(.*)$/${heading4}\1${D}\n/;
         s/\*\*([^\*]+)\*\*/${strong}\1${D}/g;
         s/__([^_]+)__/${strong}\1${D}/g;
         s/\*([^\*]+)\*/${emphasis}\1${D}/g;
@@ -142,6 +143,7 @@ do
         s/^>>\s/  |  |  /;
         s/^>\s/  |  /;
       }" | \
+      sed -E '/^\s*$/{N; /^\s*\n\s*$/s///}' | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/{/\`\`\`/d; s/^/    ${code}/; s/$/${D}/;}" | \
       sed -E 's/\\\\/\\/g' | \
       sed -E 's/\\([^\\])/\1/g' | \

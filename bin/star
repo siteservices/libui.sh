@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.2
+Version -r 1.834 1.3
 
 # load mods
 LoadMod File
@@ -46,10 +46,11 @@ retval=0
 GetTmp tmpdir
 sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
+AddOption -n verbose -f -k 'Verbose' -d 'Provide a verbose listing of file actions.' v
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
 AddParameter -n paths -m -i "." -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
 
@@ -84,7 +85,7 @@ InitCallback () {
     fi
 
     Trace 'Check for existing archive. (%s)' "${archive}"
-    ! Force && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -F (Force) to overwrite.'
+    ! Force && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -XF (Force) to overwrite.'
   fi
 
   Trace 'Check for extract. (%s)' "${extract}"
@@ -121,6 +122,7 @@ CreateArchive () { # <archive> <files> ...
 
   Trace 'Process files. (%s)' "${files[*]}"
   GetTmp -f tmp
+  exec 6>&1
   for file in "${files[@]}"
   do
     if [[ ! $(file -i "${file}") =~ .*(text|empty).* ]]
@@ -130,6 +132,7 @@ CreateArchive () { # <archive> <files> ...
     fi
     dirperms="$(stat -c '%a' "${file%/*}")"
     fileperms="$(stat -c '%a' "${file}")"
+    ${verbose} && Info 'Archiving %s' "${file}" >&6
     printf "${separatorfmt}" "${file}" "${dirperms}" "${fileperms}"
     if [[ -s "${file}" ]]
     then
@@ -138,6 +141,7 @@ CreateArchive () { # <archive> <files> ...
     fi
   done > "${tmp}"
   ((rv+=${?}))
+  exec 6>&-
 
   Trace 'Sign archive. (%s)' "${tmp}"
   ${sign} "${tmp}" | cut -d ' ' -f 1 >> "${tmp}"
@@ -204,6 +208,7 @@ ExtractArchive () { # <archive>
     Trace 'Process file info. (%s)' "${line}"
     [[ -z "${line}" ]] && break
     ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
+    ${verbose} && Info 'Extracting %s' "${fileinfo[((AO + 1))]}"
 
     Trace 'Process directory. (%s)' "${fileinfo[((AO + 1))]%/*}"
     if [[ ! -d "${fileinfo[((AO + 1))]%/*}" ]]

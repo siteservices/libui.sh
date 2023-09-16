@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.833 # Sun Aug 13 21:07:43 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Sat Sep 16 06:59:11 EDT 2023
 
 #####
 #
@@ -162,7 +162,7 @@ Version () { # [-m] [-r <required_libui_version>] <script_version>
 }
 
 # add option pattern
-_opt='CFhHNP:QVX:Y'
+_opt='hHX:'
 UICMD+=( 'AddOption' )
 AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] <option>[:]
   ${_init} || Tell -E -f -L '(AddOption) Must be called before Initialize.'
@@ -511,6 +511,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       [1-9])
         ${_T} && _Trace 'File ID. (%s)' "${_o}"
         _f="${_o}"
+        ${_vdb} && _t=true
         ;;
 
       a|c)
@@ -546,6 +547,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       l)
         ${_T} && _Trace 'File path. (%s)' "${OPTARG}"
         ${ZSH} && _l=${~OPTARG} || _l=${OPTARG}
+        ${_vdb} && _t=true
         ;;
 
       p)
@@ -575,7 +577,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
         ;;
 
       t)
-        ${_T} && _Trace 'Tee log file path. (%s)' "${OPTARG}"
+        ${_T} && _Trace 'Tee log output.'
         _t=true
         ;;
 
@@ -632,6 +634,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
 
           local _p
           local _x
+          local _z; ${TERMINAL} && [[ '(' != "${1:0:1}" ]] && _z='TERMINAL=true '
           while [[ 0 -ne ${_rv} && 0 -lt ${_r} ]]
           do
             ((_r--))
@@ -658,9 +661,10 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
               then
                 if ${ZSH}
                 then
-                  eval "TERMINAL=${TERMINAL} ${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
+                  eval "${_z}${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
                 else
-                  eval "TERMINAL=${TERMINAL} ${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
+                  _File_ip=${_p} Flush "-${_f}"
+                  eval "${_z}${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
                   ((0 > _pe)) && ((_pe--))
                 fi
               else
@@ -676,14 +680,14 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
               if ${_t}
               then
-                eval "TERMINAL=${TERMINAL} ${@} 2>&1 | tee -a '${_l}'${_b}"
+                eval "${_z}${@} 2>&1 | tee -a '${_l}'${_b}"
                 ((0 > _pe)) && ((_pe--))
               else
-                eval "TERMINAL=${TERMINAL} ${@}${_b}" >> "${_l}" 2>&1
+                eval "${_z}${@}${_b}" >> "${_l}" 2>&1
               fi
             else
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
-              eval "TERMINAL=${TERMINAL} ${@}${_b}"
+              eval "${_z}${@}${_b}"
             fi
 
             ${_m} && StopSpinner
@@ -1410,7 +1414,7 @@ Info () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>
   ${_S} && ((_cInfo++))
   ${_T} && _Trace 'Info [%s]' "${*}"
 
-  Tell -I "${@}"
+  Tell -I -n "${@}"
   local _rv=${?}
 
   ${_T} && _Trace 'Info return. (%s)' "${_rv}"
@@ -1453,7 +1457,6 @@ _Trace () { # [-I|-u] <message>
 
   if ${_hdb} || ${_tdb} || ${_udb} || ${_mdb}
   then
-    local _d=1
     local _I=false
     local _u=false
 
@@ -1469,7 +1472,6 @@ _Trace () { # [-I|-u] <message>
           ;;
 
         u) # user
-          ${ZSH} && _d=-1 || _d=0
           _u=true
           ;;
 
@@ -1512,10 +1514,16 @@ _Trace () { # [-I|-u] <message>
     then
       if ${ZSH}
       then
-        _c+="${functrace[${_d}]}: "
+        ${_u} && _c+="${funcfiletrace[2]##*/}|${functrace[2]##*/}: " || \
+            _c+="${funcfiletrace[1]##*/}|${functrace[1]##*/}: "
       else
-        local _t=( $(caller ${_d}) )
-        _c+="${_t[1]}:${_t[0]}: "
+        if ${_u}
+        then
+          local _t=( $(caller 1) )
+          _c+="${BASH_SOURCE[2]##*/}:${_t[0]}:${FUNCNAME[2]}: "
+        else
+          _c+="${BASH_SOURCE[1]##*/}:${BASH_LINENO[0]}:${FUNCNAME[1]}: "
+        fi
       fi
     fi
 
@@ -1538,6 +1546,7 @@ _Trace () { # [-I|-u] <message>
 _allowroot=false
 _confirm=false
 _force=false
+_help=false
 _init=true
 _initcallback=( )
 _multiuser=false
@@ -1562,6 +1571,7 @@ Initialize () {
   do
     if ${_p}
     then
+      [[ 1 -eq ${#_i} && '0123456789cCfFhHnNqQvVyY' =~ "${_i}" ]] && _p=false && continue
       _profile="${_i}"
       ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
       if [[ -f "${_profile}" ]]
@@ -1572,7 +1582,7 @@ Initialize () {
       fi
       break
     fi
-    [[ '-P' == "${_i}" ]] && _p=true
+    [[ '-X' == "${_i}" ]] && _p=true
   done
 
   ${_T} && _Trace 'Process initialize options. (%s)' "${_a[*]}"
@@ -1617,59 +1627,71 @@ Initialize () {
 
     ${_T} && _Trace 'Check for standard libui options. (%s)' "${_o}"
     case ${_o} in
-      C)
-        Confirm
-        ${_T} && _Trace 'Confirm operation.'
-        _confirm=true
-        CHFLAGS+='-C '
-        FMFLAGS='-i'
-        ;;
-
-      F)
-        ${_T} && _Trace 'Force operation.'
-        _force=true
-        CHFLAGS+='-F '
-        FMFLAGS='-f'
-        ;;
-
       h|H)
         ${_T} && _Trace 'Display usage.'
         _error=true
         ;;
 
-      N)
-        ${_T} && _Trace 'Perform no actions.'
-        _noaction=true
-        CHFLAGS+='-N '
-        ;;
-
-      P)
-        ${_T} && _Trace 'Profile. (%s)' "${OPTARG}"
-        _profile="${OPTARG}"
-        ;;
-
-      Q)
-        ${_T} && _Trace 'Quiet operation.'
-        _quiet=true
-        CHFLAGS+='-Q '
-        ;;
-
-      V)
-        LoadMod Info
-        Version
-        Exit 2
-        ;;
-
       X)
-        ${_T} && _Trace 'XDebug value. (%s)' "${OPTARG}"
-        [[ -z "${OPTARG//[0-9]}" ]] && _xdb="${OPTARG}" || Tell -E 'Invalid XDebug option value. (%s)' "${OPTARG}"
-        CHFLAGS+="-X ${_xdb} "
-        ;;
+        ${_T} && _Trace 'XOption value. (%s)' "${OPTARG}"
+        case ${OPTARG} in
+          [0-9])
+            ${_T} && _Trace 'XOption level.'
+            _xdb="${OPTARG}"
+            CHFLAGS+="-X ${_xdb} "
+            ;;
 
-      Y)
-        ${_T} && _Trace 'Provide "yes" response.'
-        _yes=true
-        CHFLAGS+='-Y '
+          c|C)
+            Confirm
+            ${_T} && _Trace 'Confirm operation.'
+            _confirm=true
+            CHFLAGS+='-X C '
+            FMFLAGS='-i'
+            ;;
+
+          f|F)
+            ${_T} && _Trace 'Force operation.'
+            _force=true
+            CHFLAGS+='-X F '
+            FMFLAGS='-f'
+            ;;
+
+          h|H)
+            ${_T} && _Trace 'Display debug help.'
+            _error=true
+            _help=true
+            ;;
+
+          n|N)
+            ${_T} && _Trace 'Perform no actions.'
+            _noaction=true
+            CHFLAGS+='-X N '
+            ;;
+
+          q|Q)
+            ${_T} && _Trace 'Quiet operation.'
+            _quiet=true
+            CHFLAGS+='-X Q '
+            ;;
+
+          v|V)
+            LoadMod Info
+            Version
+            Exit 0
+            ;;
+
+          y|Y)
+            ${_T} && _Trace 'Provide "yes" response.'
+            _yes=true
+            CHFLAGS+='-X Y '
+            ;;
+
+          *)
+            ${_T} && _Trace 'Profile. (%s)' "${OPTARG}"
+            _profile="${OPTARG}"
+            ;;
+
+        esac
         ;;
 
       \:)
@@ -2010,7 +2032,12 @@ Exit () { # [<return_value>]
   trap - ALRM #14
   trap - TERM #15
 
-  ${_wdb} && Verify -r '^[yY]' 'Debug wait. Exit? (%s)' "${_tmpdir}"
+  if ${_wdb}
+  then
+    Verify -r '^[yY]' 'Debug wait. Exit? (%s)' "${_tmpdir}"
+  else
+    ${TERMINAL} && ! ${_init} && ((_rv)) && [[ -t 0 && -d "${_tmpdir}" ]] && Verify -r '^[yY]' 'Error wait. Exit? (%s)' "${_tmpdir}"
+  fi
 
   ${_T} && _Trace 'Check for local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit"
   [[ -f "${IWD}/${LIBUI_HOOKPREFIX}exit" ]] && _Trace 'Source local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit" && source "${IWD}/${LIBUI_HOOKPREFIX}exit"
@@ -2271,7 +2298,7 @@ LIBUI_DOTFILE="${LIBUI_DOTFILE:-${HOME}/.libui}"
 
 # defaults
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_DOTFILE}/hook}"
-ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${ZSH_NAME:t}" || SHELL="${BASH_VERSION:+bash}"
+ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${commands[zsh]}" || SHELL="${BASH:-sh}"
 BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
 ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"

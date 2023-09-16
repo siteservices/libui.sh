@@ -1,5 +1,37 @@
 # Change Log
 
+## v1.834
+
+### New Features / Enhancements
+
+* Merge most libui options into XOptions: Confirm, Force, NoAction, Quiet, Yes.
+* Change libui -P \<file\> (Profile) option to a "-X \<file\>" profile XOption.
+* Change Action -t (Tee Log) from True / False flag to replacement for -l (Log).
+* Change Action log (-l) to tee log (-t) when verbose debug (-X 2+) is enabled.
+* Add libui File Flush command that closes / reopens a file descriptor to flush.
+* Split libui install options in to -i (Install) and -I (Install with Tests).
+* Add error exit wait for reviewing temp files / logs (if GetTmp is used).
+* Remove spurious "Working in" message from wssetup.
+* Add progress messages and -v (Verbose) to star.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Improve Action logging using the new Flush command.
+* Improve libui SSH mod "no ssh keys, password may be needed" report test.
+* Improve Trace location reporting.
+* Fix libui unify processing.
+* Tweak mless to remove double blank lines.
+
+### Incompatibilities
+
+* Change Action -t (Tee Log) from True / False flag to replacement for -l (Log).
+* Most libui options changed to XOptions: Confirm, Force, NoAction, Quiet, Yes.
+* Change libui -P \<file\> (Profile) option to a "-X \<file\>" profile XOption.
+* Change SHELL to include full path to shell instead of just the name.
+* Info is now "Tell -I -n" and no longer generates a trailing newline.
+
 ## v1.833
 
 ### New Features / Enhancements

@@ -10,9 +10,9 @@ test_Info () {
   local t="${TERMINAL}"
   TERMINAL=true
   _Terminal
-  LibuiPerformTest 'Info "Test 1."'
+  LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
   TERMINAL="${t}"
-  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}"
+  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}${TJBL}${TJBL}${TInfo}Test 2.${T}${TCEL}${TJBL}"
   return ${?}
 }
 

@@ -9,7 +9,7 @@
 #
 # Provides sort utility commands.
 #
-# Man page available for this module: man 3 libuiSort.sh
+# Man page available for this mod: man 3 libuiSort.sh
 #
 #####
 #

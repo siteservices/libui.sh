@@ -16,6 +16,6 @@ test_Y_Yes_Verify () {
 }
 
 # test setup
-_Test_opt+='-Y '
+_Test_opt+='-X Y '
 
 return 0

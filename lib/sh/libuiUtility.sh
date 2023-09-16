@@ -11,7 +11,7 @@
 #
 # Provides libui utility commands.
 #
-# Man page available for this module: man 3 libuiUtility.sh
+# Man page available for this mod: man 3 libuiUtility.sh
 #
 #####
 #

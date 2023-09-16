@@ -6,14 +6,14 @@
 #####
 
 test_Help () {
-  LibuiPerformTest 'libui -h'
+  LibuiPerformTest 'libui -X h'
   LibuiValidateTest -i ${?} 2 "${helptext}"
   return ${?}
 }
 
 # help compare text
 helptext="
-USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-h|-H|-N|-Q|-V|-Y] [-e <shells>] ... [-x <testopt>] ... [-P <file>] [-X <level>] [<param>]
+USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (config: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
@@ -34,15 +34,25 @@ USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-C|-F|-h|-H
   -U  Unify            - Unify environment by removing files already in COMMONROOT (or provided directory). (unify: false)
   -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
   -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
-  -C  Confirm          - Confirm operations before performing them. (confirm: false)
-  -F  Force            - Force file operations. (force: false)
   -H  Help             - Display usage message, also available with -h. (help: true)
-  -N  No Action        - Show operations without performing them. (noaction: false)
-  -P  Profile          - Load configuration profile. (file: )
-  -Q  Quiet            - Execute quietly. (quiet: false)
-  -V  Version          - Display version information. (version: false)
-  -X  XDebug           - Set debug level to specified level. (level: 0)
-  -Y  Yes              - Provide \"y\" or default answer to asked questions. (yes: false)
+  -X  XOption          - XOption info. (level: 0, confirm: false, force: false, noaction: false, quiet: false, yes: false, profile: )
+        0 - No debug actions.
+        1 - Verify before executing Exit handlers.
+        2 - Verbose actions.
+        3 - Local debugging.
+        5 - Profile with a timestamp in trace messages.
+        6 - Context debugging with file / function / line in trace messages.
+        7 - Remote debugging.
+        8 - Mod debugging.
+        9 - Library internals debugging.
+        c - Confirm Actions before performing them.
+        f - Force Actions.
+        h - Display this debug help.
+        n - Show but do not perform Actions.
+        q - Quiet operation.
+        v - Version information.
+        y - Answer all question with the default or \"yes\".
+        <file> - Profile configuration file to load.
 
   <param>              - Parameter: Name of the test to perform, package filename, or COMMONROOT directory. (param: )
 

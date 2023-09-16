@@ -1,17 +1,17 @@
 #!/usr/bin/env libui
 #####
 #
-# test_FMFLAGS_C
+# test_FMFLAGS_XC
 #
 #####
 
-test_FMFLAGS_C () {
+test_FMFLAGS_XC () {
   LibuiPerformTest 'Tell -- "${FMFLAGS}"'
   LibuiValidateTest ${?} 0 '-i'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-C '
+_Test_opt+='-X C '
 
 return 0

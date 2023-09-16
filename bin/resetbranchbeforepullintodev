@@ -38,7 +38,7 @@ Version -r 1.822 1.7
 
 # defaults
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n push -t -k "Skip Push" -d "Do not \\\"git push --force\\\" the reset branch back to origin." s
 

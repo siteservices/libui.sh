@@ -9,7 +9,7 @@
 #
 # Provides user information utility commands.
 #
-# Man page available for this module: man 3 libuiUser.sh
+# Man page available for this mod: man 3 libuiUser.sh
 #
 #####
 #
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.9
+Version -r 1.834 -m 1.10
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.user}"
@@ -194,7 +194,7 @@ _SetUserInfo () {
 
     ${_M} && _Trace 'Write user information dotfile. (%s)' "${userdotfile}"
     {
-      printf "#!/bin/%s\n##### User Information\n" "${SHELL:-zsh}"
+      printf "#!%s\n##### User Information\n" "${SHELL:-/bin/zsh}"
       printf 'userinfo=('
       printf " '%s'" "${userinfo[@]}"
       printf ' )\n'

@@ -47,7 +47,7 @@ LoadMod Workspace
 # defaults
 retval=0
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n change -f -k 'Change' -d 'Only change default workspace.' c
 AddParameter -r -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
@@ -143,7 +143,6 @@ Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
 Trace 'Move to WORKSPACE. (%s)' "${WORKSPACE}"
 pushd "${WORKSPACE}" > /dev/null
-Tell 'Working in: %s' "${WORKSPACE}"
 
 Trace 'Write workspace file. (%s)' "${WORKSPACE##*/}"
 Write_workspace && Alert 'Workspace file created. (%s)' "${WORKSPACE##*/}"

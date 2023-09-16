@@ -12,7 +12,7 @@ test_LoadProfile_File () {
 }
 
 # test setup
-_Test_opt+="-P '${TESTDIR}/test.profile' "
+_Test_opt+="-X '${TESTDIR}/test.profile' "
 printf '%s\n' "profile_data='Profile data loaded.'" > "${TESTDIR}/test.profile"
 
 return 0

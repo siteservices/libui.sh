@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 6, 2023
+.Dd August 21, 2023
 .Dt SHOWMODIFIEDDOTFILES 1
 .Os
 .Sh NAME
@@ -21,11 +21,10 @@
 .Nd Find dotfiles modified since being installed
 .Sh SYNOPSIS
 .Sy showmodifieddotfiles
-.Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl d Fl f Fl M Fl h Fl H
 .Op Fl r Ar <reference_directory>
 .Op Fl s Ar <source_directory>
-.Op Fl P Ar <file>
-.Op Fl X Ar <level>
+.Op Fl X Ar <option>
 .Sh DESCRIPTION
 Used to list dotfiles that have been modified since being installed.
 .Pp
@@ -37,11 +36,10 @@ The
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy showmodifieddotfiles
-.Op Fl d Fl f Fl M Fl C Fl F Fl H Fl h Fl N Fl Q Fl V Fl Y
+.Op Fl d Fl f Fl M Fl h Fl H
 .Op Fl r Ar <reference_directory>
 .Op Fl s Ar <source_directory>
-.Op Fl P Ar <file>
-.Op Fl X Ar <level>
+.Op Fl X Ar <option>
 .Ed
 .Pp
 Available command line options are:
@@ -90,36 +88,23 @@ user interface library.
 Standard command line options provided by the
 .Xr libui.sh 3
 library are:
-.Fl C
-(Confirm),
-.Fl F
-(Force),
-.Fl H
-or
 .Fl h
-(Help),
-.Fl N
-(No Action),
-.Fl P Ar <file>
-(Load Profile),
-.Fl Q
-(Quiet),
-.Fl V
-(Version),
-.Fl X Ar <level>
-(XDebug
-.Ar <level> ) ,
-and
-.Fl Y
-(Yes).
+or
+.Fl H
+(Help) and
+.Fl X Ar <option>
+(XOption).
+XOptions include Confirm, Force, NoAction, Quiet, Version, and Yes.
+They are enabled using the first letter of the option (lower or upper case) as
+.Ar <option> .
 Please see
 .Xr libui.sh 3
 for more information.
 .Pp
 Note: Option value defaults can be obtained by executing with the
-.Fl H
-or
 .Fl h
+or
+.Fl H
 (Help) option.
 .Sh FILES
 .Bl -tag -offset 4n -width 16n

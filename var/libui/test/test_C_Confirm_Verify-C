@@ -16,6 +16,6 @@ test_C_Confirm_Verify-C () {
 }
 
 # test setup
-_Test_opt+='-C '
+_Test_opt+='-X C '
 
 return 0

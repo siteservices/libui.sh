@@ -9,7 +9,7 @@
 #
 # Provides syslog utility commands.
 #
-# Man page available for this module: man 3 libuiSyslog.sh
+# Man page available for this mod: man 3 libuiSyslog.sh
 #
 #####
 #

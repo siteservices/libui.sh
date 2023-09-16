@@ -1,17 +1,17 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Force-F
+# test_Force-XF
 #
 #####
 
-test_Force-F () {
+test_Force-XF () {
   LibuiPerformTest 'Force'
   LibuiValidateTest ${?} 0
   return ${?}
 }
 
 # test setup
-_Test_opt+='-F '
+_Test_opt+='-X F '
 
 return 0

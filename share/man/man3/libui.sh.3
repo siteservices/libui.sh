@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 12, 2023
+.Dd September 4, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -77,22 +77,6 @@ Standard command line options provided by the
 .Nm
 library are:
 .Bl -tag -offset 4n -width 4n
-.It Fl C
-Confirm
-.Pp
-Confirm operations before performing them.
-.Pp
-This also sets
-.Sx ${FMFLAGS}
-to "\-i".
-.It Fl F
-Force
-.Pp
-Force file operations.
-.Pp
-This also sets
-.Sx ${FMFLAGS}
-to "\-f".
 .It Fl H
 Help
 .Pp
@@ -100,38 +84,8 @@ Display usage information.
 .Pp
 Note: This options is also available as
 .Fl h .
-.It Fl N
-No Action
-.Pp
-Show operations without performing them.
-.It Fl P Ar <file>
-Profile
-.Pp
-Load the configuration profile
-.Ar <file> .
-.Pp
-The configuration profile
-.Ar <file>
-is sourced prior to processing any options.
-This allows setting options--by assigning values to the associated
-variables--without using option flags on the command line.
-.It Fl Q
-Quiet
-.Pp
-Execute quietly.
-.Pp
-Do not prompt user with questions presented by the
-.Sx Ask ,
-.Sx Action ,
-or,
-.Sx Verify
-commands.
-.It Fl V
-Version
-.Pp
-Display version information.
 .It Fl X Ar <level>
-XDebug
+XOption
 .Ar <level>
 .Pp
 Set debug level to
@@ -141,38 +95,67 @@ When provided, the specified debug level and all lower levels are enabled.
 The levels are:
 .Pp
 .Bl -tag -offset 4n -width 4n  -compact
-.It Sy 9
-Library internals debugging enabled.
-.It Sy 8
-Mod debugging enabled.
-.It Sy 7
-Remote debugging enabled.
-.It Sy 6
-Context debugging enabled, i.e., provide user script file and line numbers in
-trace messages.
-.It Sy 5
-Profiling enabled, i.e., provide a timestamp in trace messages.
-.It Sy 3
-Local debugging enabled.
-.It Sy 2
-Verbose actions enabled.
+.It Sy 0
+No debug actions.
 .It Sy 1
 Wait debugging enabled.
 This will pause before executing any Exit handlers, i.e., before cleaning up.
-.El
-.It Fl Y
-Yes
-.Pp
-Provide "y" or default answer to questions defined by the
+.It Sy 2
+Verbose actions enabled.
+.It Sy 3
+Local debugging enabled.
+.It Sy 5
+Profiling enabled, i.e., provide a timestamp in trace messages.
+.It Sy 6
+Context debugging enabled, i.e., provide user script file and line numbers in
+trace messages.
+.It Sy 7
+Remote debugging enabled.
+.It Sy 8
+Mod debugging enabled.
+.It Sy 9
+Library internals debugging enabled.
+.It Sy c Ns No | Ns Sy C
+(Confirm) Confirm operations before performing them.
+This also sets
+.Sx ${FMFLAGS}
+to "\-i".
+.It Sy f Ns No | Ns Sy F
+(Force) Force file operations.
+This also sets
+.Sx ${FMFLAGS}
+to "\-f".
+.It Sy n Ns No | Ns Sy N
+(NoAction) Show operations without performing them.
+.It Sy q Ns No | Ns Sy Q
+(Quiet) Execute quietly.
+Do not prompt user with questions presented by the
 .Sx Ask ,
 .Sx Action ,
 or,
 .Sx Verify
 commands.
-.Pp
+.It Sy v Ns No | Ns Sy V
+(Version) Display version information.
+.It Sy y Ns No | Ns Sy Y
+(Yes) Provide the default answer or "yes" to questions defined by the
+.Sx Ask ,
+.Sx Action ,
+or,
+.Sx Verify
+commands.
 Note: Scripts executed without a TTY imply the
-.Fl Y
+.Fl XY
 (Yes) option.
+.It Sy <file>
+Load the configuration profile
+.Ar <file> .
+The configuration profile
+.Ar <file>
+is sourced prior to processing any options.
+This allows setting options--by assigning values to the associated
+variables--without using option flags on the command line.
+.El
 .El
 .Pp
 Option value defaults can be obtained by executing with the
@@ -1029,7 +1012,7 @@ a backslash (\e).
 .Pp
 Note: If local debugging is enabled using the
 .Fl X
-(XDebug) options, the
+(XOption) options, the
 .Ar <command_string_to_evaluate>
 will also be displayed just before evaluation.
 On color terminals (TTY), this text will be displayed using the
@@ -1428,7 +1411,7 @@ standard command line option for more information.
 The following command sends an info message to the user:
 .Bd -ragged -offset 4n
 .Sy Info
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl n Fl N
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl N
 .Op Fl l Ar <file_path>
 .Op Fl r Ar <return_value>
 .Ar <message>
@@ -1436,8 +1419,8 @@ The following command sends an info message to the user:
 .Pp
 Sends an "info" message to the user using the
 .Sx Tell
-.Fl -I
-(Info) command.
+.Fl -I -n
+(Info and No Newline) command.
 See the
 .Sx Tell
 command for more information.
@@ -1690,7 +1673,7 @@ script:
 .Pp
 If local debugging is enabled using the
 .Fl X
-(XDebug) options, the
+(XOption) options, the
 .Ar <message>
 will be displayed.
 On color terminals (TTY), this text will be displayed using the
@@ -1706,22 +1689,22 @@ In fact, the recommendation is that the Trace be used as a replacement for good
 comments.
 This will enable enhanced debugging when the
 .Fl X
-(XDebug) option is provided.
+(XOption) option is provided.
 .Ss Verbose
 The following command indicates if the
 .Fl X 2
-(Verbose XDebug) command line option was used with the main script:
+(Verbose XOption) command line option was used with the main script:
 .Bd -ragged -offset 4n
 .Sy Verbose
 .Ed
 .Pp
 Returns 0 (true) if the global
 .Fl X 2
-(Verbose XDebug) option (or higher XDebug value) was used with the main script,
+(Verbose XOption) option (or higher XOption value) was used with the main script,
 otherwise returns 1 (false).
 See the
 .Fl S
-(XDebug)
+(XOption)
 .Nm
 standard command line option and the
 .Sx DEBUGGING
@@ -1731,7 +1714,7 @@ The following command asks the user to verify a question and returns true (yes)
 or false (no):
 .Bd -ragged -offset 4n
 .Sy Verify
-.Op Fl C
+.Op Fl C Fl N Fl Y
 .Op Fl d Ar <default_answer>
 .Op Fl n Ar <variable_name>
 .Op Fl r Ar <required_regex>
@@ -1753,10 +1736,21 @@ Set the default answer to
 Save the answer to the
 .Ar <variable_name>
 variable.
+.It Fl N
+Set default answer to "no".
 .It Fl r Ar <required_regex>
 Require a response that matches the provided
 .Ar <required_regex>
 regular expression.
+.It Fl Y
+Set default answer to "yes".
+Note: This is the default if neither
+.Fl N
+(No),
+.Fl Y
+(Yes), or
+.Fl d Ar <default_answer>
+is provided.
 .El
 .Pp
 Display
@@ -1976,7 +1970,7 @@ The number of parameters provided on the command line.
 The name of the operating system.
 Typical values are Darwin, Linux, etc.
 .It Dv ${SHELL}
-The name of the shell being executed (limited to: zsh, bash, or sh).
+The path of the shell being executed (limited to: zsh, bash, or sh).
 .It Dv ${SHLIBPATH}
 The shell library path.
 Set by default to the directory where
@@ -2389,7 +2383,7 @@ to debug output when debugging is enabled.
 .Pp
 Normal script debugging can be enabled using the
 .Fl X Ar <level>
-(XDebug) options.
+(XOption) options.
 See the
 .Sx STANDARD OPTIONS
 section above for more information.

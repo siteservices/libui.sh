@@ -53,7 +53,7 @@ GetTmp tmpdir
 failure=false
 processed=false
 
-##### options - libui already uses options C, F, H, h, N, P, Q, V, X:, Y
+##### options - libui already uses options h, H, X:
 
 AddOption -n gitstatus -f -k 'Status' -d 'Display repo git status.' s
 AddParameter -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
@@ -97,7 +97,6 @@ Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
 GetFileList -e recipes "*/${recipefile}"
 Trace 'Process projects. (%s)' "${recipes}"
-Verbose && mode='-t' || mode='-s'
 for recipe in "${recipes[@]}"
 do
   project="${recipe%/*}"
@@ -111,7 +110,7 @@ do
       if [[ -e '.git' ]]
       then
         Trace 'Pull latest updates. (%s)' "${project}"
-        Action -i "Pulling latest updates. (${project})" -c ${mode} -l "${tmpdir}/${project}-pull.log" 'git pull'
+        Action -i "Pulling latest updates. (${project})" -c -l "${tmpdir}/${project}-pull.log" 'git pull'
 
         Trace 'Check for status. (%s)' "${gitstatus}"
         if ${gitstatus}
@@ -129,7 +128,7 @@ do
       if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
       then
         Trace 'Build project. (%s)' "${project}"
-        if Action -q "Build project? (${project})" -i "Building project. (${project})" -c ${mode} -l "${tmpdir}/${project}-build.log" "source ${recipefile}"
+        if Action -q "Build project? (${project})" -i "Building project. (${project})" -c -l "${tmpdir}/${project}-build.log" "source ${recipefile}"
         then
           processed=true
           Alert 'Project %s has been updated.' "${project}"

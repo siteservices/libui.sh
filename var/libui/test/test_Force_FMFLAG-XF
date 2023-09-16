@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Force_FMFLAG-XF
+#
+#####
+
+test_Force_FMFLAG-XF () {
+  LibuiPerformTest 'Tell "Test force -X F FMFLAGS: %s." "${FMFLAGS}"'
+  LibuiValidateTest ${?} 0 'Test force -X F FMFLAGS: -f.'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X F '
+
+return 0
