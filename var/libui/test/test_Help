@@ -13,7 +13,7 @@ test_Help () {
 
 # help compare text
 helptext="
-USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <file>] [<param>]
+USAGE: libui [-c|-d|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (config: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
