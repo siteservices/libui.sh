@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.834 -m 1.5
+Version -r 1.834 -m 1.6
 
 # defaults
 
@@ -82,7 +82,7 @@ UsageInfo () {
       printf ']'
     fi
     _opf+=( X )
-    _oavar+=( file level )
+    _oavar+=( option )
     _UsageInfo_i="${AO}"
     for _UsageInfo_p in "${_opf[@]}"
     do
