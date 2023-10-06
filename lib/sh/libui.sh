@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.834 # Sat Sep 16 06:59:11 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Fri Oct  6 19:27:52 EDT 2023
 
 #####
 #
@@ -1154,8 +1154,8 @@ AnswerMatches () { # [-r] <answer_match_string>
   then
     [[ "${ANSWER}" =~ ${_m} ]] && _rv=0
   else
-    ${ZSH} && _m="${_m:l}"; ((40 <= BV)) && _m="${_m,,}"
-    local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${_a:l}"; ((40 <= BV)) && _a="${_a,,}"
+    ${ZSH} && _m="${(L)_m}"; ((40 <= BV)) && _m="${_m,,}"
+    local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((40 <= BV)) && _a="${_a,,}"
     [[ -n "${_m}" && "${_m}" == "${_a}" ]] && _rv=0
   fi
   ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${ANSWER}" "${_m}" "${_rv}"
@@ -1535,7 +1535,7 @@ _Trace () { # [-I|-u] <message>
     then
       printf "${DTrace}"
       ${_pdb} && printf '+%s:' "${SECONDS}"
-      printf "%s${_s}${D}${DCEL}\n" "${_c}" "${_p[@]}"
+      ${ZSH} && printf "%s${_s}${D}${DCEL}\n" "${_c}" "${(V)_p[@]}" || printf "%s${_s}${D}${DCEL}\n" "${_c}" "${_p[@]}"
     fi
   fi
 
@@ -2312,12 +2312,22 @@ SHLIBPATH="${SHLIBPATH:-${LIBUI%/*}}"
 DOMAIN="${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}"
 [[ 'local' == "${DOMAIN}" ]] && DOMAIN=
 DOMAIN="${DOMAIN:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)}"
-${ZSH} && DOMAIN="${(L)DOMAIN}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
+if ${ZSH}
+then
+  DOMAIN="${(L)DOMAIN}"
+else
+  ((40 <= BV)) && DOMAIN="${DOMAIN,,}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
+fi
 HOST="${HOST:-${HOSTNAME}}"
 HOST="${HOST:-$(hostname -s 2> /dev/null)}"
 HOST="${HOST:-$(uname -n 2> /dev/null)}"
 HOST="${HOST%\.*}"
-${ZSH} && HOST="${(L)HOST}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
+if ${ZSH}
+then
+  HOST="${(L)HOST}"
+else
+  ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
+fi
 OS="${OS:-$(uname -s)}"
 TMPDIR="${TMPDIR:-/tmp}"
 MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647

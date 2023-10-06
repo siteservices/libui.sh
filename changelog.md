@@ -1,5 +1,27 @@
 # Change Log
 
+## v1.835
+
+### New Features / Enhancements
+
+* Add -c (Change Directory) option to GetFileList in libui File mod.
+* Improve libui Package mod default self-extracting header.
+* Update star to allow ascii files (e.g. xml files).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix file unlocking in Close in libui File mod (zsh).
+* Fix filename quoting in liubi Package mod and createpackage.
+* Fix IsTarget in libui SSH mod when uppercase target provided.
+* Fix second libui SSH mod "no ssh keys, password may be needed" report test.
+
+### Incompatibilities
+
+* The libui Package mod CreatePackage no longer moves to the source directory.
+* Change wssetup -c (Change) to -d (Default).
+
 ## v1.834
 
 ### New Features / Enhancements

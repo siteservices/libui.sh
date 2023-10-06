@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.834 -m 1.9
+Version -r 1.835 -m 1.10
 
 ##### configuration
 
@@ -705,6 +705,7 @@ LibuiPackage () {
   GetRealPath -P _Util_package
   LoadMod Package
 
+  ${_M} && _Trace 'Change directory. (%s)' "${_Util_libuiroot}"
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"

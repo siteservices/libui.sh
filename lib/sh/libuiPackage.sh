@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.15
+Version -r 1.835 -m 1.16
 
 # defaults
 
@@ -122,43 +122,45 @@ _CreatePackageHeader () { # [-a|-P|-S|-T] [-d <description>] [-e <environment_sp
     return ${ERRV}
   else
     ${_M} && _Trace 'Generate self-extracting package header. (%s)' "${1}"
-    cat <<EOF > "${1}"
-#!/bin/zsh
+    local _Package_head="#!/bin/zsh
 #####
 #
-#	${_Package_desc} (${_Package_archive}p)
+#	${_Package_desc} (${1##*/})
 #	Created by: ${USER}@${HOST}.${DOMAIN}
 #		on: $(date | sed 's/  / /g')
 #
-# use -e to extract archive file
+#	Install with 'zsh ${1##*/}'; add '-h' for help or '-e' to extract archive file.
 #####
 
 # startup
-printf 'Preparing...'
-error () { printf 'Self-extract failure.\n'; exit 1; }
-l=\$(head -n 35 "\${0}" | tail -n 1) && [ '__PAYLOAD__' = "\${l}" ] || error
+error () { printf 'Self-extract failure.\\\n'; exit 1; }
+l=\\\$(head -n \$((_Package_headlen - 1)) \\\"\\\${0}\\\" | tail -n 1) && [ '__PAYLOAD__' = \\\"\\\${l}\\\" ] || error
 
 # extract installer
-t="\$(mktemp -d)" || error
-a="\${0##*/}"; a="\${t}/\${a%\\.*}.${_Package_archive}"
-tail -n +36 "\${0}" > "\${a}"
-[ "\${1}" = '-e' ] && mv "\${a}" ./ && rmdir "\${t}" && exit 0
-d="\${t}/a"
-mkdir "\${d}" || error
-cd "\${d}" > /dev/null
-${_Package_unarchive} "\${a}" 2>&1 > /dev/null || error
+t=\\\"\\\$(mktemp -d)\\\" || error
+a=\\\"\\\${0##*/}\\\"; a=\\\"\\\${t}/\\\${a%\\\\\\.*}.\${_Package_archive}\\\"
+[ \\\"\\\${1}\\\" = '-h' ] && printf '%s\\\n' \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\\"\\\"\\\${a}\\\\"\\\"'.\\\" && exit 0
+printf 'Preparing...'
+tail -n +\${_Package_headlen} \\\"\\\${0}\\\" > \\\"\\\${a}\\\"
+[ \\\"\\\${1}\\\" = '-e' ] && mv \\\"\\\${a}\\\" ./ && rmdir \\\"\\\${t}\\\" && exit 0
+d=\\\"\\\${t}/a\\\"
+mkdir \\\"\\\${d}\\\" || error
+cd \\\"\\\${d}\\\" > /dev/null
+\${_Package_unarchive} \\\"\\\${a}\\\" 2>&1 > /dev/null || error
 cd - > /dev/null
 
 # run installer
-sh="\${ZSH_NAME:t}"; sh=\${sh:-bash}
-${_Package_env:+${_Package_env} }${_Package_installer} \${@}${_Package_append}
+sh=\\\"\\\${ZSH_NAME:t}\\\"; sh=\\\${sh:-bash}
+\${_Package_env:+\${_Package_env} }\${_Package_installer} \\\${@}\${_Package_append}
 
 # done
-rm -rf "\${t}"
+rm -rf \\\"\\\${t}\\\"
 exit 0
 
-${_Package_null}__PAYLOAD__
-EOF
+\${_Package_null}__PAYLOAD__
+"
+    local _Package_headlen=$(wc -l <<<"${_Package_head}")
+    eval "printf '%s' \"${_Package_head}\" > '${1}'"
 
     ${_M} && _Trace '_CreatePackageHeader return. (%s)' 0
     return 0
@@ -169,7 +171,7 @@ EOF
 #
 # Syntax: CreatePackage [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_var_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_var_name>] <package_filename>
 #
-# Example: CreatePackage -f filelist -s ''/source/dir' package.tarp
+# Example: CreatePackage -f filelist -s '/source/dir' package.tarp
 #
 # Result: Creates a package.tarp package containing the files in the filelist array from the /source/dir directory.
 #
@@ -325,12 +327,6 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
       fi
     fi
 
-    ${_M} && _Trace 'Check for source directory. (%s)' "${_Package_srcdir}"
-    [[ -d ${_Package_srcdir} ]] || Tell -E 'The source directory does not exist. (%s)' "${_Package_srcdir}"
-
-    ${_M} && _Trace 'Change directory to source. (%s)' "${_Package_srcdir}"
-    pushd ${_Package_srcdir} > /dev/null
-
     ${_M} && _Trace 'Check if listing files. (%s)' "${_Package_list}"
     if ${_Package_list}
     then
@@ -360,15 +356,6 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
             fi
           done
         fi
-#        if [[ 0 -eq ${#_Package_glob[@]} || ! ${_Package_exclude} =~ .*/.* ]]
-#        then
-#          if ${ZSH}
-#          then
-#            _Package_excludes=( "${(@)_Package_excludes:#${_Package_exclude}}" )
-#          else
-#            _Package_excludes=( "${_Package_excludes[@]/${_Package_exclude}}" )
-#          fi
-#        fi
       done
       ${_M} && _Trace 'List files. (%s)' "${_Package_files[*]}"
       Tell 'Source Directory:'
@@ -397,7 +384,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -T -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -T -s '${_Package_srcdir}' -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         Action -q "Append tar archive to package ${_Package_package}?" "cat '${_Package_tarball}' >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"
@@ -410,7 +397,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
         Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s '${_Package_srcdir}' -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         if [[ 'Darwin' == "${OS}" ]]
         then
           Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
@@ -429,7 +416,7 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
         Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -P -s ${_Package_srcdir} -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -P -s '${_Package_srcdir}' -d '${_Package_desc}' -e '${_Package_env}' -i '${_Package_installer}' ${_Package_append} '${_Package_package}'"
         Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive.' "star -c . >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created starp package: %s' "${_Package_package}"
@@ -439,7 +426,6 @@ CreatePackage () { # [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [
         Action -q 'Rename tar archive to package?' "mv ${FMFLAGS} '${_Package_tarball}' '${_Package_package}'"
       fi
     fi
-    popd > /dev/null
 
     ${_M} && _Trace 'CreatePackage return. (%s)' "${_Package_rv}"
     return ${_Package_rv}

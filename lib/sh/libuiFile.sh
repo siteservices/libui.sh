@@ -112,6 +112,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
   fi
 
   ${_M} && _Trace 'Check for flock.'
+  local _File_x
   if ${ZSH} && ((${+commands[flock]})) || command -v flock &> /dev/null
   then
     for _File_l in "${_File_i[@]}"
@@ -119,13 +120,14 @@ Close () { #  [-0|-1..-9] [<file_path>]
       if [[ -n "${_File_fd[${_File_l}]}" ]]
       then
         ${_M} && _Trace 'Remove flock. (%s)' "${_File_fd[${_File_l}]}"
+        flock -u "${_File_fd[${_File_l}]}" && ${_M} && _Trace 'Unlocked. (%s)' "${_File_fd[${_File_l}]}"
         if ${ZSH}
         then
-          eval "exec {${_File_fd[${_File_l}]}}>&-"
+          _File_x=${_File_fd[${_File_l}]}
+          eval "exec {_File_x}>&-"
         else
           eval "exec ${_File_fd[${_File_l}]}>&-"
         fi
-        flock -u "${_File_fd[${_File_l}]}" && ${_M} && _Trace 'Unlocked. (%s)' "${_File_fd[${_File_l}]}"
         unset "_File_fp[${_File_l}]"
         unset "_File_fd[${_File_l}]"
       fi
@@ -139,7 +141,8 @@ Close () { #  [-0|-1..-9] [<file_path>]
         ${_M} && _Trace 'Remove lock file. (%s)'  "${_File_fp[${_File_l}]}.lock"
         if ${ZSH}
         then
-          eval "exec {${_File_fd[${_File_l}]}}>&-"
+          _File_x=${_File_fd[${_File_l}]}
+          eval "exec {_File_x}>&-"
         else
           eval "exec ${_File_fd[${_File_l}]}>&-"
         fi
@@ -198,6 +201,7 @@ Flush () { #  [-0|-1..-9] [<file_path>]
   ((1 < ${#})) && Tell -E -f -L '(Flush) Called with multiple file paths.'
 
   local _File_l
+  local _File_x
 
   ${_M} && _Trace 'Check for file ID. (%s)' "${_File_i}"
   if [[ -z "${_File_i}" ]]
@@ -236,8 +240,10 @@ Flush () { #  [-0|-1..-9] [<file_path>]
     then
       if ${ZSH}
       then
-        eval "exec {${_File_fd[${_File_l}]}}>&-"
-        eval "exec {${_File_fd[${_File_l}]}}>>'${_File_fp[${_File_l}]}'"
+        # is this close / open needed in zsh?
+        _File_x=${_File_fd[${_File_l}]}
+        eval "exec {_File_x}>&-"
+        eval "exec ${_File_fd[${_File_l}]}>>'${_File_fp[${_File_l}]}'"
       else
         eval "exec ${_File_fd[${_File_l}]}>&-"
         eval "exec ${_File_fd[${_File_l}]}>>'${_File_fp[${_File_l}]}'"
@@ -251,7 +257,7 @@ Flush () { #  [-0|-1..-9] [<file_path>]
 
 # Get a file listing and load it into the array variable with the provided name
 #
-# Syntax: GetFileList [-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification>
+# Syntax: GetFileList |-c[-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification>
 #
 # Example: GetFileList -r *.cpp
 #
@@ -259,10 +265,11 @@ Flush () { #  [-0|-1..-9] [<file_path>]
 # directory and its subdirectories.
 #
 UICMD+=( 'GetFileList' )
-GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
+GetFileList () { # |-c[-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
   ${_S} && ((_cGetFileList++))
   ${_M} && _Trace 'GetFileList [%s]' "${*}"
 
+  local _File_c
   local _File_d=false
   local _File_e=false
   local _File_f=false
@@ -353,9 +360,14 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':defhnprw' _o
+  while getopts ':c:defhnprw' _o
   do
     case ${_o} in
+      c)
+        ${_M} && _Trace 'Change directory. (%s)' "${OPTARG}"
+        _File_c="${OPTARG}"
+        ;;
+
       d)
         ${_M} && _Trace 'Directories only.'
         _File_d=true
@@ -421,10 +433,15 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
   [[ -z "${_File_x}" ]] && Tell -E '(GetFileList) Called without a file specification.'
 
   ${_M} && _Trace 'Build file list. (%s)' "${_File_x[*]}"
+  if [[ -n "${_File_c}" ]]
+  then
+    [[ -d "${_File_c}" ]] && cd "${_File_c}" &> /dev/null || Error 'Unable to change directory. (%s)' "${_File_c}"
+  fi
   ${_File_d} && _File_g='/'
   ${_File_f} && _File_g='.'
   for _File_s in "${_File_x[@]}"
   do
+    [[ -n "${_File_c}" ]] && _File_s="${_File_s#${PWD}/}"
     ${_M} && _Trace 'Process file specification. (%s)' "${_File_s}"
     if ${ZSH}
     then
@@ -469,6 +486,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
     done
   fi
   eval "${_File_v}=( \"\${_File_l[@]}\" )"
+  [[ -n "${_File_c}" ]] && cd - &> /dev/null
 
   ${_M} && _Trace 'GetFileList return. (%s)' "${_File_rv}"
   return ${_File_rv}

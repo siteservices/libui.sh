@@ -36,7 +36,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.4
+Version -r 1.835 1.5
 
 # load mods
 LoadMod File
@@ -49,7 +49,7 @@ retval=0
 
 ##### options - libui already uses options h, H, X:
 
-AddOption -n change -f -k 'Change' -d 'Only change default workspace.' c
+AddOption -n default -f -k 'Default' -d 'Only change default workspace.' d
 AddParameter -r -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
 
 ##### callbacks
@@ -148,8 +148,8 @@ Trace 'Write workspace file. (%s)' "${WORKSPACE##*/}"
 Write_workspace && Alert 'Workspace file created. (%s)' "${WORKSPACE##*/}"
 ((retval+=${?}))
 
-Trace 'Check if only changing default. (%s)' "${change}"
-if ! ${change}
+Trace 'Check if only changing default. (%s)' "${default}"
+if ! ${default}
 then
   Trace 'Write workspace environment. (%s)' "${WORKSPACE##*/}"
   Write_wsenv && Alert 'Workspace environment created. (%s)' "${WORKSPACE##*/}"

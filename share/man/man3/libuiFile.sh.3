@@ -36,7 +36,9 @@ user interface library
 .Pp
 .Sy GetFileList
 .Op Fl d Fl e Fl f Fl h Fl n Fl p Fl r Fl w
-.Ar <variable_name> <file_specification> ...
+.Op Fl c Ar <directory_path>
+.Ar <variable_name>
+.Op Ar <file_specification> ...
 .Pp
 .Sy GetRealPath
 .Op Fl P Fl v
@@ -162,11 +164,24 @@ specification to the named array variable:
 .Bd -ragged -offset 4n
 .Sy GetFileList
 .Op Fl d Fl e Fl f Fl h Fl n Fl p Fl r Fl w
-.Ar <variable_name> <file_specification> ...
+.Op Fl c Ar <directory_path>
+.Ar <variable_name>
+.Op Ar <file_specification> ...
 .Ed
 .Pp
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
+.It Fl c
+Change directory to the provided
+.Ar <directory_path>
+directory prior to getting the file list.
+This effectively makes the list relative to the
+.Ar <directory_path> .
+Note: If the
+.Ar <file_specification>
+provided is not under the
+.Ar <directory_path> ,
+the file list will include absolute paths.
 .It Fl d
 Match directories only.
 .It Fl e

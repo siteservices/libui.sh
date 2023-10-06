@@ -417,6 +417,7 @@ non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is
 used. The file specification can be further refined with the option flags to
 limit the array results to:
 
+* **-c** - change directory before capturing list
 * **-d** - directories only
 * **-e** - generate an error if the list collected is empty
 * **-f** - files only
