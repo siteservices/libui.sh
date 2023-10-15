@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.835 1.4
+Version -r 1.835 2.0
 
 # load mods
 LoadMod File
@@ -39,9 +39,8 @@ LoadMod File
 ##### configuration
 
 # defaults
-separatorfmt='===== file:%s:%s:%s:file =====\n'
-separatorregex='^===== file:([^:]*):([^:]*):([^:]*):file =====$'
-groupmode='g+w'
+ts=$(date +%s)
+groupmode='g+wX'
 retval=0
 GetTmp tmpdir
 sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
@@ -50,6 +49,7 @@ sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /
 
 AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
+AddOption -n group -f -k 'Group' -d 'Make created files / directories group writable.' g
 AddOption -n verbose -f -k 'Verbose' -d 'Provide a verbose listing of file actions.' v
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
 AddParameter -n paths -m -i "." -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
@@ -109,8 +109,11 @@ CreateArchive () { # <archive> <files> ...
   local files; files=( )
   local fileperms
   local list
+  local prefix
   local rv=0
+  local timestamp
   local tmp
+  local ts="$(date +%s)"
 
   Trace 'Get file listing. (%s)' "${*}"
   for file in "${@}"
@@ -130,21 +133,23 @@ CreateArchive () { # <archive> <files> ...
       Caution 'File may not be text. Skipping. (%s)' "${file}"
       continue
     fi
-    dirperms="$(stat -c '%a' "${file%/*}")"
-    fileperms="$(stat -c '%a' "${file}")"
+    [[ '/' == "${file:0:1}" ]] && prefix='.' || prefix=
+    [[ 'Darwin' == "${OS}" ]] && dirperms="$(stat -f '%A' "${file%/*}")" || dirperms="$(stat -c '%a' "${file%/*}")"
+    [[ 'Darwin' == "${OS}" ]] && fileperms="$(stat -f '%A' "${file}")" || fileperms="$(stat -c '%a' "${file}")"
+    timestamp="$(date +%s -r "${file}")"
     ${verbose} && Info 'Archiving %s' "${file}" >&6
-    printf "${separatorfmt}" "${file}" "${dirperms}" "${fileperms}"
+    printf '===== file:%s:%s:%s:%s:file %s =====\n' "${prefix}${file}" "${dirperms}" "${fileperms}" "${timestamp}" "${ts}"
     if [[ -s "${file}" ]]
     then
       cat "${file}"
       [[ "$(tail -c 1 "${file}")" == '' ]] || printf '\n'
     fi
-  done > "${tmp}"
+  done >> "${tmp}"
   ((rv+=${?}))
   exec 6>&-
 
   Trace 'Sign archive. (%s)' "${tmp}"
-  ${sign} "${tmp}" | cut -d ' ' -f 1 >> "${tmp}"
+  printf '===== %s %s =====\n' "$(${sign} "${tmp}" | cut -d ' ' -f 1)" "${ts}" >> "${tmp}"
   ((rv+=${?}))
 
   Trace 'Write archive. (%s)' "${archive}"
@@ -168,6 +173,8 @@ ExtractArchive () { # <archive>
   local fileinfo
   local line
   local rv=0
+  local signature
+  local ts
 
   Trace 'Open archive file descriptor. (%s)' "${file}"
   if [[ -z "${archive}" || '-' == "${archive}" ]]
@@ -180,14 +187,15 @@ ExtractArchive () { # <archive>
   Trace 'Validate archive. (%s)' "${archive}"
   GetTmp -f file
   head -n -1 <&8 > "${file}"
-  [[ $(tail -1 "${archive}") == $(${sign} "${file}" | cut -d ' ' -f 1) ]] || \
+  ts=( $(tail -1 "${archive}") ); signature="${ts[2]}"; ts="${ts[3]}"
+  [[ "${signature}" == $(${sign} "${file}" | cut -d ' ' -f 1) ]] || \
       Error 'Unable to extract files, archive is corrupt.'
 
   Trace 'Find initial separator.'
   exec 8< "${file}"
   while IFS= read -r line
   do
-    [[ "${line}" =~ ${separatorregex} ]] && break
+    [[ "${line}" =~ ^=====\ file:([^:]*):([^:]*):([^:]*):([^:]*):file\ ${ts}\ =====$ ]] && break
   done <&8
   ((rv+=${?}))
 
@@ -199,7 +207,8 @@ ExtractArchive () { # <archive>
     then
       Trace 'Set permissions. (%s)' "${fileinfo[((AO + 3))]}"
       Action "chmod '${fileinfo[((AO + 3))]}' '${fileinfo[((AO + 1))]}'" || return 1
-      Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'" || return 1
+      ${group} && Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'"
+      Action "touch -d '@${fileinfo[((AO + 4))]}' '${fileinfo[((AO + 1))]}'"
 
       Trace 'Close file. (%s)' "${fileinfo[((AO + 1))]}"
       exec 9>&-
@@ -214,7 +223,7 @@ ExtractArchive () { # <archive>
     if [[ ! -d "${fileinfo[((AO + 1))]%/*}" ]]
     then
       Action "mkdir -p -m '${fileinfo[((AO + 2))]}' '${fileinfo[((AO + 1))]%/*}'" || return 1
-      Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]%/*}'" || return 1
+      ${group} && Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]%/*}'"
     fi
 
     Trace 'Create new file. (%s)' "${fileinfo[((AO + 1))]}"
@@ -223,7 +232,7 @@ ExtractArchive () { # <archive>
     Trace 'Copy until separator.'
     while IFS= read -r line
     do
-      [[ "${line}" =~ ${separatorregex} ]] && break
+      [[ "${line}" =~ ^=====\ file:([^:]*):([^:]*):([^:]*):([^:]*):file\ ${ts}\ =====$ ]] && break
       printf '%s\n' "${line}"
     done <&8 >&9
     ((rv+=${?}))

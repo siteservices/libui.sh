@@ -417,7 +417,7 @@ non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is
 used. The file specification can be further refined with the option flags to
 limit the array results to:
 
-* **-c** - change directory before capturing list
+* **-c** - cd to provided directory before capturing list
 * **-d** - directories only
 * **-e** - generate an error if the list collected is empty
 * **-f** - files only
@@ -428,7 +428,7 @@ limit the array results to:
 * **-w** - generate a warning if the list collected is empty
 
 ```
-GetFileList [-d|-e|-f|-n|-p|-r|-w] <variable_name> <file_specification> ...
+GetFileList [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <variable_name> <file_specification> ...
 ```
 
 ### GetRealPath (man libuiFile.sh) - Get the real, absolute path for a file.
@@ -518,13 +518,13 @@ initialization callbacks are also called.
 Initialize
 ```
 
-### IsTarget (man libuiSSH.sh) - Performs checks to confirm target is remote.
+### IsRemote (man libuiSSH.sh) - Performs checks to confirm target is remote.
 
-Performs some basic checks on the provided remote target name to ensure it is
-a valid host and not the localhost.
+Performs some basic checks on the provided host name to ensure it is a valid
+remote host and not the localhost.
 
 ```
-IsTarget <target>
+IsRemote <target>
 ```
 
 ### ListPackage (man libuiPackage.sh) - List the contents of a package.

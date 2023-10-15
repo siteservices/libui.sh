@@ -27,24 +27,24 @@
 #
 #####
 
-Version -r 1.835 -m 1.7
+Version -r 1.835 -m 1.8
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
 
 # Is Target
 #
-# Syntax: IsTarget <target>
+# Syntax: IsRemote <target>
 #
-# Example: IsTarget alpha
+# Example: IsRemote alpha
 #
 # Result: Returns true if alpha is a valid target (and not localhost), otherwise
 # returns false.
 #
-UICMD+=( 'IsTarget' )
-IsTarget () { # <target>
-  ${_S} && ((_cIsTarget++))
-  ${_M} && _Trace 'IsTarget [%s]' "${*}"
+UICMD+=( 'IsRemote' )
+IsRemote () { # <target>
+  ${_S} && ((_cIsRemote++))
+  ${_M} && _Trace 'IsRemote [%s]' "${*}"
 
   local _SSH_target
   if ${ZSH}
@@ -61,7 +61,7 @@ IsTarget () { # <target>
   [[ "${HOST}" == "${_SSH_target}" ]] && return 1
   [[ "${HOST}.${DOMAIN}" == "${_SSH_target}" ]] && return 1
 
-  ${_M} && _Trace 'IsTarget return. (%s)' 0
+  ${_M} && _Trace 'IsRemote return. (%s)' 0
   return 0
 }
 

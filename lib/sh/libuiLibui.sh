@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.835 -m 1.10
+Version -r 1.835 -m 1.11
 
 ##### configuration
 
@@ -56,7 +56,7 @@ _Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/var/libui/test}"
 _Util_libuivar="${_Util_libuiroot}/var/libui"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
 _Util_installer='${sh} ${d}/lib/sh/libui'
-_Util_groupmode='g+w'
+_Util_groupmode='g+wX'
 _Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
 _Util_configfile="${LIBUI_DOTFILE}/libui.conf"
 _Util_dcprefix="${LIBUI_DOTFILE}/display-"
@@ -129,6 +129,7 @@ _LibuiSetup () {
   AddOption -n config -f -k 'Config' -d 'Create default configuration file "${_Util_configfile}".' c
   AddOption -n demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
   AddOption -n shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
+  AddOption -n group -f -k 'Group' -d 'Make installed files / directories group writable.' g
   AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
   AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' I
   AddOption -n list -f -k 'List' -d 'List files that would be included in a libui package.' l
@@ -750,9 +751,10 @@ LibuiInstall () {
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
     do
       [[ ! -d "${COMMONROOT}/${_Util_file%/*}" ]] && \
-          Action -W "mkdir -p -m '${_Util_groupmode}' '${COMMONROOT}/${_Util_file%/*}'"
+          Action -W "mkdir -p '${COMMONROOT}/${_Util_file%/*}'" && \
+          ${group} && Action -F -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file%/*}'"
       Action "cp ${FMFLAGS} "${_Util_libuiroot%/}/${_Util_file}" '${COMMONROOT}/${_Util_file}'" && \
-          Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+          ${group} && Action -W "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
     done
 
     StopSpinner
@@ -874,7 +876,8 @@ LibuiUnity () { # [-d|-u|-U|-v]
         if [[ -f "${COMMONROOT}/${_Util_file}" ]]
         then
           ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-          Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
+          Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && \
+              ${group} && Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
         fi
       done
       popd > /dev/null

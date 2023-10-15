@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GROUP
+#
+#####
+
+test_GROUP () {
+  local grp="$(id -gn)"
+  LibuiPerformTest 'Tell -- "${GROUP}"'
+  LibuiValidateTest ${?} 0 "${grp}"
+  return ${?}
+}
+
+return 0

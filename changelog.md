@@ -7,6 +7,10 @@
 * Add -c (Change Directory) option to GetFileList in libui File mod.
 * Improve libui Package mod default self-extracting header.
 * Update star to allow ascii files (e.g. xml files).
+* Update star to include modification time.
+* Add -g (Group) write enable flag to libui -i (Install) and -u (Update).
+* Add -g (Group) write enable flag to star -x (Extract).
+* Add GROUP variable for the primary group of the user.
 * Add and update regression tests.
 * Update documentation.
 
@@ -16,11 +20,15 @@
 * Fix filename quoting in liubi Package mod and createpackage.
 * Fix IsTarget in libui SSH mod when uppercase target provided.
 * Fix second libui SSH mod "no ssh keys, password may be needed" report test.
+* Fix star to support star archives that include star archives.
+* No Action info messages when TERMINAL is false.
 
 ### Incompatibilities
 
-* The libui Package mod CreatePackage no longer moves to the source directory.
+* The star 2.0 application cannot read / write star 1.X archives.
+* Change libui SSH mod IsTarget to IsRemote.
 * Change wssetup -c (Change) to -d (Default).
+* The libui Package mod CreatePackage no longer cds to the source directory.
 
 ## v1.834
 

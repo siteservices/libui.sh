@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList-c
+#
+#####
+
+test_GetFileList-c () {
+  Action -W "mkdir -p ${TESTDIR}/list"
+  Action -W "touch ${TESTDIR}/list/listfile-1"
+  Action -W "touch ${TESTDIR}/list/listfile\ 2"
+  LibuiPerformTest "GetFileList -c '${TESTDIR}/list' testlist '${TESTDIR}/list/list*'; Tell -- '%s' \"\${testlist[*]}\""
+  LibuiValidateTest ${?} 0 "listfile 2 listfile-1"
+  return ${?}
+}
+
+return 0

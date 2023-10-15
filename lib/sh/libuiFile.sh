@@ -257,7 +257,7 @@ Flush () { #  [-0|-1..-9] [<file_path>]
 
 # Get a file listing and load it into the array variable with the provided name
 #
-# Syntax: GetFileList |-c[-d|-e|-f|-n|-p|-r|-w] <var_name> <file_specification>
+# Syntax: GetFileList [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specification>
 #
 # Example: GetFileList -r *.cpp
 #
@@ -265,7 +265,7 @@ Flush () { #  [-0|-1..-9] [<file_path>]
 # directory and its subdirectories.
 #
 UICMD+=( 'GetFileList' )
-GetFileList () { # |-c[-d|-e|-f|-h|-n|-p|-r|-w] <var_name> <file_specification> ...
+GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specification> ...
   ${_S} && ((_cGetFileList++))
   ${_M} && _Trace 'GetFileList [%s]' "${*}"
 

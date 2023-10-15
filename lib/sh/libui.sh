@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Fri Oct  6 19:27:52 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Sat Oct 14 01:23:45 EDT 2023
 
 #####
 #
@@ -644,7 +644,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
             then
               ${_confirm} || StartSpinner "${_i}"
             else
-              [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
+              ${TERMINAL} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -2304,6 +2304,7 @@ ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((5
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
+GROUP="${GROUP:-$(id -gn)}"
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
