@@ -53,22 +53,6 @@ mod will need to be loaded before calling UsageInfo.
 See the
 .Sx EXAMPLES
 section below for more information.
-.Ss VARIABLES
-Version
-.Pp
-The following line needs to be present within the main script before sourcing
-the library:
-.Bd -literal -offset 4n
-.Sy Version+=\&( \(dq Ns Sy ${0} Ar <script_version> Ns Sy \(dq \&)
-.Ed
-.Pp
-The quoting and spacing in the line is important.
-It provides the
-.Nm
-library with the version of the main script.
-Version numbers should be in the format of Major.Minor (e.g.: 1.0).
-If other scripts are sourced within the main script, a similar version line
-should be added in each sourced script.
 .Sh EXAMPLES
 Some examples include:
 .Bd -literal -offset 4n

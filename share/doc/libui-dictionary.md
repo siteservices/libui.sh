@@ -417,6 +417,7 @@ non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is
 used. The file specification can be further refined with the option flags to
 limit the array results to:
 
+* **-c** - cd to provided directory before capturing list
 * **-d** - directories only
 * **-e** - generate an error if the list collected is empty
 * **-f** - files only
@@ -427,7 +428,7 @@ limit the array results to:
 * **-w** - generate a warning if the list collected is empty
 
 ```
-GetFileList [-d|-e|-f|-n|-p|-r|-w] <variable_name> <file_specification> ...
+GetFileList [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <variable_name> <file_specification> ...
 ```
 
 ### GetRealPath (man libuiFile.sh) - Get the real, absolute path for a file.
@@ -517,13 +518,13 @@ initialization callbacks are also called.
 Initialize
 ```
 
-### IsTarget (man libuiSSH.sh) - Performs checks to confirm target is remote.
+### IsRemote (man libuiSSH.sh) - Performs checks to confirm target is remote.
 
-Performs some basic checks on the provided remote target name to ensure it is
-a valid host and not the localhost.
+Performs some basic checks on the provided host name to ensure it is a valid
+remote host and not the localhost.
 
 ```
-IsTarget <target>
+IsRemote <target>
 ```
 
 ### ListPackage (man libuiPackage.sh) - List the contents of a package.
@@ -924,18 +925,21 @@ Verify [-C|-N|-Y] [-d <default>] [-n <variable_name>] [-r <required_regex>] <que
 
 ### Version (man libui.sh) - Version information.
 
-When a version number is provided, captures the version information for the
-script. If the **-r** (Required) option flag is provided, confirms that the libui.sh
-library version being used is at least that version. When used with no
-parameters, displays the captured version information. This function is included
-with the usage information provided by the libui library with the **-H** or -h
-(Help) command line option flags.
+When a version number is provided, registers the version for the script. If the
+**-r** (Required) option flag is provided, confirms that the libui.sh library
+version being used is at least that version. If the **-m** (Mod) option flag is
+provided, the script file is defined as a mod. If the **-a** (All) option flag
+is provided, version information for all script files is displayed. When used
+with no parameters, displays the version of the requesting script file. The
+version information is included with the usage information provided by the libui
+library with the **-H** or -h (Help) command line option flags.
 
+* **-a** - display all registered script file versions
 * **-m** - the script file is a libui mod
 * **-r** - libui.sh library version must be at least provided version
 
 ```
-Version [-m] [-r <required_libui_version>] <script_version>
+Version [-a|-m] [-r <required_libui_version>] <script_version>
 ```
 
 ### WaitSpinner (man libuiSpinner.sh) - Start a spinner and wait for task.

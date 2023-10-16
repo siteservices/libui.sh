@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.834 -m 1.6
+Version -r 1.835 -m 1.7
 
 # defaults
 
@@ -199,7 +199,7 @@ EOF
 
     ${_M} && _Trace 'Display version information.'
     printf "${DCES}\n"
-    Version
+    Version -a
     printf "${D}\n"
   } >> /dev/stderr
 

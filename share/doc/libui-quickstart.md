@@ -52,11 +52,11 @@ libui script will utilize:
 > include the variable of interest so that those values may be seen during
 > debugging.
 
-* Version
+* Version \<version\>
 > Each libui script should include a Version command to define the version of
 > the script and to identify the minimum libui.sh version required for proper
 > operation. (When using `libui -n` to create a new script, the current library
-> version is automatically used.)
+> version is automatically used.) Version should be "major.minor, i.e., #.#".
 
 * Exit
 > Each libui script should include an Exit command to properly exit the script.

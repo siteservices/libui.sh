@@ -222,7 +222,7 @@ Version numbers should be in the format of Major.Minor (e.g.: 1.0).
 The library
 .Ar <required_libui_version>
 must include a three-digit minor value such as
-.Em 1.011
+.Em 1.001
 or
 .Em 1.822 .
 The
@@ -261,7 +261,7 @@ library:
 .Pp
 .Bd -ragged -compact -offset 4n
 .Sy Version
-.Op Fl m
+.Op Fl a Fl m
 .Op Fl r Ar <required_libui_version>
 .Ar <script_version>
 .Ed
@@ -276,9 +276,10 @@ mod file.
 Version numbers should be in the format of Major.Minor (e.g.: 1.0).
 If other scripts are sourced within the main script, a similar version line
 should be added in each sourced script.
-Other sourced scripts, though, should perhaps be converted into
+Note: Any other sourced scripts would likely benefit by being converted into
 .Nm
 library UI Mods.
+.Pp
 When used in a
 .Nm
 mod, the
@@ -289,6 +290,25 @@ mod.
 See the
 .Sx UIMOD
 section below for more information.
+.Pp
+If the
+.Fl r
+(Required) option flag is provided, confirms that the libui.sh library
+version being used is at least that version.
+If the
+.Fl a
+(All) option flag is provided, version information for all script files is
+displayed.
+When used with no parameters, displays the version of the requesting script
+file.
+.Pp
+The version information is included with the usage information provided by the
+.Nm
+library with the
+.Fl H
+or
+.Fl h
+(Help) command line option flags.
 .Ss Initialize
 The following line needs to be present within the main script and is used to
 initialize the
@@ -1950,6 +1970,8 @@ is set to "\-i" by
 (Confirm) and to "\-f" by
 .Fl F
 (Force) options.
+.It Dv ${GROUP}
+The primary group of the user.
 .It Dv ${HOST}
 The hostname of the current machine (hostname only, not fully qualified).
 .It Dv ${LIBUI}
@@ -2256,7 +2278,7 @@ Version numbers should be in the format of Major.Minor (e.g.: 1.0).
 The library
 .Ar <required_libui_version>
 must include a three-digit minor value such as
-.Em 1.011
+.Em 1.001
 or
 .Em 1.822 .
 The

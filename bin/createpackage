@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.5
+Version -r 1.835 1.6
 
 # load mods
 LoadMod File
@@ -95,12 +95,21 @@ InitCallback () {
     Trace 'Check for existing manifest. (%s)' "${manifest}"
     if [[ -f "${manifest}" ]]
     then
-      files+=( $(grep -v '^\s*\(#\|$\)' "${manifest}") )
+      Trace 'Load manifest. (%s)' "${manifest}"
+      if ${ZSH}
+      then
+        files+=( ${(f)"$(grep -v '^\s*\(#\|$\)' "${manifest}")"} )
+      else
+        ((40 <= BV)) && mapfile files <(grep -v '^\s*\(#\|$\)' "${manifest}") || \
+            IFS=$'\n' files+=( $(grep -v '^\s*\(#\|$\)' "${manifest}") )
+      fi
     else
       Error 'The source directory does not have a manifest file. (%s)' "${manifest}"
     fi
   else
-    files+=( $(ls -A1 "${sourcedir}") )
+    Trace 'Get file listing. (%s)' "${sourcedir}"
+    GetRealPath sourcedir
+    GetFileList -r -c "${sourcedir%/*}" files "${sourcedir}"
   fi
 
   Trace 'Build package filename. (%s)' "${package}"
@@ -153,6 +162,10 @@ Initialize
 #####
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
+
+Trace 'Change directory to source. (%s)' "${sourcedir%/*}"
+[[ -d ${sourcedir%/*} ]] && cd ${sourcedir%/*} &> /dev/null || \
+   Error 'The source directory does not exist. (%s)' "${sourcedir%/*}"
 
 Trace 'Check if listing files. (%s)' "${listfiles}"
 if ${listfiles}

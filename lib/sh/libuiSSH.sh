@@ -27,33 +27,41 @@
 #
 #####
 
-Version -r 1.833 -m 1.6
+Version -r 1.835 -m 1.8
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
 
 # Is Target
 #
-# Syntax: IsTarget <target>
+# Syntax: IsRemote <target>
 #
-# Example: IsTarget alpha
+# Example: IsRemote alpha
 #
 # Result: Returns true if alpha is a valid target (and not localhost), otherwise
 # returns false.
 #
-UICMD+=( 'IsTarget' )
-IsTarget () { # <target>
-  ${_S} && ((_cIsTarget++))
-  ${_M} && _Trace 'IsTarget [%s]' "${*}"
+UICMD+=( 'IsRemote' )
+IsRemote () { # <target>
+  ${_S} && ((_cIsRemote++))
+  ${_M} && _Trace 'IsRemote [%s]' "${*}"
 
-  ${_M} && _Trace 'Check for localhost. (%s)' "${1}"
-  [[ -z "${1}" ]] && return 1
-  [[ 'localhost' == "${1}" ]] && return 1
-  [[ '127.0.0.1' == "${1}" ]] && return 1
-  [[ "${HOST}" == "${1}" ]] && return 1
-  [[ "${HOST}.${DOMAIN}" == "${1}" ]] && return 1
+  local _SSH_target
+  if ${ZSH}
+  then
+    _SSH_target="${(L)1}"
+  else
+    ((40 <= BV)) && _SSH_target="${1,,}" || _SSH_target="$(printf '%s' "${1}" | tr '[:upper:]' '[:lower:]')"
+  fi
 
-  ${_M} && _Trace 'IsTarget return. (%s)' 0
+  ${_M} && _Trace 'Check for localhost. (%s)' "${_SSH_target}"
+  [[ -z "${_SSH_target}" ]] && return 1
+  [[ 'localhost' == "${_SSH_target}" ]] && return 1
+  [[ '127.0.0.1' == "${_SSH_target}" ]] && return 1
+  [[ "${HOST}" == "${_SSH_target}" ]] && return 1
+  [[ "${HOST}.${DOMAIN}" == "${_SSH_target}" ]] && return 1
+
+  ${_M} && _Trace 'IsRemote return. (%s)' 0
   return 0
 }
 
@@ -141,8 +149,7 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
   ${_M} && _Trace 'Check for SSH keys.'
   local _SSH_id
   GetFileList _SSH_id "${HOME}/.ssh/*.pub"
-  ((${#_SSH_id[@]})) || Warn 'No local SSH ID exists. Password will be required to send commands.'
-
+  ((${#_SSH_id[@]})) || Warn 'No local SSH ID exists. Password required to send commands.'
 
   local _SSH_file; _SSH_file=( "${@}" )
   local _SSH_target
@@ -170,9 +177,11 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
       ${_M} && _Trace 'SSH Copy. (%s -> %s:%s)' "${_SSH_file[*]}" "${_SSH_target}" "${_SSH_dest}"
       Action "Capture SSH_OUT SSH_ERR SSH_RV scp -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_port} \"${_SSH_file[@]}\" '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}:${_SSH_dest}'"
     done
-    ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
+    ${_M} && _Trace 'Raw response: %s' "${SSH_OUT}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
+    ${_M} && _Trace 'Errors: %s' "${SSH_ERR}"
     ${_SSH_quiet} || ((0 == SSH_RV)) || Tell -C '%s' "${SSH_ERR}"
+    ${_M} && _Trace 'Return value: %s' "${SSH_RV}"
   fi
 
   ${_M} && _Trace 'SSHSend return. (%s)' 0
@@ -264,8 +273,10 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
   [[ -z "${_SSH_targets}" ]] && Tell -E '(SSHExec) No target provided.'
   ((${#})) || Tell -E '(SSHExec) No command provided.'
 
-  ${_M} && _Trace 'Check for local SSH ID file. (%s)' "${HOME}/.ssh/id_rsa"
-  [[ ! -f "${HOME}/.ssh/id_rsa" ]] && Tell -W 'No local SSH ID, password will be required to send command to %s.' "${_SSH_targets[*]}"
+  ${_M} && _Trace 'Check for SSH keys.'
+  local _SSH_id
+  GetFileList _SSH_id "${HOME}/.ssh/*.pub"
+  ((${#_SSH_id[@]})) || Warn 'No local SSH ID exists. Password required to send commands.'
 
   local _SSH_cmd; _SSH_cmd=( "${@}" )
   local _SSH_target
@@ -294,9 +305,11 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
       ${_M} && _Trace 'Sending command via SSH (%s): %s' "${_SSH_user}@${_SSH_target}" "${_SSH_cmd[*]}"
       Action -s -i "${_SSH_info}" -e "Command failed on ${_SSH_target}: ${_SSH_cmd[*]}" "Capture SSH_OUT SSH_ERR SSH_RV ssh -o 'ConnectTimeout=${_SSH_timeout}' ${_SSH_disp} ${_SSH_port} '${_SSH_user}${_SSH_pass:+:${_SSH_pass}}@${_SSH_target}' \"\${_SSH_cmd[@]}\""
     done
-    ${_M} && _Trace 'Raw response: %s\nErrors: %s\nReturn value:' "${SSH_OUT}" "${SSH_ERR}" "${SSH_RV}"
+    ${_M} && _Trace 'Raw response: %s' "${SSH_OUT}"
     ${_SSH_quiet} || [[ -z "${SSH_OUT}" ]] || Tell '%s' "${SSH_OUT}"
+    ${_M} && _Trace 'Errors: %s' "${SSH_ERR}"
     ${_SSH_quiet} || ((0 == SSH_RV)) || Tell -C '%s' "${SSH_ERR}"
+    ${_M} && _Trace 'Return value: %s' "${SSH_RV}"
   fi
 
   ${_M} && _Trace 'SSHExec return. (%s)' "${SSH_RV}"
