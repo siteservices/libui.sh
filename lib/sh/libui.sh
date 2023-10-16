@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Sat Oct 14 01:23:45 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Sun Oct 15 14:20:10 EDT 2023
 
 #####
 #
@@ -117,7 +117,7 @@ Drop () { # <array_var> <value>|<value>: ...
 
 # get and check version
 UICMD+=( 'Version' )
-Version () { # [-m] [-r <required_libui_version>] <script_version>
+Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
   ${_S} && ((_cVersion++))
   ${_T} && _Trace 'Version [%s]' "${*}"
 
@@ -129,9 +129,15 @@ Version () { # [-m] [-r <required_libui_version>] <script_version>
   local _o
   local OPTIND
   local OPTARG
-  while getopts ':mr:' _o
+  while getopts ':amr:' _o
   do
     case ${_o} in
+      a)
+        ${_T} && _Trace 'Display all versions.'
+        printf '%s %s\n' "${UIVERSION[@]}"
+        return 0
+        ;;
+
       m)
         ${_T} && _Trace 'Module version.'
         _m=true
@@ -149,9 +155,19 @@ Version () { # [-m] [-r <required_libui_version>] <script_version>
     esac
   done
   shift $((OPTIND - 1))
-  ((0 == ${#})) && _Trace 'Display versions. (%s)' "${UIVERSION[*]}" && printf '%s %s\n' "${UIVERSION[@]}" && return 0
+  if ((0 == ${#}))
+  then
+    _Trace 'Display version. (%s)' "${_s##*/}"
+    local _i=${AO}
+    until [[ "${_s##*/}" == "${UIVERSION[${_i}]}" || -z "${UIVERSION[${_i}]}" ]]
+    do
+      ((_i++))
+    done
+    printf '%s\n' "${UIVERSION[((++_i))]}"
+    return 0
+  fi
 
-  [[ -n ${_r} && ${LIBUI_VERSION//.} -ge ${_r//.} ]] || \
+  [[ -n ${_r} && ${LIBUI_VERSION//.} -lt ${_r//.} ]] && \
       Tell -E -f '%s requires libui.sh version %s. Please update libui.sh.' "${_s##*/}" "${_r}"
 
   UIVERSION+=( "${_s##*/}" "${1}" )
@@ -1676,7 +1692,7 @@ Initialize () {
 
           v|V)
             LoadMod Info
-            Version
+            Version -a
             Exit 0
             ;;
 

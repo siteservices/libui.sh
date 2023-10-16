@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Version
+#
+#####
+
+test_Version () {
+  Version 1.0
+  local v="$(Version)"
+  LibuiPerformTest 'Tell "Version %s." "${v}"'
+  LibuiValidateTest ${?} 0 'Version 1.0.'
+  return ${?}
+}
+
+return 0

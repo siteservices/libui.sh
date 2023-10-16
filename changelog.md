@@ -4,7 +4,8 @@
 
 ### New Features / Enhancements
 
-* Add -c (Change Directory) option to GetFileList in libui File mod.
+* Add -a (All) option flag to Version to display all script versions.
+* Add -c (Change Directory) option flag to GetFileList in libui File mod.
 * Improve libui Package mod default self-extracting header.
 * Update star to allow ascii files (e.g. xml files).
 * Update star to include modification time.
@@ -26,6 +27,7 @@
 ### Incompatibilities
 
 * The star 2.0 application cannot read / write star 1.X archives.
+* Version (by itself) now returns current script file version, not all versions.
 * Change libui SSH mod IsTarget to IsRemote.
 * Change wssetup -c (Change) to -d (Default).
 * The libui Package mod CreatePackage no longer cds to the source directory.

@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.835 -m 1.16
+Version -r 1.835 -m 1.17
 
 # defaults
 
@@ -139,10 +139,10 @@ l=\\\$(head -n \$((_Package_headlen - 1)) \\\"\\\${0}\\\" | tail -n 1) && [ '__P
 # extract installer
 t=\\\"\\\$(mktemp -d)\\\" || error
 a=\\\"\\\${0##*/}\\\"; a=\\\"\\\${t}/\\\${a%\\\\\\.*}.\${_Package_archive}\\\"
-[ \\\"\\\${1}\\\" = '-h' ] && printf '%s\\\n' \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\\"\\\"\\\${a}\\\\"\\\"'.\\\" && exit 0
+[ \\\"\\\${1}\\\" = '-h' ] && printf '%s\\n' \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\\"\\\"\\\${a}\\\\"\\\"'.\\\" && exit 0
 printf 'Preparing...'
-tail -n +\${_Package_headlen} \\\"\\\${0}\\\" > \\\"\\\${a}\\\"
-[ \\\"\\\${1}\\\" = '-e' ] && mv \\\"\\\${a}\\\" ./ && rmdir \\\"\\\${t}\\\" && exit 0
+tail -n +\$((_Package_headlen + 0)) \\\"\\\${0}\\\" > \\\"\\\${a}\\\"
+[ \\\"\\\${1}\\\" = '-e' ] && mv \\\"\\\${a}\\\" ./ && rmdir \\\"\\\${t}\\\" && printf 'Done.\\n' && exit 0
 d=\\\"\\\${t}/a\\\"
 mkdir \\\"\\\${d}\\\" || error
 cd \\\"\\\${d}\\\" > /dev/null

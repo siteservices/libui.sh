@@ -31,9 +31,10 @@
 ##### libui setup
 
 # script version
-Version -r 1.835 2.0
+Version -r 1.835 2.1
 
 # load mods
+LoadMod Date
 LoadMod File
 
 ##### configuration
@@ -128,7 +129,7 @@ CreateArchive () { # <archive> <files> ...
   exec 6>&1
   for file in "${files[@]}"
   do
-    if [[ ! $(file -i "${file}") =~ .*(ascii|text|empty).* ]]
+    if [[ ! $(file --mime "${file}") =~ .*(ascii|text|empty).* ]]
     then
       Caution 'File may not be text. Skipping. (%s)' "${file}"
       continue
@@ -136,7 +137,7 @@ CreateArchive () { # <archive> <files> ...
     [[ '/' == "${file:0:1}" ]] && prefix='.' || prefix=
     [[ 'Darwin' == "${OS}" ]] && dirperms="$(stat -f '%A' "${file%/*}")" || dirperms="$(stat -c '%a' "${file%/*}")"
     [[ 'Darwin' == "${OS}" ]] && fileperms="$(stat -f '%A' "${file}")" || fileperms="$(stat -c '%a' "${file}")"
-    timestamp="$(date +%s -r "${file}")"
+    timestamp="$(date -r "${file}" +%s)"
     ${verbose} && Info 'Archiving %s' "${file}" >&6
     printf '===== file:%s:%s:%s:%s:file %s =====\n' "${prefix}${file}" "${dirperms}" "${fileperms}" "${timestamp}" "${ts}"
     if [[ -s "${file}" ]]
@@ -149,7 +150,7 @@ CreateArchive () { # <archive> <files> ...
   exec 6>&-
 
   Trace 'Sign archive. (%s)' "${tmp}"
-  printf '===== %s %s =====\n' "$(${sign} "${tmp}" | cut -d ' ' -f 1)" "${ts}" >> "${tmp}"
+  printf '===== %s %s %s =====\n' "$(${sign} "${tmp}" | cut -d ' ' -f 1)" "${ts}" "$(Version)" >> "${tmp}"
   ((rv+=${?}))
 
   Trace 'Write archive. (%s)' "${archive}"
@@ -174,6 +175,7 @@ ExtractArchive () { # <archive>
   local line
   local rv=0
   local signature
+  local timestamp
   local ts
 
   Trace 'Open archive file descriptor. (%s)' "${file}"
@@ -186,7 +188,7 @@ ExtractArchive () { # <archive>
 
   Trace 'Validate archive. (%s)' "${archive}"
   GetTmp -f file
-  head -n -1 <&8 > "${file}"
+  sed '$d' <&8 > "${file}"
   ts=( $(tail -1 "${archive}") ); signature="${ts[2]}"; ts="${ts[3]}"
   [[ "${signature}" == $(${sign} "${file}" | cut -d ' ' -f 1) ]] || \
       Error 'Unable to extract files, archive is corrupt.'
@@ -208,7 +210,9 @@ ExtractArchive () { # <archive>
       Trace 'Set permissions. (%s)' "${fileinfo[((AO + 3))]}"
       Action "chmod '${fileinfo[((AO + 3))]}' '${fileinfo[((AO + 1))]}'" || return 1
       ${group} && Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'"
-      Action "touch -d '@${fileinfo[((AO + 4))]}' '${fileinfo[((AO + 1))]}'"
+      [[ 'Darwin' == "${OS}" ]] && ConvertDate -i '%s' -o '%Y-%m-%dT%H:%M:%S' timestamp "${fileinfo[((AO + 4))]}" || \
+          timestamp="@${fileinfo[((AO + 4))]}"
+      Action "touch -d '${timestamp}' '${fileinfo[((AO + 1))]}'"
 
       Trace 'Close file. (%s)' "${fileinfo[((AO + 1))]}"
       exec 9>&-

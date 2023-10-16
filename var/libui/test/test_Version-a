@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Version-a
+#
+#####
+
+test_Version-a () {
+  local all; all="$(printf '%s %s\n' "${UIVERSION[@]}")"
+  Version 1.0
+  local v="$(Version -a)"
+  LibuiPerformTest 'Tell "Versions %s." "${v}"'
+  LibuiValidateTest ${?} 0 "Versions ${all}${N}test_Version-a 1.0."
+  return ${?}
+}
+
+return 0
