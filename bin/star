@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.835 2.1
+Version -r 2.000 2.1
 
 # load mods
 LoadMod Date

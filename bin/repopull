@@ -14,11 +14,13 @@
 #
 # If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
 # environment variable will be used. If the WORKSPACE environment variable is
-# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
-# WORKSPACE remains undefined, the current directory is used.
+# not defined, the ~/.local/workspace file will be sourced (to define
+# WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 # Note: interpolates branch names using associative array sourced from
-# ~/.repopull file with array like: {branch}=( {repo} {dev_branch_name} ... )
+# ~/.local/repopull.conf file with array like:
+#
+#    {branch}=( {repo} {dev_branch_name} ... )
 #
 # For example, interpolation array for the dev branch:
 #    declare -A dev
@@ -50,7 +52,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.829 6.4
+Version -r 2.000 6.5
 
 # load mods
 LoadMod File
@@ -59,7 +61,7 @@ LoadMod Workspace
 ##### configuration
 
 # defaults
-mapfile="${HOME}/.repopull"
+mapfile="${HOME}/.config/repopull.conf"
 declare -A branchmap
 processed=false
 GetTmp tmpdir
@@ -140,7 +142,7 @@ do
     if Action -i "Pulling latest updates. (${repo})" -e "Pull failure in ${repo}." -q "Pull in ${repo}?" -c -l "${tmpdir}/${repo}-pull.log" 'git pull --all'
     then
       Trace 'Check if up to date.'
-      pullstatus=$(< "${tmpdir}/${repo}-pull.log")
+      pullstatus=$(<"${tmpdir}/${repo}-pull.log")
       [[ "${pullstatus}" =~ .*Already\ up.to.date\..* ]] || updated=true
     fi
 

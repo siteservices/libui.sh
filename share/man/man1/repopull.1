@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd September 3, 2023
+.Dd October 23, 2023
 .Dt REPOPULL 1
 .Os
 .Sh NAME
@@ -38,11 +38,11 @@ is not provided, the path provided in the
 environment variable will be used.
 If the
 .Ev WORKSPACE
-environment variable is not defined, the ~/.workspace file will be sourced (to
-define
+environment variable is not defined, the ~/.config/workspace file will be
+sourced (to define
 .Ev WORKSPACE Ns ).
-If the ~/.workspace file does not exist, the current working directory will be
-used.
+If the ~/.config/workspace file does not exist, the current working directory
+will be used.
 .Pp
 Note: Interpolates branch names using an associative array sourced from
 ~/.gitrepos file with array like:
@@ -90,11 +90,11 @@ If the workspace directory is not provided, the path provided in the
 environment variable is used.
 If the
 .Ev WORKSPACE
-environment variable is not defined, the ~/.workspace file will be sourced (to
-define
+environment variable is not defined, the ~/.config/workspace file will be
+sourced (to define
 .Ev WORKSPACE Ns ).
-If the ~/.workspace file does not exist, the current working directory will be
-used.
+If the ~/.config/workspace file does not exist, the current working directory
+will be used.
 .El
 .Ss STANDARD OPTIONS
 This script was built using the
@@ -109,7 +109,7 @@ or
 (Help) and
 .Fl X Ar <option>
 (XOption).
-XOptions include Confirm, Force, NoAction, Quiet, Version, and Yes.
+XOptions include Confirm, Force, NoAction, Overwrite, Quiet, Version, and Yes.
 They are enabled using the first letter of the option (lower or upper case) as
 .Ar <option> .
 Please see

@@ -7,7 +7,7 @@
 
 test_Action-e () {
   LibuiPerformTest 'Action -e "Test failure." "false"'
-  LibuiValidateTest ${?} 1 "WARNING: (Action) Test failure."
+  LibuiValidateTest ${?} 1 "WARNING: (Action) Test failure. (false)"
   return ${?}
 }
 

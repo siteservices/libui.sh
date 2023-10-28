@@ -7,13 +7,14 @@
 #
 #####
 #
-# {libui tool} Write a .workspace file in the user's home directory and save a
-# workspace environment in the .wsenv directory in the user's home directory.
+# {libui tool} Write a .config/workspace file in the user's home directory and
+# save a workspace environment in the .config/wsenv directory in the user's home
+# directory.
 #
 # If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
 # environment variable will be used. If the WORKSPACE environment variable is
-# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
-# WORKSPACE remains undefined, the current directory is used.
+# not defined, the ~/.config/workspace file will be sourced (to define
+# WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 # Man page available for this script: man 1 wssetup
 #
@@ -36,7 +37,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.835 1.5
+Version -r 2.000 1.5
 
 # load mods
 LoadMod File
@@ -58,7 +59,7 @@ AddParameter -r -k 'Workspace' -d 'Workspace, i.e. directory above the repo tree
 InfoCallback () {
   Trace 'Provide usage information.'
   cat << EOF
-This script creates a .workspace file in the user's directory.
+This script creates a .config/workspace file in the user's directory.
 EOF
 }
 
@@ -78,7 +79,7 @@ Write_workspace () {
   local ws="#!/bin/zsh
 #####
 #
-#	Workspace File for ${WORKSPACE}
+#	Workspace File
 #	$(date)
 #
 ######

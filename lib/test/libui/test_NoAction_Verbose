@@ -6,7 +6,7 @@
 #####
 
 test_NoAction_Verbose () {
-  LibuiPerformTest 'Action "ls /tmp.tst" 5>&1'
+  LibuiPerformTest 'Action "ls /tmp.tst" 4>&1'
   LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.tst \(PWD: .*\)'
   return ${?}
 }

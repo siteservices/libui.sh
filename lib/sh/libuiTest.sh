@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.3
+Version -r 2.000 -m 1.4
 
 ##### configuration
 
@@ -73,7 +73,7 @@ LibuiValidateTest () {
   ${_S} && ((_cLibuiValidateTest++))
   ${_M} && _Trace 'LibuiValidateTest [%s]' "${*}"
 
-  local _Test_input; [[ -f "${TESTDIR}/test.out" ]] && _Test_input="$(< "${TESTDIR}/test.out")"
+  local _Test_input; [[ -f "${TESTDIR}/test.out" ]] && _Test_input="$(<"${TESTDIR}/test.out")"
   local _Test_initial=false
   local _Test_regex=false
   local _Test_rv=0
@@ -124,7 +124,9 @@ LibuiValidateTest () {
     ((_Test_tv == vr)) && [[ "${_Test_input}" == "${*}" ]] || _Test_rv=1
   fi
 
-  ${_Test_debug} && _Terminal
+  ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
+  ${_Test_debug} && source "${LIBUI_CONFIG}/display-${TERM}"
+
   if ((_Test_rv))
   then
     Tell -W -r 2 '>>> Validation failed. (%s)' "${_Test_rv}"
@@ -211,7 +213,8 @@ LibuiTest () {
       ${_M} && _Trace 'Finish test. (%s)' "${1}"
       Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHELL}" "${CMDLINE[*]}"
     else
-      _Terminal
+      ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
+      ${TERMINAL} || source "${LIBUI_CONFIG}/display-${TERM}"
       Tell -E -f 'Test not available: %s.' "${1}"
       _Test_rv=1
     fi
@@ -229,9 +232,8 @@ LibuiTest () {
     [[ -z "${@}" ]] && GetFileList -f -n _Test_tests "${_Test_testdir}"/test_* || _Test_tests=( "${@}" )
 
     ${_M} && _Trace 'Start session log.'
-    Tell 'Test environment:'
-    printf '%s\n' "${SHLIBPATH}"
-    Version
+    Tell 'Test environment (%s):' "${SHLIBPATH}"
+    Version -a
     Tell 'Begin libui %s with %s tests on %s. (%s)' "${LIBUI_VERSION}" "${#_Test_tests[@]}" "$(date)" "${TESTDIR}"
     StartTimer _Test_logtimer
 
@@ -451,6 +453,9 @@ LibuiGetDisplayTestValues () {
   T7="${T}${Tb}"
   T8="${T}"
   T9="${T}${Td}"
+
+  ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
+  ${TERMINAL} || source "${LIBUI_CONFIG}/display-${TERM}"
 
   ${_M} && _Trace 'GetDisplayTestValues return. (%s)' 0
   return 0

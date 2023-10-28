@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd September 5, 2023
+.Dd October 28, 2023
 .Dt LIBUIFILE.SH 3
 .Os
 .Sh NAME
@@ -47,6 +47,12 @@ user interface library
 .Sy GetTmp
 .Op Fl d Fl f Fl s
 .Ar <variable_name>
+.Pp
+.Sy MkDir
+.Op Fl s
+.Op Fl g Ar <group>
+.Op Fl m Ar <mask>
+.Ar <path>
 .Pp
 .Sy Open
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl b Fl c
@@ -301,6 +307,34 @@ will only create one temporary (parent) directory.
 It will reuse that same directory if called more than once.
 The temporary (parent) directory and its contents should be removed
 automatically on exit.
+.Ss MkDir
+The following command creates a directory path and sets permissions on any
+created directories:
+.Bd -ragged -offset 4n
+.Sy MkDir
+.Op Fl s
+.Op Fl g Ar <group>
+.Op Fl m Ar <mask>
+.Ar <path>
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl g Ar <group>
+Set the group ownership of any created directories to
+.Ar <group> .
+.It Fl m Ar <mask>
+Use the
+.Ar <mask>
+as the umask when creating any needed directories.
+.It Fl s
+Set the setgid bit for any created directories.
+.El
+While the standard
+.Xr mkdir 1
+command can be used to create a directory path (with the -p option flag), it
+does not properly set the permissions of any created parent directories.
+This command, however, sets the proper permissions on any created directories.
 .Ss Open
 The following command opens a file, locks it, and associates a file ID with the
 file path:
@@ -609,6 +643,7 @@ reserved for
 internal file operations.
 .Sh SEE ALSO
 .Xr bash 1 ,
+.Xr mkdir 1 ,
 .Xr zsh 1 ,
 .Xr libui.sh 3
 .Sh AUTHORS

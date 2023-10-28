@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 17, 2023
+.Dd October 23, 2023
 .Dt LIBUI 1
 .Os
 .Sh NAME
@@ -332,7 +332,7 @@ or
 (Help) and
 .Fl X Ar <option>
 (XOption).
-XOptions include Confirm, Force, NoAction, Quiet, Version, and Yes.
+XOptions include Confirm, Force, NoAction, Overwrite, Quiet, Version, and Yes.
 They are enabled using the first letter of the option (lower or upper case) as
 .Ar <option> .
 Please see
@@ -351,14 +351,14 @@ When used with the
 .Xr libui.sh 3
 configuration file.
 The file will be created in the directory pointed to by the
-.Ev LIBUI_DOTFILE
+.Ev LIBUI_CONFIG
 environment variable.
 Unless otherwise defined, the
 .Xr libui.sh 3
 library will default
-.Ev LIBUI_DOTFILE
+.Ev LIBUI_CONFIG
 to be
-.Qq Sy ${HOME}/.libui .
+.Qq Sy ${HOME}/.config/libui .
 The configuration filename is
 .Qq Sy libui.conf .
 .Pp
@@ -385,14 +385,14 @@ When used with the
 (Reset) option, libui will delete the display codes cache, the statistics file,
 and (re)create the user information file.
 The display codes cache and the statistics files are also stored in the
-.Ev LIBUI_DOTFILE
+.Ev LIBUI_CONFIG
 directory (see above).
 The display codes cache filename is
 .Qq Sy display-${TERM} .
 The statistics file name is
 .Qq Sy stats .
 The user information is stored in the
-.Qq Sy ${HOME}/.user
+.Qq Sy ${HOME}/.config/user
 file.
 .Pp
 The script creates a temporary directory (via GetTmp) that should be removed

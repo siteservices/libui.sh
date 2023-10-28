@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.832 -m 1.11
+Version -r 2.000 -m 1.11
 
 # defaults
 _File_ip=
@@ -41,7 +41,7 @@ _File_libui_ip=1 # libui prefix
 #
 # Example: Close -1
 #
-# Result: the lock (file) associated with the file ID is unlocked (removed) and
+# Result: The lock (file) associated with the file ID is unlocked (removed) and
 # the file association is removed.
 #
 UICMD+=( 'Close' )
@@ -52,20 +52,20 @@ Close () { #  [-0|-1..-9] [<file_path>]
   local _File_i; _File_i=( )
 
   ${_M} && _Trace 'Process Close options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':0123456789' _o
+  while getopts ':0123456789' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       0)
         ${_M} && _Trace 'File ID. (10)'
         _File_i+=( 10 )
         ;;
 
       [1-9])
-        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_o}"
-        _File_i+=( "${_File_ip}${_o}" )
+        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
+        _File_i+=( "${_File_ip}${_opt}" )
         ;;
 
       *)
@@ -133,7 +133,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
       fi
     done
   else
-    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
+    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
     for _File_l in "${_File_i[@]}"
     do
       if [[ -n "${_File_fd[${_File_l}]}" ]]
@@ -164,7 +164,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
 #
 # Example: Flush -1
 #
-# Result: the file descriptor associated with the file ID is closed / reopened.
+# Result: The file descriptor associated with the file ID is closed / reopened.
 #
 UICMD+=( 'Flush' )
 Flush () { #  [-0|-1..-9] [<file_path>]
@@ -174,20 +174,20 @@ Flush () { #  [-0|-1..-9] [<file_path>]
   local _File_i; _File_i=( )
 
   ${_M} && _Trace 'Process Flush options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':0123456789' _o
+  while getopts ':0123456789' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       0)
         ${_M} && _Trace 'File ID. (10)'
         _File_i+=( 10 )
         ;;
 
       [1-9])
-        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_o}"
-        _File_i+=( "${_File_ip}${_o}" )
+        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
+        _File_i+=( "${_File_ip}${_opt}" )
         ;;
 
       *)
@@ -261,7 +261,7 @@ Flush () { #  [-0|-1..-9] [<file_path>]
 #
 # Example: GetFileList -r *.cpp
 #
-# Result: obtains a listing of all of the files named '*.cpp' in the current
+# Result: Obtains a listing of all of the files named '*.cpp' in the current
 # directory and its subdirectories.
 #
 UICMD+=( 'GetFileList' )
@@ -300,7 +300,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     if ${_File_r}
     then
       eval "_File_z=( ${_File_s/ /\\ }(N/) )"
-      ${_M} && _Trace 'Subdirs: %s' "${_File_z[*]}"
+      ${_M} && _Trace 'Subdirs: %s' "${#_File_z[@]}"
       for _File_i in "${_File_z[@]}"
       do
         ${_M} && _Trace 'Process subdir: %s' "${_File_i}"
@@ -340,6 +340,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     ${_M} && _Trace 'Check for recursive. (%s)' "${_File_r}"
     if ${_File_r}
     then
+      ${_M} && _Trace 'Subdirs: %s' "${#_File_z[@]}"
       for _File_i in "${_File_z[@]}"
       do
         if [[ -d "${_File_i}" ]]
@@ -357,12 +358,12 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
   }
 
   ${_M} && _Trace 'Process GetFileList options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':c:defhnprw' _o
+  while getopts ':c:defhnprw' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       c)
         ${_M} && _Trace 'Change directory. (%s)' "${OPTARG}"
         _File_c="${OPTARG}"
@@ -498,7 +499,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
 #
 # Example: GetRealPath -P sourcedir
 #
-# Result: obtains the path_specification from the variable "sourcedir",
+# Result: Obtains the path_specification from the variable "sourcedir",
 # determines the real, absolute path of the path_specification directory, and
 # saves the directory path/file name in the variable "sourcedir".
 #
@@ -514,12 +515,12 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
   local _File_v=false
 
   ${_M} && _Trace 'Process GetRealPath options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':Pv' _o
+  while getopts ':Pv' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       P)
         ${_M} && _Trace 'Test path.'
         _File_p=true
@@ -607,7 +608,7 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
 #
 # Example: GetTmp -f logfile
 #
-# Result: creates a temporary directory and a temporary file and saves the path
+# Result: Creates a temporary directory and a temporary file and saves the path
 # in the variable "logfile".
 #
 UICMD+=( 'GetTmp' )
@@ -615,16 +616,16 @@ GetTmp () { # [-d|-f|-s] <var_name>
   ${_S} && ((_cGetTmp++))
   ${_M} && _Trace 'GetTmp [%s]' "${*}"
 
-  local _f=false
-  local _s=false
+  local _File_f=false
+  local _File_s=false
 
   ${_M} && _Trace 'Process GetTmp options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':dfs' _o
+  while getopts ':dfs' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       d)
         ${_M} && _Trace 'Temp directory.'
         # default
@@ -632,12 +633,12 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
       f)
         ${_M} && _Trace 'Temp file.'
-        _f=true
+        _File_f=true
         ;;
 
       s)
         ${_M} && _Trace 'Temp subdirectory.'
-        _s=true
+        _File_s=true
         ;;
 
       *)
@@ -660,14 +661,14 @@ GetTmp () { # [-d|-f|-s] <var_name>
     ${_M} && _Trace 'GetTmp error return. (%s)' "${ERRV}"
     return ${ERRV}
   else
-    if ${_f}
+    if ${_File_f}
     then
       ${_M} && _Trace 'Create tmp file.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q '${_tmpdir}/${CMD}.XXXXXX')\""
       ((${?})) && Tell -E '(GetTmp) Unable to create temp file.'
     fi
 
-    if ${_s}
+    if ${_File_s}
     then
       ${_M} && _Trace 'Create tmp subdirectory.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q -d '${_tmpdir}/${CMD}.XXXXXX')\""
@@ -679,13 +680,100 @@ GetTmp () { # [-d|-f|-s] <var_name>
   fi
 }
 
+# Create a new directory path with special permissions
+#
+# Syntax: MkDir [-s] [-g <group>] [-m <mask>] <path>
+#
+# Example: Mkdir -g users -s path/to/dir
+#
+# Result: Creates new directories in the path/to/dir as needed. Also sets the
+# group ownership, permissions mode of the new directory (using the umask) and
+# optionally sets the setgid bit.
+#
+UICMD+=( 'MkDir' )
+MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
+  ${_S} && ((_cMkDir++))
+  ${_M} && _Trace 'MkDir [%s]' "${*}"
+
+  local _File_g
+  local _File_m
+  local _File_s=false
+  local _File_rv=0
+
+  ${_M} && _Trace 'Process MkDir options. (%s)' "${*}"
+  local _opt
+  local OPTIND
+  local OPTARG
+  while getopts ':g:m:s' _opt
+  do
+    case ${_opt} in
+      g)
+        ${_M} && _Trace 'Group. (%s)' "${OPTARG}"
+        _File_g="${OPTARG}"
+        ;;
+
+      m)
+        ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
+        _File_m="${OPTARG}"
+        ;;
+
+      s)
+        ${_M} && _Trace 'Set setgid bit.'
+        _File_s=true
+        ;;
+
+      *)
+        Tell -E -f -L '(MkDir) Option error. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+  ((${#})) || Tell -E -f -L '(MkDir) Called without a path.'
+
+  ${_M} && _Trace 'Check / Create directory. (%s)' "${1}"
+  if [[ ! -d "${1}" ]]
+  then
+    local _File_d
+    local _File_n; [[ '/' == "${1:0:1}" ]] || _File_n="${PWD}"
+    local _File_p
+    ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -a _File_p <<< "${1}"
+    for _File_d in "${_File_p[@]}"
+    do
+      [[ -z "${_File_d}" ]] && continue
+      _File_n+="/${_File_d}"
+      if [[ ! -d "${_File_n}" ]]
+      then
+        if [[ -n "${_File_m}" ]]
+        then
+          (umask "${_File_m}"; mkdir "${_File_n}")
+        else
+          mkdir "${_File_n}"
+        fi
+        ((${?})) && _File_rv=1 && Tell -W '(MkDir) Unable to create directory path. (%s)' "${_File_n}"
+        if [[ -n "${_File_g}" ]]
+        then
+          chgrp "${_File_g}" "${_File_n}" || Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
+        fi
+        if ${_File_s}
+        then
+          chmod g+s "${_File_n}" || Tell -W '(MkDir) Unable to set directory setgid bit. (%s)' "${_File_n}"
+        fi
+      fi
+    done
+  fi
+
+  ${_M} && _Trace 'MkDir return. (%s)' "${_File_rv}"
+  return ${_File_rv}
+}
+
 # Open a file, lock it, and assiciate the path with a file ID
 #
 # Syntax: Open [-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <timeout>] <file_path>
 #
 # Example: Open -1 -c new_file
 #
-# Result: the lock (file) associated with the file ID is unlocked (removed) and
+# Result: The lock (file) associated with the file ID is unlocked (removed) and
 # the file association is removed.
 #
 # open
@@ -703,25 +791,25 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
   local _File_z
 
   ${_M} && _Trace 'Process Open options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':0123456789abB:cm:t:w:' _o
+  while getopts ':0123456789abB:cm:t:w:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       0)
         ${_M} && _Trace 'File ID. (10)'
         _File_i=10
         ;;
 
       [1-9])
-        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_o}"
-        _File_i="${_File_ip}${_o}"
+        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
+        _File_i="${_File_ip}${_opt}"
         ;;
 
       a|c)
-        ${_M} && _Trace 'File mode. (%s)' "${_o}"
-        [[ 'a' == "${_o}" ]] && _File_c=false || _File_c=true
+        ${_M} && _Trace 'File mode. (%s)' "${_opt}"
+        [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
         ;;
 
       b)
@@ -837,7 +925,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       ${_M} && _Trace 'Wait for lock file removal. (%s)' "${_File_e}"
       sleep "0.1$((RANDOM % 10))"
     done
-    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
+    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
     [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
     [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
     printf '%s\n' "${_File_n}.lock" >"${_File_d}/${_File_n##*/}.lock"
@@ -869,12 +957,12 @@ PathMatches () { # [-P] <path_specification_1> <path_specification_2>
   local _File_p=false
 
   ${_M} && _Trace 'Process PathMatches options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':P' _o
+  while getopts ':P' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       P)
         ${_M} && _Trace 'Path match.'
         _File_p=true
@@ -922,12 +1010,12 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
   local _File_f
 
   ${_M} && _Trace 'Process RemoveFileList options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':f' _o
+  while getopts ':f' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       f)
         ${_M} && _Trace 'Force remove.'
         _File_f='-f'
@@ -1012,26 +1100,26 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
   local _File_rv=0
 
   ${_M} && _Trace 'Process Write options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':0123456789acf:p:r:' _o
+  while getopts ':0123456789acf:p:r:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       0)
         ${_M} && _Trace 'File ID. (10)'
         _File_i=10
         ;;
 
       [1-9])
-        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_o}"
-        _File_i="${_File_ip}${_o}"
+        ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
+        _File_i="${_File_ip}${_opt}"
         [[ -z "${_File_fd[${_File_i}]}" ]] && Tell -E 'File ID not open. (%s)' "${_File_i}"
         ;;
 
       a|c)
-        ${_M} && _Trace 'File mode. (%s)' "${_o}"
-        [[ 'a' == "${_o}" ]] && _File_c=false || _File_c=true
+        ${_M} && _Trace 'File mode. (%s)' "${_opt}"
+        [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
         ;;
 
       f)

@@ -28,7 +28,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.834 1.6
+Version -r 2.000 1.7
 
 # load mods
 LoadMod File
@@ -36,7 +36,7 @@ LoadMod File
 ##### configuration
 
 # defaults
-MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.env/share/doc"
+MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.local/env/share/doc"
 ${ZSH} && docpath=( "${(@s[:])MLESSPATH}" ) || IFS=: docpath=( ${MLESSPATH} )
 width=${COLUMNS:-80}
 rule=; for i in {1..$((width - 1))}; do rule+='_'; done

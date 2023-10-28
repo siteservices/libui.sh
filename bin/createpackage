@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.835 1.6
+Version -r 2.000 1.7
 
 # load mods
 LoadMod File
@@ -41,11 +41,12 @@ LoadMod Package
 # defaults
 files=( )
 excludes=(
+  '*~'
+  '.*~'
   '.*.sw?'
   '*.pyc'
   '.DS_Store'
   '.git'
-  '.gitignore'
 )
 GetTmp tmpdir
 GetTmp -f tmpfile

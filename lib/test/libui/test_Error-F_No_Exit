@@ -7,10 +7,6 @@
 
 test_Error-F_No_Exit () {
   LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
   LibuiPerformTest 'Error -F "Test 1."'
   LibuiValidateTest ${?} 1 "${TJBL}${TError}ERROR: Test 1.${T}${TCEL}"
   return ${?}

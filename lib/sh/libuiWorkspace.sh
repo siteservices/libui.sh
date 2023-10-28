@@ -27,11 +27,11 @@
 #
 #####
 
-Version -r 1.834 -m 1.7
+Version -r 2.000 -m 2.0
 
 # defaults
-_WS_wsfile="${_WS_wsfile:-${HOME}/.workspace}"
-_WS_wsenv="${_WS_wsenv:-${HOME}/.wsenv}"
+_WS_wsfile="${_WS_wsfile:-${HOME}/.config/workspace}"
+_WS_wsenv="${_WS_wsenv:-${HOME}/.config/wsenv}"
 _WS_wsenvext="${_WS_wsenvext:-.wsenv}"
 
 # load mods
@@ -43,7 +43,8 @@ LoadMod File
 #
 # Example: ValidateWorkspace
 #
-# Result: Configures and verifies the workspace. Sources ~/.workspace if needed.
+# Result: Configures and verifies the workspace. Sources ~/.config/workspace if
+# needed.
 #
 # Options:
 #   -n - Check workspace but do not make changes (used by setup)
@@ -51,8 +52,9 @@ LoadMod File
 #
 # Note: If a WORKSPACE parameter is not provided, the path provided in the
 # WORKSPACE environment variable will be used. If the WORKSPACE environment
-# variable is not defined, the ~/.workspace file will be sourced (to define
-# WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
+# variable is not defined, the ~/.config/workspace file will be sourced (to
+# define WORKSPACE). If WORKSPACE remains undefined, the current directory is
+# used.
 #
 UICMD+=( 'ValidateWorkspace' )
 ValidateWorkspace () { # [-n|-w]

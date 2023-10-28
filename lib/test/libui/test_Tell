@@ -7,10 +7,6 @@
 
 test_Tell () {
   LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
   LibuiPerformTest 'Tell "Test 1."'
   LibuiValidateTest ${?} 0 "${TJBL}${TTell}Test 1.${T}${TCEL}"
   return ${?}

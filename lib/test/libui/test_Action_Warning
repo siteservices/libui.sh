@@ -7,7 +7,7 @@
 
 test_Action_Warning () {
   LibuiPerformTest 'Action "false"'
-  LibuiValidateTest ${?} 1 "WARNING: (Action) Failure while evaluating command."
+  LibuiValidateTest ${?} 1 "WARNING: (Action) Failure while evaluating command. (false)"
   return ${?}
 }
 

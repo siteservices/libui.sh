@@ -15,7 +15,7 @@ test_Help () {
 helptext="
 USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
-  -c  Config           - Create default configuration file \"${HOME}/.libui/libui.conf\". (config: false)
+  -c  Config           - Create default configuration file \"${HOME}/.config/libui/libui.conf\". (config: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
   -e  Execution        - Specify shell for regression testing (otherwise both bash and zsh). (shells: zsh, bash)
   -g  Group            - Make installed files / directories group writable. (group: false)
@@ -36,7 +36,7 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
   -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
   -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
   -H  Help             - Display usage message, also available with -h. (help: true)
-  -X  XOption          - XOption info. (level: 0, confirm: false, force: false, noaction: false, quiet: false, yes: false, profile: )
+  -X  XOption          - XOption info. (level: 0, confirm: false, force: false, overwrite: false, noaction: false, quiet: false, yes: false, profile: )
         0 - No debug actions.
         1 - Verify before executing Exit handlers.
         2 - Verbose actions.
@@ -50,6 +50,7 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
         f - Force Actions.
         h - Display this debug help.
         n - Show but do not perform Actions.
+        o - Overwrite mode.
         q - Quiet operation.
         v - Version information.
         y - Answer all question with the default or \"yes\".

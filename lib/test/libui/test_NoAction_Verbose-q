@@ -6,7 +6,7 @@
 #####
 
 test_NoAction_Verbose-q () {
-  LibuiPerformTest 'Action -q "Test question." "ls /tmp.question" 5>&1'
+  LibuiPerformTest 'Action -q "Test question." "ls /tmp.question" 4>&1'
   LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.question \(PWD: .*\)'
   return ${?}
 }

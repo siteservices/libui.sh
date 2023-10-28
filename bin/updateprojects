@@ -14,8 +14,8 @@
 #
 # If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
 # environment variable will be used. If the WORKSPACE environment variable is
-# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
-# WORKSPACE remains undefined, the current directory is used.
+# not defined, the ~/.local/workspace file will be sourced (to define
+# WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 # Man page available for this script: man 1 updateprojects
 #
@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.11
+Version -r 2.000 1.11
 
 # load mods
 LoadMod File
@@ -121,7 +121,7 @@ do
         fi
 
         Trace 'Get update status. (%s)' "${tmpdir}/${project}-pull.log"
-        pullstatus=$(< "${tmpdir}/${project}-pull.log")
+        pullstatus=$(<"${tmpdir}/${project}-pull.log")
       fi
 
       Trace 'Check if up to date.'

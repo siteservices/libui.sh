@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd September 1, 2023
+.Dd October 21, 2023
 .Dt LIBUIWORKSPACE.SH 3
 .Os
 .Sh NAME
@@ -52,7 +52,7 @@ Disable the warning about not using the current path.
 .El
 .Pp
 Checks the WORKSPACE environment variable and, if it is not set, sources the
-user's ${HOME}/.workspace file.
+user's ${HOME}/.config/workspace file.
 .Sh EXAMPLES
 Examples include:
 .Bd -literal -offset 4n
@@ -60,7 +60,7 @@ Examples include:
 .Ed
 .Pp
 Checks the WORKSPACE environment variable and, if it is not set, sources the
-user's ${HOME}/.workspace file.
+user's ${HOME}/.config/workspace file.
 .Sh SEE ALSO
 .Xr bash 1 ,
 .Xr zsh 1 ,

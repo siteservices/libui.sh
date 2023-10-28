@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.7
+Version -r 2.000 -m 1.7
 
 # defaults
 command -v bc &> /dev/null && __BC='bc' || __BC='awk "{print $1 - $3}"'

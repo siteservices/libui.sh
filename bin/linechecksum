@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.10
+Version -r 2.000 1.11
 
 # load mods
 LoadMod File
@@ -137,7 +137,7 @@ do
         if AnswerMatches q
         then
           Trace 'Quit %s. (%s)' "${CMD}" 0
-          Exit 2
+          Exit 0
         fi
         ((start = start + iterate))
         ((block = block + iterate))
