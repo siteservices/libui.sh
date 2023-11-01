@@ -6,8 +6,8 @@
 #####
 
 test_GetRealPath_HomeDir () {
-  local mp="${HOME}/.libui"
-  local rp='~/.libui'
+  local mp="${HOME}/.config/libui"
+  local rp='~/.config/libui'
   GetRealPath rp
   LibuiPerformTest 'Tell -- "${rp}"'
   LibuiValidateTest ${?} 0 "${mp}"

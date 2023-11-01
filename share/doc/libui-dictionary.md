@@ -19,7 +19,7 @@ Basic libui library functionality can be extended with the following mods:
 * Syslog (man libuiSyslog.sh) - System Log Support
 * Timer (man libuiTimer.sh) - Libui Timer Support
 * User (man libuiUser.sh) - Libui User Support
-* Utility (man libuiUtility.sh) - Libui Utilities
+* Utility (no man page) - Libui Utilities (libui internal use only)
 * Workspace (man libuiWorkspace.sh) - Workspace Support
 
 Man pages are available for the above: man 3 libui{Mod}.sh
@@ -223,10 +223,10 @@ file path.
 Close [-1..-9] [<file_path>]
 ```
 
-### Confirm (man libui.sh) - Check if in Confirm (-C) mode.
+### Confirm (man libui.sh) - Check if in Confirm (-XC) mode.
 
-Returns 0 if the "-C" (Confirm) option flag was provided on the command line,
-otherwise it returns 1.
+Returns 0 if the "-XC" or "-Xc" (Confirm) option flag was provided on the
+command line, otherwise it returns 1.
 
 ```
 Confirm
@@ -379,10 +379,10 @@ only. It is also possible to flush using the file path.
 Close [-1..-9] [<file_path>]
 ```
 
-### Force (man libui.sh) - Check if in Force (-F) mode.
+### Force (man libui.sh) - Check if in Force (-XF) mode.
 
-Returns 0 if the "-F" (Force) option flag was provided on the command line,
-otherwise it returns 1.
+Returns 0 if the "-XF" or "-Xf" (Force) option flag was provided on the command
+line, otherwise it returns 1.
 
 ```
 Force
@@ -556,6 +556,20 @@ profile.
 LoadProfile <file_path>
 ```
 
+### MkDir (man libuiFile.sh) - Create a directory path with special permissions.
+
+Creates any necessary directories in the provided path and sets the permissions
+according to the provided flags:
+
+* **-g** - set the group ownership of the directories to the provided group
+* **-m** - use the provided mask as the umask when creating the directories
+* **-s** - set the setgid bit for the created directories
+* **-W** - Do not generate a warning on failure
+
+```
+MkDir [-s|-W] [-g <group>] [-m <mask>] <path>
+```
+
 ### Multiuser (man libuiMultiuser.sh) - Check if multiuser mode is enabled.
 
 Returns 0 if multiuser mode has been enabled (by loading the Multiuser mod),
@@ -565,10 +579,10 @@ otherwise it returns 1.
 Multiuser
 ```
 
-### NoAction (man libui.sh) - Check if in No Action (-N) mode.
+### NoAction (man libui.sh) - Check if in No Action (-XN) mode.
 
-Returns 0 if the "-N" (No Action) option flag was provided on the command line,
-otherwise it returns 1.
+Returns 0 if the "-XN" or "-Xn" (No Action) option flag was provided on the
+command line, otherwise it returns 1.
 
 ```
 NoAction
@@ -594,6 +608,19 @@ should be closed using the Close command.
 Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
 ```
 
+### Overwrite (man libui.sh) - Check if in Overwrite (-XO) mode.
+
+Returns 0 if the "-XO" or "-Xo" (overwrite) option flag was provided on the
+command line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option
+flags can be used to enable and disable the Yes mode within the script.
+
+* **-e** - enable "Yes" mode, i.e., auto answer questions with default or "yes"
+* **-E** - disable "Yes" mode
+
+```
+Overwrite [-e|-E]
+```
+
 ### PathMatches (man libuiFile.sh) - Compares two provided filesystem paths.
 
 Compares the absolute path for provided path specifications, bypassing any
@@ -616,10 +643,10 @@ middle of a task.
 PauseSpinner
 ```
 
-### Quiet (man libui.sh) - Check if in Quiet (-Q) mode.
+### Quiet (man libui.sh) - Check if in Quiet (-XQ) mode.
 
-Returns 0 if the "-Q" (Quiet) option flag was provided on the command line,
-otherwise it returns 1.
+Returns 0 if the "-XQ" or "-Xq" (Quiet) option flag was provided on the command
+line, otherwise it returns 1.
 
 ```
 Quiet
@@ -896,10 +923,10 @@ environment variables that are used by other libui supported commands.
 ValidateWorkspace [-w]
 ```
 
-### Verbose (man libui.sh) - Check if in Verbose (-V) mode.
+### Verbose (man libui.sh) - Check if in Verbose (-XV) mode.
 
-Returns 0 if the "-V" (Verbose) option flag was provided on the command line,
-otherwise it returns 1.
+Returns 0 if the "-XV" or "-Xv" (Verbose) option flag was provided on the
+command line, otherwise it returns 1.
 
 ```
 Verbose
@@ -989,11 +1016,11 @@ flags.
 Write [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker>] <data>
 ```
 
-### Yes (man libui.sh) - Check if in Yes (-Y) mode.
+### Yes (man libui.sh) - Check if in Yes (-XY) mode.
 
-Returns 0 if the "-Y" (Yes) option flag was provided on the command line,
-otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option flags can be
-used to enable and disable the Yes feature within the script.
+Returns 0 if the "-XY" or "-Xy" (Yes) option flag was provided on the command
+line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option
+flags can be used to enable and disable the Yes mode within the script.
 
 * **-e** - enable "Yes" mode, i.e., auto answer questions with default or "yes"
 * **-E** - disable "Yes" mode

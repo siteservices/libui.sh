@@ -7,10 +7,6 @@
 
 test_Warn () {
   LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
   LibuiPerformTest 'Warn "Test 1."'
   LibuiValidateTest ${?} 1 "${TJBL}${TWarn}WARNING: Test 1.${T}${TCEL}"
   return ${?}

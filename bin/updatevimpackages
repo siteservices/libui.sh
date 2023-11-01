@@ -14,8 +14,8 @@
 #
 # If a WORKSPACE parameter is not provided, the path provided in the WORKSPACE
 # environment variable will be used. If the WORKSPACE environment variable is
-# not defined, the ~/.workspace file will be sourced (to define WORKSPACE). If
-# WORKSPACE remains undefined, the current directory is used.
+# not defined, the ~/.local/workspace file will be sourced (to define
+# WORKSPACE). If WORKSPACE remains undefined, the current directory is used.
 #
 # Man page available for this script: man 1 updatevimpackages
 #
@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 1.822 1.6
+Version -r 2.000 1.6
 
 # load mods
 LoadMod File
@@ -123,7 +123,7 @@ do
       fi
 
       Trace 'Check if up to date.'
-      pullstatus=$(< "${tmpdir}/${package}-pull.log")
+      pullstatus=$(<"${tmpdir}/${package}-pull.log")
       if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
       then
         Trace 'Get source file list. (%s)' "${PWD}"

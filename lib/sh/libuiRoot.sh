@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.822 -m 1.1
+Version -r 2.000 -m 1.1
 
 # defaults
 _allowroot=false

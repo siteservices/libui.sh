@@ -7,10 +7,6 @@
 
 test_Display () {
   LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  TERMINAL="${t}"
   LibuiPerformTest "printf 'Terminal: ${Db0},${Dbr},${Dbg},${Dby},${Dbb},${Dbm},${Dbc},${Db7},${DB0},${DBr},${DBg},${DBy},${DBb},${DBm},${DBc},${DB7},${Df0},${Dfr},${Dfg},${Dfy},${Dfb},${Dfm},${Dfc},${Df7},${DF0},${DFr},${DFg},${DFy},${DFb},${DFm},${DFc},${DF7},${Db},${Dd},${Dsu},${Deu},${Dr},${Dss},${Des},${D},${D0},${D1},${D2},${D3},${D4},${D5},${D6},${D7},${D8},${D9},${DAction},${DAlarm},${DAlert},${DAnswer},${DCaution},${DConfirm},${DError},${DInfo},${DOptions},${DQuestion},${DSpinner},${DTell},${DTrace},${DWarn},${D}.'"
   LibuiValidateTest ${?} 0 "Terminal: ${Tb0},${Tbr},${Tbg},${Tby},${Tbb},${Tbm},${Tbc},${Tb7},${TB0},${TBr},${TBg},${TBy},${TBb},${TBm},${TBc},${TB7},${Tf0},${Tfr},${Tfg},${Tfy},${Tfb},${Tfm},${Tfc},${Tf7},${TF0},${TFr},${TFg},${TFy},${TFb},${TFm},${TFc},${TF7},${Tb},${Td},${Tsu},${Teu},${Tr},${Tss},${Tes},${T},${T0},${T1},${T2},${T3},${T4},${T5},${T6},${T7},${T8},${T9},${TAction},${TAlarm},${TAlert},${TAnswer},${TCaution},${TConfirm},${TError},${TInfo},${TOptions},${TQuestion},${TSpinner},${TTell},${TTrace},${TWarn},${T}."
   return ${?}

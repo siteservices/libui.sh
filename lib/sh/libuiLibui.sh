@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 1.835 -m 1.11
+Version -r 2.000 -m 1.12
 
 ##### configuration
 
@@ -52,15 +52,15 @@ export LC_ALL=POSIX
 ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
-_Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/var/libui/test}"
+_Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/lib/test/libui}"
 _Util_libuivar="${_Util_libuiroot}/var/libui"
 _Util_installenv='SHLIBPATH="${d}/lib/sh"'
 _Util_installer='${sh} ${d}/lib/sh/libui'
 _Util_groupmode='g+wX'
-_Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_DOTFILE}/lock}"
-_Util_configfile="${LIBUI_DOTFILE}/libui.conf"
-_Util_dcprefix="${LIBUI_DOTFILE}/display-"
-_Util_statsfile="${LIBUI_DOTFILE}/stats"
+_Util_configfile="${LIBUI_CONFIG}/libui.conf"
+_Util_dcprefix="${LIBUI_CONFIG}/display-"
+_Util_statsfile="${LIBUI_LOCAL}/stats"
+_Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
 _Util_workdir="${PWD}"
 GetTmp _Util_tmpdir
 
@@ -380,7 +380,6 @@ LibuiDemo () {
   if ${TERMINAL}
   then
     Tell 'Available display codes:'
-    _Terminal
     [[ -z "${DCS}" ]] && Tell -W 'Clear screen (DCS) not defined.' || printf '\t%s\n' 'Clear screen (DCS).'
     [[ -z "${DCEL}" ]] && Tell -W 'Clear to end of line (DCEL) not defined.' || printf '\t%s\n' 'Clear to end of line (DCEL).'
     [[ -z "${DCES}" ]] && Tell -W 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'Clear to end of screen (DCES).'
@@ -448,16 +447,16 @@ LibuiDemo () {
   Tell "\t${DWarn}Warning format."
 
   Tell '\nDisplay modes:'
-  Tell "\t${D0}Display mode %d." 0
-  Tell "\t${D1}Display mode %d." 1
-  Tell "\t${D2}Display mode %d." 2
-  Tell "\t${D3}Display mode %d." 3
-  Tell "\t${D4}Display mode %d." 4
-  Tell "\t${D5}Display mode %d." 5
-  Tell "\t${D6}Display mode %d." 6
-  Tell "\t${D7}Display mode %d." 7
-  Tell "\t${D8}Display mode %d." 8
-  Tell "\t${D9}Display mode %d." 9
+  Tell "\t${D0}Display mode %d. (D0)" 0
+  Tell "\t${D1}Display mode %d. (D1)" 1
+  Tell "\t${D2}Display mode %d. (D2)" 2
+  Tell "\t${D3}Display mode %d. (D3)" 3
+  Tell "\t${D4}Display mode %d. (D4)" 4
+  Tell "\t${D5}Display mode %d. (D5)" 5
+  Tell "\t${D6}Display mode %d. (D6)" 6
+  Tell "\t${D7}Display mode %d. (D7)" 7
+  Tell "\t${D8}Display mode %d. (D8)" 8
+  Tell "\t${D9}Display mode %d. (D9)" 9
 
   Tell '\nExecution environment:'
   Tell "\tAssociative array (AA):          ${DFc}%s${D}" "${AA}"
@@ -468,6 +467,7 @@ LibuiDemo () {
 # Tell "\tCursor position (CROW, CCOL):    ${DFc}%s${D}" "${CROW}, ${CCOL}"
   Tell "\tDomain name (DOMAIN):            ${DFc}%s${D}" "${DOMAIN}"
   Tell "\tEffective UID (EUID):            ${DFc}%s${D} (note: consumed, not generated)" "${EUID}"
+  Tell "\tPrimary Group (GROUP):           ${DFc}%s${D}" "${GROUP}"
   Tell "\tHost name (HOST):                ${DFc}%s${D}" "${HOST}"
   Tell "\tPath of libui library (LIBUI):   ${DFc}%s${D}" "${LIBUI}"
   Tell "\tMax integer (MAXINT):            ${DFc}%s${D}" "${MAXINT}"
@@ -582,7 +582,7 @@ LibuiUnlock () {
       local _Util_file
       for _Util_file in "${_Util_lockfiles[@]}"
       do
-        _Util_lockfile="$(<${_Util_file})"
+        _Util_lockfile="$(<"${_Util_file}")"
         ${_M} && _Trace 'Remove lockfile %s.' "${_Util_lockfile}"
         if [[ -e "${_Util_lockfile}" ]]
         then
@@ -761,7 +761,7 @@ LibuiInstall () {
 
     Tell -A 'Installation of libui into %s complete.' "${COMMONROOT}"
     GetRealPath COMMONROOT
-    cat << EOF
+    Quiet || cat << EOF
 To use the library, the following should be added to your environment:
 
   * Add "${COMMONROOT}/lib/sh" to your PATH to access libui and libui.sh.
@@ -889,7 +889,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
       Tell -C 'Local files and commonroot files are different. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
     fi
   else
-    Tell -A 'Verify complete, no file differences. (%s == %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    Tell -A 'Verify complete, no file differences. (%s = %s)' "${COMMONROOT}" "${_Util_libuiroot}"
   fi
 
   ${_M} && _Trace 'Check for unify. (%s)' "${_Util_unify}"
@@ -1048,6 +1048,7 @@ _LibuiProcess () {
     ${_M} && _Trace 'Display usage.'
     LoadMod Info
     UsageInfo
+    true # disable error wait
   fi
   local _Util_rv=${?}
 

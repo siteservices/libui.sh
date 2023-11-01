@@ -32,14 +32,14 @@
 ##### libui setup
 
 # script version
-Version -r 1.832 1.14
+Version -r 2.000 1.15
 
 # load mods
 
 ##### configuration
 
 # defaults
-installdir=".env/var/installed"
+installdir=".local/env/var/installed"
 installts="${installdir}/date"
 manifest="${installdir}/manifest"
 previnst=0 # 1970-01-01
@@ -72,7 +72,7 @@ InitCallback () {
   if [[ -e "${src}/${installts}" ]]
   then
     Trace 'Get previous install timestamp. (%s)' "${src}/${installts}"
-    previnst=$(< "${src}/${installts}")
+    previnst=$(<"${src}/${installts}")
     Trace 'Previous installation timestamp: %s' "${previnst}"
   else
     if Verify 'No installation date was found. Proceed at risk?'
@@ -92,7 +92,7 @@ InitCallback () {
       Trace 'Check for existing manifest. (%s)' "${manifest}"
       if [[ -f "${src}/${manifest}" ]]
       then
-        srcfiles=( $(< "${src}/${manifest}") )
+        srcfiles=( $(<"${src}/${manifest}") )
       else
         Error 'The source directory does not have a manifest file. (%s)' "${manifest}"
       fi

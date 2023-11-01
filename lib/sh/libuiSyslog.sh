@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.2
+Version -r 2.000 -m 1.2
 
 # defaults
 _Syslog_default_priority='user.notice'
@@ -49,12 +49,12 @@ Syslog () { # [-p <priority>] [<message>]
   local _Syslog_p="${LIBUI_SYSLOG_PRIORITY-${_Syslog_default_priority}}"
 
   ${_M} && _Trace 'Process Syslog options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':p:' _o
+  while getopts ':p:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       p)
         ${_M} && _Trace 'Syslog priority. (%s)' "${OPTARG}"
         _Syslog_p="${OPTARG}"

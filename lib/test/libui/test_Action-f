@@ -7,7 +7,7 @@
 
 test_Action-f () {
   LibuiPerformTest 'Action -f "false"'
-  LibuiValidateTest ${?} 1 "ERROR: (Action) Failure while evaluating command."
+  LibuiValidateTest ${?} 1 "ERROR: (Action) Failure while evaluating command. (false)"
   return ${?}
 }
 

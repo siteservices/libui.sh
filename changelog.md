@@ -1,5 +1,26 @@
 # Change Log
 
+## v2.000
+
+### New Features / Enhancements
+
+* Add new MkDir command for making directory paths with special permissions.
+* Add -o (Output File Descriptor) to both Tell and Ask commands.
+* Add -XO|-Xo (Overwrite) mode libui standard options and Overwrite command.
+* Update the libui utility to support the configuration file changes.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Change linechecksum "quit" exit value from failure to success.
+* The createpackage command now includes .gitignore files.
+
+### Incompatibilities
+
+* Move libui configuration to .config/libui.
+* Move libui stats and logs to .local/libui.
+
 ## v1.835
 
 ### New Features / Enhancements

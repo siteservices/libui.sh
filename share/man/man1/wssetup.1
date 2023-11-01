@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd August 21, 2023
+.Dd October 31, 2023
 .Dt WSSETUP 1
 .Os
 .Sh NAME
@@ -25,8 +25,8 @@
 .Op Fl X Ar <option>
 .Ar <workspace>
 .Sh DESCRIPTION
-Used to create a ~/.workspace file containing the information necessary to set
-the workspace when accessed by workspace knowledgable tools and scripts.
+Used to create a ~/.config/workspace file containing the information necessary
+to set the workspace when accessed by workspace knowledgable tools and scripts.
 .Pp
 The
 .Nm
@@ -54,7 +54,7 @@ or
 (Help) and
 .Fl X Ar <option>
 (XOption).
-XOptions include Confirm, Force, NoAction, Quiet, Version, and Yes.
+XOptions include Confirm, Force, NoAction, Overwrite, Quiet, Version, and Yes.
 They are enabled using the first letter of the option (lower or upper case) as
 .Ar <option> .
 Please see
@@ -67,9 +67,9 @@ or
 .Fl H
 (Help) option.
 .Sh FILES
-The script creates a .workspace file in the user's home directory.
-The .workspace file contains shell commands that configure the workspace, in
-particular, commands to set the
+The script creates a .config/workspace file in the user's home directory.
+The .config/workspace file contains shell commands that configure the workspace,
+in particular, commands to set the
 .Ev WORKSPACE
 environment variable.
 .Sh EXAMPLES
@@ -78,8 +78,8 @@ Some example uses include:
 .Sy wssetup path/to/workspace
 .Ed
 .Pp
-This creates a .workspace file in the user's home directory that contains shell
-commands to configure the workspace and set the
+This creates a .config/workspace file in the user's home directory that contains
+shell commands to configure the workspace and set the
 .Ev WORKSPACE
 environment variable to contain the absolute
 .Ar <path/to/workspace> .

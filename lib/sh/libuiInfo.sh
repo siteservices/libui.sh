@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.835 -m 1.7
+Version -r 2.000 -m 1.8
 
 # defaults
 
@@ -50,7 +50,7 @@ UsageInfo () {
   _ok+=( 'Help' 'XOption' )
   _od+=(
     'Display usage message, also available with -h. (help: true)'
-    "XOption info. (level: \${_xdb}, confirm: ${_confirm}, force: ${_force}, noaction: ${_noaction}, quiet: ${_quiet}, yes: ${_yes}, profile: ${_profile})"
+    "XOption info. (level: \${_xdb}, confirm: ${_confirm}, force: ${_force}, overwrite: ${_overwrite}, noaction: ${_noaction}, quiet: ${_quiet}, yes: ${_yes}, profile: ${_profile})"
   )
   _osm+=( false false )
   _opm+=( false )
@@ -141,6 +141,7 @@ UsageInfo () {
         f - Force Actions.
         h - Display this debug help.
         n - Show but do not perform Actions.
+        o - Overwrite mode.
         q - Quiet operation.
         v - Version information.
         y - Answer all question with the default or "yes".

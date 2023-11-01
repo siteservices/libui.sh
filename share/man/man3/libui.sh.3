@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd September 4, 2023
+.Dd October 30, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -95,39 +95,39 @@ When provided, the specified debug level and all lower levels are enabled.
 The levels are:
 .Pp
 .Bl -tag -offset 4n -width 4n  -compact
-.It Sy 0
+.It Sy X0
 No debug actions.
-.It Sy 1
+.It Sy X1
 Wait debugging enabled.
 This will pause before executing any Exit handlers, i.e., before cleaning up.
-.It Sy 2
+.It Sy X2
 Verbose actions enabled.
-.It Sy 3
+.It Sy X3
 Local debugging enabled.
-.It Sy 5
+.It Sy X5
 Profiling enabled, i.e., provide a timestamp in trace messages.
-.It Sy 6
+.It Sy X6
 Context debugging enabled, i.e., provide user script file and line numbers in
 trace messages.
-.It Sy 7
+.It Sy X7
 Remote debugging enabled.
-.It Sy 8
+.It Sy X8
 Mod debugging enabled.
-.It Sy 9
+.It Sy X9
 Library internals debugging enabled.
-.It Sy c Ns No | Ns Sy C
+.It Sy XC Ns | Ns Sy \&Xc
 (Confirm) Confirm operations before performing them.
 This also sets
 .Sx ${FMFLAGS}
 to "\-i".
-.It Sy f Ns No | Ns Sy F
+.It Sy XF Ns | Ns Sy Xf
 (Force) Force file operations.
 This also sets
 .Sx ${FMFLAGS}
 to "\-f".
-.It Sy n Ns No | Ns Sy N
+.It Sy XN Ns | Ns Sy Xn
 (NoAction) Show operations without performing them.
-.It Sy q Ns No | Ns Sy Q
+.It Sy XQ Ns | Ns Sy Xq
 (Quiet) Execute quietly.
 Do not prompt user with questions presented by the
 .Sx Ask ,
@@ -135,9 +135,9 @@ Do not prompt user with questions presented by the
 or,
 .Sx Verify
 commands.
-.It Sy v Ns No | Ns Sy V
+.It Sy XV Ns | Ns Sy Xv
 (Version) Display version information.
-.It Sy y Ns No | Ns Sy Y
+.It Sy XY Ns | Ns Sy Xy
 (Yes) Provide the default answer or "yes" to questions defined by the
 .Sx Ask ,
 .Sx Action ,
@@ -536,7 +536,7 @@ option.
 .It Fl m
 Allow the option to have multiple value entries.
 Each value entry must be preceded with the option switch (i.e., the
-.Ar <command_line_option> ).
+.Ar <command_line_option> ) .
 .Pp
 If the option is set to allow multiple values, the associated variable (via the
 .Fl n
@@ -1003,7 +1003,7 @@ display format which by default is magenta.
 .Pp
 If
 .Sy Action
-is called with no arguments, it will return 0 (true) if the last
+is called with no arguments, it will return 0 (true) if the last executed
 .Sy Action
 command was successful (returned 0), otherwise it will return 1 (false).
 .Pp
@@ -1031,7 +1031,7 @@ Quotes within the quoted command_string_to_evaluate will need to be escaped with
 a backslash (\e).
 .Pp
 Note: If local debugging is enabled using the
-.Fl X
+.Fl X\&?
 (XOption) options, the
 .Ar <command_string_to_evaluate>
 will also be displayed just before evaluation.
@@ -1050,7 +1050,7 @@ The following command sends an alert message to the user:
 .Pp
 Sends an "alert" message to the user using the
 .Sx Tell
-.Fl -A
+.Fl A
 (Alert) command.
 See the
 .Sx Tell
@@ -1200,6 +1200,10 @@ and the command's return value in a variable with the name provided in
 The
 .Sy Capture
 command also returns the executed command's return value.
+.Pp
+Note: The
+.Sx Capture
+command temporarily uses file descriptors 5 and 6 to capture STDOUT and STDERR.
 .Ss Caution
 The following command sends an caution message to the user:
 .Bd -ragged -offset 4n
@@ -1212,7 +1216,7 @@ The following command sends an caution message to the user:
 .Pp
 Sends a "caution" message to the user using the
 .Sx Tell
-.Fl -C
+.Fl C
 (Caution) command.
 See the
 .Sx Tell
@@ -1226,10 +1230,12 @@ The following command indicates if the
 .Ed
 .Pp
 Returns 0 (true) if the global
-.Fl C
+.Fl XC
+or
+.Fl \&Xc
 (Confirm) option was used with the main script, otherwise returns 1 (false).
 See the
-.Fl C
+.Fl XC
 (Confirm)
 .Nm
 standard command line option for more information.
@@ -1395,7 +1401,7 @@ The following command sends an error message to the user:
 .Pp
 Normally sends an "error" message to the user using the
 .Sx Tell
-.Fl -E
+.Fl E
 (Error) command.
 See the
 .Sx Tell
@@ -1419,11 +1425,13 @@ The following command indicates if the
 .Ed
 .Pp
 Returns 0 (true) if the global
-.Fl F
+.Fl XF
+or
+.Fl Xf
 (Force) command line option was used with the main script, otherwise returns 1
 (false).
 See the
-.Fl F
+.Fl XF
 (Force)
 .Nm
 standard command line option for more information.
@@ -1439,7 +1447,7 @@ The following command sends an info message to the user:
 .Pp
 Sends an "info" message to the user using the
 .Sx Tell
-.Fl -I -n
+.Fl I Fl n
 (Info and No Newline) command.
 See the
 .Sx Tell
@@ -1480,11 +1488,47 @@ The following command indicates if the
 .Ed
 .Pp
 Returns 0 (true) if the global
-.Fl N
+.Fl XN
+or
+.Fl Xn
 (No Action) option was provided to the main script, otherwise returns 1 (false).
 See the
-.Fl N
+.Fl XN
 (No Action)
+.Nm
+standard command line option for more information.
+.Ss Overwrite
+The following command indicates if the
+.Fl XO
+or
+.Fl \&Xo
+(Overwrite) command line option was used with the main script:
+.Bd -ragged -offset 4n
+.Sy Overwrite
+.Op Fl e Fl E
+.Pp
+.Ed
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl e
+Enable "yes" in the script as if the global
+.Fl XO
+(Overwrite) option was used with the main script.
+.It Fl E
+Disable "yes" in the script as if the global
+.Fl XO
+(Overwrite) option was not used with the main script.
+.El
+.Pp
+Returns 0 (true) if the
+.Fl XO
+or
+.Fl \&Xo
+(Overwrite) option was used with (or enabled within) the main script, otherwise
+returns 1 (false).
+See the
+.Fl X O
+(Overwrite)
 .Nm
 standard command line option for more information.
 .Ss Quiet
@@ -1579,16 +1623,29 @@ display format which by default is yellow on a red background.
 Also registers an error within the library that can affect future Actions.
 See the
 .Sx Action
-.Fl -F
+.Fl F
 (Skip on Failure)
 and
-.Fl -R
+.Fl R
 (Reset Failure)
 options.
 .Pp
 If the
 .Fl r
 (Return) option is not provided, the return value will be 1.
+.It Fl f
+Force an
+.Sy Exit
+after displaying the (ERROR) message text by calling the
+.Sx Exit
+command.
+This will return the current return value unless the
+.Fl r
+command is called.
+.It Fl F
+Do not force an
+.Sy Exit
+after displaying the (ERROR) message text.
 .It Fl i
 .Sy Tell
 in place.
@@ -1683,6 +1740,16 @@ prior to displaying the
 On color terminals (TTY), this text will be displayed using the
 .Sx ${DTell}
 display format which by default is white.
+.Pp
+Note: When
+.Sy Tell
+is used for an error or warning, and STDERR is redirected and/or not on a TTY,
+.Sy Tell
+will attempt to send the output to both STDERR and to a duplicated STDERR file
+descriptor.
+This is done in an attempt to send the user the error message.
+It may result in the display of two error messages if the redirected STDERR also
+goes to the terminal.
 .Ss Trace
 The following command builds a trace message that can be used to help debug a
 script:
@@ -1692,7 +1759,7 @@ script:
 .Ed
 .Pp
 If local debugging is enabled using the
-.Fl X
+.Fl X\&?
 (XOption) options, the
 .Ar <message>
 will be displayed.
@@ -1708,25 +1775,25 @@ script, similar to a comment in a well-commented script.
 In fact, the recommendation is that the Trace be used as a replacement for good
 comments.
 This will enable enhanced debugging when the
-.Fl X
+.Fl X\&?
 (XOption) option is provided.
 .Ss Verbose
 The following command indicates if the
-.Fl X 2
+.Fl X2
 (Verbose XOption) command line option was used with the main script:
 .Bd -ragged -offset 4n
 .Sy Verbose
 .Ed
 .Pp
 Returns 0 (true) if the global
-.Fl X 2
+.Fl X2
 (Verbose XOption) option (or higher XOption value) was used with the main script,
 otherwise returns 1 (false).
 See the
-.Fl S
+.Fl X\&?
 (XOption)
 .Nm
-standard command line option and the
+standard command line options and the
 .Sx DEBUGGING
 section below for more information.
 .Ss Verify
@@ -1857,14 +1924,16 @@ The following command sends a warning message to the user:
 .Pp
 Sends a "warning" message to the user using the
 .Sx Tell
-.Fl -W
+.Fl W
 (Warn) command.
 See the
 .Sx Tell
 command for more information.
 .Ss Yes
 The following command indicates if the
-.Fl Y
+.Fl XY
+or
+.Fl Xy
 (Yes) command line option was used with the main script:
 .Bd -ragged -offset 4n
 .Sy Yes
@@ -1875,20 +1944,22 @@ The command options are as follows:
 .Bl -tag -offset 4n -width 4n
 .It Fl e
 Enable "yes" in the script as if the global
-.Fl Y
+.Fl XY
 (Yes) option was used with the main script.
 .It Fl E
 Disable "yes" in the script as if the global
-.Fl Y
+.Fl XY
 (Yes) option was not used with the main script.
 .El
 .Pp
 Returns 0 (true) if the
-.Fl Y
+.Fl XY
+or
+.Fl Xy
 (Yes) option was used with (or enabled within) the main script, otherwise
 returns 1 (false).
 See the
-.Fl Y
+.Fl XY
 (Yes)
 .Nm
 standard command line option for more information.
@@ -2451,21 +2522,21 @@ Ledger Log Enable / Disable -
 .It Sy LIBUI_LEDGERFILE= Ns Sq Ar <path>
 Ledger Log File Path -
 # the default is
-.Sy ${LIBUI_DOTFILE}/ledger
+.Sy ${LIBUI_LOCAL}/ledger
 .It Sy LIBUI_STATS=true
 Stats Collection Enable / Disable -
 # to enable / disable the stats file
 .It Sy LIBUI_STATSFILE= Ns Sq Ar <path>
 Stats File Path -
 # the default is
-.Sy ${LIBUI_DOTFILE}/stats
+.Sy ${LIBUI_LOCAL}/stats
 .It Sy LIBUI_TRACE=false
 Trace Log Enable / Disable -
 # to enable / disable the trace file
 .It Sy LIBUI_TRACEFILE= Ns Sq Ar <path>
 Trace Log File Path -
 # the default is
-.Sy ${LIBUI_DOTFILE}/trace
+.Sy ${LIBUI_LOCAL}/trace
 .El
 .Pp
 LIBUI_LEDGER and LIBUI_STATS are enabled (set to "true") by default.
@@ -2534,19 +2605,19 @@ option).
 .Sh FILES
 The
 .Nm
-library uses a dotfile directory for storage of cache and data files.
+library uses a config directory for storage of configuration files.
 The directory path can be controlled by setting the
-.Ev LIBUI_DOTFILE
+.Ev LIBUI_CONFIG
 environment variable.
 The default path for the
-.Ev LIBUI_DOTFILE
+.Ev LIBUI_CONFIG
 environment variable is
-.Sy ${HOME}/.libui .
+.Sy ${HOME}/.config/libui .
 .Pp
 Upon startup, the
 .Nm
 library sources the global
-.Sy ${LIBUI_DOTFILE}/libui.conf
+.Sy ${LIBUI_CONFIG}/libui.conf
 configuration file, if it exists.
 The
 .Sy libui
@@ -2587,7 +2658,7 @@ The
 .Ev LIBUI_HOOKDIR
 environment variable controls the default and global hook files directory.
 The default prefix value is
-.Sy ${LIBUI_DOTFILE}/hook .
+.Sy ${LIBUI_CONFIG}/hook .
 .Pp
 The
 .Ev LIBUI_HOOKPREFIX
@@ -2597,18 +2668,18 @@ The default prefix value is
 .Pp
 The display codes are cached in a display cache file.
 The default path for the display cache file is
-.Sy ${LIBUI_DOTFILE}/display-${TERM} .
+.Sy ${LIBUI_CONFIG}/display-${TERM} .
 If the display cache file does not exist, it will be created.
 To reset display code values, remove the display cache file.
 .Pp
 The default path for the ledger file is
-.Sy ${LIBUI_DOTFILE}/ledger .
+.Sy ${LIBUI_LOCAL}/ledger .
 This can be changed by setting the
 .Ev LIBUI_LEDGERFILE
 environment variable to another path.
 .Pp
 The default path for the trace file is
-.Sy ${LIBUI_DOTFILE}/trace .
+.Sy ${LIBUI_LOCAL}/trace .
 This can be changed by setting the
 .Ev LIBUI_TRACEFILE
 environment variable to another path.
@@ -2623,7 +2694,7 @@ Certain circumstances (e.g.: some crashes) prevent the _Cleanup handler from
 being executed leaving the errant trace file in place.
 .Pp
 The default path for the stats file is
-.Sy ${LIBUI_DOTFILE}/stats .
+.Sy ${LIBUI_LOCAL}/stats .
 This can be changed by setting the
 .Ev LIBUI_STATSFILE
 environment variable to another path.
@@ -2662,8 +2733,18 @@ being executed leaving the temporary directory in place.
 .Sh NOTES
 The
 .Nm
-library duplicates the STDERR file descriptor (2) as file descriptor 4.
-It also uses file descriptor 10 for maintaining statistics and trace log files.
+library duplicates the STDOUT file descriptor (1) as file descriptor 3 and the
+STDERR file descriptor (2) as file descriptor 4.
+These (3 and 4) may be used when the standard file descriptors (1 and 2) are
+redirected.
+.Pp
+The
+.Sx Capture
+command temporarily uses file descriptors 5 and 6 to capture STDOUT and STDERR.
+.Pp
+The
+.Nm
+library also uses file descriptor 10 for maintaining statistics and trace log files.
 .Pp
 The
 .Nm

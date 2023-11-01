@@ -7,11 +7,7 @@
 
 test_Info () {
   LibuiGetDisplayTestValues
-  local t="${TERMINAL}"
-  TERMINAL=true
-  _Terminal
-  LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
-  TERMINAL="${t}"
+  TERMINAL=true LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
   LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}${TJBL}${TJBL}${TInfo}Test 2.${T}${TCEL}${TJBL}"
   return ${?}
 }

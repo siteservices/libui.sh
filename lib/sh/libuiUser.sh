@@ -27,10 +27,10 @@
 #
 #####
 
-Version -r 1.834 -m 1.10
+Version -r 2.000 -m 1.11
 
 # defaults
-userdotfile="${userdotfile:-${HOME}/.user}"
+userdotfile="${userdotfile:-${HOME}/.config/user}"
 defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
 
 # Set user information
@@ -39,7 +39,7 @@ defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
 #
 # Example: _SetUserInfo
 #
-# Result: Ask questions to create the ~/.user file.
+# Result: Ask questions to create the ~/.local/user file.
 #
 UICMD+=( '_SetUserInfo' )
 _SetUserInfo () {

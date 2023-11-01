@@ -8,7 +8,7 @@
 test_Action-i () {
   local t="${TERMINAL}"
   TERMINAL=true
-  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 5>&1'
+  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL} /tmp"

@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=1.835 # Sun Oct 15 14:20:10 EDT 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.000 # Sat Oct 28 04:36:37 EDT 2023
 
 #####
 #
@@ -126,12 +126,12 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
   local _s; ${ZSH} && _s=${funcfiletrace[${AO}]%:*} || _s=$(caller | cut -f 2 -d ' ')
 
   ${_T} && _Trace 'Process Version options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':amr:' _o
+  while getopts ':amr:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       a)
         ${_T} && _Trace 'Display all versions.'
         printf '%s %s\n' "${UIVERSION[@]}"
@@ -139,7 +139,7 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
         ;;
 
       m)
-        ${_T} && _Trace 'Module version.'
+        ${_T} && _Trace 'Module version. (%s)' "${_s}"
         _m=true
         ;;
 
@@ -178,7 +178,7 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
 }
 
 # add option pattern
-_opt='hHX:'
+_opts='hHX:'
 UICMD+=( 'AddOption' )
 AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] <option>[:]
   ${_init} || Tell -E -f -L '(AddOption) Must be called before Initialize.'
@@ -200,12 +200,12 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   local _v
 
   ${_T} && _Trace 'Process AddOption options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':ac:d:fi:I:k:mn:p:P:rs:S:tv:' _o
+  while getopts ':ac:d:fi:I:k:mn:p:P:rs:S:tv:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       a)
         ${_T} && _Trace 'Autodefault.'
         _a=true
@@ -229,7 +229,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
 
       i|I)
         ${_T} && _Trace 'Initial option value. (%s)' "${OPTARG}"
-        if [[ 'I' == "${_o}" ]]
+        if [[ 'I' == "${_opt}" ]]
         then
           ${ZSH} && _i=( "${(P@)OPTARG}" ) || eval "_i=( \"\${${OPTARG}[@]}\" )"
         else
@@ -298,10 +298,10 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   ((${#})) || Tell -E -f -L '(AddOption) Called without an option.'
   [[ -z "${_n}" && -z "${_c}" ]] && Tell -E -f -L '(AddOption) No variable name or callback provided.'
 
-  ${_T} && _Trace 'Check for dups. (%s)' "${_opt}"
-  case "${_opt}" in
+  ${_T} && _Trace 'Check for dups. (%s)' "${_opts}"
+  case "${_opts}" in
     *${1:0:1}*)
-      Tell -E -f -L '(AddOption) Option %s is already defined. (%s)' "${1:0:1}" "${_opt}"
+      Tell -E -f -L '(AddOption) Option %s is already defined. (%s)' "${1:0:1}" "${_opts}"
       ;;
 
   esac
@@ -325,7 +325,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   esac
 
   ${_T} && _Trace 'Add option. (%s)' "${*}"
-  _opt+="${1}"
+  _opts+="${1}"
   _ou+=( "${1:0:1}" ) # usage
   ${_r} && _or+=( true ) || _or+=( false ) # required
   _ovar+=( "${_n}" ) # variable
@@ -383,12 +383,12 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
   local _v
 
   ${_T} && _Trace 'Process AddParameter options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':ac:d:i:I:k:mn:P:rs:S:v:' _o
+  while getopts ':ac:d:i:I:k:mn:P:rs:S:v:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       a)
         ${_T} && _Trace 'Autodefault.'
         _a=true
@@ -406,7 +406,7 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
 
       i|I)
         ${_T} && _Trace 'Initial parameter value. (%s)' "${OPTARG}"
-        if [[ 'I' == "${_o}" ]]
+        if [[ 'I' == "${_opt}" ]]
         then
           ${ZSH} && _i=( "${(P@)OPTARG}" ) || eval "_i=( \"\${${OPTARG}[@]}\" )"
         else
@@ -518,21 +518,21 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   local _w=true
 
   ${_T} && _Trace 'Process Action options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':123456789acCe:fFi:l:p:q:r:Rstw:W' _o
+  while getopts ':123456789acCe:fFi:l:p:q:r:Rstw:W' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       [1-9])
-        ${_T} && _Trace 'File ID. (%s)' "${_o}"
-        _f="${_o}"
+        ${_T} && _Trace 'File ID. (%s)' "${_opt}"
+        _f="${_opt}"
         ${_vdb} && _t=true
         ;;
 
       a|c)
-        ${_T} && _Trace 'File mode. (%s)' "${_o}"
-        _c="-${_o}"
+        ${_T} && _Trace 'File mode. (%s)' "${_opt}"
+        _c="-${_opt}"
         ;;
 
       C)
@@ -641,8 +641,8 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
         if ${_noaction}
         then
           ${_T} && _Trace -I 'NO ACTION: %s' "${*}"
-          ${_vdb} && printf "${DJBL}${DCaution}(No Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}" >&5 || \
-              printf "${DJBL}${DCaution}(No Action) %s${D}${DCEL}\n" "${*}" >&5 # duplicate stderr
+          ${_vdb} && printf "${DJBL}${DCaution}(No Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}" >&4 || \
+              printf "${DJBL}${DCaution}(No Action) %s${D}${DCEL}\n" "${*}" >&4 # duplicate stderr
           _rv=0
         else
           ${_T} && _Trace 'Check for verbose. (%s)' "${_vdb}"
@@ -660,7 +660,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
             then
               ${_confirm} || StartSpinner "${_i}"
             else
-              ${TERMINAL} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&5 # duplicate stderr
+              ${TERMINAL} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&4 # duplicate stderr
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -735,14 +735,14 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
               ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
               ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
             else
-              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
-              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h}"
+              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_i:-${*}}"
+              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_i:-${*}}"
             fi
           fi
         fi
       fi
     else
-      ${_w} && _rv=2 && Tell -W ${_c} ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} '(Action) Skipping due to previous failure: %s' "${*}"
+      ${_w} && _rv=2 && Tell -W ${_c} ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} '(Action) Skipping due to previous failure: %s' "${_i:-${*}}"
     fi
 
     ${_T} && _Trace 'Action return. (%s)' "${_rv}"
@@ -769,12 +769,12 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
   local _z
 
   ${_T} && _Trace 'Process ConfirmVar options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':AdD:eEfnP:q:Q:s:S:z' _o
+  while getopts ':AdD:eEfnP:q:Q:s:S:z' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       A)
         ${_T} && _Trace 'Associative array test.'
         _a=true
@@ -822,12 +822,12 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
       q|Q)
         ${_T} && _Trace 'Question. (%s)' "${OPTARG}"
         _q="${OPTARG}"
-        [[ 'Q' == "${_o}" ]] && _f=true
+        [[ 'Q' == "${_opt}" ]] && _f=true
         ;;
 
       s|S)
         ${_T} && _Trace 'Selection value. (%s)' "${OPTARG}"
-        _s+=" -${_o} \"${OPTARG}\""
+        _s+=" -${_opt} \"${OPTARG}\""
         ;;
 
       z)
@@ -913,17 +913,18 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   local _d="${LIBUI_DEFAULT:-}"; ${_yes} && _d="${_d:-yes}"
   local _e=true
   local _n
+  local _o=1
   local _p
   local _r
   local _z=false
 
   ${_T} && _Trace 'Process Ask options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':bCd:En:NP:r:s:S:Yz' _o
+  while getopts ':bCd:En:No:P:r:s:S:Yz' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       b)
         ${_T} && _Trace 'Boolean (y/n).'
         _b="${D} ${DOptions}(y/n)"
@@ -954,6 +955,11 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
       N)
         ${_T} && _Trace 'No.'
         _d='no'
+        ;;
+
+      o)
+        ${_T} && _Trace 'Output file descriptor. (%s)' "${OPTARG}"
+        _o="${OPTARG}"
         ;;
 
       P)
@@ -1002,20 +1008,23 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
 
   ${_T} && _Trace -I 'ASK: %s' "${*}"
 
+  local _m
+  local _q
   local _s
-  ${ZSH} && local _w='.' || local _w='?'
+  ${ZSH} && _m='.' || _m='?'
   if [[ "${1}" =~ (^|[^%])%([^%]|$) ]]
   then
     _s="${1}"
     shift
-  elif [[ "${1}" =~ \\\\${_w} ]]
+  elif [[ "${1}" =~ \\\\${_m} ]]
   then
     _s="${1}%s"
     shift
   else
     _s='%s'
   fi
-  local _q="$(printf "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
+  ${PV} && printf -v _q "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}" || \
+      _q="$(printf "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
   ANSWER=
 
   ((0 < ${_spinner:-0})) && PauseSpinner
@@ -1023,21 +1032,21 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   ${_T} && _Trace 'Check for selection. (%s)' "${#_a[@]}"
   ${_quiet} || if ((${#_a[@]}))
   then
-    printf "${DJBL}${DCEL}${DCES}\n${DOptions}The possible responses are:\n"
+    printf "${DJBL}${DCEL}${DCES}\n${DOptions}The possible responses are:\n" >&${_o}
     local _i
     if ${ZSH}
     then
       for ((_i = 1; _i <= ${#_a}; _i++))
       do
-        printf "%4s. %s${DCEL}\n" ${_i} "${_a[${_i}]/${_p:+${_p%\/}\/}}"
+        printf "%4s. %s${DCEL}\n" ${_i} "${_a[${_i}]/${_p:+${_p%\/}\/}}" >&${_o}
       done
     else
       for _i in "${!_a[@]}"
       do
-        printf "%4s. %s${DCEL}\n" $((_i + 1)) "${_a[${_i}]/${_p:+${_p%\/}\/}}"
+        printf "%4s. %s${DCEL}\n" $((_i + 1)) "${_a[${_i}]/${_p:+${_p%\/}\/}}" >&${_o}
       done
     fi
-    printf "${D}${DCEL}\n"
+    printf "${D}${DCEL}\n" >&${_o}
   fi
 
   ${_T} && _Trace 'Check if auto "yes". (%s | ! %s)' "${_yes}" "${TERMINAL}"
@@ -1045,15 +1054,15 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   then
     ${_T} && _Trace 'Default answer. (%s)' "${_d}"
     ANSWER="${_d}"
-    ${_quiet} || printf "${_q}${DAnswer}%s${D}\n" "${ANSWER}"
+    ${_quiet} || printf "${_q}${DAnswer}%s${D}\n" "${ANSWER}" >&${_o}
   else
     local _l=true
-    local _f=false
+    local _g=false
     local _t
     ${_T} && _Trace 'Prompt for answer. (%s)' "${_s} ${*}"
     while ${_l}
     do
-      if [[ -t 1 ]] && ${_e}
+      if [[ -t ${_o} ]] && ${_e}
       then
         if ${ZSH}
         then
@@ -1066,14 +1075,14 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
             unsetopt SINGLE_LINE_ZLE
           fi
         else
-          printf "${_q}"
+          printf "${_q}" >&${_o}
           read -e ANSWER
         fi
       else
-        printf "${_q}"
+        printf "${_q}" >&${_o}
         ${_e} || stty -echo
         read ANSWER
-        ${_e} || stty echo && [[ -t 1 ]] && printf "\n${DCEL}"
+        ${_e} || stty echo && [[ -t ${_o} ]] && printf "\n${DCEL}" >&${_o}
       fi
       [[ -n "${_b}" && 'q' == "${ANSWER}" ]] && Tell -E -f -r 9 'Quit requested.'
       if [[ -z "${ANSWER}" ]]
@@ -1086,32 +1095,32 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
         then
           if [[ -n "${_p}" && "${ANSWER}" =~ .*/.* ]]
           then
-            _f=true
+            _g=true
             _Trace 'Path provided. (%s) Ignoring path option. (%s)' "${ANSWER}" "${_p}"
             _p=
           else
-            _f=false
+            _g=false
             case "${ANSWER}" in
               [0-9]*) # number
-                ANSWER="${_p:+${_p%/}/}${_a[$((ANSWER + AO - 1))]/${_p:+${_p%\/}\/}}" && _f=true
+                ANSWER="${_p:+${_p%/}/}${_a[$((ANSWER + AO - 1))]/${_p:+${_p%\/}\/}}" && _g=true
                 ;;
 
               *) # nan
                 _t="${_p:+${_p%/}/}${ANSWER/${_p:+${_p%\/}\/}}"
                 if ${ZSH}
                 then
-                  ((${_a[(Ie)${_t}]})) && ANSWER="${_t}" && _f=true
+                  ((${_a[(Ie)${_t}]})) && ANSWER="${_t}" && _g=true
                 else
                   for _i in "${!_a[@]}"
                   do
-                    [[ "${_t}" == "${_a[${_i}]}" ]] && ANSWER="${_t}" && _f=true && break
+                    [[ "${_t}" == "${_a[${_i}]}" ]] && ANSWER="${_t}" && _g=true && break
                   done
                 fi
                 ;;
 
             esac
           fi
-          ${_f} || ANSWER=
+          ${_g} || ANSWER=
         fi
         if [[ -n "${ANSWER}" ]] || ${_z}
         then
@@ -1142,12 +1151,12 @@ AnswerMatches () { # [-r] <answer_match_string>
   local _e=false
 
   ${_T} && _Trace 'Process AnswerMatches options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':r' _o
+  while getopts ':r' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       r)
         ${_T} && _Trace 'Regex match.'
         _e=true
@@ -1212,25 +1221,27 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
   local _i="${DJBL}"
   local _l
   local _n=$'\n'
+  local _o=1
   local _rv=0
   local _t
+  local _w=false
   local _x=false
 
   ${_T} && _Trace 'Process Tell options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':123456789aAcCEfFiIl:LnNr:W' _o
+  while getopts ':123456789aAcCEfFiIl:LnNo:r:W' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       [1-9])
-        ${_T} && _Trace 'File ID. (%s)' "${_o}"
-        _f="${_o}"
+        ${_T} && _Trace 'File ID. (%s)' "${_opt}"
+        _f="${_opt}"
         ;;
 
       a|c)
-        ${_T} && _Trace 'File mode. (%s)' "${_o}"
-        _c="-${_o}"
+        ${_T} && _Trace 'File mode. (%s)' "${_opt}"
+        _c="-${_opt}"
         ;;
 
       A)
@@ -1243,6 +1254,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
         ${_T} && _Trace 'Caution.'
         _d="${DCaution}CAUTION"
         _t='CAUTION'
+        _w=true
         ((_rv)) || _rv=1
         ;;
 
@@ -1297,6 +1309,11 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
         _n=
         ;;
 
+      o)
+        ${_T} && _Trace 'Output file descriptor. (%s)' "${OPTARG}"
+        _o="${OPTARG}"
+        ;;
+
       r)
         ${_T} && _Trace 'Return value. (%s)' "${OPTARG}"
         _rv="${OPTARG}"
@@ -1306,6 +1323,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
         ${_T} && _Trace 'Warn.'
         _d="${DWarn}WARNING"
         _t='WARNING'
+        _w=true
         ((_rv)) || _rv=1
         ;;
 
@@ -1332,13 +1350,14 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
   ${_T} && _Trace -I '%s%s: %s' "${_t:-TELL}" "${_b}" "${*}"
 
   local _m
+  local _p
   local _s
-  ${ZSH} && local _w='.' || local _w='?'
+  ${ZSH} && _m='.' || _m='?'
   if [[ "${1}" =~ (^|[^%])%([^%]|$) ]]
   then
     _s="${1}"
     shift
-  elif [[ "${1}" =~ \\\\${_w} ]]
+  elif [[ "${1}" =~ \\\\${_m} ]]
   then
     _s="${1}%s"
     shift
@@ -1348,7 +1367,6 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
   ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0
   if [[ -n "${_f}" || -n "${_l}" ]]
   then
-    local _p
     ${_T} && _Trace 'Log message. (%s)' "${_f:-${_l}}"
     ${PV} && printf -v _m "%s%s%s${_s}" "${_t}" "${_b}" "${_t:+: }" "${@}" || _m="$(printf "%s%s%s${_s}" "${_t}" "${_b}" "${_t:+: }" "${@}")"
     ((_File_libui_ip)) || LoadMod File
@@ -1363,12 +1381,12 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
   fi
 
   ${_T} && _Trace 'Check for error. (%s)' "${_rv}"
-  if ((_rv))
+  if ${_e} || ${_w}
   then
     [[ -t 2 ]] && printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_b}" "${@}" >> /dev/stderr || \
-        printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_b}" "${@}" | tee -a /dev/stderr >&5 # duplicate stderr
+        printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_b}" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
   else
-    ${_quiet} || printf -- "${_i}${_d}${_s}${D}${DCEL}${_n}" "${@}"
+    ${_quiet} || printf -- "${_i}${_d}${_s}${D}${DCEL}${_n}" "${@}" >&${_o}
   fi
 
   ${_T} && _Trace 'Check for exit. (%s)' "${_x}"
@@ -1477,12 +1495,12 @@ _Trace () { # [-I|-u] <message>
     local _u=false
 
     # process options
-    local _o
+    local _opt
     local OPTIND
     local OPTARG
-    while getopts ':Iu' _o
+    while getopts ':Iu' _opt
     do
-      case ${_o} in
+      case ${_opt} in
         I) # don't interpret
           _I=true
           ;;
@@ -1567,9 +1585,9 @@ _init=true
 _initcallback=( )
 _multiuser=false
 _noaction=false
+_overwrite=false
 _quiet=false
 _requireroot=false
-_xdb=0
 UICMD+=( 'Initialize' )
 Initialize () {
   ${_S} && ((_cInitialize++))
@@ -1602,23 +1620,23 @@ Initialize () {
   done
 
   ${_T} && _Trace 'Process initialize options. (%s)' "${_a[*]}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
   NROPT=0
-  while getopts ":${_opt}" _o "${_a[@]}"
+  while getopts ":${_opts}" _opt "${_a[@]}"
   do
     ((NROPT++))
-    ${_T} && _Trace 'Check for user provided options. (%s)' "${_o}"
+    ${_T} && _Trace 'Check for user provided options. (%s)' "${_opt}"
     _i=${AO}
     for _p in "${_ou[@]}"
     do
-      if [[ "${_p}" == "${_o}" ]]
+      if [[ "${_p}" == "${_opt}" ]]
       then
         if ${_om[${_i}]}
         then
           ${_T} && _Trace 'Process multiple option value. (%s+=( "%s" ) [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
-          [[ ! "${_x}" =~ ${_o} ]] && _x="${_o}" && eval "${_ovar[${_i}]}=( )"
+          [[ ! "${_x}" =~ ${_opt} ]] && _x="${_opt}" && eval "${_ovar[${_i}]}=( )"
           if [[ -z "${_op[${_i}]}" ]]
           then
             eval "${_ovar[${_i}]}+=( \"${_oval[${_i}]}\" )"
@@ -1641,8 +1659,8 @@ Initialize () {
       ((_i++))
     done
 
-    ${_T} && _Trace 'Check for standard libui options. (%s)' "${_o}"
-    case ${_o} in
+    ${_T} && _Trace 'Check for standard libui options. (%s)' "${_opt}"
+    case ${_opt} in
       h|H)
         ${_T} && _Trace 'Display usage.'
         _error=true
@@ -1682,6 +1700,12 @@ Initialize () {
             ${_T} && _Trace 'Perform no actions.'
             _noaction=true
             CHFLAGS+='-X N '
+            ;;
+
+          o|O)
+            ${_T} && _Trace 'Overwrite mode.'
+            CHFLAGS+='-X O '
+            _overwrite=true
             ;;
 
           q|Q)
@@ -1724,16 +1748,17 @@ Initialize () {
   NRPARAM=${#_a[@]}
 
   ${_T} && _Trace 'Set up debugging. (%s)' "${_xdb}"
-  ((9 <= _xdb)) && _pdb=true && _cdb=true && _udb=true && _T=true && _Trace 'xdb:%s Libui debug enabled.' "${_xdb}"
-  ((6 <= _xdb)) && _pdb=true && _cdb=true && ${_T} && _Trace 'xdb:%s Context debug enabled.' "${_xdb}"
-  ((5 <= _xdb)) && _pdb=true && ${_T} && _Trace 'xdb:%s Profiling enabled.' "${_xdb}"
-  ((8 <= _xdb)) && _mdb=true && _M=true && ${_T} && _Trace 'xdb:%s Mod debug enabled.' "${_xdb}"
-  ((7 <= _xdb)) && _rdb=true && ${_T} && _Trace 'xdb:%s Remote debug enabled.' "${_xdb}"
-  ((3 <= _xdb)) && _hdb=true && ${_T} && _Trace 'xdb:%s Host debug enabled.' "${_xdb}"
-  ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'xdb:%s Verbose actions enabled.' "${_xdb}"
-  ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'xdb:%s Wait debug enabled.' "${_xdb}"
+  ((9 <= _xdb)) && _pdb=true && _cdb=true && _udb=true && _T=true && _Trace 'LIBUI_XDB:%s Libui debug enabled.' "${_xdb}"
+  ((6 <= _xdb)) && _pdb=true && _cdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Context debug enabled.' "${_xdb}"
+  ((5 <= _xdb)) && _pdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Profiling enabled.' "${_xdb}"
+  ((8 <= _xdb)) && _mdb=true && _M=true && ${_T} && _Trace 'LIBUI_XDB:%s Mod debug enabled.' "${_xdb}"
+  ((7 <= _xdb)) && _rdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Remote debug enabled.' "${_xdb}"
+  ((3 <= _xdb)) && _hdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Host debug enabled.' "${_xdb}"
+  ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Verbose actions enabled.' "${_xdb}"
+  ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Wait debug enabled.' "${_xdb}"
 
-  ${_T} && _Trace 'libui %s. (%s)' "${Version[${#Version[@]} - ${AO} + 1]##*/}" "${SHELL}"
+  ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SHELL}"
+  ${_T} && _Trace 'loaded mods: %s' "${UIMODS[*]}"
 
   ${_T} && _Trace 'Check for required options. (%s)' "${_r[*]}"
   local _m
@@ -1976,6 +2001,41 @@ NoAction () {
   ${_noaction} && return 0 || return 1
 }
 
+# overwrite check
+UICMD+=( 'Overwrite' )
+Overwrite () {
+  ${_S} && ((_cOverwrite++))
+  ${_T} && _Trace 'Overwrite [%s]' "${*}"
+
+  ${_T} && _Trace 'Process Overwrite options. (%s)' "${*}"
+  local _opt
+  local OPTIND
+  local OPTARG
+  while getopts ':eE' _opt
+  do
+    case ${_opt} in
+      e)
+        ${_T} && _Trace 'Enable. (%s)' "${_opt}"
+        _overwrite=true
+        ;;
+
+      E)
+        ${_T} && _Trace 'Disable. (%s)' "${_opt}"
+        _overwrite=false
+        ;;
+
+      *)
+        Tell -E -f -L '(Overwrite) Option error. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  ${_T} && _Trace 'Return overwrite state. (%s)' "${_overwrite}"
+  ${_overwrite} && return 0 || return 1
+}
+
 # quiet check
 UICMD+=( 'Quiet' )
 Quiet () {
@@ -2003,19 +2063,19 @@ Yes () { # [-e|-E]
   ${_T} && _Trace 'Yes [%s]' "${*}"
 
   ${_T} && _Trace 'Process Yes options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':eE' _o
+  while getopts ':eE' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       e)
-        ${_T} && _Trace 'Enable. (%s)' "${_o}"
+        ${_T} && _Trace 'Enable. (%s)' "${_opt}"
         _yes=true
         ;;
 
       E)
-        ${_T} && _Trace 'Disable. (%s)' "${_o}"
+        ${_T} && _Trace 'Disable. (%s)' "${_opt}"
         _yes=false
         ;;
 
@@ -2052,7 +2112,8 @@ Exit () { # [<return_value>]
   then
     Verify -r '^[yY]' 'Debug wait. Exit? (%s)' "${_tmpdir}"
   else
-    ${TERMINAL} && ! ${_init} && ((_rv)) && [[ -t 0 && -d "${_tmpdir}" ]] && Verify -r '^[yY]' 'Error wait. Exit? (%s)' "${_tmpdir}"
+    ((_rv)) && ${TERMINAL} && ! ${_init} && [[ -t 0 && -d "${_tmpdir}" ]] && \
+        Verify -r '^[yY]' 'Wait on error exit (%s). Exit? (%s)' "${_rv}" "${_tmpdir}"
   fi
 
   ${_T} && _Trace 'Check for local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit"
@@ -2083,7 +2144,7 @@ Exit () { # [<return_value>]
   ${_T} && _Trace 'Check for ledger. (%s)' "${_ldb}"
   if ${_ldb}
   then
-    local _l="${LIBUI_LEDGERFILE:-${LIBUI_DOTFILE}/ledger}"
+    local _l="${LIBUI_LEDGERFILE:-${LIBUI_LOCAL}/ledger}"
     if [[ ! -f "${_l}" && "${_l}" =~ .*/.* ]]
     then
       ${_T} && _Trace 'Check ledger dir. (%s)' "${_l}"
@@ -2128,7 +2189,7 @@ Exit () { # [<return_value>]
       eval "_c+=( \"${_l}\" )"
     done
 
-    local _s="${LIBUI_STATSFILE:-${LIBUI_DOTFILE}/stats}"
+    local _s="${LIBUI_STATSFILE:-${LIBUI_LOCAL}/stats}"
     if [[ -f "${_s}" ]]
     then
       ${_T} && _Trace 'Merge stats. (%s)' "${_s}"
@@ -2187,7 +2248,7 @@ Exit () { # [<return_value>]
   ${_T} && _Trace 'Check for trace. (%s)' "${_tdb}"
   if ${_tdb}
   then
-    local _t="${LIBUI_TRACEFILE:-${LIBUI_DOTFILE}/trace}"
+    local _t="${LIBUI_TRACEFILE:-${LIBUI_LOCAL}/trace}"
     if [[ ! -f "${_t}" && "${_t}" =~ .*/.* ]]
     then
       ${_T} && _Trace 'Check trace dir. (%s)' "${_t}"
@@ -2213,12 +2274,12 @@ LoadMod () { # [-P <path>] <libui_mod_name>
   local _rv=0
 
   ${_T} && _Trace 'Process LoadMod options. (%s)' "${*}"
-  local _o
+  local _opt
   local OPTIND
   local OPTARG
-  while getopts ':P:' _o
+  while getopts ':P:' _opt
   do
-    case ${_o} in
+    case ${_opt} in
       P)
         ${_T} && _Trace 'libui mod path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
@@ -2246,43 +2307,34 @@ LoadMod () { # [-P <path>] <libui_mod_name>
       [[ "libui${_m}.sh" == "${_c}" ]] && _l=false && break
     done
   fi
+
   ${_T} && _Trace 'Check if %s libui mod needs to be loaded. (%s)' "${_l}"
   if ${_l}
   then
+    local _s=false
     ${_T} && _Trace 'Load libui mod. (%s / %s)' "${_p}" "${_m}"
-    [[ -f "${_p}/libui${_m}.sh" ]] || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
-    source "${_p}/libui${_m}.sh" "${@}"
+    if [[ -f "${_p}/libui${_m}.sh" ]]
+    then
+      source "${_p}/libui${_m}.sh" "${@}"
+      _rv=${?}
+      _s=true
+    else
+      ! ${ZSH} && local path && IFS=: read -a path <<< "${PATH}"
+      for _p in "${path[@]}"
+      do
+        if [[ -f "${_p}/libui${_m}.sh" ]]
+        then
+          source "${_p}/libui${_m}.sh" "${@}"
+          _rv=${?}
+          _s=true
+          break
+        fi
+      done
+    fi
+    ${_s} || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
   fi
-  _rv=${?}
 
   ${_T} && _Trace 'LoadMod return. (%s)' "${_rv}"
-  return ${_rv}
-}
-
-# terminal codes
-UICMD+=( '_Terminal' )
-_Terminal () {
-  ${_S} && ((_c_Terminal++))
-  ${_T} && _Trace '_Terminal [%s]' "${*}"
-
-  local _rv=0
-
-  ${_T} && _Trace 'Check for terminal. (%s)' "${TERMINAL}"
-  if ${TERMINAL} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
-  then
-    local _d="${LIBUI_DOTFILE}/display-${TERM}"
-    if [[ ! -f "${_d}" ]]
-    then
-      LoadMod Utility
-      BuildTerminalCache
-    fi
-
-    ${_T} && _Trace 'Load display codes. (%s)' "${_d}"
-    source "${_d}"
-    _rv=${?}
-  fi
-
-  ${_T} && _Trace '_Terminal return. (%s)' "${_rv}"
   return ${_rv}
 }
 
@@ -2308,12 +2360,13 @@ _WINCH () {
 #####
 
 # load config
-LIBUI_DOTFILE="${LIBUI_DOTFILE:-${HOME}/.libui}"
-[[ -d "${LIBUI_DOTFILE}" ]] || mkdir -p "${LIBUI_DOTFILE}" || Tell -E 'Invalid LIBUI_DOTFILE path. (%s)' "${LIBUI_DOTFILE}"
-[[ -f "${LIBUI_CONF:-${LIBUI_DOTFILE}/libui.conf}" ]] && source "${LIBUI_CONF:-${LIBUI_DOTFILE}/libui.conf}"
+LIBUI_CONFIG="${LIBUI_CONFIG:-${HOME}/.config/libui}"
+[[ -d "${LIBUI_CONFIG}" ]] || mkdir -p "${LIBUI_CONFIG}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${LIBUI_CONFIG}"
+[[ -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" ]] && source "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}"
+LIBUI_LOCAL="${LIBUI_LOCAL:-${HOME}/.local/libui}"
 
 # defaults
-LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_DOTFILE}/hook}"
+LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
 ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${commands[zsh]}" || SHELL="${BASH:-sh}"
 BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
 ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
@@ -2356,28 +2409,37 @@ ERRV=100
 ${ZSH} && typeset -aU UIMOD && typeset -aU UICMD
 UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 
+# load terminal cache
+${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors))) && \
+    _display=true && source "${LIBUI_CONFIG}/display-${TERM}" || _display=false
+
 # debug
-_ldb="${LIBUI_LEDGER:-true}"; # ledger
-_sdb="${LIBUI_STATS:-true}"; _S="${_sdb}" # stats
-_tdb="${LIBUI_TRACE:-false}"; _T="${_tdb}" # trace
-_udb="${LIBUI_LIBUI:-false}"; ${_T} || _T="${_udb}" # libui
-_cdb="${LIBUI_CONTEXT:-false}" # context
-_rdb="${LIBUI_RDEBUG:-false}" # remote
-_mdb="${LIBUI_MDEBUG:-false}"; _M="${_mdb}" # mod
-_pdb="${LIBUI_PROFILE:-false}" # profiling
-_hdb="${LIBUI_HDEBUG:-false}" # host
-_vdb="${LIBUI_VERBOSE:-false}" # verbose
-_wdb="${LIBUI_WDEBUG:-false}" # wait
+_tdb="${LIBUI_TRACE:-false}"; _T="${_tdb}"
 if ${_tdb}
 then
   _tfile="$(mktemp -q "${TMPDIR%/}/${CMD}-trace.XXXXXX")"
   printf 'Executed "%s" on %s.\n' "${CMDLINE[*]}" "$(date)" > "${_tfile}" ||
       Tell -E -f -l '' 'Unable to reset trace file. (%s)' "${_tfile}"
+  ${_tdb} && _Trace 'Trace enabled.'
 fi
+_xdb="${LIBUI_XDB:-0}"
+((9 <= _xdb)) && _udb=true && _T=true && _Trace 'Libui debug enabled.' || _udb=false
+((6 <= _xdb)) && _cdb=true && _Trace 'Context debug enabled.' || _cdb=false
+((5 <= _xdb)) && _pdb=true && _Trace 'Profiling enabled.' || _pdb=false
+_M=false; ((8 <= _xdb)) && _mdb=true && _M=true && _Trace 'Mod debug enabled.' || _mdb=false
+((7 <= _xdb)) && _rdb=true && _Trace 'Remote debug enabled.' || _rdb=false
+((3 <= _xdb)) && _hdb=true && _Trace 'Host debug enabled.' || _hdb=false
+((2 <= _xdb)) && _vdb=true && _Trace 'Verbose actions enabled.' || _vdb=false
+((1 <= _xdb)) && _wdb=true && _Trace 'Wait debug enabled.' || _wdb=false
+_sdb="${LIBUI_STATS:-true}"; _S="${_sdb}"; ${_sdb} && _Trace 'Stats enabled.'
+_ldb="${LIBUI_LEDGER:-true}"; ${_ldb} && _Trace 'Ledger enabled.'
 
-# check user
-[[ -z "${USER}" ]] && Tell -E -f -l '' 'USER environment variable not defined.'
-[[ -z "${EUID}" ]] && Tell -E -f -l '' 'EUID environment variable not defined.'
+# build terminal cache
+if ! ${_display}
+then
+  LoadMod Utility
+  _Terminal
+fi
 
 # global log
 _L=false
@@ -2390,20 +2452,9 @@ else
   [[ -z "${LIBUI_LOGFILE}" ]] || Tell -E -f -l '' 'Invalid log file. (%s)' "${LIBUI_LOGFILE}"
 fi
 
-# display / status
-_Terminal
-_WINCH
-${_pdb} && _Trace 'Profiling enabled.' # 5
-${_cdb} && _Trace 'Context debug enabled.' # 6
-${_udb} && _Trace 'Libui debug enabled.' # 9
-${_mdb} && _Trace 'Mod debug enabled.' # 8
-${_rdb} && _Trace 'Remote debug enabled.' # 7
-${_hdb} && _Trace 'Host debug enabled.' # 3
-${_vdb} && _Trace 'Verbose actions enabled.' # 2
-${_wdb} && _Trace 'Wait debug enabled.' # 1
-${_ldb} && _Trace 'Ledger enabled.'
-${_sdb} && _Trace 'Stats enabled.'
-${_tdb} && _Trace 'Trace enabled.'
+# check user
+[[ -z "${USER}" ]] && Tell -E -f -l '' 'USER environment variable not defined.'
+[[ -z "${EUID}" ]] && Tell -E -f -l '' 'EUID environment variable not defined.'
 
 # traps
 trap 'Tell -E -f -r 129 "Received HUP signal. ($(date))"' HUP #1
@@ -2412,9 +2463,10 @@ trap 'Tell -E -f -r 131 "Received QUIT signal. ($(date))"' QUIT #3
 trap 'Tell -E -f -r 137 "Received KILL signal. ($(date))"' KILL #9
 ${TERMINAL} && trap 'printf "${DAlarm}Received ALRM signal. ($(date))${D} " >> /dev/stderr' ALRM #14
 trap 'Tell -E -f -r 143 "Received TERM signal. ($(date))"' TERM #15
-trap '_WINCH' WINCH #28
+trap '_WINCH' WINCH; _WINCH #28
 
 # duplicate stderr
-exec 5>&2
+exec 3>&1
+exec 4>&2
 
-_Trace 'READY (%s)' "${SHLIBPATH}"
+${_T} && _Trace 'READY (%s)' "${SHLIBPATH}"

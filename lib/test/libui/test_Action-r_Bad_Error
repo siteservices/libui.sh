@@ -8,7 +8,7 @@
 test_Action-r_Bad_Error () {
   retries=4
   LibuiPerformTest 'Action -f -r 3 -w 0.1 "RetryCountdown"'
-  LibuiValidateTest ${?} 1 "Bad${N}Bad${N}Bad${N}ERROR: (Action) Failure while evaluating command."
+  LibuiValidateTest ${?} 1 "Bad${N}Bad${N}Bad${N}ERROR: (Action) Failure while evaluating command. (RetryCountdown)"
   return ${?}
 }
 

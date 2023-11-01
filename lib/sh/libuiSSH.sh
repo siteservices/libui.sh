@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 1.835 -m 1.8
+Version -r 2.000 -m 1.8
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds

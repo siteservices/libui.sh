@@ -6,7 +6,7 @@
 #####
 
 test_NoAction-N () {
-  LibuiPerformTest 'Action "ls -lad /tmp" 5>&1'
+  LibuiPerformTest 'Action "ls -lad /tmp" 4>&1'
   LibuiValidateTest ${?} 0 '(No Action) ls -lad /tmp'
   return ${?}
 }

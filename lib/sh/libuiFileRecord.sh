@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 1.829 -m 1.5
+Version -r 2.000 -m 1.5
 
 ${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHELL}"
 
