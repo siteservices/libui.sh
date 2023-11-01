@@ -2307,14 +2307,32 @@ LoadMod () { # [-P <path>] <libui_mod_name>
       [[ "libui${_m}.sh" == "${_c}" ]] && _l=false && break
     done
   fi
+
   ${_T} && _Trace 'Check if %s libui mod needs to be loaded. (%s)' "${_l}"
   if ${_l}
   then
+    local _s=false
     ${_T} && _Trace 'Load libui mod. (%s / %s)' "${_p}" "${_m}"
-    [[ -f "${_p}/libui${_m}.sh" ]] || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
-    source "${_p}/libui${_m}.sh" "${@}"
+    if [[ -f "${_p}/libui${_m}.sh" ]]
+    then
+      source "${_p}/libui${_m}.sh" "${@}"
+      _rv=${?}
+      _s=true
+    else
+      ! ${ZSH} && local path && IFS=: read -a path <<< "${PATH}"
+      for _p in "${path[@]}"
+      do
+        if [[ -f "${_p}/libui${_m}.sh" ]]
+        then
+          source "${_p}/libui${_m}.sh" "${@}"
+          _rv=${?}
+          _s=true
+          break
+        fi
+      done
+    fi
+    ${_s} || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
   fi
-  _rv=${?}
 
   ${_T} && _Trace 'LoadMod return. (%s)' "${_rv}"
   return ${_rv}

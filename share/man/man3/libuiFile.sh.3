@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 28, 2023
+.Dd October 31, 2023
 .Dt LIBUIFILE.SH 3
 .Os
 .Sh NAME
@@ -49,7 +49,7 @@ user interface library
 .Ar <variable_name>
 .Pp
 .Sy MkDir
-.Op Fl s
+.Op Fl s Fl W
 .Op Fl g Ar <group>
 .Op Fl m Ar <mask>
 .Ar <path>
@@ -312,7 +312,7 @@ The following command creates a directory path and sets permissions on any
 created directories:
 .Bd -ragged -offset 4n
 .Sy MkDir
-.Op Fl s
+.Op Fl s Fl W
 .Op Fl g Ar <group>
 .Op Fl m Ar <mask>
 .Ar <path>
@@ -329,6 +329,8 @@ Use the
 as the umask when creating any needed directories.
 .It Fl s
 Set the setgid bit for any created directories.
+.It Fl W
+Do not generate a warning message if a failure occurs when making the directory.
 .El
 While the standard
 .Xr mkdir 1

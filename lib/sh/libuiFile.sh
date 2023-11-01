@@ -682,7 +682,7 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
 # Create a new directory path with special permissions
 #
-# Syntax: MkDir [-s] [-g <group>] [-m <mask>] <path>
+# Syntax: MkDir [-s|-W] [-g <group>] [-m <mask>] <path>
 #
 # Example: Mkdir -g users -s path/to/dir
 #
@@ -691,7 +691,7 @@ GetTmp () { # [-d|-f|-s] <var_name>
 # optionally sets the setgid bit.
 #
 UICMD+=( 'MkDir' )
-MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
+MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
   ${_S} && ((_cMkDir++))
   ${_M} && _Trace 'MkDir [%s]' "${*}"
 
@@ -699,12 +699,13 @@ MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
   local _File_m
   local _File_s=false
   local _File_rv=0
+  local _File_w=true
 
   ${_M} && _Trace 'Process MkDir options. (%s)' "${*}"
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':g:m:s' _opt
+  while getopts ':g:m:sW' _opt
   do
     case ${_opt} in
       g)
@@ -722,6 +723,11 @@ MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
         _File_s=true
         ;;
 
+      W)
+        ${_M} && _Trace 'Suppress Warning.'
+        _File_w=false
+        ;;
+
       *)
         Tell -E -f -L '(MkDir) Option error. (-%s)' "${OPTARG}"
         ;;
@@ -737,6 +743,7 @@ MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
     local _File_d
     local _File_n; [[ '/' == "${1:0:1}" ]] || _File_n="${PWD}"
     local _File_p
+    local _File_e
     ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -a _File_p <<< "${1}"
     for _File_d in "${_File_p[@]}"
     do
@@ -750,14 +757,19 @@ MkDir () { # [-s] [-g <group>] [-m <mask>] <path>
         else
           mkdir "${_File_n}"
         fi
-        ((${?})) && _File_rv=1 && Tell -W '(MkDir) Unable to create directory path. (%s)' "${_File_n}"
-        if [[ -n "${_File_g}" ]]
+        ((${?})) && _File_rv=1 && ${_File_w} && Tell -W '(MkDir) Unable to create directory path. (%s)' "${_File_n}"
+
+        ${_M} && _Trace 'Set directory group. (%s)' "${_File_g}"
+        [[ 'Darwin' == "${OS}" ]] && _File_e="$(stat -f '%Sg' "${_File_n}")" || _File_e="$(stat -c '%G' "${_File_n}")"
+        if [[ -n "${_File_g}" && "${_File_g}" != "${_File_e}" ]]
         then
-          chgrp "${_File_g}" "${_File_n}" || Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
+          ! chgrp "${_File_g}" "${_File_n}" && ${_File_w} && Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
         fi
+
+        ${_M} && _Trace 'Set directory setgid bit. (%s)' "${_File_s}"
         if ${_File_s}
         then
-          chmod g+s "${_File_n}" || Tell -W '(MkDir) Unable to set directory setgid bit. (%s)' "${_File_n}"
+          ! chmod g+s "${_File_n}" && ${_File_w} && Tell -W '(MkDir) Unable to set directory setgid bit. (%s)' "${_File_n}"
         fi
       fi
     done

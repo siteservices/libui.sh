@@ -564,9 +564,10 @@ according to the provided flags:
 * **-g** - set the group ownership of the directories to the provided group
 * **-m** - use the provided mask as the umask when creating the directories
 * **-s** - set the setgid bit for the created directories
+* **-W** - Do not generate a warning on failure
 
 ```
-MkDir [-s] [-g <group>] [-m <mask>] <path>
+MkDir [-s|-W] [-g <group>] [-m <mask>] <path>
 ```
 
 ### Multiuser (man libuiMultiuser.sh) - Check if multiuser mode is enabled.

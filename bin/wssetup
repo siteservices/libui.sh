@@ -51,6 +51,7 @@ retval=0
 ##### options - libui already uses options h, H, X:
 
 AddOption -n default -f -k 'Default' -d 'Only change default workspace.' d
+AddOption -n envdata -m -k 'Env Data' -d 'Environment data that should be included in workspace.' e:
 AddParameter -r -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
 
 ##### callbacks
@@ -69,6 +70,15 @@ InitCallback () {
 
   Trace 'Validate workspace. (%s)' "${WORKSPACE}"
   ValidateWorkspace -n
+
+  Trace 'Check for existing files. (%s, %s)' "${_WS_wsfile}" "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+  if [[ -f "${_WS_wsfile}" ]]
+  then
+    Overwrite || Error 'Workspace file aready exists. Use -XO (Overwrite) to replace it. (%s)' "${_WS_wsfile}"
+  elif [[ -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]]
+  then
+    Overwrite || Error 'Workspace environment file aready exists. Use -XO (Overwrite) to replace it. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
+  fi
 }
 
 ##### functions
@@ -86,10 +96,12 @@ Write_workspace () {
 
 # set workspace
 export WORKSPACE=\"${WORKSPACE/${HOME}/\${HOME\}}\"
+
+return 0
 "
 
   Trace 'Check for existing workspace file. (%s)' "${_WS_wsfile}"
-  if Force || [[ ! -f "${_WS_wsfile}" ]] || Verify 'Set default workspace to "%s"? (%s)' "${WORKSPACE##*/}" "${_WS_wsfile}"
+  if Overwrite || [[ ! -f "${_WS_wsfile}" ]] || Verify 'Set default workspace to "%s"? (%s)' "${WORKSPACE##*/}" "${_WS_wsfile}"
   then
     Trace 'Write workspace file. (%s)' "${_WS_wsfile}"
     printf '%s' "${ws}" > "${_WS_wsfile}" || Error 'Unable to write workspace file. (%s)' "${_WS_wsfile}"
@@ -99,7 +111,7 @@ export WORKSPACE=\"${WORKSPACE/${HOME}/\${HOME\}}\"
 }
 
 # write workspace environment file
-Write_wsenv () {
+Write_wsenv () { # <env_data>
   Trace 'Prepare workspace environment file. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
   local wsenv="#!/bin/zsh
 #####
@@ -109,12 +121,14 @@ Write_wsenv () {
 #
 ######
 
-# set workspace
+# configure workspace
 export WORKSPACE=\"${WORKSPACE/${HOME}/\${HOME\}}\"
+${@/%/\n}
+return 0
 "
 
   Trace 'Check for existing workspace environment file. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
-  if Force || [[ ! -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]] || \
+  if Overwrite || [[ ! -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]] || \
       Verify 'Replace "%s" environment file? (%s)' "${WORKSPACE##*/}" "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
   then
     Trace 'Create workspace environment directory. (%s)' "${_WS_wsenv}"
@@ -153,7 +167,7 @@ Trace 'Check if only changing default. (%s)' "${default}"
 if ! ${default}
 then
   Trace 'Write workspace environment. (%s)' "${WORKSPACE##*/}"
-  Write_wsenv && Alert 'Workspace environment created. (%s)' "${WORKSPACE##*/}"
+  Write_wsenv "${envdata[@]}" && Alert 'Workspace environment created. (%s)' "${WORKSPACE##*/}"
   ((retval+=${?}))
 fi
 

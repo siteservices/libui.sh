@@ -889,7 +889,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
       Tell -C 'Local files and commonroot files are different. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
     fi
   else
-    Tell -A 'Verify complete, no file differences. (%s == %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    Tell -A 'Verify complete, no file differences. (%s = %s)' "${COMMONROOT}" "${_Util_libuiroot}"
   fi
 
   ${_M} && _Trace 'Check for unify. (%s)' "${_Util_unify}"
