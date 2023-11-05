@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 21, 2023
+.Dd November 5, 2023
 .Dt LIBUIPACKAGE.SH 3
 .Os
 .Sh NAME
@@ -25,9 +25,9 @@ user interface library
 .Sh SYNOPSIS
 .Sy LoadMod Package
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl N Fl P Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl l Fl N Fl P Fl S Fl T Fl X Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl I Ar <installer_prep> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
-.Sy _CreatePackageHeader Oo Fl a Fl P Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl P Fl S Fl T Fl X Oc Oo Fl d Ar <description> Oc Oo Fl i Ar <installer> Oc Oo Fl I Ar <installer_prep> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 .Sy ListPackage Ar <package>
 .Sh DESCRIPTION
@@ -36,11 +36,13 @@ The
 .Xr libui.sh 3
 mod provides functions for creating and listing the contents of self-extracting
 packages.
-The self-extracting packages can be tar or shar based.
+The self-extracting packages can be tar, shar, or star based.
 .Pp
 Note: The use of the tar format package is recommended.
-The shar format is provided in case the package content must be reviewed by a
-human (e.g. in a classified environment).
+The shar format is provided in case the package content must be sent over a
+non-binary transport, or requires high portability.
+The star format is provided in case the package content must be reviewed by a
+human (e.g., transfer in or out of a classified environment).
 .Pp
 The
 .Nm
@@ -52,7 +54,7 @@ specified
 .Ar <source_directory>
 directory.
 .Pp
-.Sy CreatePackage Oo Fl a Fl l Fl N Fl P Fl S Fl T Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
+.Sy CreatePackage Oo Fl l Fl N Fl P Fl S Fl T Fl X Oc Oo Fl c Ar <compression> Oc Oo Fl d Ar <description> Oc Oo Fl f Ar <filelist_array_var_name> Oc Oo Fl h Ar <header_command> Oc Oo Fl i Ar <installer> Oc Oo Fl I Ar <installer_prep> Oc Oo Fl n Ar <encoding> Oc Oo Fl s Ar <source_directory> Oc Oo Fl x Ar <exclude_array_var_name> Oc Ar <package_filename>
 .Pp
 When executed, the
 .Sy CreatePackage
@@ -63,14 +65,6 @@ directory.
 .Pp
 The available options are:
 .Bl -tag -offset 4n -width 4n
-.It Fl a
-Append Archive
-.Pp
-This option is passed through to the
-.Ar <header_command> .
-See the
-.Sx _CreatePackageHeader
-command for more information.
 .It Fl c
 Compression
 .Pp
@@ -88,19 +82,6 @@ See
 for more information.
 .It Fl d Ar <description>
 Description
-.It Fl e Ar <environment_spec>
-This option is passed through to the
-.Ar <header_command> .
-See the
-.Sx _CreatePackageHeader
-command for more information.
-Environment
-.Pp
-The
-.Ar <environment_spec>
-will be added before the command line that executes the installer.
-This is typically used to pass an environment variable into the installer
-process.
 .It Fl f Ar <filelist_array_var_name>
 Include
 .Pp
@@ -128,33 +109,12 @@ In other words, the
 .Ar <header_command>
 will be called as:
 .Bd -literal -offset 4n
-.Sy <header_command> Oo Fl a Fl S Fl T Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy <header_command> Oo Fl P Fl S Fl T Fl X Oc Oo Fl d Ar <description> Oc Oo Fl i Ar <installer> Oc Oo Fl I Ar <installer_prep> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Ed
 .Pp
-Where
-.Fl a
-will be used to append the archive file as the last parameter on the
-.Ar <installer>
-command line when the self-extracting header is executed,
-.Fl e Ar <environment_spec>
-will add
-.Ar <environment_spec>
-before the command line that executes the installer,
-.Fl i Ar <installer>
-is the installer command to execute,
-.Fl s Ar <source_directory>
-is the package source directory,
-and
-.Ar <package_filename>
-is the name of the package file being generated.
-.It Fl i Ar <installer>
-Installer
-.Pp
-This option is passed through to the
-.Ar <header_command> .
 See the
 .Sx _CreatePackageHeader
-command for more information.
+command for information associated with each option flag and parameter.
 .It Fl l
 List
 .Pp
@@ -219,16 +179,17 @@ This option is also passed through to the
 See the
 .Sx _CreatePackageHeader
 command for more information.
-This is the default format if neither
-.Fl S
-(Sharp) or
-.Fl T
-(Tarp) option is provided.
+This is the default format.
 .It Fl x Ar <exclude_array_var_name>
 (E)xclude
 .Pp
 The name of an array varaiable that contains a list of directories and files in
 the
+.It Fl X
+No Extraction
+.Pp
+Do not extract the archive into the temporary directory before executing the
+installer.
 .It Ar <package_filename>
 Package Filename
 .Pp
@@ -266,7 +227,7 @@ names.
 .Ss _CreatePackageHeader
 The _CreatePackageHeader command.
 .Pp
-.Sy _CreatePackageHeader Oo Fl a Fl P Fl S Fl T Oc Oo Fl d Ar <description> Oc Oo Fl e Ar <environment_spec> Oc Oo Fl i Ar <installer> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
+.Sy _CreatePackageHeader Oo Fl P Fl S Fl T Fl X Oc Oo Fl d Ar <description> Oc Oo Fl i Ar <installer> Oc Oo Fl I Ar <installer_prep> Oc Oo Fl s Ar <source_directory> Oc Ar <package_filename>
 .Pp
 When executed, the
 .Sy _CreatePackageHeader
@@ -310,16 +271,6 @@ their final destination.
 .Pp
 The available options are:
 .Bl -tag -offset 4n -width 4n
-.It Fl a
-Append Archive
-.Pp
-When included, the
-.Fl a
-(Append Archive) option will add the archive filename as the last element on the
-installer command line.
-See the
-.Fl i
-(installer) option for more information.
 .It Fl d Ar <description>
 Description
 .Pp
@@ -329,14 +280,6 @@ will be added as the first text line in the package header.
 If not provided, it will default to "Self-Extracting
 .Ar <source_directory>
 Package".
-.It Fl e Ar <environment_spec>
-Environment
-.Pp
-The
-.Ar <environment_spec>
-will be added before the command line that executes the installer.
-This is typically used to pass an environment variable into the installer
-process.
 .It Fl i Ar <installer>
 Installer
 .Pp
@@ -344,12 +287,33 @@ The path of the installer program, relative to the
 .Ar <source_directory>
 directory.
 When the self-extracting archive package is executed, it will extract the
-installation program directory and then execute the installer.
+archive into a temporary directory and then execute the installer from that
+temporary directory.
+The format of the
+.Ar <installer>
+should be similar to:
+.Bd -literal -offset 4n
+.Sy \e${d}/path/to/installer \e${@} "\e${a}"
+.Ed
 .Pp
-Note: The contents of the parent directory containing the installation program
-will be available in the temporary installation directory and relative to the
-.Ar <source_directory>
-root.
+Where
+.Sy \e${d}
+will be replaced with with the temporary directory path,
+.Sy path/to/installer
+is the path to the installer in the extracted directory,
+.Sy \e${@}
+will be replaced with any user-provided option flags, and
+.Sy \e${a}
+will be replaced with the archive path.
+The default installer is:
+.Bd -literal -offset 4n
+.Sy \e${d}/.installer \e${@} "\e${a}"
+.Ed
+.It Fl I Ar <installer_prep>
+Installer Prep
+.Pp
+Shell commands to be executed in the self-extractor prior to running the
+installer.
 .It Fl P
 Simple Text Archive Package
 .Pp
@@ -367,11 +331,12 @@ A shar archive package (.sharp) will be created.
 Tarp
 .Pp
 A tar archive package (.tarp) will be created.
-This is the default format if neither
-.Fl S
-(Sharp) or
-.Fl T
-(Tarp) option is provided.
+This is the default format.
+.It X
+No Extraction
+.Pp
+Do not extract the archive into the temporary directory before executing the
+installer.
 .It Ar <package_filename>
 Package Filename
 .Pp
@@ -422,7 +387,7 @@ When executed, the self-extracting header will create a temporary directory,
 extract the lib/sh directory, and execute
 the installer from the root of the extracted package.
 .Bd -literal -offset 4n
-.Sy _CreatePackageHeader Fl T Fl a Fl i Ar ./path/to/installer Ar package.tarp
+.Sy _CreatePackageHeader Fl T Fl i Ar '\e${d}/path/to/installer\ \e${@}\ \e${a}' Ar package.tarp
 .Ed
 .Pp
 Creates a

@@ -1,5 +1,26 @@
 # Change Log
 
+## v2.001
+
+### New Features / Enhancements
+
+* Add starx standalone .star archive extraction tool and self-extractor support.
+* Add -I (Installer prep) and -X (No Extract) to CreatePackage command.
+* Add wssetup version number to created workspace and wsenv file headers.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix libui package content problems (lists and missing tests).
+* Remove double extraction in base createpackage archive self-extractor.
+
+### Incompatibilities
+
+* Change overwrite support in some tools from -XF (Force) to -XO (Overwrite).
+* Removed -a (Append Package) and -e (Install env) from CreatePackage command.
+* Removed -E (Installer environment) from createpackage.
+
 ## v2.000
 
 ### New Features / Enhancements
