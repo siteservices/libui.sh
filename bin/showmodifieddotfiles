@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 1.15
+Version -r 2.001 1.16
 
 # load mods
 
@@ -52,8 +52,8 @@ AddOption -n diff -f -k 'Diff' -d 'Display file differences from reference direc
 AddOption -n usemanifest -t -k '(No) Manifest' -d 'Do not use manifest. Use all dotfiles in source directory.' M
 AddOption -n refdir -k 'Reference' -d 'The reference directory for the analysis.' r:
 AddOption -n src -i "${HOME}" -k 'Source' -d 'The source directory for the analysis.' s:
-AddOption -c "FastCallback test" -n fasttest -k '(Skip) test' -d 'Perform "fast" diff by skipping test directory.' t
-AddOption -c "FastCallback .vim" -n fastvim -k '(Skip) .vim' -d 'Perform "fast" diff by skipping .vim directory.' v
+AddOption -c "FastCallback test" -n fasttest -k '(No) test' -d 'Perform "fast" diff by skipping test directory.' T
+AddOption -c "FastCallback .vim" -n fastvim -k '(No) .vim' -d 'Perform "fast" diff by skipping .vim directory.' V
 
 ##### callbacks
 

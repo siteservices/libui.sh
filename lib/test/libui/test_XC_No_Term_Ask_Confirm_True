@@ -1,11 +1,11 @@
 #!/usr/bin/env libui
 #####
 #
-# test_C_No_Term_Ask_Confirm_True
+# test_XC_No_Term_Ask_Confirm_True
 #
 #####
 
-test_C_No_Term_Ask_Confirm_True () {
+test_XC_No_Term_Ask_Confirm_True () {
   local t="${TERMINAL}"
   TERMINAL=false
   Yes -e

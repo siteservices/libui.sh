@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_XY_Yes-E
+#
+#####
+
+test_XY_Yes-E () {
+  Yes -E
+  LibuiPerformTest 'Yes'
+  local tv=${?}
+  LibuiValidateTest "${tv}" 1
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-X Y '
+
+return 0

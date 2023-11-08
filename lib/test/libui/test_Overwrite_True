@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Overwrite_True
+#
+#####
+
+test_Overwrite_True () {
+  Overwrite -e
+  LibuiPerformTest 'Overwrite'
+  local tv=${?}
+  Overwrite -E
+  LibuiValidateTest "${tv}" 0
+  return ${?}
+}
+
+return 0

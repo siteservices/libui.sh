@@ -7,6 +7,7 @@
 * Add starx standalone .star archive extraction tool and self-extractor support.
 * Add -I (Installer prep) and -X (No Extract) to CreatePackage command.
 * Add wssetup version number to created workspace and wsenv file headers.
+* Removed "overwrite" checks from wssetup to simplify use.
 * Add and update regression tests.
 * Update documentation.
 
@@ -18,8 +19,10 @@
 ### Incompatibilities
 
 * Change overwrite support in some tools from -XF (Force) to -XO (Overwrite).
-* Removed -a (Append Package) and -e (Install env) from CreatePackage command.
-* Removed -E (Installer environment) from createpackage.
+* Remove -a (Append Package) and -e (Install env) from CreatePackage command.
+* Remove -E (Installer environment) from createpackage.
+* Change showmodifieddotfiles -t (Skip test) option to -T (No test).
+* Change showmodifieddotfiles -v (Skip .vim) option to -V (No .vim).
 
 ## v2.000
 

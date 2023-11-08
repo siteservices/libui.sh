@@ -1,11 +1,11 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Y_Yes_No_Term_Action-Cq
+# test_XY_Yes_No_Term_Action-Cq
 #
 #####
 
-test_Y_Yes_No_Term_Action-Cq () {
+test_XY_Yes_No_Term_Action-Cq () {
   local t="${TERMINAL}"
   TERMINAL=false
   LibuiPerformTest 'Action -C -q "Yes question?" "ls -d /tmp"'

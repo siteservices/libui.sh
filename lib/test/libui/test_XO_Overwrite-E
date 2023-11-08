@@ -1,19 +1,19 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Y_Yes-E
+# test_XO_Overwrite-E
 #
 #####
 
-test_Y_Yes-E () {
-  Yes -E
-  LibuiPerformTest 'Yes'
+test_XO_Overwrite-E () {
+  Overwrite -E
+  LibuiPerformTest 'Overwrite'
   local tv=${?}
   LibuiValidateTest "${tv}" 1
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X Y '
+_Test_opt+='-X O '
 
 return 0
