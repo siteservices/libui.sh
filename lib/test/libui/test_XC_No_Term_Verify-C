@@ -1,14 +1,14 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Y_Yes_Verify
+# test_XC_No_Term_Verify-C
 #
 #####
 
-test_Y_Yes_Verify () {
+test_XC_No_Term_Verify-C () {
   local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Verify "Test verify?"'
+  TERMINAL=false
+  LibuiPerformTest 'Verify -C "Test verify?"'
   local tv=${?}
   TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 'Test verify? (y/n) [yes] yes'
@@ -16,6 +16,6 @@ test_Y_Yes_Verify () {
 }
 
 # test setup
-_Test_opt+='-X Y '
+_Test_opt+='-X C '
 
 return 0

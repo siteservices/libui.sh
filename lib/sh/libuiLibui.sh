@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 2.000 -m 1.12
+Version -r 2.001 -m 1.13
 
 ##### configuration
 
@@ -53,9 +53,7 @@ ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
 _Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/lib/test/libui}"
-_Util_libuivar="${_Util_libuiroot}/var/libui"
-_Util_installenv='SHLIBPATH="${d}/lib/sh"'
-_Util_installer='${sh} ${d}/lib/sh/libui'
+_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}SHLIBPATH=\"\${d}/lib/sh\" \${sh} \"\${d}/lib/sh/libui\" \${@}"
 _Util_groupmode='g+wX'
 _Util_configfile="${LIBUI_CONFIG}/libui.conf"
 _Util_dcprefix="${LIBUI_CONFIG}/display-"
@@ -354,7 +352,7 @@ LibuiConfig () {
 
   local _Util_rv=0
 
-  if Force || [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite libui configuration file %s?' "${_Util_configfile}"
+  if Overwrite || [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite libui configuration file %s?' "${_Util_configfile}"
   then
     ${_M} && _Trace 'Create default config file. (%s)' "${_Util_configfile}"
     LoadMod File
@@ -614,7 +612,7 @@ LibuiUpdateMan () {
   local _Util_mp
   local _Util_mts
   local _Util_sedi; [[ 'Darwin' == "${OS}" ]] && _Util_sedi="-i ''" || _Util_sedi="-i"
-  for _Util_file in $(find . -name 'man' -prune -o -name '.*.sw*' -prune -o -type f -print)
+  for _Util_file in $(find . -name 'man' -prune -o -name '*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     ${ZSH} && eval "_Util_mp=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.*(N) )" || \
@@ -656,8 +654,8 @@ LibuiPackageList () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'List libui package.'
-  local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -type f -name 'libui*') )
-  [[ -d "${_Util_libuivar}" ]] && _Util_files+=( $(find ./${_Util_libuivar#${_Util_libuiroot}} -name '.*.sw*' -prune -o -type f) )
+  local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
 
   ${_M} && _Trace 'Files in libui package. (%s)' "${_Util_files[*]}"
@@ -675,21 +673,15 @@ LibuiPackage () {
   ${_S} && ((_cLibuiPackage++))
   ${_M} && _Trace 'LibuiPackage [%s]' "${*}"
 
-  local _Util_installenv
   local _Util_installer
 
   ${_M} && _Trace 'Process LibuiPackage options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':e:i:' opt
+  while getopts ':i:' opt
   do
     case ${opt} in
-      e)
-        ${_M} && _Trace 'Install environment. (%s)' "${OPTARG}"
-        _Util_installenv="${OPTARG}"
-        ;;
-
       i)
         ${_M} && _Trace 'Installer. (%s)' "${OPTARG}"
         _Util_installer="${OPTARG}"
@@ -710,20 +702,20 @@ LibuiPackage () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
-  local _Util_files; _Util_files=( $(find . -name '.*.sw*' -prune -o -type f -name 'libui*') )
-  [[ -d "${_Util_libuivar}" ]] && _Util_files+=( $(find ./${_Util_libuivar#${_Util_libuiroot}} -name '.*.sw*' -prune -o -type f) )
+  local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
 
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
   if [[ ".sharp" == "${_Util_package: -6}" ]]
   then
-    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   elif [[ ".starp" == "${_Util_package: -6}" ]]
   then
-    Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   else
     [[ ".tarp" == "${_Util_package: -5}" ]] || _Util_package+='.tarp'
-    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -e '${_Util_installenv}' -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   fi
   Tell -A 'Creation of libui package complete. (%s)' "${_Util_package}"
 
@@ -743,9 +735,9 @@ LibuiInstall () {
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
-    _Util_files=( $(find "${_Util_libuiroot}" -name '.*.sw*' -prune -o -type f -name 'libui*') )
-    ${installtests} && [[ -d "${_Util_libuivar}" ]] && \
-        _Util_files+=( $(find "${_Util_libuivar}" -name '.*.sw*' -prune -o -type f) )
+    _Util_files=( $(find "${_Util_libuiroot}" -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
+    ${installtests} && [[ -d "${_Util_libuitest}" ]] && \
+        _Util_files+=( $(find "${_Util_libuitest}" -name '*.sw*' -prune -o -type f -print) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
@@ -840,7 +832,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
   StartSpinner 'Comparing "%s" with commonroot "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
 
   ${_M} && _Trace 'Verify %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-  for _Util_file in $(find . -name '.*.sw*' -prune -o -type f -print)
+  for _Util_file in $(find . -name '*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     if [[ -f "${COMMONROOT}/${_Util_file}" ]]
@@ -899,7 +891,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
 
     ${_M} && _Trace 'Unify user environment with %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
     pushd "${_Util_libuiroot}" > /dev/null
-    for _Util_file in $(find . -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
+    for _Util_file in $(find . -name '*.sw*' -prune -o -name '*version' -prune -o -type f -print)
     do
       _Util_file="${_Util_file#./}"
       if [[ -f "${COMMONROOT}/${_Util_file}" ]]
@@ -952,7 +944,7 @@ LibuiNew () {
 
   [[ -f "${_Util_template}" ]] || Tell -E 'Template libui script file is not available. (%s)' "${_Util_template}"
 
-  if Force || [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_target}"
+  if Overwrite || [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_target}"
   then
     ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_target}"
     [[ -f "${_Util_target}" ]] && Action "rm ${FMFLAGS} '${_Util_target}'"
@@ -1029,7 +1021,7 @@ _LibuiProcess () {
     LibuiPackageList
   elif ${package}
   then
-    LibuiPackage -e "${_Util_installenv}" -i "${_Util_installer}" "${param}"
+    LibuiPackage -i "${_Util_installer}" "${param}"
   elif ${install}
   then
     LibuiInstall

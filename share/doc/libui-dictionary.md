@@ -290,13 +290,12 @@ environment specification is a variable name that contains an environment string
 prepended when executing the provided installer command. It is expected that the
 installer is a libui script.
 
-* **-a** - append archive file as parameter at end of installer command string
 * **-c** - tar compression option flag to use
 * **-d** - description to use in package header
-* **-e** - environment string to prepend to installer command string
 * **-f** - array variable name containing file list to include in package
 * **-h** - function to call to generate the package header
 * **-i** - installer command (included in self-extracting package header)
+* **-I** - installer preparation commands (to set up environment, etc.)
 * **-l** - generate package contents list instead of creating package
 * **-n** - encoding to use (man 1 shar for details)
 * **-N** - do not create a package, only create a tar archive
@@ -305,9 +304,10 @@ installer is a libui script.
 * **-S** - create a shar package (.sharp)
 * **-T** - create a tar package (.tarp)
 * **-x** - array variable name containing file list to exclude from package
+* **-X** - do not extract the archive before running the installer
 
 ```
-CreatePackage [-a|-l|-N|-P|-S|-T] [-c <compression>] [-d <description>] [-e <environment_spec>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+CreatePackage [-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-I <installer_prep>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
 ```
 
 ### Drop (man libui.sh) - Utility function to drop a value from an array.

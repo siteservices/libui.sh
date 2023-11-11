@@ -1,0 +1,77 @@
+.\" Manpage for starx {libui tool}
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd November 5, 2023
+.Dt STARX 1
+.Os
+.Sh NAME
+.Nm starx
+.Nd Extract simple text archives (.star files)
+.Sh SYNOPSIS
+.Sy starx
+.Op Ar <filepath>
+.Sh DESCRIPTION
+Extracts files from a simple text archive (.star file) into the current
+directory.
+The
+.Sy starx
+command was implemented as a standalone, extract-only command.
+The
+.Xr star 1
+command provides full support for simple text archives (.star files).
+See the
+.Xr star 1
+command for more information.
+.Pp
+The
+.Nm
+script can be executed using the following:
+.Bd -ragged -offset 4n
+.Sy starx
+.Op Ar <filepath>
+.Ed
+.Pp
+When executed, the script extracts files from the
+.Ar <filepath>
+archive into the current directory.
+.Sh FILES
+The script will read from the file path provided as
+.Ar <filepath> .
+.Sh EXAMPLES
+This example:
+.Bd -literal -offset 4n
+.Sy starx /tmp/archive.star
+.Ed
+.Pp
+Extracts the files contained in archive.star into the current directory.
+.Sh NOTES
+While the
+.Sy starx
+command is provided with the
+.Xr libuil.sh 3
+user interface library, it does not utilize the
+.Xr libui.sh 3
+library. It is provided as a separate shell script to support the transfer of
+simple text archive (.star) files when the full
+.Xr libui.sh 3
+library has not yet been installed.
+.Sh SEE ALSO
+.Xr star 1 ,
+.Xr libui.sh 3
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

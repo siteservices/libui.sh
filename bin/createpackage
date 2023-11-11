@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 1.7
+Version -r 2.001 1.8
 
 # load mods
 LoadMod File
@@ -55,10 +55,10 @@ GetTmp -f tmpfile
 
 AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
-[[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -i '-T' -k 'Encoding' -d 'Shar encoding format option.' e:
-AddOption -n installenv -k 'Environment' -d 'Installer command line environment.' E:
+[[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -k 'Encoding' -d 'Shar encoding format option.' e:
 AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
 AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
+AddOption -n prep -k 'Install Prep' -d 'Package installer preparation commands.' I:
 AddOption -n listfiles -f -k 'List Files' -d 'List files to package.' l
 AddOption -n manifest -k 'Manifest' -d 'Manifest file location.' m:
 AddOption -n pkgtype -i tarp -s tarp -s sharp -s starp -k 'Package' -d 'Package type.' p:
@@ -79,9 +79,13 @@ Files may be excluded using the -x (Exclude) option flag.
 If the provided package filename is a directory, a new file will be created in
 that directory with a name folowing: "<sourcedir>-<YYMMDD>.<pkgtype>".
 
-When extracting, if the installer is contained within the package, you can
-access it using "\${d}/<installer>", where the "\${d}" is a copy of the package
-directory and "<installer>" is the path to the installer in that directory.
+When extracting, if the installer is contained within the package, it can be
+accessed using "\${d}/<installer> \${@} \${a}", where \${d} will be replaced
+with with the temporary directory path, path/to/installer is the path to the
+installer in the extracted directory, \${@} will be replaced with any
+user-provided option flags, and \${a} will be replaced with the archive path.
+If an installer is not provided, the archive will be extracted into the current
+directory.
 EOF
 }
 
@@ -144,8 +148,8 @@ InitCallback () {
   esac
 
   Trace 'Check for existing package. (%s)' "${package}"
-  ! Force && [[ -n "${package}" && -f "${package}" ]] && \
-      Error 'Package already exists. Use -XF (Force) to overwrite.'
+  ! Overwrite && [[ -n "${package}" && -f "${package}" ]] && \
+      Error 'Package already exists. Use -XO (Overwrite) to overwrite.'
 }
 
 ##### functions
@@ -175,20 +179,24 @@ then
   Action -q 'Generate file list?' "CreatePackage -l -f files -x excludes ${sourcedir}"
 else
   Trace 'Find package type. (%s)' "${pkgtype}"
+  local i
   case "${pkgtype}" in
     sharp)
       Trace 'Files to include in shar package. (%s)' "${#files[@]}"
-      Action -s -q 'Create shar package archive?' "CreatePackage -S -n '${encoding}' -f files -x excludes -d 'Self-Extracting shar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
+      [[ -z "${installer}" ]] && i="-X -i 'printf \"\\n\"; sh \${@} \"\${a}\"'" || i="-i '${installer}'"
+      Action -s -q 'Create shar package archive?' "CreatePackage -S -n '${encoding}' -f files -x excludes -d 'Self-Extracting shar package.' -I '${prep}' ${i} -s '${sourcedir}' '${package}'"
       ;;
 
     starp)
       Trace 'Files to include in star package. (%s)' "${#files[@]}"
-      Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -e '${installenv}' -i '${installer:-star -x -f}' -a -s '${sourcedir}' '${package}'"
+      [[ -z "${installer}" ]] && i="-X -i '\${s} \${@} -x -f \"\${a}\"'" || i="-i '${installer}'"
+      Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -I '${prep}' ${i} -s '${sourcedir}' '${package}'"
       ;;
 
     tarp)
       Trace 'Files to include in tar package. (%s)' "${#files[@]}"
-      Action -s -q 'Create tar package archive?' "CreatePackage -T -c '${compression}' -f files -x excludes -d 'Self-Extracting tar package.' -e '${installenv}' -i '${installer}' -a -s '${sourcedir}' '${package}'"
+      [[ -z "${installer}" ]] && i="-X -i 'tar \${@} -xf \"\${a}\"'" || i="-i '${installer}'"
+      Action -s -q 'Create tar package archive?' "CreatePackage -T -c '${compression}' -f files -x excludes -d 'Self-Extracting tar package.' -I '${prep}' ${i} -s '${sourcedir}' '${package}'"
       ;;
 
     *)

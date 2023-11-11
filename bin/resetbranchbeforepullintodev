@@ -40,7 +40,7 @@ Version -r 2.000 1.7
 
 ##### options - libui already uses options h, H, X:
 
-AddOption -n push -t -k "Skip Push" -d "Do not \\\"git push --force\\\" the reset branch back to origin." s
+AddOption -n push -t -k "Skip Push" -d "Do not 'git push --force' the reset branch back to origin." s
 
 ##### callbacks
 

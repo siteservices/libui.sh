@@ -13,12 +13,12 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 21, 2023
+.Dd November 5, 2023
 .Dt STAR 1
 .Os
 .Sh NAME
 .Nm star
-.Nd Manage simple archives of text only files
+.Nd Manage simple text archives (.star files)
 .Sh SYNOPSIS
 .Sy star
 .Op Fl c Fl x Fl h Fl H
@@ -26,9 +26,9 @@
 .Op Fl X Ar <option>
 .Op Ar <filepath>
 .Sh DESCRIPTION
-Manages simple text only file archives where the files are concatenated
-together with a separator line containing the filename and directory and file
-permissions.
+Manages simple text archives (.star files) where only text files are
+concatenated together with a separator line containing the filename, directory,
+file permissions and file timestamp.
 .Pp
 The
 .Nm
@@ -46,7 +46,7 @@ Available command line options are:
 .It Fl c
 Create
 .Pp
-Create a new archive from the provided
+Create a new text archive (.star file) from the provided
 .Ar <filepath> .
 .Pp
 Note: If any files in the provided
@@ -110,11 +110,15 @@ or
 The script will create or read from the file provided with the
 .Fl f Ar <filename>
 option flag.
-The script will collect, with the
+The script, with the
 .Fl c
-(Crate) option flag, or create, with the
+(Crate) option flag, will collect files from
+.Ar <filepath>
+parameter.
+With the
 .Fl x
-(Extract) option flag, files from the directory provided with the
+(Extract) option flag, the script will create files in the directory provided as
+the
 .Ar <filepath>
 parameter.
 .Sh EXAMPLES
@@ -125,8 +129,14 @@ Some example uses include:
 .Pp
 Creates an archive named "keep.star" in the /tmp directory with the text files
 contained in the current directory.
+.Bd -literal -offset 4n
+.Sy star -x -f /tmp/archive.star .
+.Ed
+.Pp
+Extracts the files contained in archive.star into the current directory.
 .Sh SEE ALSO
 .Xr createpackage 1 ,
+.Xr starx 1 ,
 .Xr libui.sh 3
 .Sh AUTHORS
 .An F Harvell
