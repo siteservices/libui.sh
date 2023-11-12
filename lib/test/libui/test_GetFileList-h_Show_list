@@ -18,9 +18,10 @@ test_GetFileList-h_Show_list () {
   Action -W "touch ${TESTDIR}/list/listdir-1/testfile\ 1"
   Action -W "touch ${TESTDIR}/list/.listdir\ 3/dirfile\ 3"
   Action -W "mkdir -p ${TESTDIR}/list/listdir-1/.listdir\ 4"
-  Action -W "touch ${TESTDIR}/list/listdir-1/.listdir\ 4\.testfile\ 2"
+  Action -W "touch ${TESTDIR}/list/listdir-1/.listdir\ 4/.testfile\ 2"
   LibuiPerformTest "GetFileList -h testlist '${TESTDIR}/list/list*'; Tell -- '%s' \"\${testlist[*]}\""
-  LibuiValidateTest ${?} 0 "${TESTDIR}/list/listdir 2 ${TESTDIR}/list/listdir-1 ${TESTDIR}/list/listfile 2 ${TESTDIR}/list/listfile-1 ${TESTDIR}/list/listdir-1/.listdir 4 ${TESTDIR}/list/listdir-1/.listdir 4.testfile 2 ${TESTDIR}/list/listdir-1/dirfile 2 ${TESTDIR}/list/listdir-1/dirfile-1 ${TESTDIR}/list/listdir-1/testfile 1"
+  LibuiValidateTest ${?} 0 "${TESTDIR}/list/listdir 2 ${TESTDIR}/list/listdir-1 ${TESTDIR}/list/listfile 2 ${TESTDIR}/list/listfile-1 ${TESTDIR}/list/listdir-1/.listdir 4 ${TESTDIR}/list/listdir-1/dirfile 2 ${TESTDIR}/list/listdir-1/dirfile-1 ${TESTDIR}/list/listdir-1/testfile 1 ${TESTDIR}/list/listdir-1/.listdir 4/.testfile 2"
+  #LibuiValidateTest ${?} 0 "${TESTDIR}/list/listdir 2 ${TESTDIR}/list/listdir-1 ${TESTDIR}/list/listfile 2 ${TESTDIR}/list/listfile-1 ${TESTDIR}/list/listdir-1/.listdir 4 ${TESTDIR}/list/listdir-1/.listdir 4/.testfile 2 ${TESTDIR}/list/listdir-1/dirfile 2 ${TESTDIR}/list/listdir-1/dirfile-1 ${TESTDIR}/list/listdir-1/testfile 1"
   return ${?}
 }
 

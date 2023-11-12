@@ -13,7 +13,8 @@
 
 ### Bug Fixes
 
-* N/A
+* Fix GetFileList hidden file handling.
+* Add check for parent directory when using liubi -n (New) to create new script.
 
 ### Incompatibilities
 
