@@ -1,5 +1,25 @@
 # Change Log
 
+## v2.002
+
+### New Features / Enhancements
+
+* Add -l (List) option to star to list files in an archive.
+* Add OctalToPerms command for converting octal perms to perms string.
+* Add PermsToOctal command for converting perms string to octal perms.
+* Add ability to get date from variable in ConvertDate
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* N/A
+
+### Incompatibilities
+
+* Change libui Date mod to libui Convert mod (LoadMod Date -\> LoadMod Convert).
+* Moved AdOption callback before variable assignment (should be transparent).
+
 ## v2.001
 
 ### New Features / Enhancements

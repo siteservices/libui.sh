@@ -1,4 +1,4 @@
-.\" Manpage for libuiDate.sh
+.\" Manpage for libuiConvert.sh
 .\" Please contact fharvell@siteservices.net to correct errors or typos.
 .\" Please note that the libui library is young and under active development.
 .\"
@@ -14,27 +14,31 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 21, 2023
-.Dt LIBUIDATE.SH 3
+.Dd November 11, 2023
+.Dt LIBUICONVERT.SH 3
 .Os
 .Sh NAME
-.Nm libuiDate.sh
-.Nd Date Utilities Mod for the
+.Nm libuiConvert.sh
+.Nd Conversion Utilities Mod for the
 .Xr libui.sh 3
 user interface library
 .Sh SYNOPSIS
-.Sy LoadMod Date
+.Sy LoadMod Convert
 .Pp
 .Sy ConvertDate
 .Op Fl i Ar <input_format>
 .Op Fl o Ar <output_format>
 .Ar <variable_name>
-.Ar <date_time_value>
+.Op Ar <date_time_value>
+.Pp
+.Sy OctalToPerms
+.Ar <variable_name>
+.Op Ar <octal_perms>
 .Sh DESCRIPTION
 The
 .Nm
 .Xr libui.sh 3
-mod provides a function for converting date formats.
+mod provides tools for various conversions.
 .Pp
 The
 .Nm
@@ -47,7 +51,7 @@ The ConvertDate command changes the format of a provided date / time value.
 .Op Fl i Ar <input_format>
 .Op Fl o Ar <output_format>
 .Ar <variable_name>
-.Ar <date_time_value>
+.Op Ar <date_time_value>
 .Pp
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
@@ -81,9 +85,44 @@ The date / time value that should be converted.
 This value must match the input format for proper interpretation.
 .El
 .Pp
-Performs a simple conversion of the provided
+The command performs a conversion of the provided
 .Ar <date_time_value>
 provided and places the converted value in the
+.Ar <variable_name>
+variable.
+If the
+.Ar <date_time_value>
+is not provided, the command will obtain the date-time value from the
+.Ar <variable_name>
+variable.
+.Ss OctalToPerms
+The OctalToPerms command converts an octal permissions value into a permissions
+string similar to that provided by "ls".
+.Pp
+.Sy OctalToPerms
+.Ar <variable_name>
+.Op Ar <octal_perms>
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Ar <variable_name>
+The name of the variable that the
+.Nm
+function should place the output format converted date / time value.
+.It Ar <octal_perms>
+The octal permissions value that should be converted.
+The value can be 3 or 4 digits, i.e., the function understands the SUID, SGID,
+and sticky bits.
+.El
+.Pp
+The command performs a conversion of the provided
+.Ar <octal_perms>
+provided and places the converted string in the
+.Ar <variable_name>
+variable.
+If the
+.Ar <octal_perms>
+is not provided, the command will obtain the octal permissions from the
 .Ar <variable_name>
 variable.
 .Sh EXAMPLES
@@ -94,7 +133,14 @@ Some examples include:
 .Pp
 Result: The variable
 .Ar today
-is assignd the value '2021-12-28'
+is assigned the value '2021-12-28'.
+.Bd -literal -offset 4n
+.Sy OctalToPerms perms 750
+.Ed
+.Pp
+Result: The variable
+.Ar perms
+is assigned the value 'rwxr-x---'.
 .Sh SEE ALSO
 .Xr bash 1 ,
 .Xr date 1 ,
@@ -102,8 +148,8 @@ is assignd the value '2021-12-28'
 .Xr libui.sh 3
 .Sh NOTES
 The
-.Nm
-Uses the
+.Sx ConvertDate
+command uses the
 .Xr date 1
 command to perform the date / time conversions.
 It is, therefore, dependent upon the
@@ -111,6 +157,9 @@ It is, therefore, dependent upon the
 command and can only perform the conversions provided by the
 .Xr date 1
 command.
+The
+.Sx ConvertDate
+command supports both BSD and Gnu versions of date.
 .Sh AUTHORS
 .An F Harvell
 .Mt <fharvell@siteservices.net>

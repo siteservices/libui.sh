@@ -4,7 +4,7 @@
 
 Basic libui library functionality can be extended with the following mods:
 
-* Date (man libuiDate.sh) - Date Format Utilities
+* Convert (man libuiConvert.sh) - Conversion Utilities
 * File (man libuiFile.sh) - File Support
 * FileRecord (man libuiFileRecord.sh) - CSV File Records Support
 * Info (man libuiInfo.sh) - Libui Information Utilities
@@ -268,18 +268,19 @@ provided array variable name otherwise it returns 1.
 Contains <array_variable> <value>
 ```
 
-### ConvertDate (man libuiDate.sh) - Converts a date string between formats.
+### ConvertDate (man libuiConvert.sh) - Converts a date string between formats.
 
 This command provides an interface to the "date" command to convert data strings
 from one format to another. The default input format is "%a %b %d %T %Z %Y"
 (which is the default date command output format) and the default output format
-is "%Y-%m-%d".
+is "%Y-%m-%d". If \<date\> is not provided, the date will be obtained from the
+\<var\_name\> variable.
 
 * **-i** - input format (man 1 date for details)
 * **-o** - output format (man 1 date for details)
 
 ```
-ConvertDate [-i <input_format>] [-o <output_format>] <var_name> <date>
+ConvertDate [-i <input_format>] [-o <output_format>] <var_name> [<date>]
 ```
 
 ### CreatePackage (man libuiPackage.sh) - Creates a self-extracting package.
@@ -586,6 +587,16 @@ command line, otherwise it returns 1.
 
 ```
 NoAction
+```
+
+### OctalToPerms (man libuiConvert.sh) - Converts octal perms to perms string.
+
+This command converts the provided octal permissions int a permissions string
+similar to what "ls" presents. If \<octal\_perms\> is not provided, the octal
+value will be obtained from the \<var\_name\> variable.
+
+```
+OctalToPerms <var_name> [<octal_perms>]
 ```
 
 ### Open (man libuiFile.sh) - Open a file ID for use within the script.

@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.001 # Tue Nov 7 23:29:47 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Sat Nov 11 15:41:32 EST 2023
 
 #####
 #
@@ -1633,6 +1633,9 @@ Initialize () {
     do
       if [[ "${_p}" == "${_opt}" ]]
       then
+        ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
+        [[ -n "${_oc[${_i}]}" ]] && eval ${_oc[${_i}]} "${OPTARG}"
+
         if ${_om[${_i}]}
         then
           ${_T} && _Trace 'Process multiple option value. (%s+=( "%s" ) [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
@@ -1649,9 +1652,6 @@ Initialize () {
           [[ -n "${_oval[${_i}]}" ]] && eval "${_ovar[${_i}]}=\"${_oval[${_i}]}\"" && [[ -n "${_op[${_i}]}" ]] && \
               eval "${_ovar[${_i}]}=\"${_op[${_i}]%/}/\${${_ovar[${_i}]}/\${_op[${_i}]%\/}\/}\""
         fi
-
-        ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
-        [[ -n "${_oc[${_i}]}" ]] && eval ${_oc[${_i}]} "${OPTARG}"
 
         ${_T} && _Trace 'Process required option. (%s)' "${_r[*]}"
         _r[${_i}]=false

@@ -31,10 +31,10 @@
 ##### libui setup
 
 # script version
-Version -r 2.001 2.2
+Version -r 2.002 2.3
 
 # load mods
-LoadMod Date
+LoadMod Convert
 LoadMod File
 
 ##### configuration
@@ -42,16 +42,18 @@ LoadMod File
 # defaults
 ts=$(date +%s)
 groupmode='g+wX'
+long=false
 retval=0
-GetTmp tmpdir
 sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
+GetTmp tmpdir
 
 ##### options - libui already uses options h, H, X:
 
 AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
 AddOption -n group -f -k 'Group' -d 'Make created files / directories group writable.' g
-AddOption -n verbose -f -k 'Verbose' -d 'Provide a verbose listing of file actions.' v
+AddOption -c ListCallback -n list -f -k 'List' -d 'List files in an archive, twice for file info.' l
+AddOption -n verbose -f -k 'Verbose' -d 'Verbose operation.' v
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
 AddParameter -n paths -m -i "." -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
 
@@ -66,10 +68,9 @@ Manages simple text only file archives.
 EOF
 }
 
-ExitCallback () {
-  Trace 'In user exit callback.'
-
-  Trace 'Exit cleanup.'
+ListCallback () {
+  Trace 'list callback.'
+  ${list} && long=true
 }
 
 InitCallback () {
@@ -109,7 +110,7 @@ CreateArchive () { # <archive> <files> ...
   local file
   local files; files=( )
   local fileperms
-  local list
+  local listing
   local prefix
   local rv=0
   local timestamp
@@ -120,8 +121,8 @@ CreateArchive () { # <archive> <files> ...
   for file in "${@}"
   do
     Trace 'Get file listing. (%s)' "${PWD}"
-    GetFileList -h -f list "${file}"
-    [[ -n "${list}" ]] && files+=( "${list[@]}" ) || Warn 'File not found. (%s)' "${file}"
+    GetFileList -h -f listing "${file}"
+    [[ -n "${listing}" ]] && files+=( "${listing[@]}" ) || Warn 'File not found. (%s)' "${file}"
   done
 
   Trace 'Process files. (%s)' "${files[*]}"
@@ -178,7 +179,7 @@ ExtractArchive () { # <archive>
   local timestamp
   local ts
 
-  Trace 'Open archive file descriptor. (%s)' "${file}"
+  Trace 'Open archive file descriptor. (%s)' "${archive}"
   if [[ -z "${archive}" || '-' == "${archive}" ]]
   then
     exec 8<&0
@@ -247,6 +248,54 @@ ExtractArchive () { # <archive>
   return ${rv}
 }
 
+ListArchive () { # <archive>
+  Trace 'Start ListArchive. (%s)' "${*}"
+  local archive="${*}"
+  local file
+  local fileinfo
+  local line
+  local perms
+  local rv=0
+  local signature
+  local timestamp
+  local ts
+
+  Trace 'Open archive file descriptor. (%s)' "${archive}"
+  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  then
+    exec 8<&0
+  else
+    exec 8< "${archive}"
+  fi
+
+  Trace 'Validate archive. (%s)' "${archive}"
+  GetTmp -f file
+  sed '$d' <&8 > "${file}"
+  ts=( $(tail -1 "${archive}") ); signature="${ts[2]}"; ts="${ts[3]}"
+  [[ "${signature}" == $(${sign} "${file}" | cut -d ' ' -f 1) ]] || \
+      Error 'Unable to list files, archive is corrupt.'
+
+  Trace 'Find files.'
+  while read -r line
+  do
+    Trace 'Process separator. (%s)' "${line}"
+    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
+    if ${long}
+    then
+      Trace 'Process file info. (%s)' "${line}"
+      OctalToPerms perms "${fileinfo[((AO + 3))]}"
+      ConvertDate -i '%s' -o '%b %d %Y' timestamp "${fileinfo[((AO + 4))]}"
+      Tell "%s %s ${D4}%s${D}" "${perms}" "${timestamp}" "${fileinfo[((AO + 1))]}"
+    else
+      Tell "${D4}%s${D}" "${fileinfo[((AO + 1))]}"
+    fi
+  done < <(grep "^===== file:[^:]*:[^:]*:[^:]*:[^:]*:file ${ts} =====$" "${file}")
+  rv=${?}
+
+  Trace 'ListArchive return. (%s)' "${rv}"
+  return ${rv}
+}
+
 ##### initialization
 
 # initialize UI
@@ -269,6 +318,18 @@ then
   then
     Warn 'Archive creation failed.'
   fi
+fi
+
+Trace 'Check for list. (%s)' "${list}"
+if ${list}
+then
+  Trace 'List archive. (%s)' "${archive}"
+  cd "${paths[${AO}]}"
+  if ! ListArchive "${archive}"
+  then
+    Warn 'Archive list failed.'
+  fi
+  cd -
 fi
 
 Trace 'Check for extract. (%s)' "${extract}"
