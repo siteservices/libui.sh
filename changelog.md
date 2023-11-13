@@ -8,6 +8,7 @@
 * Add OctalToPerms command for converting octal perms to perms string.
 * Add PermsToOctal command for converting perms string to octal perms.
 * Add ability to get date from variable in ConvertDate
+* Removed "overwrite" checks from wssetup to simplify use.
 * Add and update regression tests.
 * Update documentation.
 
@@ -28,7 +29,6 @@
 * Add starx standalone .star archive extraction tool and self-extractor support.
 * Add -I (Installer prep) and -X (No Extract) to CreatePackage command.
 * Add wssetup version number to created workspace and wsenv file headers.
-* Removed "overwrite" checks from wssetup to simplify use.
 * Add and update regression tests.
 * Update documentation.
 
