@@ -334,6 +334,10 @@ EOF
       fi
       ConfirmVar -d TESTDIR
       pushd "${TESTDIR}" > /dev/null
+    elif ${new}
+    then
+      GetRealPath -v param
+      [[ -d "${param%/*}" ]] || Error 'Parent directory does not exist. (%s)' "${param%/*}"
     fi
   }
 }

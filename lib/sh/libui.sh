@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.001 # Tue Nov 7 23:29:47 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Mon Nov 13 22:45:42 EST 2023
 
 #####
 #
@@ -1633,6 +1633,9 @@ Initialize () {
     do
       if [[ "${_p}" == "${_opt}" ]]
       then
+        ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
+        [[ -n "${_oc[${_i}]}" ]] && eval ${_oc[${_i}]} "${OPTARG}"
+
         if ${_om[${_i}]}
         then
           ${_T} && _Trace 'Process multiple option value. (%s+=( "%s" ) [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
@@ -1649,9 +1652,6 @@ Initialize () {
           [[ -n "${_oval[${_i}]}" ]] && eval "${_ovar[${_i}]}=\"${_oval[${_i}]}\"" && [[ -n "${_op[${_i}]}" ]] && \
               eval "${_ovar[${_i}]}=\"${_op[${_i}]%/}/\${${_ovar[${_i}]}/\${_op[${_i}]%\/}\/}\""
         fi
-
-        ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
-        [[ -n "${_oc[${_i}]}" ]] && eval ${_oc[${_i}]} "${OPTARG}"
 
         ${_T} && _Trace 'Process required option. (%s)' "${_r[*]}"
         _r[${_i}]=false
@@ -1960,7 +1960,7 @@ Initialize () {
   if ${_error}
   then
     LoadMod Info
-    UsageInfo
+    ${TERMINAL} && UsageInfo
     Exit ${?}
   fi
 
@@ -2345,7 +2345,7 @@ _WINCH () {
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
   # local _x; [[ -n "${DRP}" ]] && printf "${DRP}" && IFS='[;' read -sd R _x CROW CCOL
-  ${TERMINAL} && SCOLS="$(tput cols)" && SROWS="$(tput lines)" && \
+  SCOLS="$(tput cols)" && SROWS="$(tput lines)" && \
       declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
   ${_T} && _Trace '_WINCH return. (%s)' 0
@@ -2463,7 +2463,7 @@ trap 'Tell -E -f -r 131 "Received QUIT signal. ($(date))"' QUIT #3
 trap 'Tell -E -f -r 137 "Received KILL signal. ($(date))"' KILL #9
 ${TERMINAL} && trap 'printf "${DAlarm}Received ALRM signal. ($(date))${D} " >> /dev/stderr' ALRM #14
 trap 'Tell -E -f -r 143 "Received TERM signal. ($(date))"' TERM #15
-trap '_WINCH' WINCH; _WINCH #28
+${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH #28
 
 # duplicate stderr
 exec 3>&1

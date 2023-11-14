@@ -6,7 +6,7 @@
 #####
 
 test_AddOption-s_Bad_Select_Val () {
-  LibuiPerformTest 'libui -x os -Z x'
+  LibuiPerformTest 'TERMINAL=true libui -x os -Z x'
   LibuiValidateTest -r ${?} 2 '.*ERROR: The value provided for -Z \(Test s\) is not an available option value\. \(x\).*'
   return ${?}
 }

@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.000 -m 1.11
+Version -r 2.002 -m 1.12
 
 # defaults
 _File_ip=
@@ -269,6 +269,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
   ${_S} && ((_cGetFileList++))
   ${_M} && _Trace 'GetFileList [%s]' "${*}"
 
+  local _File_b
   local _File_c
   local _File_d=false
   local _File_e=false
@@ -304,7 +305,6 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
       for _File_i in "${_File_z[@]}"
       do
         ${_M} && _Trace 'Process subdir: %s' "${_File_i}"
-        ${_File_h} && ZshSubdirFileList "${_File_i}/.*"
         ZshSubdirFileList "${_File_i}/*"
         ((_File_rv+=${?}))
       done
@@ -346,7 +346,6 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
         if [[ -d "${_File_i}" ]]
         then
           ${_M} && _Trace 'Process subdir: %s' "${_File_i}"
-          ${_File_h} && BashSubdirFileList "${_File_i}/.*!(.|..)"
           BashSubdirFileList "${_File_i}/*"
           ((_File_rv+=${?}))
         fi
@@ -446,12 +445,18 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     ${_M} && _Trace 'Process file specification. (%s)' "${_File_s}"
     if ${ZSH}
     then
+      [[ -o extendedglob ]] && _File_b="setopt extendedglob${N}" || _File_b="unsetopt extendededglob${N}"
+      [[ -o globdots ]] && _File_b="setopt globdots${N}" || _File_b="unsetopt globdots${N}"
+      setopt extendedglob
+      ${_File_h} && setopt globdots
       ZshSubdirFileList "${_File_s}"
       ((_File_rv+=${?}))
+      eval "${_File_b}"
     else
-      local _File_b=$(shopt -p extglob nullglob)
+      _File_b="GLOBIGNORE=${GLOBIGNORE}${N}$(shopt -p extglob nullglob)"
       shopt -s extglob
       shopt -s nullglob
+      ${_File_h} && GLOBIGNORE=".:.."
       BashSubdirFileList "${_File_s}"
       ((_File_rv+=${?}))
       eval "${_File_b}"

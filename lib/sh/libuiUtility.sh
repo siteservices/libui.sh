@@ -221,7 +221,6 @@ _Terminal () {
       source "${LIBUI_CONFIG}/display-${TERM}"
       _rv=${?}
     else
-      Warn 'Unknown terminal, cache file not constructed.'
       _rv=2
     fi
   fi
@@ -229,3 +228,5 @@ _Terminal () {
   ${_T} && _Trace '_Terminal return. (%s)' "${_rv}"
   return ${_rv}
 }
+
+return 0

@@ -1,5 +1,29 @@
 # Change Log
 
+## v2.002
+
+### New Features / Enhancements
+
+* Add -l (List) option to star to list files in an archive.
+* Add OctalToPerms command for converting octal perms to perms string.
+* Add PermsToOctal command for converting perms string to octal perms.
+* Add ability to get date from variable in ConvertDate
+* Removed "overwrite" checks from wssetup to simplify use.
+* Suppressed usage information if TERMINAL is not true.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix empty TERM display handling.
+* Fix GetFileList hidden file handling.
+* Add check for parent directory when using liubi -n (New) to create new script.
+
+### Incompatibilities
+
+* Change libui Date mod to libui Convert mod (LoadMod Date -\> LoadMod Convert).
+* Moved AdOption callback before variable assignment (should be transparent).
+
 ## v2.001
 
 ### New Features / Enhancements
@@ -7,7 +31,6 @@
 * Add starx standalone .star archive extraction tool and self-extractor support.
 * Add -I (Installer prep) and -X (No Extract) to CreatePackage command.
 * Add wssetup version number to created workspace and wsenv file headers.
-* Removed "overwrite" checks from wssetup to simplify use.
 * Add and update regression tests.
 * Update documentation.
 

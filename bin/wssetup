@@ -37,7 +37,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.001 1.6
+Version -r 2.002 1.7
 
 # load mods
 LoadMod File
@@ -70,15 +70,6 @@ InitCallback () {
 
   Trace 'Validate workspace. (%s)' "${WORKSPACE}"
   ValidateWorkspace -n
-
-  Trace 'Check for existing files. (%s, %s)' "${_WS_wsfile}" "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
-  if [[ -f "${_WS_wsfile}" ]]
-  then
-    Overwrite || Error 'Workspace file aready exists. Use -XO (Overwrite) to replace it. (%s)' "${_WS_wsfile}"
-  elif [[ -f "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}" ]]
-  then
-    Overwrite || Error 'Workspace environment file aready exists. Use -XO (Overwrite) to replace it. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"
-  fi
 }
 
 ##### functions
