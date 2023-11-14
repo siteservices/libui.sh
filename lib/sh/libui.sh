@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Mon Nov 13 19:24:56 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Mon Nov 13 22:45:42 EST 2023
 
 #####
 #
@@ -2345,7 +2345,7 @@ _WINCH () {
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
   # local _x; [[ -n "${DRP}" ]] && printf "${DRP}" && IFS='[;' read -sd R _x CROW CCOL
-  ${TERMINAL} && SCOLS="$(tput cols)" && SROWS="$(tput lines)" && \
+  SCOLS="$(tput cols)" && SROWS="$(tput lines)" && \
       declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
   ${_T} && _Trace '_WINCH return. (%s)' 0
@@ -2463,7 +2463,7 @@ trap 'Tell -E -f -r 131 "Received QUIT signal. ($(date))"' QUIT #3
 trap 'Tell -E -f -r 137 "Received KILL signal. ($(date))"' KILL #9
 ${TERMINAL} && trap 'printf "${DAlarm}Received ALRM signal. ($(date))${D} " >> /dev/stderr' ALRM #14
 trap 'Tell -E -f -r 143 "Received TERM signal. ($(date))"' TERM #15
-trap '_WINCH' WINCH; _WINCH #28
+${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH #28
 
 # duplicate stderr
 exec 3>&1

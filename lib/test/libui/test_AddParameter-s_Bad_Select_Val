@@ -6,7 +6,7 @@
 #####
 
 test_AddParameter-s_Bad_Select_Val () {
-  LibuiPerformTest 'libui -x ps x'
+  LibuiPerformTest 'TERMINAL=true libui -x ps x'
   LibuiValidateTest -r ${?} 2 '.*ERROR: The value provided for testparam \(Test Param\) is not an available parameter value\. \(x\).*'
   return ${?}
 }

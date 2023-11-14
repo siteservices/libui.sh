@@ -6,7 +6,7 @@
 #####
 
 test_AddParameter-s () {
-  LibuiPerformTest 'libui -x pA -h'
+  LibuiPerformTest 'TERMINAL=true libui -x pA -h'
   LibuiValidateTest -r ${?} 2 '.*<testparam> *- Test Param: Test parameter A\. \(testparam: \).*'
   return ${?}
 }

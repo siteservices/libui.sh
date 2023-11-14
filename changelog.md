@@ -15,6 +15,7 @@
 
 ### Bug Fixes
 
+* Fix empty TERM display handling.
 * Fix GetFileList hidden file handling.
 * Add check for parent directory when using liubi -n (New) to create new script.
 

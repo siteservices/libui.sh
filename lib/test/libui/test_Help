@@ -6,7 +6,7 @@
 #####
 
 test_Help () {
-  LibuiPerformTest 'libui -X h'
+  LibuiPerformTest 'TERMINAL=true TERM= libui -X h'
   LibuiValidateTest -i ${?} 2 "${helptext}"
   return ${?}
 }
