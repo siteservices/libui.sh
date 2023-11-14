@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Sun Nov 12 00:01:08 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Mon Nov 13 19:24:56 EST 2023
 
 #####
 #
@@ -1960,7 +1960,7 @@ Initialize () {
   if ${_error}
   then
     LoadMod Info
-    UsageInfo
+    ${TERMINAL} && UsageInfo
     Exit ${?}
   fi
 

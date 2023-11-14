@@ -9,6 +9,7 @@
 * Add PermsToOctal command for converting perms string to octal perms.
 * Add ability to get date from variable in ConvertDate
 * Removed "overwrite" checks from wssetup to simplify use.
+* Suppressed usage information if TERMINAL is not true.
 * Add and update regression tests.
 * Update documentation.
 
