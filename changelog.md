@@ -1,5 +1,20 @@
 # Change Log
 
+## v2.003
+
+### New Features / Enhancements
+
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Substitute "${HOME}" for "~" in ConfirmVar filesystem tests.
+
+### Incompatibilities
+
+* N/A
+
 ## v2.002
 
 ### New Features / Enhancements

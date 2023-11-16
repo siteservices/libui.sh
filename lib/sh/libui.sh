@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.002 # Mon Nov 13 22:45:42 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.003 # Thu Nov 16 21:47:55 EST 2023
 
 #####
 #
@@ -760,6 +760,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
   local _c
   local _d
   local _f=false
+  local _h=false
   local _m='The variable "%s%s" is required but not defined.'
   local _p
   local _q
@@ -783,6 +784,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
 
       d)
         ${_T} && _Trace 'Directory exists test.'
+        _h=true
         _t='d'
         _m='The directory "%s" does not exist. (%s)'
         ;;
@@ -794,6 +796,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
 
       e)
         ${_T} && _Trace 'Path exists test.'
+        _h=true
         _t='e'
         _m='The path "%s" does not exist. (%s)'
         ;;
@@ -805,6 +808,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
 
       f)
         ${_T} && _Trace 'File exists test.'
+        _h=true
         _t='f'
         _m='The file "%s" does not exist. (%s)'
         ;;
@@ -859,6 +863,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
       if ! Error && [[ -z "${_x}" && -n "${_q}" ]] || ${_f}
       then
         ${_T} && _Trace 'Query and test -%s ${%s}. (%s)' "${_t}" "${_v}" "${_x}"
+        ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
         until ! ${_f} && [[ -n "${_x}" ]] && test -${_t} "${_x}" # must use test
         do
           ${_T} && _Trace 'Check value. (%s)' "${_x}"
@@ -871,6 +876,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
             ${_T} && _Trace 'Check if empty and allowed. (%s / %s)' "${_x}" "${_z}"
             [[ -n "${_z}" && -z "${_x}" ]] && break
             ${_T} && _Trace 'Loop and test -%s %s. (%s)' "${_t}" "${_v}" "${_x}"
+            ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
           else
             Verify 'Response invalid (%s). Try again?' "${_x}" && _f=true || break
           fi
@@ -885,6 +891,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
         ${_T} && _Trace 'Check if empty allowed. (%s)' "${_z}"
         [[ -n "${_z}" ]]
       else
+        ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
         test -${_t} "${_x}" # must use test
       fi
     fi
