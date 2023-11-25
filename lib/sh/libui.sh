@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.003 # Thu Nov 16 21:47:55 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.003 # Fri Nov 24 19:33:14 EST 2023
 
 #####
 #
@@ -2318,27 +2318,28 @@ LoadMod () { # [-P <path>] <libui_mod_name>
   ${_T} && _Trace 'Check if %s libui mod needs to be loaded. (%s)' "${_l}"
   if ${_l}
   then
-    local _s=false
+    local _f=false
     ${_T} && _Trace 'Load libui mod. (%s / %s)' "${_p}" "${_m}"
     if [[ -f "${_p}/libui${_m}.sh" ]]
     then
       source "${_p}/libui${_m}.sh" "${@}"
       _rv=${?}
-      _s=true
+      _f=true
     else
-      ! ${ZSH} && local path && IFS=: read -a path <<< "${PATH}"
-      for _p in "${path[@]}"
+      ! ${ZSH} && _p && IFS=: read -a _p <<< "${PATH}"
+      local _s
+      for _s in "${path[@]}"
       do
-        if [[ -f "${_p}/libui${_m}.sh" ]]
+        if [[ -f "${_s}/libui${_m}.sh" ]]
         then
-          source "${_p}/libui${_m}.sh" "${@}"
+          source "${_s}/libui${_m}.sh" "${@}"
           _rv=${?}
-          _s=true
+          _f=true
           break
         fi
       done
     fi
-    ${_s} || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p}"
+    ${_f} || Tell -E -f -L -r ${?} 'Unable to locate %s libui mod. (%s)' "libui${_m}.sh" "${_p[*]}"
   fi
 
   ${_T} && _Trace 'LoadMod return. (%s)' "${_rv}"
@@ -2476,4 +2477,4 @@ ${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH #28
 exec 3>&1
 exec 4>&2
 
-${_T} && _Trace 'READY (%s)' "${SHLIBPATH}"
+${_T} && _Trace 'READY (%s v%s)' "${SHLIBPATH}" "${LIBUI_VERSION}"

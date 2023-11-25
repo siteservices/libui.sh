@@ -160,7 +160,7 @@ ${_Package_extract} && _Package_head+="
 d=\\\"\\\${t}/a\\\"
 mkdir \\\"\\\${d}\\\" || error
 cd \\\"\\\${d}\\\" > /dev/null
-\${_Package_unarchive} \\\"\\\${a}\\\" 2>&1 > /dev/null || error
+\${_Package_unarchive} \\\"\\\${a}\\\" > /dev/null 2>&1 || error
 cd - > /dev/null
 "
 

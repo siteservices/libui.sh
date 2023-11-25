@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.000 -m 1.8
+Version -r 2.003 -m 1.9
 
 # defaults
 
@@ -46,12 +46,6 @@ UsageInfo () {
   ${_M} && _Trace 'UsageInfo [%s]' "${*}"
 
   # library provided options
-  _ou+=( 'H' 'X' )
-  _ok+=( 'Help' 'XOption' )
-  _od+=(
-    'Display usage message, also available with -h. (help: true)'
-    "XOption info. (level: \${_xdb}, confirm: ${_confirm}, force: ${_force}, overwrite: ${_overwrite}, noaction: ${_noaction}, quiet: ${_quiet}, yes: ${_yes}, profile: ${_profile})"
-  )
   _osm+=( false false )
   _opm+=( false )
 
@@ -125,6 +119,17 @@ UsageInfo () {
     done
 
     ${_M} && _Trace 'Display debug help options. (%s)' "${_help}"
+    printf "  -%s  %-${_UsageInfo_x}s - %s\n" 'H' 'Help' 'Display usage message, also available with -h. (help: true)'
+    printf "  -%s  %-${_UsageInfo_x}s - %s" 'X' 'XOption' "XOption info. (level: ${_xdb}"
+    ${_confirm} && printf ', confirm'
+    ${_force} && printf ', force'
+    ${_help} && printf ', help'
+    ${_overwrite} && printf ', overwrite'
+    ${_noaction} && printf ', noaction'
+    ${_quiet} && printf ', quiet'
+    ${_yes} && printf ', yes'
+    [[ -n "${_profile}" ]] && printf '%s' ", profile: ${_profile})"
+    printf ')\n'
     if ${_help}
     then
       cat << EOF

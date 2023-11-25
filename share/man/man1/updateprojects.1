@@ -13,7 +13,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 23, 2023
+.Dd November 19, 2023
 .Dt UPDATEPROJECTS 1
 .Os
 .Sh NAME
@@ -23,6 +23,7 @@ script to rebuild the project.
 .Sh SYNOPSIS
 .Sy updateprojects
 .Op Fl s Fl h Fl H
+.Op Fl p Ar <project>
 .Op Fl X Ar <option>
 .Op Ar <WORKSPACE>
 .Sh DESCRIPTION
@@ -36,12 +37,18 @@ script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy updateprojects
 .Op Fl s Fl h Fl H
+.Op Fl p Ar <project>
 .Op Fl X Ar <option>
 .Op Ar <WORKSPACE>
 .Ed
 .Pp
 Available command line options are:
 .Bl -tag -offset 4n -width 4n
+.It Fl p Ar <project>
+Project
+.Pp
+The project to update.
+If no project is provided, all projects will be updated.
 .It Fl s
 Status
 .Pp
