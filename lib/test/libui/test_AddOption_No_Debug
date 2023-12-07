@@ -8,7 +8,7 @@
 test_AddOption_No_Debug () {
   LoadMod Info
   LibuiPerformTest 'UsageInfo'
-  LibuiValidateTest -r ${?} 2 '.*-X *XOption *- *XOption info\. \(level: 0.*'
+  LibuiValidateTest -r ${?} 2 '.*-X *XOption *- *XOptions, use -XH for more\. \(level: 0.*'
   return ${?}
 }
 

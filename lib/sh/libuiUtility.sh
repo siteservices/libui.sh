@@ -142,7 +142,7 @@ _Drop () { # <array_var> <value>|<value>: ...
         [[ "${_opt}" =~ ${_p} ]] && continue 2
       else
         [[ "${_opt}:" == "${_p}" ]] && _f=true && continue 2
-        [[ "${_opt}" == "${_p}" ]] && echo "found" && continue 2
+        [[ "${_opt}" == "${_p}" ]] && continue 2
       fi
     done
     _r+=( "${_opt}" )
