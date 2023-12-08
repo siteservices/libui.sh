@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 1.6
+Version -r 2.003 1.7
 
 # load mods
 LoadMod File
@@ -55,6 +55,7 @@ processed=false
 
 ##### options - libui already uses options h, H, X:
 
+AddOption -n packages -m -S plist -v 'GetFileList -d -n plist "${HOME}/.vim/pack/plugin/start/*" "${HOME}/.vim/pack/plugin/opt/*"' -k 'Project' -d 'Project to build.' p:
 AddOption -n gitstatus -f -k "Status" -d "Display repo git status." s
 AddParameter -k 'Workspace' -d 'Workspace, i.e. directory above the repo trees.' WORKSPACE
 
@@ -76,6 +77,9 @@ InitCallback () {
   Trace 'Validate workspace. (%s)' "${WORKSPACE}"
   ValidateWorkspace -w
   Tell 'Working in: %s' "${PWD}"
+
+  Trace 'Get packages. (%s)' "${packages}"
+  [[ -z "${packages}" ]] && GetFileList -d -n packages "${HOME}/.vim/pack/plugin/start/*" "${HOME}/.vim/pack/plugin/opt/*"
 }
 
 ##### functions
@@ -101,68 +105,72 @@ do
   pushd "${packdir}" &> /dev/null || Error 'Unable to access vim package directory. (%s)' "${packdir}"
 
   Trace 'Get file list. (%s)' "${PWD}"
-  GetFileList packages '*'
+  GetFileList -d list '*'
 
-  Trace 'Process package list. (%s)' "${packages[*]}"
-  for package in "${packages[@]}"
+  Trace 'Process package list. (%s)' "${list[*]}"
+  for package in "${list[@]}"
   do
-    Trace 'Change directory to %s.' "${WORKSPACE}/${package}"
-    if pushd "${WORKSPACE}/${package}" &> /dev/null
+    Trace 'Check if processing package. (%s)' "${package}"
+    if Contains packages "${package}"
     then
-      Verbose && Tell '========== %s' "${package}"
-
-      Trace 'Pull latest updates. (%s)' "${package}"
-      Action -i "Pulling latest updates. (${package})" -c -l "${tmpdir}/${package}-pull.log" 'git pull --all'
-
-      Trace 'Check if getting status. (%s)' "${gitstatus}"
-      if ${gitstatus}
+      Trace 'Change directory to %s.' "${WORKSPACE}/${package}"
+      if pushd "${WORKSPACE}/${package}" &> /dev/null
       then
-        Trace 'Display current repo status.'
-        Tell -- '----- %s status' "${package}"
-        Action -q "Get ${repo} status?" "git status"
-      fi
+        Verbose && Tell '========== %s' "${package}"
 
-      Trace 'Check if up to date.'
-      pullstatus=$(<"${tmpdir}/${package}-pull.log")
-      if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
-      then
-        Trace 'Get source file list. (%s)' "${PWD}"
-        GetFileList sourcefiles '*'
+        Trace 'Pull latest updates. (%s)' "${package}"
+        Action -i "Pulling latest updates. (${package})" -c -l "${tmpdir}/${package}-pull.log" 'git pull --all'
+
+        Trace 'Check if getting status. (%s)' "${gitstatus}"
+        if ${gitstatus}
+        then
+          Trace 'Display current repo status.'
+          Tell -- '----- %s status' "${package}"
+          Action -q "Get ${repo} status?" "git status"
+        fi
+
+        Trace 'Check if up to date.'
+        pullstatus=$(<"${tmpdir}/${package}-pull.log")
+        if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
+        then
+          Trace 'Get source file list. (%s)' "${PWD}"
+          GetFileList sourcefiles '*'
+
+          popd &> /dev/null
+
+          Trace 'Change directory to %s.' "${package}"
+          pushd "${package}" &> /dev/null || Error 'Unable to access package destination directory. (%s)' "${packdir}"
+
+          Trace 'Get target file list. (%s)' "${PWD}"
+          GetFileList destfiles '*'
+
+          Trace 'Process file list. (%s)' "${#destfiles[@]}"
+          for file in "${destfiles[@]}"
+          do
+            #[[ ${file} =~ .*ale.*/.*test.* ]] && Tell 'skipping %s' "${file}" && continue
+            Trace 'Sync file tree. (%s)' "${file}"
+            Action "rsync -a --delete '${WORKSPACE}/${package}/${file}' '${packdir}/${package}/'"
+            if [ 0 -ne ${?} ]
+            then
+              Tell 'File not available, archived. (%s)' "${tmpdir}"
+              Action "mv ${FMFLAGS} '${packdir}/${package}/' '${tmpdir}'"
+            fi
+            sourcefiles=( ${sourcefiles[@]:#${file}} )
+          done
+
+          Trace 'Identify uncopied files. (%s)' "${#sourcefiles[@]}"
+          Verbose && [[ 0 < ${#sourcefiles[@]} ]] && Tell "${DF0}Package ${package} path not copied: %s${D}" "${sourcefiles[@]}"
+
+          processed=true
+          Alert 'Package %s has been updated.' "${package}"
+        else
+          Tell 'No updates available. (%s)' "${package}"
+        fi
 
         popd &> /dev/null
-
-        Trace 'Change directory to %s.' "${package}"
-        pushd "${package}" &> /dev/null || Error 'Unable to access package destination directory. (%s)' "${packdir}"
-
-        Trace 'Get target file list. (%s)' "${PWD}"
-        GetFileList destfiles '*'
-
-        Trace 'Process file list. (%s)' "${#destfiles[@]}"
-        for file in "${destfiles[@]}"
-        do
-          #[[ ${file} =~ .*ale.*/.*test.* ]] && Tell 'skipping %s' "${file}" && continue
-          Trace 'Sync file tree. (%s)' "${file}"
-          Action "rsync -a --delete '${WORKSPACE}/${package}/${file}' '${packdir}/${package}/'"
-          if [ 0 -ne ${?} ]
-          then
-            Tell 'File not available, archived. (%s)' "${tmpdir}"
-            Action "mv ${FMFLAGS} '${packdir}/${package}/' '${tmpdir}'"
-          fi
-          sourcefiles=( ${sourcefiles[@]:#${file}} )
-        done
-
-        Trace 'Identify uncopied files. (%s)' "${#sourcefiles[@]}"
-        Verbose && [[ 0 < ${#sourcefiles[@]} ]] && Tell "${DF0}Package ${package} path not copied: %s${D}" "${sourcefiles[@]}"
-
-        processed=true
-        Alert 'Package %s has been updated.' "${package}"
       else
-        Tell 'No updates available. (%s)' "${package}"
+        Warn 'Unable to find package source. (%s)' "${package}"
       fi
-
-      popd &> /dev/null
-    else
-      Warn 'Unable to find package source. (%s)' "${package}"
     fi
   done
   popd &> /dev/null

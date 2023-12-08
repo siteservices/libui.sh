@@ -1,5 +1,23 @@
 # Change Log
 
+## v2.003
+
+### New Features / Enhancements
+
+* Add -r (Regular Expression) option to Drop command.
+* Add -p (Project) option flag to updateprojects and updatevimpackages scripts.
+* Simplify XOption usage information.
+* LoadMod searches for module in PATH and better error message with path info.
+* Improve XOption help info.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Substitute "${HOME}" for "~" in ConfirmVar filesystem tests.
+* Fix to remove tar error output in package header when expanding tarball.
+* Actually include starx.
+
 ## v2.002
 
 ### New Features / Enhancements

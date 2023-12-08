@@ -6,7 +6,7 @@
 #####
 
 test_Help () {
-  LibuiPerformTest 'TERMINAL=true TERM= libui -X h'
+  LibuiPerformTest 'TERMINAL=true TERM= libui -XC -XF -XH -XO -XN -XQ -XY '
   LibuiValidateTest -i ${?} 2 "${helptext}"
   return ${?}
 }
@@ -36,24 +36,24 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
   -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
   -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
   -H  Help             - Display usage message, also available with -h. (help: true)
-  -X  XOption          - XOption info. (level: 0, confirm: false, force: false, overwrite: false, noaction: false, quiet: false, yes: false, profile: )
-        0 - No debug actions.
-        1 - Verify before executing Exit handlers.
-        2 - Verbose actions.
-        3 - Local debugging.
-        5 - Profile with a timestamp in trace messages.
-        6 - Context debugging with file / function / line in trace messages.
-        7 - Remote debugging.
-        8 - Mod debugging.
-        9 - Library internals debugging.
-        c - Confirm Actions before performing them.
-        f - Force Actions.
-        h - Display this debug help.
-        n - Show but do not perform Actions.
-        o - Overwrite mode.
-        q - Quiet operation.
-        v - Version information.
-        y - Answer all question with the default or \"yes\".
+  -X  XOption          - XOptions, use -XH for more. (level: 0, confirm, force, help, overwrite, noaction, quiet, yes)
+        0   - No debug actions.
+        1   - Verify before executing Exit handlers.
+        2   - Verbose actions.
+        3   - Local debugging.
+        5   - Profile with a timestamp in trace messages.
+        6   - Context debugging with file / function / line in trace messages.
+        7   - Remote debugging.
+        8   - Mod debugging.
+        9   - Library internals debugging.
+        c|C - Confirm Actions before performing them.
+        f|F - Force Actions.
+        h|H - Display this debug help.
+        n|N - Show but do not perform Actions.
+        o|O - Overwrite mode.
+        q|Q - Quiet operation.
+        v|V - Version information.
+        y|Y - Answer all question with the default or \"yes\".
         <file> - Profile configuration file to load.
 
   <param>              - Parameter: Name of the test to perform, package filename, or COMMONROOT directory. (param: )

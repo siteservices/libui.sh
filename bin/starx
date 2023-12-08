@@ -1,0 +1,109 @@
+#!/bin/zsh
+#####
+#
+#	Simple .star file Extractor - Extract files from a .star archive.
+#
+#	F Harvell - Sat Nov  4 07:50:23 EDT 2023 - 2.1
+#
+#####
+#
+# Extracts files from a simple archive of text only files created by the star
+# archive manager. The star arhive files are concatenated with the separation
+# line (with no leading / trailing whitespace):
+#
+#   ===== file:<name>:<dir perms>:<file perms>:<timestamp>file <archivets>=====
+#
+#####
+#
+# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# domain. Permission is unconditionally granted to anyone with an interest, the
+# rights to use, modify, publish, distribute, sublicense, and/or sell this
+# content and associated files.
+#
+# All content is provided "as is", without warranty of any kind, expressed or
+# implied, including but not limited to merchantability, fitness for a
+# particular purpose, and noninfringement. In no event shall the authors or
+# copyright holders be liable for any claim, damages, or other liability,
+# whether in an action of contract, tort, or otherwise, arising from, out of,
+# or in connection with this content or use of the associated files.
+#
+#####
+
+# defaults
+ts=$(date +%s)
+rv=0
+TMPDIR=${TMPDIR:-/tmp}
+tmpdir="$(mktemp -d "${TMPDIR%/}/${0##*/}.XXXXXX")"
+sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
+archive="${1}"
+
+# error handler
+error () {
+  printf 'Extract error.'
+  exit 1
+}
+
+# open archive file descriptor
+if [[ -z "${archive}" || '-' == "${archive}" ]]
+then
+  exec 8<&0
+else
+  exec 8< "${archive}"
+fi
+
+# validate archive
+file="${tmpdir}/sigtest.tmp"
+sed '$d' <&8 > "${file}"
+ts=( $(tail -1 "${archive}") ); signature="${ts[2]}"; ts="${ts[3]}"
+if [[ "${signature}" != $(${sign} "${file}" | cut -d ' ' -f 1) ]]
+then
+  printf 'Unable to extract files, archive is corrupt.'
+  exit 1
+fi
+
+# find initial separator
+exec 8< "${file}"
+while IFS= read -r line
+do
+  [[ "${line}" =~ ^=====\ file:([^:]*):([^:]*):([^:]*):([^:]*):file\ ${ts}\ =====$ ]] && break
+done <&8
+((rv+=${?}))
+
+# extract files
+while true
+do
+  # check for current file
+  if [[ -n "${fileinfo[((2))]%/*}" ]]
+  then
+    # set permissions
+    chmod "${fileinfo[((4))]}" "${fileinfo[((2))]}" || error
+
+    # close file
+    exec 9>&-
+  fi
+
+  # process file info
+  [[ -z "${line}" ]] && break
+  fileinfo=( "${(@s|:|)line}" )
+
+  # process directory
+  if [[ ! -d "${fileinfo[((2))]%/*}" ]]
+  then
+    mkdir -p -m "${fileinfo[((3))]}" "${fileinfo[((2))]%/*}" || error
+  fi
+
+  # create new file
+  exec 9> "${fileinfo[((2))]}"
+
+  # copy until separator
+  while IFS= read -r line
+  do
+    [[ "${line}" =~ ^=====\ file:([^:]*):([^:]*):([^:]*):([^:]*):file\ ${ts}\ =====$ ]] && break
+    printf '%s\n' "${line}"
+  done <&8 >&9
+  ((rv+=${?}))
+done
+exec 8<&-
+
+# done
+((rv)) && error || exit 0

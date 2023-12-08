@@ -318,6 +318,8 @@ array variable name. If the value contains a colon (:) at the end, both the
 provided value and the following value will be removed. This is useful for
 removing option values from an argument list like CMDARGS.
 
+* **-r** - treat the provided value / value: is a regular expression pattern
+
 ```
 Drop <array_variable> <value>|<value>: ...
 ```

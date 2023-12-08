@@ -30,7 +30,7 @@
 #
 #####
 
-Version -r 2.000 -m 1.2
+Version -r 2.003 -m 1.3
 
 ##### configuration
 
@@ -100,11 +100,32 @@ _Drop () { # <array_var> <value>|<value>: ...
   ${_S} && ((_c_Drop++))
   ${_T} && _Trace '_Drop [%s]' "${*}"
 
-  local _a; ${ZSH} && _a=( "${(P)1[@]}" ) || eval "_a=( \"\${${1}[@]}\" )"
+  local _a
+  local _e=false
   local _f=false
-  local _opt
   local _p
   local _r; _r=( )
+
+  ${_T} && _Trace 'Process Drop options. (%s)' "${*}"
+  local _opt
+  local OPTIND
+  local OPTARG
+  while getopts ':r' _opt
+  do
+    case ${_opt} in
+      r)
+        ${_T} && _Trace 'Regex match.'
+        _e=true
+        ;;
+
+      *)
+        Tell -E -f -L '(Drop) Option error. (-%s)' "${OPTARG}"
+        ;;
+
+    esac
+  done
+  shift $((OPTIND - 1))
+  ${ZSH} && _a=( "${(P)1[@]}" ) || eval "_a=( \"\${${1}[@]}\" )"
 
   for _opt in "${_a[@]}"
   do
@@ -115,8 +136,14 @@ _Drop () { # <array_var> <value>|<value>: ...
     fi
     for _p in "${@:1}"
     do
-      [[ "${_opt}:" == "${_p}" ]] && _f=true && continue 2
-      [[ "${_opt}" == "${_p}" ]] && continue 2
+      if ${_e}
+      then
+        [[ "${_opt}:" =~ ${_p} ]] && _f=true && continue 2
+        [[ "${_opt}" =~ ${_p} ]] && continue 2
+      else
+        [[ "${_opt}:" == "${_p}" ]] && _f=true && continue 2
+        [[ "${_opt}" == "${_p}" ]] && continue 2
+      fi
     done
     _r+=( "${_opt}" )
   done

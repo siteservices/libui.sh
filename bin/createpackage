@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.002 1.9
+Version -r 2.003 1.10
 
 # load mods
 LoadMod File
@@ -110,7 +110,7 @@ InitCallback () {
             IFS=$'\n' files+=( $(grep -v '^\s*\(#\|$\)' "${manifest}") )
       fi
     else
-      Error 'The source directory does not have a manifest file. (%s)' "${manifest}"
+      Error 'No manifest file was found. (%s)' "${manifest}"
     fi
   else
     Trace 'Get file listing. (%s)' "${sourcedir}"

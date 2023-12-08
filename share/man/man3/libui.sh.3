@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd November 13, 2023
+.Dd December 6, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -1378,9 +1378,20 @@ exists as an element in the array named
 The following command is a utility function for dropping a value from an array:
 .Bd -ragged -offset 4n
 .Sy Drop
+.Op Fl r
 .Ar <array_variable>
 .Ar <value>|<value>: ...
 .Ed
+.Ed
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Fl r
+Regular Expression
+When provided, the
+.Ar <value>|<value>: ...
+should be interpreted as a regular expression pattern.
+.El
 .Pp
 The
 .Sy Drop
@@ -1388,7 +1399,9 @@ command removes the provided values from the array with the provided array
 variable name.
 If the value contains a colon (:) at the end, both the provided value and the
 following value will be removed.
-This is useful for removing option values from an argument list like CMDARGS.
+The colon (:) terminated values are useful for removing option values from an
+argument list like
+.Sx CMDARGS .
 .Ss Error
 The following command sends an error message to the user:
 .Bd -ragged -offset 4n
