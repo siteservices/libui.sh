@@ -13,7 +13,7 @@ test_Help () {
 
 # help compare text
 helptext="
-USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
+USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.config/libui/libui.conf\". (config: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
@@ -26,6 +26,7 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
   -m  Man Page         - Display man page. (manpage: false)
   -M  Update Man Pages - Update man page timestamps to match respective script timestamp. (updateman: false)
   -n  New Script       - Create a new libui script with the provided filename. (new: false)
+  -N  New Empty Script - Create a libui script with the provided filename without demo content. (empty: false)
   -p  Package          - Create a libui.sh package with the provided filename. (package: false)
   -R  Reset Caches     - Reset display and user information caches. (cachereset: false)
   -s  Stats            - Display stats. (stats: false)
@@ -63,6 +64,9 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
 
 This script provides support functionality for the libui library including
 regression testing, capabilities demonstration, and usage statistics reports.
+
+Hints: Use the \"-n\" (New Script) option to generate a new liubi script.
+       Use the \"-d\" (Demo) option to see the display formats available.
 
 Current test mode options:
     AddOption F/T test. (b: false)
