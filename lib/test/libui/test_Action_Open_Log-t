@@ -9,11 +9,10 @@ test_Action_Open_Log-t () {
   local lfile; GetTmp -f lfile
   LoadMod File
   Open -1 -c "${lfile}"
-  Action -t -1 'ls -d /tmp'
-  LibuiPerformTest "Action -t -1 'ls -d /tmp'; cat '${lfile}'"
+  LibuiPerformTest "Action -t -1 'ls -d /tmp'; Action -t -1 'ls -d /tmp'; sync; cat '${lfile}'"
   local tv=${?}
   Close -1
-  LibuiValidateTest -r "${tv}" 0 "/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
+  LibuiValidateTest -r "${tv}" 0 "/tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
   return ${?}
 }
 

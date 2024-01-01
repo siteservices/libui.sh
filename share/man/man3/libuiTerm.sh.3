@@ -1,0 +1,192 @@
+.\" Manpage for libuiTerm.sh
+.\" Please contact fharvell@siteservices.net to correct errors or typos.
+.\" Please note that the libui library is young and under active development.
+.\"
+.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" domain.  Permission is unconditionally granted to anyone with an interest,
+.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
+.\" content and associated files.
+.\"
+.\" All content is provided "as is", without warranty of any kind, expressed or
+.\" implied, including but not limited to merchantability, fitness for a
+.\" particular purpose, and noninfringement.  In no event shall the authors or
+.\" copyright holders be liable for any claim, damages, or other liability,
+.\" whether in an action of contract, tort, or otherwise, arising from, out of,
+.\" or in connection with this content or use of the associated files.
+.\"
+.Dd December 31, 2023
+.Dt LIBUITERM.SH 3
+.Os
+.Sh NAME
+.Nm libuiTerm.sh
+.Nd Terminal Utilities Mod for the
+.Xr libui.sh 3
+user interface library
+.Sh SYNOPSIS
+.Sy LoadMod Term
+.Pp
+.Sy \&At
+.Pp
+.Sy GetCursor
+.Pp
+.Sy RestoreCursor
+.Pp
+.Sy SaveCursor
+.Pp
+.Sy SetCursor
+.Sh DESCRIPTION
+The
+.Nm
+.Xr libui.sh 3
+mod provides commands for manipulating the terminal and cursor location.
+The
+.Sx \&At
+command is a support command for executing another command at a specific postion
+on the terminal.
+The
+.Sx GetCursor
+and
+.Sx SetCursor
+commands get the current cursor position and set (i.e., move) the cursor to a
+specific position.
+The
+.Sx SaveCursor
+and
+.Sx RestoreCursor
+commands tell the terminal to save the current cursor position and to restore
+the cursor position (to the last saved position).
+.Pp
+The
+.Nm
+.Xr libui.sh 3
+mod provides the following commands:
+.Ss \&At
+The following command executes a command at the specified location in the
+terminal window.
+.Bd -ragged -offset 4n
+.Sy \&At Ar <row> Ar <col> Ar <command>
+.Ed
+.Pp
+The
+.Sy \&At
+command is a support command that saves the current cursor position, moves the
+cursor to the provided
+.Ar <row>
+and
+.Ar <col> ,
+executes the provided command (which can be multiple words), and then restores
+the cursor position.
+.Ss GetCursor
+The following command gets the current cursor position.
+.Bd -ragged -offset 4n
+.Sy GetCursor
+.Ed
+.Pp
+Gets the current cursor position.
+The cursor position is then available in the variables "ROW" and "COL".
+.Ss RestoreCursor
+The following command tells the terminal to restore the cursor position.
+.Bd -ragged -offset 4n
+.Sy RestoreCursor
+.Ed
+.Pp
+Tells the terminal to restore the cursor to the last saved cursor position.
+The
+.Sx SaveCursor
+command should be used previously to save the current cursor position.
+See the
+.Sx SaveCursor
+command for more information.
+.Ss SetCursor
+The following command resumes a paused spinner.
+.Bd -ragged -offset 4n
+.Sy SetCursor Ar <row> Ar <col>
+.Ed
+.Pp
+Moves the cursor to the provided
+.Ar <row>
+and
+.Ar <col> .
+.Ss SaveCursor
+The following command tells the terminal to save the current cursor position.
+.Bd -ragged -offset 4n
+.Sy SaveCursor
+.Ed
+.Pp
+Tells the terminal to save the current cursor position.
+The
+.Sx RestoreCursor
+command then subsequently be used to restore the cursor to the saved position.
+See the
+.Sx RestoreCursor
+command for more information.
+.Sh VARIABLES
+The following variables are used / available with the
+.Nm
+mod:
+.Bl -tag -offset 4n -width 6n
+.It COL
+The current cursor column.
+(Only set when the GetCursor command is executed.)
+.It MAXCOL
+The maximum column value.
+The value may change if the terminal window is resized.
+.It MAXROW
+The maximum row value.
+The value may change if the terminal window is resized.
+.It ROW
+The current cursor row.
+(Only set when the GetCursor command is executed.)
+.El
+.Sh EXAMPLES
+Some examples include:
+.Bd -literal -offset 4n
+.Sy \&At 10 20 Alert -i "Hello"
+.Ed
+.Pp
+Result: Moves to row 10, column 20, and displays "Hello.".
+.Bd -literal -offset 4n
+.Sy GetCursor
+.Ed
+.Pp
+Result: Gets the current cursor position which is then available in the "ROW"
+and "COL" variables.
+.Bd -literal -offset 4n
+.Sy SetCursor 10 20
+.Ed
+.Pp
+Result: Moves the cursor to row 10, column 20.
+Subsequent output will be displayed at that position.
+.Pp
+Note: Most of the message commands provided by the
+.Xr libui.sh 3
+user interface library automatically jump to the beginning (i.e., first column)
+of the current row before starting to display the provided message.
+For many of the commands, you can use the
+.Fl i
+(In Place) option flag to have the message displayed "in place", i.e., where the
+cursor is currently located.
+.Sh SEE ALSO
+.Xr bash 1 ,
+.Xr tput 1 ,
+.Xr zsh 1 ,
+.Xr libui.sh 3
+.Sh NOTES
+The terminal rows and columns start at 0.
+The MAXROWS and MAXCOLS values are therefore zero-based (i.e., one less than the
+total number of rows and columns).
+.Pp
+These terminal commands were developed and tested using Xterm compatible
+terminals.
+While the
+.Nm
+mod (and the rest of the
+.Xr libui.sh 3
+user interface library) was built using the terminfo / termcap supported
+.Xr tput 1
+command, the results on non-Xterm compliant terminals may vary.
+.Sh AUTHORS
+.An F Harvell
+.Mt <fharvell@siteservices.net>
+.Sh BUGS
+No known bugs.

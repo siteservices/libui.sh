@@ -15,7 +15,7 @@
 #
 # Alternatively, to source libui.sh in a zsh or bash script, include the line:
 #
-#   LIBUI="${SHLIBPATH:+${SHLIBPATH%/}/}libui.sh"; source "${LIBUI}" "${0}" "${@}"
+#   source "${LIBUI:-libui.sh}" "${0}" "${@}"
 #
 # Every libui script (or libui mod) should contain the following command:
 #
@@ -65,7 +65,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.003 # Wed Dec 6 19:19:53 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.004 # Sun Dec 31 22:37:44 EST 2023
 
 #####
 #
@@ -507,6 +507,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   local _i
   local _l
   local _m=false
+  local _n; ((${_spinner:-0})) || _n="${DJBL}"
   local _pe
   local _ps; _ps=( )
   local _q
@@ -590,6 +591,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
         ${_T} && _Trace 'Use spinner.'
         LoadMod Spinner
         _m=true
+        _n=
         ;;
 
       t)
@@ -637,6 +639,9 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       ${_T} && _Trace 'Check if confirming action. (%s)' "${_v}"
       if ! ${_v} || Verify "${DConfirm}(Confirm)${D} ${_q:-${*}}"
       then
+        ${_T} && _Trace 'Process info message. (%s)' "${_i}"
+        ${TERMINAL} && ! ${_quiet} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D}${DCEL}${_n}" "${_i}" >&4 # duplicate stderr
+
         ${_T} && _Trace 'Check for no action. (%s)' "${_noaction}"
         if ${_noaction}
         then
@@ -655,12 +660,10 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
           do
             ((_r--))
 
-            ${_T} && _Trace 'Process info message. (%s)' "${_i}"
-            ${_quiet} || if ${_m}
+            ${_T} && _Trace 'Check for spinner. (%s)' "${_m}"
+            if ${_m} && ! ${_confirm} && ! ${_quiet}
             then
-              ${_confirm} || StartSpinner "${_i}"
-            else
-              ${TERMINAL} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D} ${DCEL}" "${_i}" >&4 # duplicate stderr
+              StartSpinner
             fi
 
             ${_L} && [[ -z "${_f}" && -z "${_l}" ]] && _f=0 && _x=10
@@ -910,7 +913,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
 # ask a question and return a response
 _yes=false
 UICMD+=( 'Ask' )
-Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
+Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
   ${_S} && ((_cAsk++))
   ${_T} && _Trace 'Ask [%s]' "${*}"
 
@@ -934,7 +937,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
     case ${_opt} in
       b)
         ${_T} && _Trace 'Boolean (y/n).'
-        _b="${D} ${DOptions}(y/n)"
+        _b=' (y/n)'
         _r='[nNyY]'
         ;;
 
@@ -1030,17 +1033,17 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   else
     _s='%s'
   fi
-  ${PV} && printf -v _q "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}" || \
-      _q="$(printf "${DJBL}${DQuestion}${_s}${_b}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
+  ${PV} && printf -v _q "${DJBL}${DQuestion}${_s}${_b:+${D}${DOptions}${_b}}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}" || \
+      _q="$(printf "${DJBL}${DQuestion}${_s}${_b:+${D}${DOptions}${_b}}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
   ANSWER=
 
-  ((0 < ${_spinner:-0})) && PauseSpinner
+  ((${_spinner:-0})) && PauseSpinner
 
   ${_T} && _Trace 'Check for selection. (%s)' "${#_a[@]}"
+  local _i
   ${_quiet} || if ((${#_a[@]}))
   then
     printf "${DJBL}${DCEL}${DCES}\n${DOptions}The possible responses are:\n" >&${_o}
-    local _i
     if ${ZSH}
     then
       for ((_i = 1; _i <= ${#_a}; _i++))
@@ -1065,6 +1068,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
   else
     local _l=true
     local _g=false
+    local _x
     local _t
     ${_T} && _Trace 'Prompt for answer. (%s)' "${_s} ${*}"
     while ${_l}
@@ -1073,14 +1077,11 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
       then
         if ${ZSH}
         then
-          if [[ -o SINGLE_LINE_ZLE ]]
-          then
-            vared -p "${_q}" ANSWER
-          else
-            setopt SINGLE_LINE_ZLE
-            vared -p "${_q}" ANSWER
-            unsetopt SINGLE_LINE_ZLE
-          fi
+          [[ -o SINGLE_LINE_ZLE ]] || _x="unsetopt SINGLE_LINE_ZLE${N}"
+          setopt SINGLE_LINE_ZLE
+          _i="${_s//\%s/}${_b} [] ${*}${_d/${_p:+${_p%\/}\/}}"
+          vared -p "%${#_i}{${_q}%}" ANSWER
+          [[ -n "${_x}" ]] && eval "${_x}"
         else
           printf "${_q}" >&${_o}
           read -e ANSWER
@@ -1138,7 +1139,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-P <path>] [-r <re
     done
   fi
 
-  ((0 < ${_spinner:-0})) && ResumeSpinner
+  ((${_spinner:-0})) && ResumeSpinner
 
   ${_T} && _Trace -I 'ANSWER: %s' "${ANSWER}"
 
@@ -1216,7 +1217,7 @@ Verify () { # [-C|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] <qu
 
 # send user message
 UICMD+=( 'Tell' )
-Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r <return_value>] <message>
+Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o <fd>] [-r <return_value>] <message>
   ${_S} && ((_cTell++))
   ${_T} && _Trace 'Tell [%s]' "${*}"
 
@@ -1312,7 +1313,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r
         ;;
 
       N)
-        ${_T} && _Trace 'No newline.'
+        ${_T} && _Trace 'No carrage return.'
         _n=
         ;;
 
@@ -1612,7 +1613,7 @@ Initialize () {
   do
     if ${_p}
     then
-      [[ 1 -eq ${#_i} && '0123456789cCfFhHnNqQvVyY' =~ "${_i}" ]] && _p=false && continue
+      [[ 1 -eq ${#_i} && '0123456789cCfFhHnNoOqQvVyY' =~ "${_i}" ]] && _p=false && continue
       _profile="${_i}"
       ${_T} && _Trace 'Load profile. (%s)' "${_profile}"
       if [[ -f "${_profile}" ]]
@@ -1676,7 +1677,7 @@ Initialize () {
       X)
         ${_T} && _Trace 'XOption value. (%s)' "${OPTARG}"
         case ${OPTARG} in
-          [0-9])
+          [1-9])
             ${_T} && _Trace 'XOption level.'
             _xdb="${OPTARG}"
             CHFLAGS+="-X ${_xdb} "
@@ -1848,6 +1849,7 @@ Initialize () {
   local _v
   ${_T} && _Trace 'Verify option values. (%s)' "${_ou[*]}"
   _i=${AO}
+  _ol=( )
   for _p in "${_ou[@]}"
   do
     ${_T} && _Trace 'Call option validation callback. (%s)' "${_ov[${_i}]}"
@@ -2277,7 +2279,7 @@ LoadMod () { # [-P <path>] <libui_mod_name>
   ${_S} && ((_cLoadMod++))
   ${_T} && _Trace 'LoadMod [%s]' "${*}"
 
-  local _p="${SHLIBPATH%/}"
+  local _p="${LIBUI%/*}"
   local _rv=0
 
   ${_T} && _Trace 'Process LoadMod options. (%s)' "${*}"
@@ -2352,9 +2354,9 @@ _WINCH () {
   ${_S} && ((_c_WINCH++))
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
-  # local _x; [[ -n "${DRP}" ]] && printf "${DRP}" && IFS='[;' read -sd R _x CROW CCOL
-  SCOLS="$(tput cols)" && SROWS="$(tput lines)" && \
-      declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
+  MAXROW=$(($(tput lines) - 1))
+  MAXCOL=$(($(tput cols) - 1))
+  declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
   ${_T} && _Trace '_WINCH return. (%s)' 0
   return 0
@@ -2385,9 +2387,8 @@ GROUP="${GROUP:-$(id -gn)}"
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
-SHLIBPATH="${SHLIBPATH:-${LIBUI%/*}}"
-[[ "${PATH}" =~ (.*:|^)"${SHLIBPATH%/}"($|:.*) ]] || PATH="${SHLIBPATH%/}${PATH:+:${PATH}}"
-DOMAIN="${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}"
+[[ "${PATH}" =~ (.*:|^)"${LIBUI%/*}"($|:.*) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
+DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
 [[ 'local' == "${DOMAIN}" ]] && DOMAIN=
 DOMAIN="${DOMAIN:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)}"
 if ${ZSH}
@@ -2407,6 +2408,20 @@ else
   ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
 fi
 OS="${OS:-$(uname -s)}"
+case "${OS}" in
+  Linux)
+    UNIX='GNU'
+    ;;
+
+  Solaris)
+    UNIX='SYSV'
+    ;;
+
+  *) # Darwin|FreeBSD|SunOS
+    UNIX='BSD'
+    ;;
+
+esac
 TMPDIR="${TMPDIR:-/tmp}"
 MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647
 CHFLAGS=
@@ -2477,4 +2492,4 @@ ${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH #28
 exec 3>&1
 exec 4>&2
 
-${_T} && _Trace 'READY (%s v%s)' "${SHLIBPATH}" "${LIBUI_VERSION}"
+${_T} && _Trace 'READY (%s v%s)' "${LIBUI}" "${LIBUI_VERSION}"

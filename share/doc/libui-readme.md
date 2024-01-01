@@ -9,9 +9,12 @@ flags that help with debugging, options for alternate execution flows
 (confirmation, no action, verbose, etc.), automatic script usage information,
 and color terminal highlighting.
 
+The easiest way to start a new script is to use the `libui -n <script_path>`
+command. Use `man libui` for more details.
+
 ## Synopsis
 
-To create a libui script, use the following shebang:
+To create a libui script, use the following shebang in the first line:
 
 ```
 #!/usr/bin/env libui
@@ -20,7 +23,7 @@ To create a libui script, use the following shebang:
 Alternatively, to source libui.sh in a zsh or bash script, include the line:
 
 ```
-LIBUI="${SHLIBPATH:+${SHLIBPATH%/}/}libui.sh"; source "${LIBUI}" "${0}" "${@}"
+source "${LIBUI:-libui.sh}" "${0}" "${@}"
 ```
 
 Every libui script (or libui mod) should contain the following command:
@@ -83,6 +86,9 @@ Alternatively, the libui script may be called directly from within the repo:
 ```
 lib/sh/libui -i <COMMONROOT>
 ```
+
+Note: to inclue all of the regression tests, use the `-I` (Install with tests)
+option flag instead of the `-i` (Install) option flag.
 
 ## Post Installation
 

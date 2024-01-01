@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd October 23, 2023
+.Dd December 29, 2023
 .Dt LIBUI 1
 .Os
 .Sh NAME
@@ -25,7 +25,9 @@ library utility actions
 .Sh SYNOPSIS
 .Sy libui
 .Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl h Fl H
-.Op Fl e Ar shell ...
+.Op Fl e Ar <shell> ...
+.Op Fl n Ar <script_path>
+.Op Fl N Ar <script_path>
 .Op Fl X Ar <option>
 .Op Ar <parameter>
 .Sh DESCRIPTION
@@ -100,6 +102,8 @@ script can be executed using the following:
 .Sy libui
 .Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl h Fl H
 .Op Fl e Ar <shell> ...
+.Op Fl n Ar <script_path>
+.Op Fl N Ar <script_path>
 .Op Fl X Ar <option>
 .Op Ar <parameter>
 .Ed
@@ -120,7 +124,7 @@ Demo
 Provide a simple
 .Xr libui.sh 3
 capabilities demonstration.
-.It Fl e Ar <shell>
+.It Fl e Ar <shell> ...
 Execute Shell
 .Pp
 Perform regression testing using the provided
@@ -198,6 +202,24 @@ man page.
 Update Man Pages
 .Pp
 Update man page timestamps to match the respective script modification dates.
+.It Fl n Ar <script_path>
+New Script
+.Pp
+Creates a new script at the provided
+.Ar <script_path>
+from the share/doc/libui-template template file.
+The new script provides the basic (recommended) outline of a
+.Xr libui.sh 3
+script and includes some sample statements (demo content).
+.It Fl N Ar <script_path>
+New Script Without Demo Content
+.Pp
+Creates a new script at the provided
+.Ar <script_path>
+from the share/doc/libui-template template file without the demo content.
+The new script provides the basic (recommended) outline of a
+.Xr libui.sh 3
+script.
 .It Fl p
 Package
 .Pp

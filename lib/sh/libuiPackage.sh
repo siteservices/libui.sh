@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.001 -m 1.18
+Version -r 2.004 -m 1.19
 
 # defaults
 
@@ -416,11 +416,11 @@ CreatePackage () { # [-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>] [
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
-        if [[ 'Darwin' == "${OS}" ]]
+        if [[ 'GNU' == "${UNIX}" ]]
         then
-          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
-        else
           Action -q "Create shar package archive for ${_Package_package}?" -i 'Creating shar archive.' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
+        else
+          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"

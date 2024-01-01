@@ -36,8 +36,7 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [
   -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
   -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
   -H  Help             - Display usage message, also available with -h. (help: true)
-  -X  XOption          - XOptions, use -XH for more. (level: 0, confirm, force, help, overwrite, noaction, quiet, yes)
-        0   - No debug actions.
+  -X  XOption          - XOptions, use -XH for details. (level: 0, confirm, force, help, overwrite, noaction, quiet, yes)
         1   - Verify before executing Exit handlers.
         2   - Verbose actions.
         3   - Local debugging.

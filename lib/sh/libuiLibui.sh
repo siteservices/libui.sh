@@ -34,7 +34,7 @@
 #
 #####
 
-Version -r 2.001 -m 1.13
+Version -r 2.004 -m 1.14
 
 ##### configuration
 
@@ -45,6 +45,7 @@ LoadMod Sort
 LoadMod Spinner
 LoadMod Timer
 LoadMod User
+LoadMod Term
 LoadMod Test
 
 # defaults
@@ -53,7 +54,7 @@ ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
 _Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/lib/test/libui}"
-_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}SHLIBPATH=\"\${d}/lib/sh\" \${sh} \"\${d}/lib/sh/libui\" \${@}"
+_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}\${sh} \"\${d}/lib/sh/libui\" \${@}"
 _Util_groupmode='g+wX'
 _Util_configfile="${LIBUI_CONFIG}/libui.conf"
 _Util_dcprefix="${LIBUI_CONFIG}/display-"
@@ -135,6 +136,7 @@ _LibuiSetup () {
   AddOption -n manpage -c ManualCallback -f -k 'Man Page' -d 'Display man page.' m
   AddOption -n updateman -f -k 'Update Man Pages' -d 'Update man page timestamps to match respective script timestamp.' M
   AddOption -n new -f -k 'New Script' -d 'Create a new libui script with the provided filename.' n
+  AddOption -n empty -f -k 'New Empty Script' -d 'Create a libui script with the provided filename without demo content.' N
   AddOption -n package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
   AddOption -n cachereset -f -k 'Reset Caches' -d 'Reset display and user information caches.' R
   AddOption -n stats -f -k 'Stats' -d 'Display stats.' s
@@ -280,6 +282,9 @@ _LibuiSetup () {
 This script provides support functionality for the libui library including
 regression testing, capabilities demonstration, and usage statistics reports.
 
+Hints: ${D0}Use the "-n" (New Script) option to generate a new liubi script.${D}
+       Use the "-d" (Demo) option to see the display formats available.
+
 Current test mode options:
     AddOption F/T test. (b: ${_Util_addoptft})
     AddOption T/F test. (B: ${_Util_addopttf})
@@ -334,7 +339,7 @@ EOF
       fi
       ConfirmVar -d TESTDIR
       pushd "${TESTDIR}" > /dev/null
-    elif ${new}
+    elif ${new} || ${empty}
     then
       GetRealPath -v param
       [[ -d "${param%/*}" ]] || Error 'Parent directory does not exist. (%s)' "${param%/*}"
@@ -356,14 +361,16 @@ LibuiConfig () {
 
   local _Util_rv=0
 
-  if Overwrite || [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite libui configuration file %s?' "${_Util_configfile}"
+  Overwrite || [[ ! -f "${_Util_configfile}" ]] || Error 'The configuration file already exists, use -XO to overwrite.'
+  if [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite existing libui configuration file %s?' "${_Util_configfile}"
   then
     ${_M} && _Trace 'Create default config file. (%s)' "${_Util_configfile}"
     LoadMod File
     Open -1 -c ${_Util_configfile}
     Write -1 "#####${N}#${N}# libui.conf - $(date)${N}#${N}######${N}"
-    Write -1 "# use LIBUI_<VAR>=\"\${LIBUI_<VAR>:-<value>}\" to support temporary command line environment changes.${N}"
-    Write -1 "$(grep 'LIBUI_' "${LIBUI}" | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_.*:-.*\)}.*$/\1/' | sed 's/}[";].*$//' | sed -E 's/(LIBUI_.*):-(.*)$/\1="${\1:-\2}"/' | sed 's/^/#/' | sort -u)"
+    Write -1 "# use LIBUI_{VAR}=\"\${LIBUI_{VAR}:-<value>}\" to support temporary command line environment changes.${N}"
+    Write -1 "$(grep 'LIBUI_' "${LIBUI}" | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_[^:]*\):-\([^;]*\)}.*$/\1="${\1:-\2}"/' | sed 's/^/#/' | sort -u)"
+    DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
     Close -1
 
     Tell -A 'Config file has been created. (%s)' "${_Util_configfile}"
@@ -387,7 +394,7 @@ LibuiDemo () {
     [[ -z "${DCES}" ]] && Tell -W 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'Clear to end of screen (DCES).'
     [[ -z "${DJBL}" ]] && Tell -W 'Jump to beginning of line (DJBL) not defined.' || printf '\t%s\n' 'Jump to beginning of line (DJBL).'
     [[ -z "${DJH}" ]] && Tell -W 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'Jump to home (DJH).'
-    [[ -z "${DRP}" ]] && Tell -W 'Read cursor position (DRP) not defined.' || printf '\t%s\n' 'Read cursor position (DRP).'
+    [[ -z "${DCP}" ]] && Tell -W 'Read cursor position (DCP) not defined.' || printf '\t%s\n' 'Read cursor position (DCP).'
     [[ -z "${Db0}" ]] && Tell -W 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Black background (Db0).'
     [[ -z "${Dbr}" ]] && Tell -W 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Red background (Dbr).'
     [[ -z "${Dbg}" ]] && Tell -W 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Green background(Dbg).'
@@ -460,30 +467,33 @@ LibuiDemo () {
   Tell "\t${D8}Display mode %d. (D8)" 8
   Tell "\t${D9}Display mode %d. (D9)" 9
 
+  GetCursor
+
   Tell '\nExecution environment:'
   Tell "\tAssociative array (AA):          ${DFc}%s${D}" "${AA}"
   Tell "\tArray offset (AO):               ${DFc}%s${D}" "${AO}"
   Tell "\tInitial working directory (IWD): ${DFc}%s${D}" "${IWD}"
   Tell "\tBash version (BV):               ${DFc}%s${D}" "${BV}"
   Tell "\tCommand line string (CMDLINE):   ${DFc}%s${D}" "${CMDLINE[*]}"
-# Tell "\tCursor position (CROW, CCOL):    ${DFc}%s${D}" "${CROW}, ${CCOL}"
+  Tell "\tCursor position (ROW, COL):      ${DFc}%s${D}" "${ROW}, ${COL}"
   Tell "\tDomain name (DOMAIN):            ${DFc}%s${D}" "${DOMAIN}"
   Tell "\tEffective UID (EUID):            ${DFc}%s${D} (note: consumed, not generated)" "${EUID}"
   Tell "\tPrimary Group (GROUP):           ${DFc}%s${D}" "${GROUP}"
   Tell "\tHost name (HOST):                ${DFc}%s${D}" "${HOST}"
   Tell "\tPath of libui library (LIBUI):   ${DFc}%s${D}" "${LIBUI}"
+  Tell "\tMax column (MAXCOL):             ${DFc}%s${D}" "${MAXCOL}"
   Tell "\tMax integer (MAXINT):            ${DFc}%s${D}" "${MAXINT}"
+  Tell "\tMax row (MAXROW):                ${DFc}%s${D}" "${MAXROW}"
   Tell "\tNumber of options (NROPT):       ${DFc}%s${D}" "${NROPT}"
   Tell "\tNumber of parameters (NRPARAM):  ${DFc}%s${D}" "${NRPARAM}"
   Tell "\tOperating system (OS):           ${DFc}%s${D}" "${OS}"
   Tell "\tProgram name (CMD):              ${DFc}%s${D}" "${CMD}"
   Tell "\tSupports printf -v (PV):         ${DFc}%s${D}" "${PV}"
-  Tell "\tScreen size (SROWS, SCOLS):      ${DFc}%s${D}" "${SROWS}, ${SCOLS}"
   Tell "\tShell (SHELL):                   ${DFc}%s${D}" "${SHELL}"
-  Tell "\tShell library path (SHLIBPATH):  ${DFc}%s${D}" "${SHLIBPATH}"
   Tell "\tOutput to terminal (TERMINAL):   ${DFc}%s${D}" "${TERMINAL}"
   Tell "\tLoaded UI mods (UIMOD):          ${DFc}%s${D}" "${UIMOD[*]}"
 # Tell "\tTracked UI functions (UICMD):    ${DFc}%s${D}" "${UICMD[*]}"
+  Tell "\tOperating system type (UNIX):    ${DFc}%s${D}" "${UNIX}"
   Tell "\tUser name (USER):                ${DFc}%s${D} (note: consumed, not generated)" "${USER}"
   Tell "\tUsing Z shell (ZSH):             ${DFc}%s${D}" "${ZSH}"
   Tell "\tZ shell version (ZV):            ${DFc}%s${D}" "${ZV}"
@@ -615,7 +625,7 @@ LibuiUpdateMan () {
   local _Util_fts
   local _Util_mp
   local _Util_mts
-  local _Util_sedi; [[ 'Darwin' == "${OS}" ]] && _Util_sedi="-i ''" || _Util_sedi="-i"
+  local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
   for _Util_file in $(find . -name 'man' -prune -o -name '*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
@@ -773,7 +783,7 @@ EOF
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using the Z shell (zsh)."
     else
       Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
-      [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
+      local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
       Action -F "sed ${_Util_sedi} -e '1s|^#!/bin/zsh|#!/bin/bash|' '${COMMONROOT}/lib/sh/libui'"
       Action -F "sed ${_Util_sedi} -e '3s|^#!/bin/bash|#!/bin/zsh|' '${COMMONROOT}/lib/sh/libui'"
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using bash."
@@ -918,20 +928,26 @@ LibuiUnity () { # [-d|-u|-U|-v]
 }
 
 UICMD+=( 'LibuiNew' )
-LibuiNew () {
+LibuiNew () { # [-e] =t <template_file>
   ${_S} && ((_cLibuiNew++))
   ${_M} && _Trace 'LibuiNew [%s]' "${*}"
 
-  local _Util_rv=0
+  local _Util_empty=false
   local _Util_template
+  local _Util_rv=0
 
   ${_M} && _Trace 'Process LibuiNew options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':t:' opt
+  while getopts ':et:' opt
   do
     case ${opt} in
+      e)
+        ${_M} && _Trace 'Empty.'
+        _Util_empty=true
+        ;;
+
       t)
         ${_M} && _Trace 'Template. (%s)' "${OPTARG}"
         _Util_template="${OPTARG}"
@@ -945,17 +961,18 @@ LibuiNew () {
   done
   shift $((OPTIND - 1))
   local _Util_target="${1}"
-
   [[ -f "${_Util_template}" ]] || Tell -E 'Template libui script file is not available. (%s)' "${_Util_template}"
 
-  if Overwrite || [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing file %s?' "${_Util_target}"
+  Overwrite || [[ ! -f "${_Util_configfile}" ]] || Error 'The script file already exists, use -XO to overwrite.'
+  if [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing script file %s?' "${_Util_target}"
   then
     ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_target}"
     [[ -f "${_Util_target}" ]] && Action "rm ${FMFLAGS} '${_Util_target}'"
 
     ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_target}"
-    [[ 'Darwin' == "${OS}" ]] && local _Util_sedi="-i ''" || local _Util_sedi="-i"
-    Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'"
+    local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+    ${_Util_empty} && Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'" || \
+        Action -F "cat '${_Util_template}' | sed -e '/demo content/s/^/# /' > '${_Util_target}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
     Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_target}'"
     Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line description for the script header:'
@@ -969,6 +986,7 @@ LibuiNew () {
     Tell -A 'New file has been created. (%s)' "${_Util_target}"
     local _Util_here=$(tr '[:space:]' '\n' < "${param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
     Tell 'Search for "HERE" and replace%s with new script content.' "${_Util_here:+ all ${_Util_here}}"
+    ${_Util_empty} || Tell 'The lines containing "demo content" should be deleted.'
   fi
   _Util_rv=${?}
 
@@ -1040,6 +1058,9 @@ _LibuiProcess () {
   elif ${new}
   then
     LibuiNew -t "${_Util_template}" "${param}"
+  elif ${empty}
+  then
+    LibuiNew -e -t "${_Util_template}" "${param}"
   else
     ${_M} && _Trace 'Display usage.'
     LoadMod Info

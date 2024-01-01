@@ -17,6 +17,7 @@ Basic libui library functionality can be extended with the following mods:
 * Sort (man libuiSort.sh) - Sort Utilities
 * Spinner (man libuiSpinner.sh) - Libui Progress Spinner Support
 * Syslog (man libuiSyslog.sh) - System Log Support
+* Term (man libuiTerm.sh) - Libui Terminal Support
 * Timer (man libuiTimer.sh) - Libui Timer Support
 * User (man libuiUser.sh) - Libui User Support
 * Utility (no man page) - Libui Utilities (libui internal use only)
@@ -58,6 +59,22 @@ warning message on an action failure.
 
 ```
 Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+```
+
+### At (man libuiTerm.sh) - Execute a command at a position on the terminal.
+
+This support command saves the current cursor position, moves to the provided
+position, executes the provided command, and restores the original cursor
+position. Useful for displaying specific messages at a specific location on the
+display. The command can be multiple words.
+
+Note: Most of the libui.sh provided message commands jump to the beginning of
+the current row before displaying the message. Most support the **-i** (In Place)
+option flag allowing the message to be displayed "in place" at the current
+cursor position.
+
+```
+At <row> <col> <command>
 ```
 
 ### AddOption (man libui.sh) - Add command line option flags for the script.
@@ -168,7 +185,8 @@ variable and can optionally be assigned to a named variable.
 * **-E** - disable echo on the terminal when asking a question
 * **-n** - variable name to save the answer
 * **-N** - default answer to "no"
-* **-P** - patch to prepend to answer
+* **-o** - output file descriptor
+* **-P** - path fragment, i.e., directory, to prepend to answer
 * **-r** - regular expression that the answer must match
 * **-S** - get selection of values from provided variable name
 * **-s** - selection of values that can be used
@@ -402,6 +420,15 @@ Converts the number of seconds in ELAPSED to a human readable format of
 FormatElapsed [-d]
 ```
 
+### GetCursor (man libuiTerm.sh) - Get the current cursor position.
+
+Gets the current cursor position which is then available in the variables "ROW"
+and "COL".
+
+```
+GetCursor
+```
+
 ### GetElapsed (man libuiTimer.sh) - Get the elapsed time from a timer.
 
 Captures the time elapsed in seconds since the timer identified by the variable
@@ -541,10 +568,10 @@ ListPackage <package>
 ### LoadMod (man libui.sh) - Loads a libui mod.
 
 The libui library supports mods that add new and/or change existing
-functionality. This command loads a mod for use. It normally loads from the
-SHLIBPATH but another path can be provided using the **-P** (Path) option flag.
+functionality. This command loads a mod for use. It normally searches PATH but
+another path can be provided using the **-P** (Path) option flag.
 
-* **-P** - load mod from the provided directory (otherwise use SHLIBPATH)
+* **-P** - load mod from the provided directory (otherwise use PATH)
 
 ```
 LoadMod [-P <path>] <libui_mod_name>
@@ -736,12 +763,30 @@ root user is required, otherwise it returns 1.
 RequireRoot
 ```
 
+### RestoreCursor (man libuiTerm.sh) - Restores cursor to last saved position.
+
+Tells the terminal to restore the cursor to the last saved position. The cursor
+position needs to have been previously saved using the SaveCursor command.
+
+```
+RestoreCursor
+```
+
 ### ResumeSpinner (man libuiSpinner.sh) - Resumes a progress spinner.
 
 Resumes a running progress spinner that was paused by the PauseSpinner command.
 
 ```
 ResumeSpinner
+```
+
+### SaveCursor (man libuiTerm.sh) - Saves the current cursor position.
+
+Tells the terminal to save the current cursor position. The cursor can then be
+restored to the last saved postion using the RestoreCursor command.
+
+```
+SaveCursor
 ```
 
 ### Sleep (man libuiSpinner.sh) - Sleeps a script with an optional countdown.
@@ -760,6 +805,14 @@ Waiting %s...
 
 ```
 Sleep [-m "<message>"] [-u <interval>] [<sleep>]
+```
+
+### SetCursor (man libuiTerm.sh) - Move the cursor to the provided position.
+
+Sets (i.e., moves) the cursor to the provided position.
+
+```
+SetCursor <row> <col>
 ```
 
 ### Sort (man libuiSort.sh) - Sorts an array.
@@ -884,6 +937,7 @@ Newline) option.
 * **-L** - include the location of the message request (see Error command)
 * **-n** - do not include a trailing newline
 * **-N** - do not include a trailing linefeed
+* **-o** - output file descriptor
 * **-r** - use provided return value
 * **-W** - display the message as a "Warning" message (see also Warn)
 
