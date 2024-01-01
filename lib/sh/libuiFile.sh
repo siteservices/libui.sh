@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env libui
 #####
 #
 #	Libui File Mod - File Access / Manipulation
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.002 -m 1.12
+Version -r 2.004 -m 1.13
 
 # defaults
 _File_ip=
@@ -445,8 +445,8 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     ${_M} && _Trace 'Process file specification. (%s)' "${_File_s}"
     if ${ZSH}
     then
-      [[ -o extendedglob ]] && _File_b="setopt extendedglob${N}" || _File_b="unsetopt extendededglob${N}"
-      [[ -o globdots ]] && _File_b="setopt globdots${N}" || _File_b="unsetopt globdots${N}"
+      [[ -o extendedglob ]] && _File_b="setopt extendedglob${N}" || _File_b="unsetopt extendedglob${N}"
+      [[ -o globdots ]] && _File_b+="setopt globdots${N}" || _File_b+="unsetopt globdots${N}"
       setopt extendedglob
       ${_File_h} && setopt globdots
       ZshSubdirFileList "${_File_s}"
@@ -765,7 +765,7 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
         ((${?})) && _File_rv=1 && ${_File_w} && Tell -W '(MkDir) Unable to create directory path. (%s)' "${_File_n}"
 
         ${_M} && _Trace 'Set directory group. (%s)' "${_File_g}"
-        [[ 'Darwin' == "${OS}" ]] && _File_e="$(stat -f '%Sg' "${_File_n}")" || _File_e="$(stat -c '%G' "${_File_n}")"
+        [[ 'GNU' == "${UNIX}" ]] && _File_e="$(stat -c '%G' "${_File_n}")" || _File_e="$(stat -f '%Sg' "${_File_n}")"
         if [[ -n "${_File_g}" && "${_File_g}" != "${_File_e}" ]]
         then
           ! chgrp "${_File_g}" "${_File_n}" && ${_File_w} && Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
@@ -1001,7 +1001,7 @@ PathMatches () { # [-P] <path_specification_1> <path_specification_2>
     [[ "${_File_1%/*}/" == "${_File_2%/*}"/* || "${_File_2%/*}/" == "${_File_1%/*}"/* ]]
   else
     ${_M} && _Trace 'Find path inodes. (%s)' "${*}"
-    stat -c %i . &> /dev/null && local _File_s='-c' || local _File_s='-f' # Linux vs. BSD
+    [[ 'GNU' == "${UNIX}" ]] && _File_s="-c" || _File_s="-f"
     [[ -e "${1}" && -e "${2}" && "$(stat -L ${_File_s} %i "${1}")" == "$(stat -L ${_File_s} %i "${2}")" ]]
   fi
   local _File_rv=${?}

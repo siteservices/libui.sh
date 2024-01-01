@@ -1,6 +1,4 @@
-#!/bin/zsh
-# also works with bash but, zsh improves profiling
-#!/bin/bash
+#!/usr/bin/env libui
 #####
 #
 #	Libui Utilities - Libui Utility Commands Mod
@@ -30,7 +28,7 @@
 #
 #####
 
-Version -r 2.003 -m 1.3
+Version -r 2.004 -m 1.4
 
 ##### configuration
 
@@ -173,9 +171,11 @@ _Terminal () {
         printf "DCS='$(tput clear)'\n" # clear screen (jump home)
         printf "DCEL='$(tput el)'\n" # clear end of line
         printf "DCES='$(tput ed || tput cd)'\n" # clear end of screen
-        printf "DJBL='$(tput hpa 0)'\n" # jump begin of line
+        [[ -n "$(tput u7)" ]] && printf "DCP='$(tput u7)'\n" || printf "DCP=$'\\e[6n'\n" # read cursor position
+        [[ -n "$(tput hpa 0)" ]] && printf "DJBL='$(tput hpa 0)'\n" || printf "DJBL=$'\\r'\n" # jump to begining of line
         printf "DJH='$(tput cup 0 0)'\n" # jump home (0, 0)
-        printf "DRP='$(tput u7)'\n" # read cursor position
+        printf "DRC='$(tput rc)'\n" # restore cursor
+        printf "DSC='$(tput sc)'\n" # save cursor
         if ((16 <= $(tput colors)))
         then
           printf "DB0='$(tput setab 8)'\n" # bright black
@@ -213,7 +213,7 @@ _Terminal () {
         printf "Dfm='$(tput setaf 5)'\n" # magenta
         printf "Dfc='$(tput setaf 6)'\n" # cyan
         printf "Db='$(tput bold)'\n" # bold
-        [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DF0:-${Df0}}"\n' # dim
+        [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DF0:-${Df7}}"\n' # dim
         printf "Dsu='$(tput smul)'\n" # start underline
         printf "Deu='$(tput rmul)'\n" # end underline
         printf "Dr='$(tput rev)'\n" # reverse
@@ -222,25 +222,25 @@ _Terminal () {
         printf "D='$(tput sgr0)'\n" # normal
         printf 'DAction="${Dfb}"\n' # display formats
         printf 'DAlarm="${Dd}${Dfr}"\n'
-        printf 'DAlert="${Db}${DFg}"\n'
+        printf 'DAlert="${Db}${DFg:-${Dfg}}"\n'
         printf 'DAnswer="${Dfy}"\n'
-        printf 'DCaution="${DFm}"\n'
-        printf 'DConfirm="${Db}${DFy}"\n'
-        printf 'DError="${Dbr}${Db}${DFy}"\n'
-        printf 'DInfo="${DFc}"\n'
+        printf 'DCaution="${DFm:-${Dfm}}"\n'
+        printf 'DConfirm="${Db}${DFy:-${Dfy}}"\n'
+        printf 'DError="${Dbr}${Db}${DFy:-${Dfy}}"\n'
+        printf 'DInfo="${DFc:-${Dfc}}"\n'
         printf 'DOptions="${Db}"\n'
-        printf 'DQuestion="${DFc}${Dsu}"\n'
-        printf 'DSpinner="${Db}${DFc}"\n'
+        printf 'DQuestion="${DFc:-${Dfc}}${Dsu}"\n'
+        printf 'DSpinner="${Db}${DFc:-${Dfc}}"\n'
         printf 'DTell="${Db}"\n'
-        printf 'DTrace="${Dd}"\n'
-        printf 'DWarn="${Dby}${DBy}${Df0}"\n'
+        printf 'DTrace="${DF0:-${Dd}}"\n'
+        printf 'DWarn="${DBy:-${Dby}}${Df0}"\n'
         printf 'D0="${D}${Db}${Dsu}"\n' # display modes
-        printf 'D1="${D}${Db}${DFr}"\n'
-        printf 'D2="${D}${Db}${DFg}"\n'
-        printf 'D3="${D}${Db}${DFy}"\n'
-        printf 'D4="${D}${Db}${DFb}"\n'
-        printf 'D5="${D}${Db}${DFm}"\n'
-        printf 'D6="${D}${Db}${DFc}"\n'
+        printf 'D1="${D}${Db}${DFr:-${Dfr}}"\n'
+        printf 'D2="${D}${Db}${DFg:-${Dfg}}"\n'
+        printf 'D3="${D}${Db}${DFy:-${Dfy}}"\n'
+        printf 'D4="${D}${Db}${DFb:-${Dfb}}"\n'
+        printf 'D5="${D}${Db}${DFm:-${Dfm}}"\n'
+        printf 'D6="${D}${Db}${DFc:-${Dfc}}"\n'
         printf 'D7="${D}${Db}"\n'
         printf 'D8="${D}"\n'
         printf 'D9="${D}${Dd}"\n'

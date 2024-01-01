@@ -1,6 +1,4 @@
-#!/bin/zsh
-# also works with bash but, zsh improves profiling
-#!/bin/bash
+#!/usr/bin/env libui
 #####
 #
 #	Libui Test - Libui Test Mod
@@ -29,7 +27,7 @@
 #
 #####
 
-Version -r 2.000 -m 1.4
+Version -r 2.004 -m 1.6
 
 ##### configuration
 
@@ -232,7 +230,7 @@ LibuiTest () {
     [[ -z "${@}" ]] && GetFileList -f -n _Test_tests "${_Test_testdir}"/test_* || _Test_tests=( "${@}" )
 
     ${_M} && _Trace 'Start session log.'
-    Tell 'Test environment (%s):' "${SHLIBPATH}"
+    Tell 'Test environment (%s):' "${LIBUI}"
     Version -a
     Tell 'Begin libui %s with %s tests on %s. (%s)' "${LIBUI_VERSION}" "${#_Test_tests[@]}" "$(date)" "${TESTDIR}"
     StartTimer _Test_logtimer
@@ -382,9 +380,11 @@ LibuiGetDisplayTestValues () {
   TCS="$(tput clear)" # clear screen (jump home)
   TCEL="$(tput el)" # clear end of line
   TCES="$(tput ed)" # clear end of screen
-  TJBL="$(tput hpa 0)" # jump begin of line
+  [[ -n "$(tput u7)" ]] && TCP="$(tput u7)" || TCP=$'\e[6n' # read cursor position
+  [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\\r' # jump to begining of line
   TJH="$(tput cup 0 0)" # jump home (0, 0)
-  TRP="$(tput u7)" # read cursor position
+  TRC="$(tput rc)" # restore cursor
+  TSC="$(tput sc)" # save cursor
   if ((16 <= $(tput colors)))
   then
     TB0="$(tput setab 8)" # bright black
@@ -422,7 +422,7 @@ LibuiGetDisplayTestValues () {
   Tfm="$(tput setaf 5)" # magenta
   Tfc="$(tput setaf 6)" # cyan
   Tb="$(tput bold)" # bold
-  [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TF0:-${Tf0}}" # dim
+  [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TF0:-${Tf7}}" # dim
   Tsu="$(tput smul)" # start underline
   Teu="$(tput rmul)" # end underline
   Tr="$(tput rev)" # reverse
@@ -431,25 +431,25 @@ LibuiGetDisplayTestValues () {
   T="$(tput sgr0)" # normal
   TAction="${Tfb}" # display formats
   TAlarm="${Td}${Tfr}"
-  TAlert="${Tb}${TFg}"
+  TAlert="${Tb}${TFg:-${Tfg}}"
   TAnswer="${Tfy}"
-  TCaution="${TFm}"
-  TConfirm="${Tb}${TFy}"
-  TError="${Tbr}${Tb}${TFy}"
-  TInfo="${TFc}"
+  TCaution="${TFm:-${Tfm}}"
+  TConfirm="${Tb}${TFy:-${Tfy}}"
+  TError="${Tbr}${Tb}${TFy:-${Tfy}}"
+  TInfo="${TFc:-${Tfc}}"
   TOptions="${Tb}"
-  TQuestion="${TFc}${Tsu}"
-  TSpinner="${Tb}${TFc}"
+  TQuestion="${TFc:-${Tfc}}${Tsu}"
+  TSpinner="${Tb}${TFc:-${Tfc}}"
   TTell="${Tb}"
-  TTrace="${Td}"
-  TWarn="${Tby}${TBy}${Tf0}"
+  TTrace="${TF0:-${Td}}"
+  TWarn="${TBy:-${Tby}}${Tf0}"
   T0="${T}${Tb}${Tsu}" # display modes
-  T1="${T}${Tb}${TFr}"
-  T2="${T}${Tb}${TFg}"
-  T3="${T}${Tb}${TFy}"
-  T4="${T}${Tb}${TFb}"
-  T5="${T}${Tb}${TFm}"
-  T6="${T}${Tb}${TFc}"
+  T1="${T}${Tb}${TFr:-${Tfr}}"
+  T2="${T}${Tb}${TFg:-${Tfg}}"
+  T3="${T}${Tb}${TFy:-${Tfy}}"
+  T4="${T}${Tb}${TFb:-${Tfb}}"
+  T5="${T}${Tb}${TFm:-${Tfm}}"
+  T6="${T}${Tb}${TFc:-${Tfc}}"
   T7="${T}${Tb}"
   T8="${T}"
   T9="${T}${Td}"

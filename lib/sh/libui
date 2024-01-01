@@ -1,6 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 # also works with bash but, zsh improves profiling
-#!/bin/bash
+#!/usr/bin/env bash
 #####
 #
 #	libui - Loader and Utility Script for libui.sh Appications
@@ -31,13 +31,13 @@
 #
 #####
 
-# build shell libary path
-[[ -z "${SHLIBPATH}" ]] && SHLIBPATH="${BASH_SOURCE[0]}" && SHLIBPATH="${SHLIBPATH:-${(%):-%N}}" && SHLIBPATH="${SHLIBPATH%/*}"
+# find root dir
+_dir="${BASH_SOURCE[0]}" && _dir="${_dir:-${(%):-%N}}" && _dir="${_dir%/*}"
 
 if [[ 0 < ${#} && "${1:0:1}" != '-' ]]
 then
   # load libui.sh
-  source "${SHLIBPATH%/}/libui.sh" "${1}" "${@:2}"
+  source "${LIBUI:-${_dir}/libui.sh}" "${1}" "${@:2}"
 
   # execute script
   if [[ -f "${1}" ]]
@@ -55,7 +55,7 @@ else
   [[ " ${*} " =~ .*\ -T\ .* ]] && TERMINAL=false # plain ui in single test
 
   # load libui.sh
-  source "${SHLIBPATH%/}/libui.sh" "${0}" "${@}"
+  source "${LIBUI:-${_dir}/libui.sh}" "${0}" "${@}"
 
   # load mods
   LoadMod Libui

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env libui
 #####
 #
 #	Libui Convert Mod - Conversion Utilities
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.002 -m 2.0
+Version -r 2.004 -m 2.1
 
 # defaults
 
@@ -86,14 +86,14 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
   [[ -z "${_Convert_date}" ]] && Tell -E '(ConvertDate) Called without a soure date.'
 
   ${_M} && _Trace 'Converting date. (%s -> %s)' "${_Convert_ifmt}" "${_Convert_ofmt}"
-  if [[ 'Darwin' == "${OS}" || 'FreeBSD' == "${OS}" ]]
+  if [[ 'GNU' == "${UNIX}" ]]
   then
-    # BSD / macOS
-    eval "${_Convert_var}=\$(date -j -f '${_Convert_ifmt}' '${_Convert_date}' '+${_Convert_ofmt}')"
-  else
-    # Linux / SysV
+    # Linux / GNU
     [[ '%s' == ${_Convert_ifmt} ]] && eval "${_Convert_var}=\$(date -d '@${_Convert_date}' +'${_Convert_ofmt}')" || \
         eval "${_Convert_var}=\$(date -d '${*}' +'${_Convert_ofmt}')"
+  else
+    # BSD / macOS
+    eval "${_Convert_var}=\$(date -j -f '${_Convert_ifmt}' '${_Convert_date}' '+${_Convert_ofmt}')"
   fi
 
   ${M} && Trace 'ConvertDate return. (%s)' 0

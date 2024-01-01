@@ -68,8 +68,14 @@ priority.
 If
 .Ar <message>
 is not provided, the script command line executed is logged.
-.Ss VARIABLES
-The default user priority.
+.Sh VARIABLES
+The following environment variables are used by the
+.Nm
+mod if provided:
+.Bl -tag -offset 4n -width 4n
+.It Ev LIBUI_SYSLOG_PRIORITY
+Provides the default user priority.
+.El
 .Sh EXAMPLES
 Some examples include:
 .Bd -literal -offset 4n

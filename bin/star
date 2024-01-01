@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.002 2.3
+Version -r 2.004 2.4
 
 # load mods
 LoadMod Convert
@@ -136,8 +136,8 @@ CreateArchive () { # <archive> <files> ...
       continue
     fi
     [[ '/' == "${file:0:1}" ]] && prefix='.' || prefix=
-    [[ 'Darwin' == "${OS}" ]] && dirperms="$(stat -f '%A' "${file%/*}")" || dirperms="$(stat -c '%a' "${file%/*}")"
-    [[ 'Darwin' == "${OS}" ]] && fileperms="$(stat -f '%A' "${file}")" || fileperms="$(stat -c '%a' "${file}")"
+    [[ 'GNU' == "${UNIX}" ]] && dirperms="$(stat -c '%a' "${file%/*}")" || dirperms="$(stat -f '%Mp%Lp' "${file%/*}")"
+    [[ 'GNU' == "${UNIX}" ]] && fileperms="$(stat -c '%a' "${file}")" || fileperms="$(stat -f '%Mp%Lp' "${file}")"
     timestamp="$(date -r "${file}" +%s)"
     ${verbose} && Info 'Archiving %s' "${file}" >&6
     printf '===== file:%s:%s:%s:%s:file %s =====\n' "${prefix}${file}" "${dirperms}" "${fileperms}" "${timestamp}" "${ts}"
@@ -211,8 +211,8 @@ ExtractArchive () { # <archive>
       Trace 'Set permissions. (%s)' "${fileinfo[((AO + 3))]}"
       Action "chmod '${fileinfo[((AO + 3))]}' '${fileinfo[((AO + 1))]}'" || return 1
       ${group} && Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'"
-      [[ 'Darwin' == "${OS}" ]] && ConvertDate -i '%s' -o '%Y-%m-%dT%H:%M:%S' timestamp "${fileinfo[((AO + 4))]}" || \
-          timestamp="@${fileinfo[((AO + 4))]}"
+      [[ 'GNU' == "${UNIX}" ]] && timestamp="@${fileinfo[((AO + 4))]}" || \
+          ConvertDate -i '%s' -o '%Y-%m-%dT%H:%M:%S' timestamp "${fileinfo[((AO + 4))]}"
       Action "touch -d '${timestamp}' '${fileinfo[((AO + 1))]}'"
 
       Trace 'Close file. (%s)' "${fileinfo[((AO + 1))]}"

@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd December 6, 2023
+.Dd December 31, 2023
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -29,7 +29,7 @@
 Alternatively, to source libui.sh in a Z shell or Bash script, include the line:
 .Pp
 .Bd -ragged -compact -offset 4n
-.Sy LIBUI=\(dq${SHLIBPATH:+${SHLIBPATH%/}/} Ns Nm Ns Sy \&\(dq; source \(dq${LIBUI}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Sy source \(dq${LIBUI:-libui.sh}\(dq \(dq${0}\(dq \(dq${@}\(dq
 .Ed
 .Pp
 Every libui script should contain the following command:
@@ -95,8 +95,6 @@ When provided, the specified debug level and all lower levels are enabled.
 The levels are:
 .Pp
 .Bl -tag -offset 4n -width 4n  -compact
-.It Sy X0
-No debug actions.
 .It Sy X1
 Wait debugging enabled.
 This will pause before executing any Exit handlers, i.e., before cleaning up.
@@ -175,7 +173,7 @@ Alternatively, to source
 in a Z shell or Bash script, include the line:
 .Pp
 .Bd -ragged -compact -offset 4n
-.Sy LIBUI=\(dq${SHLIBPATH:+${SHLIBPATH%/}/} Ns Nm Ns Sy \&\(dq; source \(dq${LIBUI}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Sy source \(dq${LIBUI:-libui.sh}\(dq \(dq${0}\(dq \(dq${@}\(dq
 .Ed
 .Pp
 Please note that either syntax assumes:
@@ -183,15 +181,14 @@ Please note that either syntax assumes:
 .It
 The
 .Ev PATH
-environment variable contains the directory where
+environment variable includes the directory where
 .Nm
 resides, or
 .It
 The
-.Ev SHLIBPATH
-environment variable contains the directory where
-.Nm
-resides.
+.Ev LIBUI
+environment variable contains the path for
+.Nm .
 .El
 .Pp
 Ideally either or both of these environment variables would be set in the user's
@@ -1089,6 +1086,8 @@ The following command asks the user a question:
 .Op Fl b Fl C Fl E Fl N Fl Y Fl z
 .Op Fl d Ar <default_answer>
 .Op Fl n Ar <variable_name>
+.Op Fl o Ar <file_descriptor>
+.Op Fl P Ar <path_prefix>
 .Op Fl r Ar <required_regex>
 .Op Fl s Ar <selection_value>
 .Op Fl S Ar <selection_variable_name>
@@ -1112,19 +1111,29 @@ Note: Also sets the
 to "yes" if not otherwise set using the
 .Fl d
 option.
-.It Fl E
-Do not echo characters when receiving a response to the question.
 .It Fl d Ar <default_answer>
 Set the default answer to
 .Ar <default_answer> .
 .Pp
 (Used when the user does not provide an answer.)
+.It Fl E
+Do not echo characters when receiving a response to the question.
 .It Fl n Ar <variable_name>
 Save the answer to the
 .Ar <variable_name>
 variable.
 .It Fl N
 Set the default answer to "no".
+.It Fl o Ar <file_descriptor>
+Output the request text to the file descriptor provided as
+.Ar <file_descriptor> .
+The file descriptor defaults to 1 (STDOUT).
+.It Fl P Ar <path_prefix>
+Prepends the
+.Ar <path_prefix>
+to the provided answer.
+This is useful when selecting a file without requiring its parent directory
+path.
 .It Fl r Ar <required_regex>
 Require an answer that matches the provided
 .Ar <required_regex>
@@ -1480,11 +1489,9 @@ Loads the
 library mod using the
 .Nm
 mod name provided in the parameter.
-The
-.Nm
-mods are loaded from the
-.Sx ${SHLIBPATH}
-directory unless a path is provided using the
+It normally searches
+.Ev PATH
+but another path can be provided using the
 .Fl P Ar <path>
 (Path) option.
 See the
@@ -1566,6 +1573,7 @@ The following command sends a message to the user:
 .Sy Tell
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl c Fl C Fl E Fl f Fl F Fl i Fl I Fl L Fl n Fl N Fl W
 .Op Fl l Ar <file_path>
+.Op Fl o Ar <file_descriptor>
 .Op Fl r Ar <return_value>
 .Ar <message>
 .Ed
@@ -1719,6 +1727,10 @@ to the screen.
 This effectively displays the message and returns the cursor to the first
 column.
 This is useful to display a series of messages to the screen without scrolling.
+.It Fl o Ar <file_descriptor>
+Output the message to the file descriptor provided as
+.Ar <file_descriptor> .
+The file descriptor defaults to 1 (STDOUT).
 .It Fl r Ar <return_value>
 Return
 .Ar <return_value>
@@ -2062,8 +2074,14 @@ The hostname of the current machine (hostname only, not fully qualified).
 The absolute path of the included
 .Nm
 file.
+.It Dv ${MAXCOL}
+Maximum terminal window column.
+Note: Terminal columns start at 0.
 .It Dv ${MAXINT}
 Maximum integer: Set to the shell's maximum integer value.
+.It Dv ${MAXROW}
+Maximum terminal window row.
+Note: Terminal rows start at 0.
 .It Dv ${N}
 The newline character.
 This is equivalent to $'\n' but, available for use in
@@ -2074,16 +2092,9 @@ The number of options provided on the command line.
 The number of parameters provided on the command line.
 .It Dv ${OS}
 The name of the operating system.
-Typical values are Darwin, Linux, etc.
+Typical values are Darwin, Linux, SunOS, Solaris, etc.
 .It Dv ${SHELL}
 The path of the shell being executed (limited to: zsh, bash, or sh).
-.It Dv ${SHLIBPATH}
-The shell library path.
-Set by default to the directory where
-.Nm
-resides.
-It is used when loading mods.
-It can be set before loading a mod and/or pre-set in an environment variable.
 .It Dv ${TERMINAL}
 Set to "true" if standard out is to a terminal, "false" if standard out is not
 to a terminal.
@@ -2116,6 +2127,9 @@ mods.
 An array containing the filenames and versions of the loaded scripts and
 .Nm
 mods in alternating "pairs": <file> <version> ...
+.It Dv ${UNIX}
+The type of the operating system.
+The possible values are BSD, SYSV, or GNU (e.g. Linux).
 .It Dv ${ZSH}
 Z shell - Set to "true" if the shell is Z shell (zsh).
 .El
@@ -2139,14 +2153,14 @@ Clear Screen
 Clear to End of Line
 .It Dv ${DCES}
 Clear to End of Screen
+.It Dv ${DCP}
+Read Current Cursor Position -
+note that the position must be read after sending this sequence
+(e.g.: printf "${DCP}" && IFS='[;' read -sd R _x ROW COL)
 .It Dv ${DJBL}
 Jump to Beginning of Line
 .It Dv ${DJH}
 Jump to Home (0,0)
-.It Dv ${DRP}
-Read Current Cursor Position -
-note that the position must be read after sending this sequence
-(e.g.: printf "${DRP}" && IFS='[;' read -sd R _x CROW CCOL)
 .It Dv ${Db0}
 Background Black
 .It Dv ${Dbr}
@@ -2306,16 +2320,17 @@ mods can be loaded using the
 .Sx LoadMod
 command.
 The
-.Nm
-mods are loaded from the
-.Sx ${SHLIBPATH}
-directory unless a path is provided using the
 .Sx LoadMod
-.Fl P
+command loads the
+.Nm
+library mod using the
+.Nm
+mod name provided.
+It normally searches
+.Ev PATH
+but another path can be provided using the
+.Fl P Ar <path>
 (Path) option.
-See the
-.Sx ${SHLIBPATH}
-variable for details.
 One or more commands (functions) may be provided in a single mod file.
 All
 .Nm
@@ -2567,7 +2582,7 @@ is sourced as above, you can debug the
 .Nm
 library with something like:
 .Bd -ragged -offset 4n
-.Sy SHLIBPATH=~/.env/lib/sh/ LIBUI_HDEBUG=true LIBUI_PROFILE=true Ar <script_file>
+.Sy LIBUI_HDEBUG=true LIBUI_PROFILE=true Ar <script_file>
 .Ed
 .Pp
 Note: Use Z shell (zsh) in the main script to get sub-second profiling.

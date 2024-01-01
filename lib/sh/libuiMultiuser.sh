@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env libui
 #####
 #
 #	Libui Multiuser Mod - Multiuser Support

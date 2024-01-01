@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.003 1.10
+Version -r 2.004 1.11
 
 # load mods
 LoadMod File
@@ -55,7 +55,7 @@ GetTmp -f tmpfile
 
 AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
-[[ 'Darwin' == "${OS}" ]] || AddOption -n encoding -k 'Encoding' -d 'Shar encoding format option.' e:
+[[ 'GNU' == "${UNIX}" ]] && AddOption -n encoding -k 'Encoding' -d 'Shar encoding format option.' e:
 AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
 AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
 AddOption -n prep -k 'Install Prep' -d 'Package installer preparation commands.' I:

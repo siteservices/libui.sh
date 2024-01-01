@@ -11,7 +11,7 @@ test_Action-i () {
   LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
   local tv=${?}
   TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL} /tmp"
+  LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL}${TJBL}/tmp"
   return ${?}
 }
 

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env libui
 #####
 #
 #	Libui Info Mod - Libui Information
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.003 -m 1.9
+Version -r 2.004 -m 1.10
 
 # defaults
 
@@ -120,7 +120,7 @@ UsageInfo () {
 
     ${_M} && _Trace 'Display debug help options. (%s)' "${_help}"
     printf "  -%s  %-${_UsageInfo_x}s - %s\n" 'H' 'Help' 'Display usage message, also available with -h. (help: true)'
-    printf "  -%s  %-${_UsageInfo_x}s - %s" 'X' 'XOption' "XOptions, use -XH for more. (level: ${_xdb}"
+    printf "  -%s  %-${_UsageInfo_x}s - %s" 'X' 'XOption' "XOptions, use -XH for details. (level: ${_xdb}"
     ${_confirm} && printf ', confirm'
     ${_force} && printf ', force'
     ${_help} && printf ', help'
@@ -133,7 +133,6 @@ UsageInfo () {
     if ${_help}
     then
       cat << EOF
-        0   - No debug actions.
         1   - Verify before executing Exit handlers.
         2   - Verbose actions.
         3   - Local debugging.

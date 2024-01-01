@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env libui
 #####
 #
 #	Libui File Record Mod - Record-Based, CSV Data File Support

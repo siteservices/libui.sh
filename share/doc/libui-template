@@ -17,22 +17,23 @@
 Version -r <REQUIRED LIBUI HERE> <SCRIPT VERSION HERE>
 
 # load mods
+LoadMod Spinner                                                                                     # demo content
 # <LIBUI MODS HERE>
-LoadMod File                                                                                        # demo content
 
 ##### configuration
 
 # defaults
-# <DEFAULT VALUES HERE>
 statuslevel=0                                                                                       # demo content
 GetTmp tmpdir                                                                                       # demo content
+# <DEFAULT VALUES HERE>
 retval=0
 
 ##### options - libui already uses options h, H, X:
 
+AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show option status.' s              # demo content
+AddOption -n lines -i 100 -k 'Lines' -d 'Specify the number of lines to include in each batch.' l:  # demo content
+AddParameter -n files -r -m -k 'Files' -d 'Files to be processed.' files                            # demo content
 # <ADD OPTIONS AND PARAMETERS HERE>
-AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show demo status.' s                # demo content
-AddParameter -n files -m -k 'Files' -d 'Files to be processed.' files                               # demo content
 
 ##### callbacks
 
@@ -44,33 +45,37 @@ StatusCallback () {                                                             
 }                                                                                                   # demo content
 
 InfoCallback () {
-  # note: this function is optional                                                                 # demo content
   Trace 'In user info callback.'
 
   Trace 'Usage information.'
   cat << EOF
+This is a template script intended to provide a starting point for development.                     # demo content
+# note: this function is optional                                                                   # demo content
 <ADDITIONAL SCRIPT USAGE INFORMATION HERE>
 EOF
 }
 
 ExitCallback () {
-  # note: this function is optional                                                                 # demo content
   Trace 'In user exit callback.'
 
   Trace 'Exit cleanup.'
+  [[ -e "${HOME}/demo.out" ]] && rm ${FMFLAGS} "${HOME}/demo.out"                                   # demo content
+  # note: this function is optional                                                                 # demo content
   # <EXIT CLEANUP ACTIONS HERE>
 }
 
 InitCallback () {
-  # note: this function is recommended                                                              # demo content
   Trace 'In user init callback.'
 
   Trace 'Confirm and initialize environment.'                                                       # demo content
+  [[ 0 -lt "${lines}" ]] || Error 'Batches must be one or more lines.'                              # demo content
+  # note: this function is recommended                                                              # demo content
   # <STARTUP CONFIRMATION HERE>
 }
 
 ##### functions
 
+# note: additional functions are not required                                                       # demo content
 # <MAIN SCRIPT FUNCTIONS HERE>
 
 ##### initialization
@@ -87,7 +92,6 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
-# <MAIN SCRIPT HERE>
 Trace 'Check for show status. (%s)' "${showstatus}"                                                # demo content
 if ${showstatus}                                                                                   # demo content
 then                                                                                               # demo content
@@ -99,18 +103,12 @@ GetFileList files                                                               
 for file in "${files[@]}"                                                                          # demo content
 do                                                                                                 # demo content
   printf 'File: %s' "${file}"                                                                      # demo content
-  Action -s -i "Copy file: ${file}" "cp '${file}' '${tmpdir}'"                                     # demo content
+  Action -s -i "Copy file: ${file}" "cp ${FMFLAGS} '${file}' '${tmpdir}'"                          # demo content
+  ((retval+=${?}))                                                                                 # demo content
 done                                                                                               # demo content
 ls -l "${tmpdir}"                                                                                  # demo content
                                                                                                    # demo content
-if Verify 'Exit with success?'                                                                     # demo content
-then                                                                                               # demo content
-  Tell 'Returning success.'                                                                        # demo content
-  retval=0                                                                                         # demo content
-else                                                                                               # demo content
-  Tell 'Returning error.'                                                                          # demo content
-  retval=1                                                                                         # demo content
-fi                                                                                                 # demo content
+# <MAIN SCRIPT HERE>
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
 Exit "${retval}"
