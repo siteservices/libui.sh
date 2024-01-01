@@ -1,6 +1,4 @@
-#!/bin/zsh
-# also works with bash but, zsh improves profiling
-#!/bin/bash
+#!/usr/bin/env libui
 #####
 #
 #	Libui Utilities - Libui Utility Commands Mod

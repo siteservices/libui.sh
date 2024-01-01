@@ -1,6 +1,4 @@
-#!/bin/zsh
-# also works with bash but, zsh improves profiling
-#!/bin/bash
+#!/usr/bin/env libui
 #####
 #
 #	Libui Support - Multifunction Libui Support Mod
@@ -780,12 +778,12 @@ EOF
     ${_M} && _Trace 'Check for zsh.'
     if ${ZSH} && ((${+commands[zsh]})) || command -v zsh &> /dev/null
     then
-      Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using the Z shell (zsh)."
+      Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using Z shell (zsh)."
     else
       Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
       local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
-      Action -F "sed ${_Util_sedi} -e '1s|^#!/bin/zsh|#!/bin/bash|' '${COMMONROOT}/lib/sh/libui'"
-      Action -F "sed ${_Util_sedi} -e '3s|^#!/bin/bash|#!/bin/zsh|' '${COMMONROOT}/lib/sh/libui'"
+      Action -F "sed ${_Util_sedi} -e '1s|^#!/usr/bin/env zsh|#!/usr/bin/env bash|' '${COMMONROOT}/lib/sh/libui'"
+      Action -F "sed ${_Util_sedi} -e '3s|^#!/usr/bin/env bash|#!/usr/bin/env zsh|' '${COMMONROOT}/lib/sh/libui'"
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using bash."
     fi
   fi
