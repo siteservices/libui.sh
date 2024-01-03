@@ -21,7 +21,7 @@
 #
 #####
 #
-# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.003 1.12
+Version -r 2.004 1.13
 
 # load mods
 LoadMod File
@@ -127,7 +127,7 @@ do
       fi
 
       Trace 'Check if up to date.'
-      if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
+      if Force || [[ ! "${pullstatus}" =~ .*Already\ up[-\ ]to[-\ ]date\..* ]]
       then
         Trace 'Build project. (%s)' "${project}"
         if Action -q "Build project? (${project})" -i "Building project. (${project})" -c -l "${tmpdir}/${project}-build.log" "source ${recipefile}"

@@ -21,7 +21,7 @@
 #
 #####
 #
-# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.003 1.7
+Version -r 2.004 1.8
 
 # load mods
 LoadMod File
@@ -131,7 +131,7 @@ do
 
         Trace 'Check if up to date.'
         pullstatus=$(<"${tmpdir}/${package}-pull.log")
-        if Force || [[ ! "${pullstatus}" =~ .*Already\ up\ to\ date\..* ]]
+        if Force || [[ ! "${pullstatus}" =~ .*Already\ up[-\ ]to[-\ ]date\..* ]]
         then
           Trace 'Get source file list. (%s)' "${PWD}"
           GetFileList sourcefiles '*'

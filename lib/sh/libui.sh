@@ -49,7 +49,7 @@
 #
 #####
 #
-# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -63,7 +63,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.004 # Sun Dec 31 22:37:44 EST 2023
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.005 # Tue Jan 2 21:59:17 EST 2024
 
 #####
 #
@@ -1754,14 +1754,14 @@ Initialize () {
   NRPARAM=${#_a[@]}
 
   ${_T} && _Trace 'Set up debugging. (%s)' "${_xdb}"
-  ((9 <= _xdb)) && _pdb=true && _cdb=true && _udb=true && _T=true && _Trace 'LIBUI_XDB:%s Libui debug enabled.' "${_xdb}"
-  ((6 <= _xdb)) && _pdb=true && _cdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Context debug enabled.' "${_xdb}"
-  ((5 <= _xdb)) && _pdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Profiling enabled.' "${_xdb}"
-  ((8 <= _xdb)) && _mdb=true && _M=true && ${_T} && _Trace 'LIBUI_XDB:%s Mod debug enabled.' "${_xdb}"
-  ((7 <= _xdb)) && _rdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Remote debug enabled.' "${_xdb}"
-  ((3 <= _xdb)) && _hdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Host debug enabled.' "${_xdb}"
-  ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Verbose actions enabled.' "${_xdb}"
-  ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'LIBUI_XDB:%s Wait debug enabled.' "${_xdb}"
+  ((9 <= _xdb)) && _pdb=true && _cdb=true && _udb=true && _T=true && _Trace 'Libui debug enabled. (%s)' "${_xdb}"
+  ((6 <= _xdb)) && _pdb=true && _cdb=true && ${_T} && _Trace 'Context debug enabled. (%s)' "${_xdb}"
+  ((5 <= _xdb)) && _pdb=true && ${_T} && _Trace 'Profiling enabled. (%s)' "${_xdb}"
+  ((8 <= _xdb)) && _mdb=true && _M=true && ${_T} && _Trace 'Mod debug enabled. (%s)' "${_xdb}"
+  ((7 <= _xdb)) && _rdb=true && ${_T} && _Trace 'Remote debug enabled. (%s)' "${_xdb}"
+  ((3 <= _xdb)) && _hdb=true && ${_T} && _Trace 'Host debug enabled. (%s)' "${_xdb}"
+  ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'Verbose actions enabled. (%s)' "${_xdb}"
+  ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'Wait debug enabled. (%s)' "${_xdb}"
 
   ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SHELL}"
   ${_T} && _Trace 'loaded mods: %s' "${UIMODS[*]}"
@@ -2407,7 +2407,7 @@ else
 fi
 OS="${OS:-$(uname -s)}"
 case "${OS}" in
-  Linux)
+  Linux|CYGWIN*)
     UNIX='GNU'
     ;;
 
@@ -2443,7 +2443,7 @@ then
       Tell -E -f -l '' 'Unable to reset trace file. (%s)' "${_tfile}"
   ${_tdb} && _Trace 'Trace enabled.'
 fi
-_xdb="${LIBUI_XDB:-0}"
+_xdb="${LIBUI_XDB:-0}"; typeset +x LIBUI_XDB
 ((9 <= _xdb)) && _udb=true && _T=true && _Trace 'Libui debug enabled.' || _udb=false
 ((6 <= _xdb)) && _cdb=true && _Trace 'Context debug enabled.' || _cdb=false
 ((5 <= _xdb)) && _pdb=true && _Trace 'Profiling enabled.' || _pdb=false
