@@ -41,11 +41,17 @@
 # Important note: libui.sh uses file index prefix (_File_ip) 1 for maintaining
 # logs. Please be aware when building libui mods that make use of file indexes.
 #
-# Vim note: when using the shebang, add this to your ~/.vim/scripts.vim file:
+# Vim note: When using the "#!/usr/bin/env libui" shebang, syntax highlighting
+# and formatting can be improved by creating a "~/.vim/ftdetect/libui.vim" file
+# and adding the following to set the filetype to zsh (or bash):
 #
-#     if getline(1) =~ '^#!/usr/bin/env libui'
-#       setfiletype zsh " or setfiletype bash
-#     endif
+# autocmd BufRead *
+#             \ if getline(1) =~ '^#!/usr/bin/env libui' |
+#             \   set filetype=zsh |
+#             \ endif
+#
+# If you prefer Bash syntax highlighting, change "set filetype=zsh" in the
+# file to "set filetype=bash".
 #
 #####
 #

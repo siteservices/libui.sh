@@ -2779,16 +2779,21 @@ The
 library is young and under considerable development.
 It is worth tracking the current version to access new features being added.
 .Pp
-Vim Note: When using the
+Vim note: When using the
 .Qq Sy #!/usr/bin/env libui
-shebang, add the following to your
-.Sy ~/.vim/scripts.vim
-file to improve syntax highlighting:
+shebang, syntax highlighting
+and formatting can be improved by creating a
+.Qq Sy ~/.vim/ftdetect/libui.vim
+file and adding the following to set the filetype to zsh (or bash):
 .Bd -literal -offset 4n
-if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or setfiletype bash
-endif
+autocmd BufRead *
+            \ if getline(1) =~ '^#!/usr/bin/env libui' |
+            \   set filetype=zsh |
+            \ endif
 .Ed
+.Pp
+If you prefer Bash syntax highlighting, change "set filetype=zsh" in the
+file to "set filetype=bash".
 .Sh AUTHORS
 .An F Harvell
 .Mt <fharvell@siteservices.net>
