@@ -2,7 +2,7 @@
 .\" Please contact fharvell@siteservices.net to correct errors or typos. Please
 .\" note that the libui library is young and under active development.
 .\"
-.\" Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+.\" Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 .\" domain.  Permission is unconditionally granted to anyone with an interest,
 .\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
 .\" content and associated files.
@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd December 31, 2023
+.Dd January 2, 2024
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -2779,16 +2779,21 @@ The
 library is young and under considerable development.
 It is worth tracking the current version to access new features being added.
 .Pp
-Vim Note: When using the
+Vim note: When using the
 .Qq Sy #!/usr/bin/env libui
-shebang, add the following to your
-.Sy ~/.vim/scripts.vim
-file to improve syntax highlighting:
+shebang, syntax highlighting
+and formatting can be improved by creating a
+.Qq Sy ~/.vim/ftdetect/libui.vim
+file and adding the following to set the filetype to zsh (or bash):
 .Bd -literal -offset 4n
-if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or setfiletype bash
-endif
+autocmd BufRead *
+            \ if getline(1) =~ '^#!/usr/bin/env libui' |
+            \   set filetype=zsh |
+            \ endif
 .Ed
+.Pp
+If you prefer Bash syntax highlighting, change "set filetype=zsh" in the
+file to "set filetype=bash".
 .Sh AUTHORS
 .An F Harvell
 .Mt <fharvell@siteservices.net>

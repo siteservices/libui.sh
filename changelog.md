@@ -1,5 +1,23 @@
 # Change Log
 
+## v2.005
+
+### New Features / Enhancements
+
+* Add Cygwin support to `${UNIX}` (GNU).
+* Update copyright dates (err, okay, maybe not a feature / enhancement).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix git update checking in `updateprojects` and `updatevimpackages`.
+* Fix `${LIBUI_XDB}` environment variable bleedthrough into executed (libui) commands.
+
+### Incompatibilities
+
+* N/A
+
 ## v2.004
 
 ### New Features / Enhancements
@@ -24,7 +42,7 @@
 
 ### Incompatibilities
 
-* Remove `${SHLIBPATH}` (path to libui diretory); use `${LIBUI%/*}` instead.
+* Remove `${SHLIBPATH}` (path to libui directory); use `${LIBUI%/*}` instead.
 
 ### Known Issues
 

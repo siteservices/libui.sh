@@ -146,18 +146,23 @@ installed `libui/sh/libui` support script to use bash.
 
 ## Vim Note
 
-When using the "#!/usr/bin/env libui" shebang, add the following to your
-~/.vim/scripts.vim file to improve syntax highlighting:
+When using the ```#!/usr/bin/env libui``` shebang, syntax highlighting and
+formatting can be improved by creating a ```~/.vim/ftdetect/libui.vim``` file
+and adding the following to set the filetype to zsh (or bash):
 
 ```
-if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or setfiletype bash
-endif
+autocmd BufRead *
+            \ if getline(1) =~ '^#!/usr/bin/env libui' |
+            \   set filetype=zsh |
+            \ endif
 ```
+
+If you prefer Bash syntax highlighting, change ```set filetype=zsh``` in the
+file to ```set filetype=bash```.
 
 ## Copyright and License
 
-Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 domain. Permission is unconditionally granted to anyone with an interest, the
 rights to use, modify, publish, distribute, sublicense, and/or sell this content
 and associated files.

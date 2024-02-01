@@ -7,13 +7,13 @@
 #
 #####
 #
-# Provides confversion utility commands.
+# Provides conversion utility commands.
 #
 # Man page available for this mod: man 3 libuiConvert.sh
 #
 #####
 #
-# Copyright 2018-2023 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.004 -m 2.1
+Version -r 2.005 -m 2.2
 
 # defaults
 
@@ -83,18 +83,20 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
     ${_M} && _Trace 'Get spec from var. (%s)' "${_Convert_var}"
     ${ZSH} && _Convert_date=( ${(P)_Convert_var[@]} ) || eval "_Convert_date=( \"\${${_Convert_var}[@]}\" )"
   fi
-  [[ -z "${_Convert_date}" ]] && Tell -E '(ConvertDate) Called without a soure date.'
+  ((${#_Convert_date[@]})) || Tell -E '(ConvertDate) Called without a soure date.'
 
   ${_M} && _Trace 'Converting date. (%s -> %s)' "${_Convert_ifmt}" "${_Convert_ofmt}"
-  if [[ 'GNU' == "${UNIX}" ]]
-  then
-    # Linux / GNU
-    [[ '%s' == ${_Convert_ifmt} ]] && eval "${_Convert_var}=\$(date -d '@${_Convert_date}' +'${_Convert_ofmt}')" || \
-        eval "${_Convert_var}=\$(date -d '${*}' +'${_Convert_ofmt}')"
-  else
-    # BSD / macOS
-    eval "${_Convert_var}=\$(date -j -f '${_Convert_ifmt}' '${_Convert_date}' '+${_Convert_ofmt}')"
-  fi
+  case "${UNIX}" in
+    BSD) # BSD / macOS
+      eval "${_Convert_var}=\"\$(date -j -f '${_Convert_ifmt}' \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
+      ;;
+
+    *) # Linux / GNU
+      [[ '%s' == "${_Convert_ifmt}" ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
+          eval "${_Convert_var}=\"\$(date -d \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
+      ;;
+
+  esac
 
   ${M} && Trace 'ConvertDate return. (%s)' 0
   return 0

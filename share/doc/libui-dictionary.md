@@ -1098,11 +1098,16 @@ Yes [-e|-E]
 
 ## Vim Note
 
-When using the "#!/usr/bin/env libui" shebang, add the following to your
-~/.vim/scripts.vim file to improve syntax highlighting:
+When using the ```#!/usr/bin/env libui``` shebang, syntax highlighting and
+formatting can be improved by creating a ```~/.vim/ftdetect/libui.vim``` file
+and adding the following to set the filetype to zsh (or bash):
 
 ```
-if getline(1) =~ '^#!/usr/bin/env libui'
-  setfiletype zsh " or setfiletype bash
-endif
+autocmd BufRead *
+            \ if getline(1) =~ '^#!/usr/bin/env libui' |
+            \   set filetype=zsh |
+            \ endif
 ```
+
+If you prefer Bash syntax highlighting, change ```set filetype=zsh``` in the
+file to ```set filetype=bash```.
