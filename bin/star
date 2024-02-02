@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.004 2.4
+Version -r 2.005 2.5
 
 # load mods
 LoadMod Convert
@@ -55,7 +55,7 @@ AddOption -n group -f -k 'Group' -d 'Make created files / directories group writ
 AddOption -c ListCallback -n list -f -k 'List' -d 'List files in an archive, twice for file info.' l
 AddOption -n verbose -f -k 'Verbose' -d 'Verbose operation.' v
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
-AddParameter -n paths -m -i "." -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
+AddParameter -n pathlist -m -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
 
 ##### callbacks
 
@@ -76,29 +76,38 @@ ListCallback () {
 InitCallback () {
   Trace 'In user init callback.'
 
-  Trace 'Check for create. (%s)' "${create}"
-  if ${create}
+  Trace 'Check for archive. (%s)' "${archive}"
+  if [[ -n "${archive}" ]]
   then
-    Trace 'Check for filename extension. (%s)' "${archive}"
-    local period='\.' # fix for bash / zsh
-    if [[ -n "${archive}" && ! "${archive##*/}" =~ ${period} ]]
+    Trace 'Check for create. (%s)' "${create}"
+    if ${create}
     then
-      archive+='.star'
+      Trace 'Check for filename extension. (%s)' "${archive}"
+      if [[ ! "${archive##*/}" == *.* ]]
+      then
+        archive+='.star'
+      fi
+
+      Trace 'Check for existing archive. (%s)' "${archive}"
+      ! Overwrite && [[ -f "${archive}" ]] && Error 'Archive already exists. Use -XO (Overwrite) to overwrite.'
     fi
 
-    Trace 'Check for existing archive. (%s)' "${archive}"
-    ! Overwrite && [[ -n "${archive}" && -f "${archive}" ]] && Error 'Archive already exists. Use -XO (Overwrite) to overwrite.'
+    Trace 'Check for extract. (%s)' "${extract}"
+    if ${extract}
+    then
+      Trace 'Get real archive path. (%s)' "${archive}"
+      GetRealPath archive
+
+      Trace 'Check pathlist count. (%s)' "${#pathlist[@]}"
+      ((1 < ${#pathlist[@]})) && Error 'Only one target path allowed.'
+    fi
+
+    Trace 'Check for list. (%s)' "${list}"
+    ${list} && ConfirmVar -f archive
   fi
 
-  Trace 'Check for extract. (%s)' "${extract}"
-  if ${extract}
-  then
-    Trace 'Check paths count. (%s)' "${#paths[@]}"
-    ((1 == ${#paths[@]})) || Error 'Only one target allowed.'
-
-    Trace 'Get real archive path. (%s)' "${archive}"
-    GetRealPath archive
-  fi
+  Trace 'Check list and pathlist count. ($s:%s)' "${list}" "${#pathlist[@]}"
+  ${list} && ((0 < ${#pathlist[@]})) && Error 'No paths allowed when listing. (Did you forget the -f option flag?)'
 }
 
 ##### functions
@@ -314,7 +323,7 @@ Trace 'Check for create. (%s)' "${create}"
 if ${create}
 then
   Trace 'Create archive. (%s)' "${archive}"
-  if ! CreateArchive "${archive}" "${paths[@]}"
+  if ! CreateArchive "${archive}" "${pathlist[@]}"
   then
     Warn 'Archive creation failed.'
   fi
@@ -324,7 +333,6 @@ Trace 'Check for list. (%s)' "${list}"
 if ${list}
 then
   Trace 'List archive. (%s)' "${archive}"
-  cd "${paths[${AO}]}"
   if ! ListArchive "${archive}"
   then
     Warn 'Archive list failed.'
@@ -336,7 +344,7 @@ Trace 'Check for extract. (%s)' "${extract}"
 if ${extract}
 then
   Trace 'Extract archive. (%s)' "${archive}"
-  cd "${paths[${AO}]}"
+  cd "${pathlist[${AO}]}"
   if ! ExtractArchive "${archive}"
   then
     Warn 'Archive extraction failed.'

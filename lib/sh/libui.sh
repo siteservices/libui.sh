@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.005 # Tue Jan 2 21:59:17 EST 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.006 # Wed Jan 31 22:43:52 EST 2024
 
 #####
 #
@@ -1195,7 +1195,7 @@ AnswerMatches () { # [-r] <answer_match_string>
     local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((40 <= BV)) && _a="${_a,,}"
     [[ -n "${_m}" && "${_m}" == "${_a}" ]] && _rv=0
   fi
-  ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${ANSWER}" "${_m}" "${_rv}"
+  ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${_a}" "${_m}" "${_rv}"
 
   ${_T} && _Trace 'AnswerMatches return. (%s)' "${_rv}"
   return ${_rv}
@@ -1818,7 +1818,7 @@ Initialize () {
       ${_T} && _Trace 'Callback and capture multiple values. (%s)' "${_a[*]}"
       [[ -n "${_p}" ]] && eval "${_p}=( \"\${${_p}[@]}\" )"
 
-      while [[ 0 -lt "${#_a[@]}" ]]
+      while ((${#_a[@]}))
       do
         ${_T} && _Trace 'Process parameter callback. (%s)' "${_pc[${_i}]}"
         eval ${_pc[${_i}]} "${_a[${AO}]}"
@@ -1831,7 +1831,7 @@ Initialize () {
       done
     else
       ${_T} && _Trace 'Capture multiple values. (%s)' "${_a[*]}"
-      eval "${_p}=( \"\${${_p}[@]}\" \"\${_a[@]}\" )"
+      ((${#_a[@]})) && eval "${_p}=( \"\${${_p}[@]}\" \"\${_a[@]}\" )"
     fi
   elif ((0 < ${#_a[@]}))
   then

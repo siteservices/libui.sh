@@ -3,7 +3,7 @@
 #
 #	Simple .star file Extractor - Extract files from a .star archive.
 #
-#	F Harvell - Sat Nov  4 07:50:23 EDT 2023 - 2.1
+#	F Harvell - Sat Nov  4 07:50:23 EDT 2023 - 2.2
 #
 #####
 #
@@ -42,6 +42,13 @@ error () {
   printf 'Extract error.'
   exit 1
 }
+
+# ignore options
+while [[ '-' == "${1:0:1}" ]]
+do
+  [[ '--' == "${1}" ]] && shift && break
+  shift
+done
 
 # open archive file descriptor
 if [[ -z "${archive}" || '-' == "${archive}" ]]
