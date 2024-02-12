@@ -27,11 +27,11 @@
 #
 #####
 
-Version -r 2.000 -m 1.11
+Version -r 2.006 -m 1.12
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' 'SH' )
 
 # Set user information
 #
@@ -180,6 +180,24 @@ _SetUserInfo () {
             COLORS=true
           else
             COLORS=false
+          fi
+          ;;
+
+        SH)
+          local _User_shells; _User_shells=( "default (${SHELL##*/})" )
+          if ${ZSH}
+          then
+            _User_shells+=( ${commands[zsh]##*/} ${commands[bash]##*/} )
+          else
+            $(command -v zsh 2> /dev/null) && _User_shells+=( 'zsh' );
+            $(command -v bash 2> /dev/null) && _User_shells+=( 'bash' );
+          fi
+          Alert 'The default shell for this acount is "%s".' "${SHELL##*/}"
+          Tell 'Select "%s" unless you cannot use "chsh" and need a different shell.' "${_User_shells[${AO}]}"
+          Ask -n SH -S _User_shells -d "${_User_shells[${AO}]}" 'Use login shell:'
+          if AnswerMatches 'default'
+          then
+            SH=
           fi
           ;;
 

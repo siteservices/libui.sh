@@ -1,22 +1,42 @@
 # Change Log
 
+## v2.006
+
+### New Features / Enhancements
+
+* Add -C (Chain Flag) option to AddOption to include option in CHFLAGS variable.
+* Add verbose option to createpackage self extraction header.
+* Improve star command archive vs. paths error messages and handling.
+* Ignore options in starx command (to support embedded self-extraction header).
+* Add preferred shell handling in libui User mod (when chsh is not available).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Create empty array when no parameters passed to a multiple-parameter script.
+* Fix no compression handling in libui package mod CreatePackage command.
+* Fix file path handling in createpackage.
+
+### Incompatibilities
+
+* N/A
+
 ## v2.005
 
 ### New Features / Enhancements
 
 * Add Cygwin support to `${UNIX}` (GNU).
 * Update copyright dates (err, okay, maybe not a feature / enhancement).
+* Improve git handling (1.8 and 2.X) in updateprojects, updatevimpackages.
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
+* Fix ConvertDate missing source date error handling.
 * Fix git update checking in `updateprojects` and `updatevimpackages`.
 * Fix `${LIBUI_XDB}` environment variable bleedthrough into executed (libui) commands.
-
-### Incompatibilities
-
-* N/A
 
 ## v2.004
 

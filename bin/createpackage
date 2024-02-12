@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.004 1.11
+Version -r 2.006 1.12
 
 # load mods
 LoadMod File
@@ -124,6 +124,8 @@ InitCallback () {
   elif [[ -d "${package}" ]]
   then
     package="${package}/${sourcedir##*/}-$(date +%Y%m%d)"
+  else
+    GetRealPath -P package
   fi
   case "${pkgtype}" in
     sharp)
@@ -189,7 +191,7 @@ else
 
     starp)
       Trace 'Files to include in star package. (%s)' "${#files[@]}"
-      [[ -z "${installer}" ]] && i="-X -i '\${s} \${@} -x -f \"\${a}\"'" || i="-i '${installer}'"
+      [[ -z "${installer}" ]] && i="-X -i '\${s} \${@} -x -v -f \"\${a}\"'" || i="-i '${installer}'"
       Action -s -q 'Create star package archive?' "CreatePackage -P -f files -x excludes -d 'Self-Extracting star package.' -I '${prep}' ${i} -s '${sourcedir}' '${package}'"
       ;;
 

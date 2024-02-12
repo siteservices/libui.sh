@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd January 2, 2024
+.Dd February 11, 2024
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -460,7 +460,7 @@ The following configuration option enables support for a script command line
 option (flag):
 .Bd -ragged -offset 4n
 .Sy AddOption
-.Op Fl a Fl f Fl m Fl r Fl t
+.Op Fl a Fl C Fl f Fl m Fl r Fl t
 .Op Fl c Ar <callback>
 .Op Fl d Ar <description>
 .Op Fl i Ar <initial_value>
@@ -497,6 +497,18 @@ function as the first parameter.
 The
 .Ar <callback>
 must be provided in the main script.
+.It Fl C
+Include the option in the
+.Sx CHFLAGS
+variable.
+The
+.Sx CHFLAGS
+variable provides the ability to chain provided options to embedded
+.Xr libui.sh 3
+scripts.
+See
+.Sx VARIABLES
+for more information.
 .It Fl d Ar <description>
 Use
 .Ar <description>
@@ -621,7 +633,7 @@ configuration option prior to calling
 .Sy Initialize
 The enabled script command line option added cannot be one of the
 .Nm
-library provided standard options: C, F, H, h, N, P, Q, V, X:, Y.
+library provided standard options: H, h, X:.
 .Ss AddParameter
 The following configuration option enables support for a script command line
 parameter:
@@ -2042,7 +2054,7 @@ place it as if it were a command line option for the script to be executed
 .Sy script
 .Ar ${CHFLAGS} Ns \&).
 By default, the
-.Fl C , Fl F , Fl N , Fl Q , Fl X , No and Fl Y
+.Fl XC , Fl XF , Fl XN , Fl XQ , No and Fl XY
 options are automatically captured.
 Additional flags can be added as needed.
 .It Dv ${CMD}

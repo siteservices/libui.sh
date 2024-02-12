@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.005 # Tue Jan 2 21:59:17 EST 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.006 # Sun Feb 11 19:48:53 EST 2024
 
 #####
 #
@@ -184,7 +184,7 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
 # add option pattern
 _opts='hHX:'
 UICMD+=( 'AddOption' )
-AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] <option>[:]
+AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] <option>[:]
   ${_init} || Tell -E -f -L '(AddOption) Must be called before Initialize.'
   ${_S} && ((_cAddOption++))
   ${_T} && _Trace 'AddOption [%s]' "${*}"
@@ -192,6 +192,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   local _a=false
   local _c
   local _d
+  local _f=false
   local _i
   local _k
   local _l
@@ -207,7 +208,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':ac:d:fi:I:k:mn:p:P:rs:S:tv:' _opt
+  while getopts ':ac:Cd:fi:I:k:mn:p:P:rs:S:tv:' _opt
   do
     case ${_opt} in
       a)
@@ -218,6 +219,11 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
       c)
         ${_T} && _Trace 'Option callback. (%s)' "${OPTARG}"
         _c="${OPTARG}"
+        ;;
+
+      C)
+        ${_T} && _Trace 'Chain flag.'
+        _f=true
         ;;
 
       d)
@@ -336,6 +342,7 @@ AddOption () { # [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value
   _oval+=( "${_u}" ) # value
   _op+=( "${_p}" ) # path
   _oc+=( "${_c}" ) # callback
+  _ocf+=( "${_f}" ) # chain flag
   _ov+=( "${_v}" ) # validation callback
   _ok+=( "${_k}" ) # keyword
   _oa+=( "${_a}" ) # autodefault
@@ -1195,7 +1202,7 @@ AnswerMatches () { # [-r] <answer_match_string>
     local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((40 <= BV)) && _a="${_a,,}"
     [[ -n "${_m}" && "${_m}" == "${_a}" ]] && _rv=0
   fi
-  ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${ANSWER}" "${_m}" "${_rv}"
+  ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${_a}" "${_m}" "${_rv}"
 
   ${_T} && _Trace 'AnswerMatches return. (%s)' "${_rv}"
   return ${_rv}
@@ -1648,6 +1655,11 @@ Initialize () {
         ${_T} && _Trace 'Process option callback. (%s)' "${_oc[${_i}]}"
         [[ -n "${_oc[${_i}]}" ]] && eval ${_oc[${_i}]} "${OPTARG}"
 
+        if ${_ocf[${_i}]}
+        then
+          [[ "${_oval[${_i}]}" == *OPTARG* ]] && CHFLAGS+="-${_opt} '${OPTARG}' " || CHFLAGS+="-${_opt} "
+        fi
+
         if ${_om[${_i}]}
         then
           ${_T} && _Trace 'Process multiple option value. (%s+=( "%s" ) [%s])' "${_ovar[${_i}]}" "${_oval[${_i}]}" "${OPTARG}"
@@ -1818,7 +1830,7 @@ Initialize () {
       ${_T} && _Trace 'Callback and capture multiple values. (%s)' "${_a[*]}"
       [[ -n "${_p}" ]] && eval "${_p}=( \"\${${_p}[@]}\" )"
 
-      while [[ 0 -lt "${#_a[@]}" ]]
+      while ((${#_a[@]}))
       do
         ${_T} && _Trace 'Process parameter callback. (%s)' "${_pc[${_i}]}"
         eval ${_pc[${_i}]} "${_a[${AO}]}"
@@ -1831,7 +1843,7 @@ Initialize () {
       done
     else
       ${_T} && _Trace 'Capture multiple values. (%s)' "${_a[*]}"
-      eval "${_p}=( \"\${${_p}[@]}\" \"\${_a[@]}\" )"
+      ((${#_a[@]})) && eval "${_p}=( \"\${${_p}[@]}\" \"\${_a[@]}\" )"
     fi
   elif ((0 < ${#_a[@]}))
   then
