@@ -4,6 +4,7 @@
 
 ### New Features / Enhancements
 
+* Add -C (Chain Flag) option to AddOption to include option in CHFLAGS variable.
 * Add verbose option to createpackage self extraction header.
 * Improve star command archive vs. paths error messages and handling.
 * Ignore options in starx command (to support embedded self-extraction header).
@@ -15,6 +16,7 @@
 
 * Create empty array when no parameters passed to a multiple-parameter script.
 * Fix no compression handling in libui package mod CreatePackage command.
+* Fix file path handling in createpackage.
 
 ### Incompatibilities
 

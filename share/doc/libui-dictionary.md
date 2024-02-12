@@ -85,6 +85,7 @@ the option, and the keyword and description for the usage information.
 
 * **-a** - automatically default if only one selection option
 * **-c** - option callback called when processing option
+* **-C** - include option in chain flag (CHFLAGS) variable
 * **-d** - option description
 * **-f** - initial value "false", provided value "true"
 * **-i** - initial value to use when option is not provided

@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 2.004 -m 1.14
+Version -r 2.006 -m 1.15
 
 ##### configuration
 
@@ -92,6 +92,8 @@ _LibuiSetup () {
   # local variables
   local aopt
   local Aopt
+  local copt
+  local Copt
   local popt
   local sopt
   local Sopt
@@ -105,6 +107,8 @@ _LibuiSetup () {
   ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}}"
   [[ " ${arg[*]} " =~ .*\ -x\ *oa\ .* ]] && aopt=true || aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oA\ .* ]] && Aopt=true || Aopt=false
+  [[ " ${arg[*]} " =~ .*\ -x\ *oc\ .* ]] && copt=true || copt=false
+  [[ " ${arg[*]} " =~ .*\ -x\ *oC\ .* ]] && Copt=true || Copt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *os\ .* ]] && sopt=true || sopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oS\ .* ]] && Sopt=true || Sopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *ov\ .* ]] && vopt=true || vopt=false
@@ -143,12 +147,14 @@ _LibuiSetup () {
   AddOption -n update -f -k 'Update' -d 'Update libui in COMMONROOT (or provided directory).' u
   AddOption -n unify -f -k 'Unify' -d 'Unify environment by removing files already in COMMONROOT (or provided directory).' U
   AddOption -n vlevel -c VerifyCallback -m -p true -k 'Verify' -d 'Verify libui in COMMONROOT (or provided directory).' v
-  availopt=( b B d m n o oa oA os oS ov p pa pA ps pS pv r R t w X aot one two three four five )
+  availopt=( b B d m n o oa oA oc oC os oS ov p pa pA ps pS pv r R t w X aot one two three four five )
   testopt=( X )
   AddOption -n testopt -c TestModeCallback -m -S availopt -k 'Test Option' -d '(Only for test.) Set test mode.' x:
   testvalues=( x y z )
   ${aopt} && AddOption -n opta -s a -a -k 'Test a' -d 'Test option a.' Z:
   ${Aopt} && AddOption -n optA -s A -k 'Test A' -d 'Test option A.' Z:
+  ${copt} && AddOption -n optc -C -k 'Test c' -d 'Test option c.' Z
+  ${Copt} && AddOption -n optC -C -k 'Test C' -d 'Test option C.' Z:
   ${sopt} && AddOption -n opts -s a -s b -s c -k 'Test s' -d 'Test option s.' Z:
   ${Sopt} && AddOption -n optS -S testvalues -k 'Test S' -d 'Test option S.' Z:
   ${vopt} && AddOption -n optv -v ValidCallback -k 'Test v' -d 'Test option v.' Z:

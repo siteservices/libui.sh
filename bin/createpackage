@@ -124,6 +124,8 @@ InitCallback () {
   elif [[ -d "${package}" ]]
   then
     package="${package}/${sourcedir##*/}-$(date +%Y%m%d)"
+  else
+    GetRealPath -P package
   fi
   case "${pkgtype}" in
     sharp)

@@ -60,7 +60,7 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H
 
   Available option values:
     For -e (Execution): zsh, bash
-    For -x (Test Option): b, B, d, m, n, o, oa, oA, os, oS, ov, p, pa, pA, ps, pS, pv, r, R, t, w, X, aot, one, two, three, four, five
+    For -x (Test Option): b, B, d, m, n, o, oa, oA, oc, oC, os, oS, ov, p, pa, pA, ps, pS, pv, r, R, t, w, X, aot, one, two, three, four, five
 
 This script provides support functionality for the libui library including
 regression testing, capabilities demonstration, and usage statistics reports.
