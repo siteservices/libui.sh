@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CHFLAGS_Chain_opt
+#
+#####
+
+test_CHFLAGS_Chain_opt () {
+  LibuiPerformTest 'Tell -- "${CHFLAGS}"'
+  LibuiValidateTest -r ${?} 0 ".*-Z 'arg'.*"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x oC -Z arg '
+
+return 0

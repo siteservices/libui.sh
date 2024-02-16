@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.006 # Sun Feb 11 19:48:53 EST 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.007 # Fri Feb 16 00:02:30 EST 2024
 
 #####
 #
@@ -2230,7 +2230,7 @@ Exit () { # [<return_value>]
     fi
 
     _c+=( "_cstart='${_cstart}'" )
-    _c+=( "\${ZSH} && _ctime=\$((_ctime + ${_ctime:-0})) || _ctime=\$(bc <<< \"\${_ctime:-0} + ${_ctime:-0}\")" )
+    _c+=( "\${ZSH} && _ctime=\$((_ctime + ${_ctime:-0})) || _ctime=\$(command -v bc &> /dev/null && bc <<< \"\${_ctime:-0} + ${_ctime:-0}\" || awk '{print \$1 + \$2}' <<< \"\${_ctime:-0} ${_ctime:-0}\")" )
     ((_crun++)); _c+=( "_crun=${_crun}" )
     if ! ${ZSH}
     then

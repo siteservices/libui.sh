@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd January 2, 2024
+.Dd February 16, 2024
 .Dt LIBUISORT.SH 3
 .Os
 .Sh NAME
@@ -26,7 +26,7 @@ user interface library
 .Sy LoadMod Sort
 .Pp
 .Sy Sort
-.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p
+.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p Fl u
 .Op Fl c Ar <compare_function>
 .Ar <array_variable_name> ...
 .Sh DESCRIPTION
@@ -41,10 +41,10 @@ The
 mod provides the following commands:
 .Ss Sort
 The Sort command sorts the elements in the named array variable.
-It supports sorts using a variety of lexigraphical algorithms.
+It supports sorts using a variety of lexicographical algorithms.
 .Pp
 .Sy Sort
-.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p
+.Op Fl a Fl A Fl l Fl L Fl n Fl N Fl p Fl u
 .Op Fl c Ar <compare_function>
 .Ar <array_variable_name> ...
 .Pp
@@ -54,10 +54,19 @@ The command options are as follows:
 Performs an ASCII ascending sort.
 .It Fl A
 Performs an ASCII descending sort.
+.It Fl c Ar <compare_function_name>
+Use the
+.Ar <compare_function_name>
+shell function to define order within the sort.
+.Pp
+The
+.Ar <compare_function_name>
+shell function must take two arguments (i.e. ${1} and ${2}) and return 0 (true)
+when ${1} is less than ${2}.
 .It Fl l
-Performs a lexically ascending sort and is the default sort.
+Performs a lexicographically ascending sort and is the default sort.
 .It Fl L
-Performs a lexically descending sort.
+Performs a lexicographically descending sort.
 .It Fl n
 Performs a numeric ascending sort.
 .It Fl N
@@ -70,15 +79,9 @@ The
 option is used by the
 .Sy RemoveFileList
 recursion to delete nested paths.
-.It Fl c Ar <compare_function_name>
-Use the
-.Ar <compare_function_name>
-shell function to define order within the sort.
-.Pp
-The
-.Ar <compare_function_name>
-shell function must take two arguments (i.e. ${1} and ${2}) and return 0 (true)
-when ${1} is less than ${2}.
+.It Fl u
+Only keep unique values.
+Removes any duplicate values from the array.
 .It Ar <array_variable_name>
 The name of the array variable that contains the list to be sorted.
 .El

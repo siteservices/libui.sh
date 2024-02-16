@@ -27,10 +27,10 @@
 #
 #####
 
-Version -r 2.000 -m 1.7
+Version -r 2.007 -m 1.8
 
 # defaults
-command -v bc &> /dev/null && __BC='bc' || __BC='awk "{print $1 - $3}"'
+command -v bc &> /dev/null && __BC='bc' || __BC='awk "{print \$1 - \$3}"'
 __timer=0
 ELAPSED=0
 
@@ -76,7 +76,7 @@ GetElapsed () { # [<variable>]
 
   if [[ -z "${1}" ]]
   then
-    ${ZSH} && ((ELAPSED = SECONDS - __timer)) || ELAPSED=$(${__BC} <<< "${SECONDS} - ${__timer}")
+    ${ZSH} && ((ELAPSED = SECONDS - __timer)) || eval "ELAPSED=\$(${__BC} <<< \"${SECONDS} - ${__timer}\")"
     ${_M} && _Trace 'Timer %s elapsed. (%s)' "${__timer}" "${ELAPSED}"
   else
     ${ZSH} && eval "((ELAPSED = SECONDS - ${1}))" || eval "ELAPSED=\$(${__BC} <<< \"${SECONDS} - \${${1}}\")"

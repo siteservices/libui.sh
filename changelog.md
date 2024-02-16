@@ -1,5 +1,20 @@
 # Change Log
 
+## v2.007
+
+### New Features / Enhancements
+
+* Add -u (unique) option to libui Sort mod Sort command.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix libui package / installer duplicate file in tarball.
+* Fix multi-word handling in libui Sort mod Sort command. (Bash)
+* Fix awk math processing in libui Timer mod. (Bash)
+* Use awk math processing in libui.sh if bc is not available. (Bash)
+
 ## v2.006
 
 ### New Features / Enhancements
@@ -15,12 +30,8 @@
 ### Bug Fixes
 
 * Create empty array when no parameters passed to a multiple-parameter script.
-* Fix no compression handling in libui package mod CreatePackage command.
+* Fix no compression handling in libui Package mod CreatePackage command.
 * Fix file path handling in createpackage.
-
-### Incompatibilities
-
-* N/A
 
 ## v2.005
 

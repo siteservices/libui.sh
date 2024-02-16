@@ -1,0 +1,29 @@
+#!/usr/bin/env libui
+#####
+#
+# test_UNIX
+#
+#####
+
+test_UNIX () {
+  local tos="$(uname -s)"
+  case "${tos}" in
+    Linux|CYGWIN*)
+      tunix='GNU'
+      ;;
+
+    Solaris)
+      tunix='SYSV'
+      ;;
+
+    *) # Darwin|FreeBSD|SunOS
+      tunix='BSD'
+      ;;
+
+  esac
+  LibuiPerformTest 'Tell -- "${UNIX}"'
+  LibuiValidateTest -r ${?} 0 "${tunix}"
+  return ${?}
+}
+
+return 0

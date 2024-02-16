@@ -830,9 +830,10 @@ path, or custom.
 * **-n** - numeric ascending
 * **-N** - numeric decending
 * **-p** - filesystem path depth-first sort
+* **-u** - only keep unique values
 
 ```
-Sort [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_variable_name> ...
+Sort [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_variable_name> ...
 ```
 
 ### SSHExec (man libuiSSH.sh) - Execute a command on a remote server via ssh.

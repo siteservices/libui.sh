@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 2.006 -m 1.15
+Version -r 2.007 -m 1.16
 
 ##### configuration
 
@@ -675,6 +675,7 @@ LibuiPackageList () {
   local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
+  Sort -u _Util_files
 
   ${_M} && _Trace 'Files in libui package. (%s)' "${_Util_files[*]}"
   Tell 'Libui Files:'
@@ -723,6 +724,7 @@ LibuiPackage () {
   local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
+  Sort -u _Util_files
 
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
   if [[ ".sharp" == "${_Util_package: -6}" ]]

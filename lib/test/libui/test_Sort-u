@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sort-u
+#
+#####
+
+test_Sort-u () {
+  LoadMod Sort
+  testlist=( 'who' 'x' 'x' 'what was there' 'when' 'where' 'x' 'zebra' 'Snow Hope' 'is' 'the' 'time' 'for' 'all' 'great' 'men' 'who' 'Now' )
+  LibuiPerformTest 'Sort -u testlist; printf "%s\n" "${testlist[*]}"'
+  LibuiValidateTest ${?} 0 'all for great is men Now Snow Hope the time what was there when where who x zebra'
+
+  return ${?}
+}
+
+return 0
