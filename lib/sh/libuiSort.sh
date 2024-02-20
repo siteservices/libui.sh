@@ -27,27 +27,28 @@
 #
 #####
 
-Version -r 2.000 -m 1.4
+Version -r 2.007 -m 2.0
 
 # defaults
 
 # Sort a list in an array
 #
-# Syntax: Sort [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
+# Syntax: Sort [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> ...
 #
 # Example: Sort list
 #
 # Result: Sorts the list array (using default ASCII ascending sort)
 #
 UICMD+=( 'Sort' )
-Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
+Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> ...
   ${_S} && ((_cSort++))
   ${_M} && _Trace 'Sort [%s]' "${*}"
 
   local _Sort_cmp
+  local _Sort_locale
   local _Sort_results
   local _Sort_source; _Sort_source=( )
-  local _Sort_locale
+  local _Sort_unique;
 
   # sort compares
   ${ZSH} || cmpa () { [ "${1}" \< "${2}" ]; } # ASCII ascending
@@ -64,7 +65,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':aAc:lLnNp' opt
+  while getopts ':aAc:lLnNpu' opt
   do
     case ${opt} in
       a)
@@ -111,6 +112,11 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
         _Sort_cmp='cmpp'
         ;;
 
+      u)
+        ${_M} && _Trace 'Unique.'
+        _Sort_unique='u'
+        ;;
+
       *)
         Tell -E -f -L '(Sort) Option error. (-%s)' "${OPTARG}"
         ;;
@@ -137,27 +143,27 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
       then
         case "${_Sort_cmp}" in
           cmpa)
-            _Sort_results=( "${(o)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(o${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           cmpA)
-            _Sort_results=( "${(O)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(O${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           cmpl)
-            _Sort_results=( "${(i)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(i${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           cmpL)
-            _Sort_results=( "${(Oi)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(Oi${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           cmpn)
-            _Sort_results=( "${(n)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(n${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           cmpN)
-            _Sort_results=( "${(On)_Sort_results[@]}" )
+            eval "_Sort_results=( \"\${(On${_Sort_unique})_Sort_results[@]}\" )"
             ;;
 
           *)
@@ -166,31 +172,38 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
 
         esac
       else
-        if ${ZSH} && ((${+commands[sort]})) || command -v sort &> /dev/null
+        if command -v sort &> /dev/null
         then
+          local _Sort_ifs="${IFS}"; IFS=$'\n'
           case "${_Sort_cmp}" in
             cmpa)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             cmpA)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort -r) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort -r ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             cmpl)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             cmpL)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f -r) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f -r ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             cmpn)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             cmpN)
-              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n -r) )
+              _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n -r ${_Sort_unique:+-${_Sort_unique}}) )
+              _Sort_unique=
               ;;
 
             *)
@@ -198,6 +211,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
               ;;
 
           esac
+          IFS="${_Sort_ifs}"
         else
           _Sort_source=( ${AO} $((${#_Sort_results[@]} + AO - 1)) )
         fi
@@ -233,6 +247,22 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p] [-c <compare_function>] <array_var_name> ...
         ((0 < ${#_Sort_l[@]} - AO)) && _Sort_source+=( "${_Sort_b}" "$((_Sort_b + ${#_Sort_l[@]} + AO - 1))" )
         ((0 < ${#_Sort_g[@]} - AO)) && _Sort_source+=( "$((_Sort_e - ${#_Sort_g[@]} + 1))" "${_Sort_e}" )
       done
+
+      ${_M} && _Trace 'Check for unique. (%s)' "${_Sort_unique}"
+      if ! ${ZSH} && [[ -n "${_Sort_unique}" ]] # note: uniq changes sort order
+      then
+        _Sort_source=( "${_Sort_results[@]}" )
+        _Sort_e=$((${#_Sort_source[@]} + AO))
+        _Sort_i=$((AO + 1))
+        _Sort_l="${AO}"
+        _Sort_results=( ${_Sort_source[${AO}]} )
+        while ((_Sort_i < _Sort_e))
+        do
+          [[ "${_Sort_results[${_Sort_l}]}" == "${_Sort_source[${_Sort_i}]}" ]] || \
+              _Sort_results[$((++_Sort_l))]="${_Sort_source[${_Sort_i}]}"
+          ((_Sort_i++))
+        done
+      fi
 
       ${_M} && _Trace 'Save results to %s. (%s)' "${1}" "${#_Sort_results[*]}"
       eval "${1}=( \"\${_Sort_results[@]}\" )"
