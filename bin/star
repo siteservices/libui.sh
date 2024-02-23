@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.005 2.5
+Version -r 2.008 2.6
 
 # load mods
 LoadMod Convert
@@ -157,6 +157,7 @@ CreateArchive () { # <archive> <files> ...
     fi
   done >> "${tmp}"
   ((rv+=${?}))
+  ${verbose} && Info >&6
   exec 6>&-
 
   Trace 'Sign archive. (%s)' "${tmp}"
@@ -252,6 +253,7 @@ ExtractArchive () { # <archive>
     ((rv+=${?}))
   done
   exec 8<&-
+  ${verbose} && Info
 
   Trace 'ExtractArchive return. (%s)' "${rv}"
   return ${rv}

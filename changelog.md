@@ -1,5 +1,17 @@
 # Change Log
 
+## v2.008
+
+### New Features / Enhancements
+
+* Improve help performance in createpackage when over large directory tree.
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix star -v (Verbose) output text overwrite issue.
+
 ## v2.007
 
 ### New Features / Enhancements
