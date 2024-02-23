@@ -102,7 +102,7 @@ the option, and the keyword and description for the usage information.
 * **-v** - validation callback called after all parameters have been processed
 
 ```
-AddOption [-a|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] <option>[:]
+AddOption [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] <option>[:]
 ```
 
 ### AddParameter (man libui.sh) - Add command line parameters for the script.
@@ -1113,3 +1113,17 @@ autocmd BufRead *
 
 If you prefer Bash syntax highlighting, change ```set filetype=zsh``` in the
 file to ```set filetype=bash```.
+
+## Copyright and License
+
+Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+domain. Permission is unconditionally granted to anyone with an interest, the
+rights to use, modify, publish, distribute, sublicense, and/or sell this
+content and associated files.
+
+All content is provided "as is", without warranty of any kind, expressed or
+implied, including but not limited to merchantability, fitness for a
+particular purpose, and noninfringement. In no event shall the authors or
+copyright holders be liable for any claim, damages, or other liability,
+whether in an action of contract, tort, or otherwise, arising from, out of,
+or in connection with this content or use of the associated files.
