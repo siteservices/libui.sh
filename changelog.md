@@ -1,5 +1,20 @@
 # Change Log
 
+## v2.009
+
+### New Features / Enhancements
+
+* New LIBUI_WAITONERROR variable enables / disables waiting on exit with errors.
+* New LIBUI_PLAIN variable enables / disables enhanced display effects.
+* New HEIGHT and WIDTH variables for terminal height (rows) and width (columns).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix Ask varedit "question mark line" issue.
+* Fix test invalid source file errors.
+
 ## v2.008
 
 ### New Features / Enhancements

@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.004 -m 1.4
+Version -r 2.009 -m 1.5
 
 ##### configuration
 
@@ -160,96 +160,93 @@ _Terminal () {
   local _rv=0
 
   ${_T} && _Trace 'Check for terminal. (%s)' "${TERMINAL}"
-  if ${TERMINAL}
+  if ${TERMINAL} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
   then
-    if [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
-    then
-      ${_T} && _Trace 'Define display codes.'
-      _display=true
-      {
-        printf '# display codes generated %s.\n' "$(date)"
-        printf "DCS='$(tput clear)'\n" # clear screen (jump home)
-        printf "DCEL='$(tput el)'\n" # clear end of line
-        printf "DCES='$(tput ed || tput cd)'\n" # clear end of screen
-        [[ -n "$(tput u7)" ]] && printf "DCP='$(tput u7)'\n" || printf "DCP=$'\\e[6n'\n" # read cursor position
-        [[ -n "$(tput hpa 0)" ]] && printf "DJBL='$(tput hpa 0)'\n" || printf "DJBL=$'\\r'\n" # jump to begining of line
-        printf "DJH='$(tput cup 0 0)'\n" # jump home (0, 0)
-        printf "DRC='$(tput rc)'\n" # restore cursor
-        printf "DSC='$(tput sc)'\n" # save cursor
-        if ((16 <= $(tput colors)))
-        then
-          printf "DB0='$(tput setab 8)'\n" # bright black
-          printf "DBr='$(tput setab 9)'\n" # bright red
-          printf "DBg='$(tput setab 10)'\n" # bright green
-          printf "DBy='$(tput setab 11)'\n" # bright yellow
-          printf "DBb='$(tput setab 12)'\n" # bright blue
-          printf "DBm='$(tput setab 13)'\n" # bright magenta
-          printf "DBc='$(tput setab 14)'\n" # bright cyan
-          printf "DB7='$(tput setab 15)'\n" # bright white
-          printf "DF0='$(tput setaf 8)'\n" # bright black
-          printf "DFr='$(tput setaf 9)'; Dfr=\"\${DFr}\"\n" # bright / red
-          printf "DFg='$(tput setaf 10)'\n" # bright green
-          printf "DFy='$(tput setaf 11)'; Dfy=\"\${DFy}\"\n" # bright / yellow
-          printf "DFb='$(tput setaf 12)'; Dfb=\"\${DFb}\"\n" # bright / blue
-          printf "DFm='$(tput setaf 13)'\n" # bright magenta
-          printf "DFc='$(tput setaf 14)'\n" # bright cyan
-          printf "DF7='$(tput setaf 15)'; Df7=\"\${DF7}\"\n" # bright / white
-        else
-          printf "Dfr='$(tput bold; tput setaf 1)'\n" # red
-          printf "Dfy='$(tput bold; tput setaf 3)'\n" # yellow
-          printf "Dfb='$(tput bold; tput setaf 4)'\n" # blue
-          printf "Df7='$(tput bold; tput setaf 7)'\n" # white
-        fi
-        printf "Db0='$(tput setab 0)'\n" # black
-        printf "Dbr='$(tput setab 1)'\n" # red
-        printf "Dbg='$(tput setab 2)'\n" # green
-        printf "Dby='$(tput setab 3)'\n" # yellow
-        printf "Dbb='$(tput setab 4)'\n" # blue
-        printf "Dbm='$(tput setab 5)'\n" # magenta
-        printf "Dbc='$(tput setab 6)'\n" # cyan
-        printf "Db7='$(tput setab 7)'\n" # white
-        printf "Df0='$(tput setaf 0)'\n" # black
-        printf "Dfg='$(tput setaf 2)'\n" # green
-        printf "Dfm='$(tput setaf 5)'\n" # magenta
-        printf "Dfc='$(tput setaf 6)'\n" # cyan
-        printf "Db='$(tput bold)'\n" # bold
-        [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DF0:-${Df7}}"\n' # dim
-        printf "Dsu='$(tput smul)'\n" # start underline
-        printf "Deu='$(tput rmul)'\n" # end underline
-        printf "Dr='$(tput rev)'\n" # reverse
-        printf "Dss='$(tput smso)'\n" # start standout
-        printf "Des='$(tput rmso)'\n" # exit standout
-        printf "D='$(tput sgr0)'\n" # normal
-        printf 'DAction="${Dfb}"\n' # display formats
-        printf 'DAlarm="${Dd}${Dfr}"\n'
-        printf 'DAlert="${Db}${DFg:-${Dfg}}"\n'
-        printf 'DAnswer="${Dfy}"\n'
-        printf 'DCaution="${DFm:-${Dfm}}"\n'
-        printf 'DConfirm="${Db}${DFy:-${Dfy}}"\n'
-        printf 'DError="${Dbr}${Db}${DFy:-${Dfy}}"\n'
-        printf 'DInfo="${DFc:-${Dfc}}"\n'
-        printf 'DOptions="${Db}"\n'
-        printf 'DQuestion="${DFc:-${Dfc}}${Dsu}"\n'
-        printf 'DSpinner="${Db}${DFc:-${Dfc}}"\n'
-        printf 'DTell="${Db}"\n'
-        printf 'DTrace="${DF0:-${Dd}}"\n'
-        printf 'DWarn="${DBy:-${Dby}}${Df0}"\n'
-        printf 'D0="${D}${Db}${Dsu}"\n' # display modes
-        printf 'D1="${D}${Db}${DFr:-${Dfr}}"\n'
-        printf 'D2="${D}${Db}${DFg:-${Dfg}}"\n'
-        printf 'D3="${D}${Db}${DFy:-${Dfy}}"\n'
-        printf 'D4="${D}${Db}${DFb:-${Dfb}}"\n'
-        printf 'D5="${D}${Db}${DFm:-${Dfm}}"\n'
-        printf 'D6="${D}${Db}${DFc:-${Dfc}}"\n'
-        printf 'D7="${D}${Db}"\n'
-        printf 'D8="${D}"\n'
-        printf 'D9="${D}${Dd}"\n'
-      } > "${LIBUI_CONFIG}/display-${TERM}"
-      source "${LIBUI_CONFIG}/display-${TERM}"
-      _rv=${?}
-    else
-      _rv=2
-    fi
+    ${_T} && _Trace 'Define display codes.'
+    _display=true
+    {
+      printf '# display codes generated %s.\n' "$(date)"
+      printf "DCS='$(tput clear)'\n" # clear screen (jump home)
+      printf "DCEL='$(tput el)'\n" # clear end of line
+      printf "DCES='$(tput ed || tput cd)'\n" # clear end of screen
+      [[ -n "$(tput u7)" ]] && printf "DCP='$(tput u7)'\n" || printf "DCP=$'\\e[6n'\n" # read cursor position
+      [[ -n "$(tput hpa 0)" ]] && printf "DJBL='$(tput hpa 0)'\n" || printf "DJBL=$'\\r'\n" # jump to begining of line
+      printf "DJH='$(tput cup 0 0)'\n" # jump home (0, 0)
+      printf "DRC='$(tput rc)'\n" # restore cursor
+      printf "DSC='$(tput sc)'\n" # save cursor
+      if ((16 <= $(tput colors)))
+      then
+        printf "DB0='$(tput setab 8)'\n" # bright black
+        printf "DBr='$(tput setab 9)'\n" # bright red
+        printf "DBg='$(tput setab 10)'\n" # bright green
+        printf "DBy='$(tput setab 11)'\n" # bright yellow
+        printf "DBb='$(tput setab 12)'\n" # bright blue
+        printf "DBm='$(tput setab 13)'\n" # bright magenta
+        printf "DBc='$(tput setab 14)'\n" # bright cyan
+        printf "DB7='$(tput setab 15)'\n" # bright white
+        printf "DF0='$(tput setaf 8)'\n" # bright black
+        printf "DFr='$(tput setaf 9)'; Dfr=\"\${DFr}\"\n" # bright / red
+        printf "DFg='$(tput setaf 10)'\n" # bright green
+        printf "DFy='$(tput setaf 11)'; Dfy=\"\${DFy}\"\n" # bright / yellow
+        printf "DFb='$(tput setaf 12)'; Dfb=\"\${DFb}\"\n" # bright / blue
+        printf "DFm='$(tput setaf 13)'\n" # bright magenta
+        printf "DFc='$(tput setaf 14)'\n" # bright cyan
+        printf "DF7='$(tput setaf 15)'; Df7=\"\${DF7}\"\n" # bright / white
+      else
+        printf "Dfr='$(tput bold; tput setaf 1)'\n" # red
+        printf "Dfy='$(tput bold; tput setaf 3)'\n" # yellow
+        printf "Dfb='$(tput bold; tput setaf 4)'\n" # blue
+        printf "Df7='$(tput bold; tput setaf 7)'\n" # white
+      fi
+      printf "Db0='$(tput setab 0)'\n" # black
+      printf "Dbr='$(tput setab 1)'\n" # red
+      printf "Dbg='$(tput setab 2)'\n" # green
+      printf "Dby='$(tput setab 3)'\n" # yellow
+      printf "Dbb='$(tput setab 4)'\n" # blue
+      printf "Dbm='$(tput setab 5)'\n" # magenta
+      printf "Dbc='$(tput setab 6)'\n" # cyan
+      printf "Db7='$(tput setab 7)'\n" # white
+      printf "Df0='$(tput setaf 0)'\n" # black
+      printf "Dfg='$(tput setaf 2)'\n" # green
+      printf "Dfm='$(tput setaf 5)'\n" # magenta
+      printf "Dfc='$(tput setaf 6)'\n" # cyan
+      printf "Db='$(tput bold)'\n" # bold
+      [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DF0:-${Df7}}"\n' # dim
+      printf "Dsu='$(tput smul)'\n" # start underline
+      printf "Deu='$(tput rmul)'\n" # end underline
+      printf "Dr='$(tput rev)'\n" # reverse
+      printf "Dss='$(tput smso)'\n" # start standout
+      printf "Des='$(tput rmso)'\n" # exit standout
+      printf "D='$(tput sgr0)'\n" # normal
+      printf 'DAction="${Dfb}"\n' # display formats
+      printf 'DAlarm="${Dd}${Dfr}"\n'
+      printf 'DAlert="${Db}${DFg:-${Dfg}}"\n'
+      printf 'DAnswer="${Dfy}"\n'
+      printf 'DCaution="${DFm:-${Dfm}}"\n'
+      printf 'DConfirm="${Db}${DFy:-${Dfy}}"\n'
+      printf 'DError="${Dbr}${Db}${DFy:-${Dfy}}"\n'
+      printf 'DInfo="${DFc:-${Dfc}}"\n'
+      printf 'DOptions="${Db}"\n'
+      printf 'DQuestion="${DFc:-${Dfc}}${Dsu}"\n'
+      printf 'DSpinner="${Db}${DFc:-${Dfc}}"\n'
+      printf 'DTell="${Db}"\n'
+      printf 'DTrace="${DF0:-${Dd}}"\n'
+      printf 'DWarn="${DBy:-${Dby}}${Df0}"\n'
+      printf 'D0="${D}${Db}${Dsu}"\n' # display modes
+      printf 'D1="${D}${Db}${DFr:-${Dfr}}"\n'
+      printf 'D2="${D}${Db}${DFg:-${Dfg}}"\n'
+      printf 'D3="${D}${Db}${DFy:-${Dfy}}"\n'
+      printf 'D4="${D}${Db}${DFb:-${Dfb}}"\n'
+      printf 'D5="${D}${Db}${DFm:-${Dfm}}"\n'
+      printf 'D6="${D}${Db}${DFc:-${Dfc}}"\n'
+      printf 'D7="${D}${Db}"\n'
+      printf 'D8="${D}"\n'
+      printf 'D9="${D}${Dd}"\n'
+    } > "${LIBUI_CONFIG}/display-${TERM}"
+    source "${LIBUI_CONFIG}/display-${TERM}"
+    _rv=${?}
+  else
+    _rv=2
   fi
 
   ${_T} && _Trace '_Terminal return. (%s)' "${_rv}"
