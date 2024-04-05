@@ -14,7 +14,7 @@
 .\" whether in an action of contract, tort, or otherwise, arising from, out of,
 .\" or in connection with this content or use of the associated files.
 .\"
-.Dd February 23, 2024
+.Dd April 2, 2024
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -1824,8 +1824,8 @@ The following command indicates if the
 .Pp
 Returns 0 (true) if the global
 .Fl X2
-(Verbose XOption) option (or higher XOption value) was used with the main script,
-otherwise returns 1 (false).
+(Verbose XOption) option (or higher XOption value) was used with the main
+script, otherwise returns 1 (false).
 See the
 .Fl X\&?
 (XOption)
@@ -2056,7 +2056,10 @@ place it as if it were a command line option for the script to be executed
 By default, the
 .Fl XC , Fl XF , Fl XN , Fl XQ , No and Fl XY
 options are automatically captured.
-Additional flags can be added as needed.
+Additional flags can be added as needed using the
+.Fl C
+(Chain) option flag with
+.Sx AddOption .
 .It Dv ${CMD}
 The command name, i.e., the filename of the main script.
 .It Dv ${CMDARGS}
@@ -2080,6 +2083,8 @@ is set to "\-i" by
 (Force) options.
 .It Dv ${GROUP}
 The primary group of the user.
+.It Dv ${HEIGHT}
+Terminal window height in rows.
 .It Dv ${HOST}
 The hostname of the current machine (hostname only, not fully qualified).
 .It Dv ${LIBUI}
@@ -2088,11 +2093,13 @@ The absolute path of the included
 file.
 .It Dv ${MAXCOL}
 Maximum terminal window column.
+Equivalent to WIDTH - 1.
 Note: Terminal columns start at 0.
 .It Dv ${MAXINT}
 Maximum integer: Set to the shell's maximum integer value.
 .It Dv ${MAXROW}
 Maximum terminal window row.
+Equivalent to HEIGHT - 1.
 Note: Terminal rows start at 0.
 .It Dv ${N}
 The newline character.
@@ -2142,6 +2149,8 @@ mods in alternating "pairs": <file> <version> ...
 .It Dv ${UNIX}
 The type of the operating system.
 The possible values are BSD, SYSV, or GNU (e.g. Linux).
+.It Dv ${WIDTH}
+Terminal window width in colums.
 .It Dv ${ZSH}
 Z shell - Set to "true" if the shell is Z shell (zsh).
 .El
@@ -2310,16 +2319,28 @@ Trace display format - defaults to cyan text.
 .It Dv ${DWarning}
 Warning display format - defaults to black text on a yellow background.
 .El
-.Ss TERMINAL VARIABLE
+.Ss SPECIAL TERMINAL VARIABLES
 The
 .Nm
 library automatically generates ANSI X3.64 escape codes to deliver enhanced
-(color) display content.
+(color) display content, spinners, and informational messages.
 The
 .Sy TERMINAL
-variable  can be set to "true" or "false" before sourcing
+and the
+.Sy LIBUI_PLAIN
+variables can be set to "true" or "false" before sourcing
 .Nm
 to enable / disable these terminal effects.
+Setting the
+.Sy TERMINAL
+variable to "false" disables terminal interactions including the enhanced text
+effects, Info messages, spinner, Ask, and Verify.
+It defaults answers and removes all other interactive actions.
+Alternatively, setting the
+.Sy LIBUI_PLAIN
+variable to "true" disables only the enhanced text effects, Info messages, and
+spinner.
+All other terminal interactions remain operational.
 .Sh UIMOD
 The
 .Nm
@@ -2443,7 +2464,7 @@ Note: The exit callback will be provided with the exit code ${?} as a parameter
 when called.
 .It Dv ${_exitcleanup}
 Exit Cleanup -
-When this variable is set to true, the Exit Callbacks will be called and the
+When this variable is set to "true", the Exit Callbacks will be called and the
 temp directory will be removed when the script exits.
 When this variable is set to false, these actions are not perform when the
 script exits.
@@ -2452,7 +2473,7 @@ This variable is set true when the library is being initialized, false after
 initialization.
 .It Dv ${_hdb}
 Host Debug -
-This variable is set to true when local debugging is enabled, false when
+This variable is set to "true" when local debugging is enabled, false when
 disabled.
 .It Dv ${_initcallback}
 Initialization Callbacks -
@@ -2463,10 +2484,10 @@ Note: The initialization callback will be provided ${@} as a parameter when
 called.
 .It Dv ${_ldb}
 Ledger Debug -
-This variable is set to true when the ledger is enabled, false when disabled.
+This variable is set to "true" when the ledger is enabled, false when disabled.
 .It Dv ${_rdb}
 Remote Debug -
-This variable is set to true when remote debugging is enabled, false when
+This variable is set to "true" when remote debugging is enabled, false when
 disabled.
 .It Dv ${_S}
 Stats -
@@ -2474,22 +2495,22 @@ This variable is set true when statistics gathering is enabled, false when
 disabled.
 .It Dv ${_sdb}
 Stats Debug -
-This variable is set to true when stats are enabled, false when disabled.
+This variable is set to "true" when stats are enabled, false when disabled.
 .It Dv ${_M}
 Mod Tracing -
 This variable is set true when mod tracing is enabled, false when disabled.
 .It Dv ${_mdb}
 Mod Debug -
-This variable is set to true when mod tracing is enabled, false when disabled.
+This variable is set to "true" when mod tracing is enabled, false when disabled.
 .It Dv ${_T}
 Tracing -
 This variable is set true when tracing is enabled, false when disabled.
 .It Dv ${_tdb}
 Trace Debug -
-This variable is set to true when tracing is enabled, false when disabled.
+This variable is set to "true" when tracing is enabled, false when disabled.
 .It Dv ${_vdb}
 Verbose Debug -
-This variable is set to true when verbose actions are enabled, false when
+This variable is set to "true" when verbose actions are enabled, false when
 disabled.
 .It Dv ${_xdb}
 X Debug -
@@ -2528,28 +2549,31 @@ initialization, set the following environment variables:
 .Bl -tag -offset 4n -width 26n -compact
 .It Sy LIBUI_LIBUI=true
 Libui Debug Enable / Disable -
-Enable Xdebug / Library internals
+Set to "true" to enable Xdebug / Library internals
 .It Sy LIBUI_RDEBUG=true
 Remote Debug Enable / Disable -
-Enable Xdebug / Remote debug
+Set to "true" to enable Xdebug / Remote debug
 .It Sy LIBUI_CONTEXT=true
 Libui Context Debug Enable / Disable -
-Enable Xdebug / Context debug
+Set to "true" to enable Xdebug / Context debug
 .It Sy LIBUI_PROFILE=true
 Profiling Enable / Disable -
-Enable Xdebug / Profiling
+Set to "true" to enable Xdebug / Profiling
 .It Sy LIBUI_HDEBUG=true
 Host Debug Enable / Disable -
-Enable Xdebug / Host debug
+Set to "true" to enable Xdebug / Host debug
 .It Sy LIBUI_MDEBUG=true
 Mod Debug Enable / Disable -
-Enable Xdebug / Mod debug
+Set to "true" to enable Xdebug / Mod debug
 .It Sy LIBUI_VERBOSE=true
 Verbose Actions Enable / Disable -
-Enable Xdebug / Verbose actions
+Set to "true" to enable Xdebug / Verbose actions
 .It Sy LIBUI_WDEBUG=true
 Wait Debug Enable / Disable -
-Enable Xdebug / Wait debug
+Set to "true" to enable Xdebug / Wait debug
+.It Sy LIBUI_WAITONERROR=true
+Wait on Error Enable / Disable -
+Set to "false" to disable wait on error.
 .El
 .Pp
 In addition to the trace debug levels above, the following additional debug
@@ -2558,24 +2582,24 @@ options are available.
 .Bl -tag -offset 4n -width 26n -compact
 .It Sy LIBUI_LEDGER=true
 Ledger Log Enable / Disable -
-# to enable / disable the ledger file
+Set to "true" to enable the ledger file
 .It Sy LIBUI_LEDGERFILE= Ns Sq Ar <path>
 Ledger Log File Path -
-# the default is
+The default is
 .Sy ${LIBUI_LOCAL}/ledger
 .It Sy LIBUI_STATS=true
 Stats Collection Enable / Disable -
-# to enable / disable the stats file
+Set to "true" to enable the stats file
 .It Sy LIBUI_STATSFILE= Ns Sq Ar <path>
 Stats File Path -
-# the default is
+The default is
 .Sy ${LIBUI_LOCAL}/stats
 .It Sy LIBUI_TRACE=false
 Trace Log Enable / Disable -
-# to enable / disable the trace file
+Set to "true" to enable the trace file
 .It Sy LIBUI_TRACEFILE= Ns Sq Ar <path>
 Trace Log File Path -
-# the default is
+The default is
 .Sy ${LIBUI_LOCAL}/trace
 .El
 .Pp
@@ -2606,36 +2630,36 @@ These include:
 .Bl -tag -offset 4n -width 8n -compact
 .It Sy ${_pdb}
 Profiling -
-This variable is set to true when profiling enabled, false when disabled.
+This variable is set to "true" when profiling enabled, false when disabled.
 .It Sy ${_udb}
 Libui Debug -
-This variable is set to true when
+This variable is set to "true" when
 .Nm
 library debugging is enabled, false when disabled.
 .It Sy ${_rdb}
 Remote Debug -
-This variable is set to true when remote debugging is enabled, false when
+This variable is set to "true" when remote debugging is enabled, false when
 disabled.
 .It Sy ${_hdb}
 Host Debug -
-This variable is set to true when local debugging is enabled, false when
+This variable is set to "true" when local debugging is enabled, false when
 disabled.
 .It Sy ${_vdb}
 Verbose Debug -
-This variable is set to true when verbose actions are enabled, false when
+This variable is set to "true" when verbose actions are enabled, false when
 disabled.
 .It Sy ${_ldb}
 Ledger Debug -
-This variable is set to true when the ledger is enabled, false when disabled.
+This variable is set to "true" when the ledger is enabled, false when disabled.
 .It Sy ${_sdb}
 Stats Debug -
-This variable is set to true when stats are enabled, false when disabled.
+This variable is set to "true" when stats are enabled, false when disabled.
 .It Sy ${_mdb}
 Mod Trace Debug -
-This variable is set to true when mod tracing is enabled, false when disabled.
+This variable is set to "true" when mod tracing is enabled, false when disabled.
 .It Sy ${_tdb}
 Trace Debug -
-This variable is set to true when tracing is enabled, false when disabled.
+This variable is set to "true" when tracing is enabled, false when disabled.
 .It Sy ${_xdb}
 X Debug -
 This variable is set to the current debug level (as set by the
@@ -2784,7 +2808,8 @@ command temporarily uses file descriptors 5 and 6 to capture STDOUT and STDERR.
 .Pp
 The
 .Nm
-library also uses file descriptor 10 for maintaining statistics and trace log files.
+library also uses file descriptor 10 for maintaining statistics and trace log
+files.
 .Pp
 The
 .Nm

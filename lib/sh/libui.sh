@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.008 # Fri Feb 23 07:00:47 EST 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.009 # Tue Apr 2 19:48:32 EDT 2024
 
 #####
 #
@@ -1088,11 +1088,17 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
       then
         if ${ZSH}
         then
-          [[ -o SINGLE_LINE_ZLE ]] || _x="unsetopt SINGLE_LINE_ZLE${N}"
-          setopt SINGLE_LINE_ZLE
-          _i="${_s//\%s/}${_b} [] ${*}${_d/${_p:+${_p%\/}\/}}"
-          vared -p "%${#_i}{${_q}%}" ANSWER
-          [[ -n "${_x}" ]] && eval "${_x}"
+          if ${LIBUI_PLAIN}
+          then
+            printf "${_q}" >&${_o}
+            read ANSWER
+          else
+            [[ -o SINGLE_LINE_ZLE ]] || _x="unsetopt SINGLE_LINE_ZLE${N}"
+            setopt SINGLE_LINE_ZLE
+            _i="${_s//\%s/}${_b} [] ${*}${_d/${_p:+${_p%\/}\/}}"
+            vared -p "%$((${#_i} % WIDTH)){${_q}%}" ANSWER
+            [[ -n "${_x}" ]] && eval "${_x}"
+          fi
         else
           printf "${_q}" >&${_o}
           read -e ANSWER
@@ -1304,7 +1310,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
 
       I)
         ${_T} && _Trace 'Info.'
-        ${TERMINAL} || return 0 # only if on a terminal
+        ${TERMINAL} && ! ${LIBUI_PLAIN} || return 0 # only if on a known terminal
         _d="${DInfo}"
         ;;
 
@@ -2137,7 +2143,7 @@ Exit () { # [<return_value>]
   then
     Verify -r '^[yY]' 'Debug wait. Exit? (%s)' "${_tmpdir}"
   else
-    ((_rv)) && ${TERMINAL} && ! ${_init} && [[ -t 0 && -d "${_tmpdir}" ]] && \
+    ((_rv)) && ${TERMINAL} && ! ${_init} && [[ -t 0 && -d "${_tmpdir}" ]] && ${LIBUI_WAITONERROR:-true} \
         Verify -r '^[yY]' 'Wait on error exit (%s). Exit? (%s)' "${_rv}" "${_tmpdir}"
   fi
 
@@ -2370,8 +2376,10 @@ _WINCH () {
   ${_S} && ((_c_WINCH++))
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
-  MAXROW=$(($(tput lines) - 1))
-  MAXCOL=$(($(tput cols) - 1))
+  HEIGHT=$(tput lines)
+  MAXROW=$((HEIGHT - 1))
+  WIDTH=$(tput cols)
+  MAXCOL=$((WIDTH - 1))
   declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
   ${_T} && _Trace '_WINCH return. (%s)' 0
@@ -2443,12 +2451,14 @@ MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647
 CHFLAGS=
 FMFLAGS=
 N=$'\n'
-[[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
 ERRV=100
 ${ZSH} && typeset -aU UIMOD && typeset -aU UICMD
 UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 
-# load terminal cache
+# terminal setup
+[[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
+${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
+${LIBUI_PLAIN} && TERM=
 ${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors))) && \
     _display=true && source "${LIBUI_CONFIG}/display-${TERM}" || _display=false
 

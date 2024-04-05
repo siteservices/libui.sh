@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Info_Plain
+#
+#####
+
+test_Info_Plain () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LIBUI_PLAIN=true LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0

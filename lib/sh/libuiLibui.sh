@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 2.007 -m 1.16
+Version -r 2.009 -m 1.17
 
 ##### configuration
 
@@ -366,7 +366,7 @@ LibuiConfig () {
   local _Util_rv=0
 
   Overwrite || [[ ! -f "${_Util_configfile}" ]] || Error 'The configuration file already exists, use -XO to overwrite.'
-  if [[ ! -f "${_Util_configfile}" ]] || Verify -N 'Really overwrite existing libui configuration file %s?' "${_Util_configfile}"
+  if [[ ! -f "${_Util_configfile}" ]] || Verify 'Really overwrite existing libui configuration file %s?' "${_Util_configfile}"
   then
     ${_M} && _Trace 'Create default config file. (%s)' "${_Util_configfile}"
     LoadMod File

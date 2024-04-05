@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.004 -m 1.6
+Version -r 2.009 -m 1.7
 
 ##### configuration
 
@@ -123,7 +123,7 @@ LibuiValidateTest () {
   fi
 
   ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-  ${_Test_debug} && source "${LIBUI_CONFIG}/display-${TERM}"
+  ${_Test_debug} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
 
   if ((_Test_rv))
   then
@@ -196,7 +196,7 @@ LibuiTest () {
   if ${singletest}
   then
     ${_M} && _Trace 'Load test. (%s)' "${1}"
-    source "${_Test_testdir}/${1}"
+    [[ -f "${_Test_testdir}/${1}" ]] && source "${_Test_testdir}/${1}" || Error 'Test does not exist. (%s)' "${1}"
 
     ${_M} && _Trace 'Check for test. (%s)' "${1}"
     if declare -f ${1} > /dev/null
@@ -212,7 +212,7 @@ LibuiTest () {
       Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHELL}" "${CMDLINE[*]}"
     else
       ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-      ${TERMINAL} || source "${LIBUI_CONFIG}/display-${TERM}"
+      ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
       Tell -E -f 'Test not available: %s.' "${1}"
       _Test_rv=1
     fi
@@ -376,88 +376,93 @@ LibuiGetDisplayTestValues () {
   ${_S} && ((_cDisplayTestValues++))
   ${_M} && _Trace 'LibuiGetDisplayTestValues [%s]' "${*}"
 
-  ${_M} && _Trace 'Define display values.'
-  TCS="$(tput clear)" # clear screen (jump home)
-  TCEL="$(tput el)" # clear end of line
-  TCES="$(tput ed)" # clear end of screen
-  [[ -n "$(tput u7)" ]] && TCP="$(tput u7)" || TCP=$'\e[6n' # read cursor position
-  [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\\r' # jump to begining of line
-  TJH="$(tput cup 0 0)" # jump home (0, 0)
-  TRC="$(tput rc)" # restore cursor
-  TSC="$(tput sc)" # save cursor
-  if ((16 <= $(tput colors)))
+  if [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
   then
-    TB0="$(tput setab 8)" # bright black
-    TBr="$(tput setab 9)" # bright red
-    TBg="$(tput setab 10)" # bright green
-    TBy="$(tput setab 11)" # bright yellow
-    TBb="$(tput setab 12)" # bright blue
-    TBm="$(tput setab 13)" # bright magenta
-    TBc="$(tput setab 14)" # bright cyan
-    TB7="$(tput setab 15)" # bright white
-    TF0="$(tput setaf 8)" # bright black
-    TFr="$(tput setaf 9)"; Tfr="${TFr}" # bright / red
-    TFg="$(tput setaf 10)" # bright green
-    TFy="$(tput setaf 11)"; Tfy="${TFy}" # bright / yellow
-    TFb="$(tput setaf 12)"; Tfb="${TFb}" # bright / blue
-    TFm="$(tput setaf 13)" # bright magenta
-    TFc="$(tput setaf 14)" # bright cyan
-    TF7="$(tput setaf 15)"; Tf7="${TF7}" # bright / white
+    ${_M} && _Trace 'Define display values.'
+    TCS="$(tput clear)" # clear screen (jump home)
+    TCEL="$(tput el)" # clear end of line
+    TCES="$(tput ed)" # clear end of screen
+    [[ -n "$(tput u7)" ]] && TCP="$(tput u7)" || TCP=$'\e[6n' # read cursor position
+    [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\\r' # jump to begining of line
+    TJH="$(tput cup 0 0)" # jump home (0, 0)
+    TRC="$(tput rc)" # restore cursor
+    TSC="$(tput sc)" # save cursor
+    if ((16 <= $(tput colors)))
+    then
+      TB0="$(tput setab 8)" # bright black
+      TBr="$(tput setab 9)" # bright red
+      TBg="$(tput setab 10)" # bright green
+      TBy="$(tput setab 11)" # bright yellow
+      TBb="$(tput setab 12)" # bright blue
+      TBm="$(tput setab 13)" # bright magenta
+      TBc="$(tput setab 14)" # bright cyan
+      TB7="$(tput setab 15)" # bright white
+      TF0="$(tput setaf 8)" # bright black
+      TFr="$(tput setaf 9)"; Tfr="${TFr}" # bright / red
+      TFg="$(tput setaf 10)" # bright green
+      TFy="$(tput setaf 11)"; Tfy="${TFy}" # bright / yellow
+      TFb="$(tput setaf 12)"; Tfb="${TFb}" # bright / blue
+      TFm="$(tput setaf 13)" # bright magenta
+      TFc="$(tput setaf 14)" # bright cyan
+      TF7="$(tput setaf 15)"; Tf7="${TF7}" # bright / white
+    else
+      Tfr="$(tput bold; tput setaf 1)" # red
+      Tfy="$(tput bold; tput setaf 3)" # yellow
+      Tfb="$(tput bold; tput setaf 4)" # blue
+      Tf7="$(tput bold; tput setaf 7)" # white
+    fi
+    Tb0="$(tput setab 0)" # black
+    Tbr="$(tput setab 1)" # red
+    Tbg="$(tput setab 2)" # green
+    Tby="$(tput setab 3)" # yellow
+    Tbb="$(tput setab 4)" # blue
+    Tbm="$(tput setab 5)" # magenta
+    Tbc="$(tput setab 6)" # cyan
+    Tb7="$(tput setab 7)" # white
+    Tf0="$(tput setaf 0)" # black
+    Tfg="$(tput setaf 2)" # green
+    Tfm="$(tput setaf 5)" # magenta
+    Tfc="$(tput setaf 6)" # cyan
+    Tb="$(tput bold)" # bold
+    [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TF0:-${Tf7}}" # dim
+    Tsu="$(tput smul)" # start underline
+    Teu="$(tput rmul)" # end underline
+    Tr="$(tput rev)" # reverse
+    Tss="$(tput smso)" # start standout
+    Tes="$(tput rmso)" # exit standout
+    T="$(tput sgr0)" # normal
+    TAction="${Tfb}" # display formats
+    TAlarm="${Td}${Tfr}"
+    TAlert="${Tb}${TFg:-${Tfg}}"
+    TAnswer="${Tfy}"
+    TCaution="${TFm:-${Tfm}}"
+    TConfirm="${Tb}${TFy:-${Tfy}}"
+    TError="${Tbr}${Tb}${TFy:-${Tfy}}"
+    TInfo="${TFc:-${Tfc}}"
+    TOptions="${Tb}"
+    TQuestion="${TFc:-${Tfc}}${Tsu}"
+    TSpinner="${Tb}${TFc:-${Tfc}}"
+    TTell="${Tb}"
+    TTrace="${TF0:-${Td}}"
+    TWarn="${TBy:-${Tby}}${Tf0}"
+    T0="${T}${Tb}${Tsu}" # display modes
+    T1="${T}${Tb}${TFr:-${Tfr}}"
+    T2="${T}${Tb}${TFg:-${Tfg}}"
+    T3="${T}${Tb}${TFy:-${Tfy}}"
+    T4="${T}${Tb}${TFb:-${Tfb}}"
+    T5="${T}${Tb}${TFm:-${Tfm}}"
+    T6="${T}${Tb}${TFc:-${Tfc}}"
+    T7="${T}${Tb}"
+    T8="${T}"
+    T9="${T}${Td}"
+
+    ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
+    ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
+
+    ${_M} && _Trace 'GetDisplayTestValues return. (%s)' 0
+    return 0
   else
-    Tfr="$(tput bold; tput setaf 1)" # red
-    Tfy="$(tput bold; tput setaf 3)" # yellow
-    Tfb="$(tput bold; tput setaf 4)" # blue
-    Tf7="$(tput bold; tput setaf 7)" # white
+    return 1
   fi
-  Tb0="$(tput setab 0)" # black
-  Tbr="$(tput setab 1)" # red
-  Tbg="$(tput setab 2)" # green
-  Tby="$(tput setab 3)" # yellow
-  Tbb="$(tput setab 4)" # blue
-  Tbm="$(tput setab 5)" # magenta
-  Tbc="$(tput setab 6)" # cyan
-  Tb7="$(tput setab 7)" # white
-  Tf0="$(tput setaf 0)" # black
-  Tfg="$(tput setaf 2)" # green
-  Tfm="$(tput setaf 5)" # magenta
-  Tfc="$(tput setaf 6)" # cyan
-  Tb="$(tput bold)" # bold
-  [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TF0:-${Tf7}}" # dim
-  Tsu="$(tput smul)" # start underline
-  Teu="$(tput rmul)" # end underline
-  Tr="$(tput rev)" # reverse
-  Tss="$(tput smso)" # start standout
-  Tes="$(tput rmso)" # exit standout
-  T="$(tput sgr0)" # normal
-  TAction="${Tfb}" # display formats
-  TAlarm="${Td}${Tfr}"
-  TAlert="${Tb}${TFg:-${Tfg}}"
-  TAnswer="${Tfy}"
-  TCaution="${TFm:-${Tfm}}"
-  TConfirm="${Tb}${TFy:-${Tfy}}"
-  TError="${Tbr}${Tb}${TFy:-${Tfy}}"
-  TInfo="${TFc:-${Tfc}}"
-  TOptions="${Tb}"
-  TQuestion="${TFc:-${Tfc}}${Tsu}"
-  TSpinner="${Tb}${TFc:-${Tfc}}"
-  TTell="${Tb}"
-  TTrace="${TF0:-${Td}}"
-  TWarn="${TBy:-${Tby}}${Tf0}"
-  T0="${T}${Tb}${Tsu}" # display modes
-  T1="${T}${Tb}${TFr:-${Tfr}}"
-  T2="${T}${Tb}${TFg:-${Tfg}}"
-  T3="${T}${Tb}${TFy:-${Tfy}}"
-  T4="${T}${Tb}${TFb:-${Tfb}}"
-  T5="${T}${Tb}${TFm:-${Tfm}}"
-  T6="${T}${Tb}${TFc:-${Tfc}}"
-  T7="${T}${Tb}"
-  T8="${T}"
-  T9="${T}${Td}"
-
-  ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-  ${TERMINAL} || source "${LIBUI_CONFIG}/display-${TERM}"
-
-  ${_M} && _Trace 'GetDisplayTestValues return. (%s)' 0
-  return 0
 }
 

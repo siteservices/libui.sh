@@ -1098,6 +1098,44 @@ flags can be used to enable and disable the Yes mode within the script.
 Yes [-e|-E]
 ```
 
+## Variables
+
+The libui library defines the following variables for use in scripts. Please
+note that, while most are all caps, they are not environment variables.
+
+* **${AA}** - Associative Array: Set to "true" if the shell supports associative arrays.
+* **${AO}** - (Pq as in A O, not A zero) Array Offset: Set to "1" (one) if the shell is Z shell (zsh) and "0" (zero) otherwise.
+* **${ANSWER}** - The last answer provided by the user via an Ask command.
+* **${IWD}** - The path of the directory where the script was initially executed.
+* **${BV}** - Bash Version: Set to the major and minor version of the Bash shell (without the
+intervening period). Note: If the executing shell is the Z shell, BV will be set to "0" (zero).
+* **${CHFLAGS}** - Chain flags: This variable collects command line flags (options) that should be passed on to chained scripts. (Chained scripts are scripts executed by the main script.) To properly use ${CHFLAGS}, place it as if it were a command line option for the script to be executed (e.g.: script ${CHFLAGS}). By default, the -XC, -XF, -XN, -XQ, and -XY options are automatically captured. Additional flags can be added as needed using the -C (Chain) option flag with AddOption.
+* **${CMD}** - The command name, i.e., the filename of the main script.
+* **${CMDARGS}** - An array containing the arguments provided on the command line.
+* **${CMDLINE}** - The full command line string used to call the current script. This is the same as: ${CMD} "${CMDARGS[@]}"
+* **${CMDPATH}** - The absolute path of the main script file.
+* **${DOMAIN}** - The domain of the current machine.
+* **${FMFLAGS}** - File management flags: For use by cp, mv, rm. Note: ${FMFLAGS} is set to "-i" by -C (Confirm) and to "-f" by-F (Force) options.
+* **${GROUP}** - The primary group of the user.
+* **${HEIGHT}** - Terminal window height in rows.
+* **${HOST}** - The hostname of the current machine (hostname only, not fully qualified).
+* **${LIBUI}** - The absolute path of the included libui.sh source file.
+* **${MAXCOL}** - Maximum terminal window column. Equivalent to WIDTH - 1. Note: Terminal columns start at 0.
+* **${MAXINT}** - Maximum integer: Set to the shell's maximum integer value.
+* **${MAXROW}** - Maximum terminal window row. Equivalent to HEIGHT - 1. Note: Terminal rows start at 0.
+* **${N}** - The newline character. This is equivalent to $'\n' but, available for use in string assignments.
+* **${NROPT}** - The number of options provided on the command line.
+* **${NRPARAM}** - The number of parameters provided on the command line.
+* **${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
+* **${SHELL}** - The path of the shell being executed (limited to: zsh, bash, or sh).
+* **${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if standard out is not to a terminal. When standard out is to a terminal, the libui library generates color text and additional user cues including questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or "false" before executing the script (or sourcing libui.sh) to force enabling / disabling these terminal effects. Note: The ${TERMINAL} variable is only set during initialization and should not be used to determine if output is actually to a terminal. Use the [[ -t 1 ]] construct to determine if STDOUT is actually to a terminal.
+* **${UICMD}** - An array containing the names of (available) libui commands (including libui mod provided commands).
+* **${UIMOD}** - An array containing the filenames of loaded libui mods.
+* **${UIVERSION}** - An array containing the filenames and versions of the loaded scripts and libui mods in alternating "pairs": \<file\> \<version\> ...
+* **${UNIX}** - The type of the operating system. The possible values are BSD, SYSV, or GNU (e.g. Linux).
+* **${WIDTH}** - Terminal window width in colums.
+* **${ZSH}** - Z shell - Set to "true" if the shell is Z shell (zsh).
+
 ## Vim Note
 
 When using the ```#!/usr/bin/env libui``` shebang, syntax highlighting and
