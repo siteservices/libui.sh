@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.006 -m 1.20
+Version -r 2.010 -m 1.21
 
 # defaults
 
@@ -222,8 +222,9 @@ CreatePackage () { # [-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>] [
     case ${opt} in
       c)
         ${_M} && _Trace 'Compression. (%s)' "${OPTARG}"
-        [[ -n "${OPTARG}" ]] && _Package_compression="${OPTARG}" && [[ "${_Package_compression:0:1}" != '-' ]] && \
-            _Package_compression="${_Package_compression:+-${_Package_compression}}" || _Package_compression=
+        _Package_compression="${OPTARG}"
+        [[ -n "${_Package_compression}" ]] &&[[ "${_Package_compression:0:1}" != '-' ]] && \
+            _Package_compression="${_Package_compression:+-${_Package_compression}}"
         ;;
 
       d)

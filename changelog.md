@@ -1,5 +1,24 @@
 # Change Log
 
+## v2.010
+
+### New Features / Enhancements
+
+* Improve libui -n (New Script) / template handling.
+* Update no update wording in repopull.
+* Merge updatevimprojects into updateprojects (removing updatevimprojects).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix liubi -n (New Script) demo content bugs.
+* Fix package compression bug in libui Package mod.
+
+### Incompatibilities
+
+* Merged updatevimpackages into updateprojects and removed updatevimpackages.
+
 ## v2.009
 
 ### New Features / Enhancements

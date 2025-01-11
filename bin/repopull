@@ -52,7 +52,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 6.5
+Version -r 2.010 6.6
 
 # load mods
 LoadMod File
@@ -222,7 +222,7 @@ do
       Alert 'Repo has been updated. (%s: %s)' "${repo}" "${current}"
       processed=true
     else
-      Tell 'Repo was not updated. (%s: %s)' "${repo}" "${current}"
+      Tell 'No repo updates available. (%s: %s)' "${repo}" "${current}"
     fi
 
     popd > /dev/null

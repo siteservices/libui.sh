@@ -38,7 +38,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.004 1.13
+Version -r 2.010 1.14
 
 # load mods
 LoadMod File
@@ -112,7 +112,8 @@ do
       if [[ -e '.git' ]]
       then
         Trace 'Pull latest updates. (%s)' "${project}"
-        Action -i "Pulling latest updates. (${project})" -c -l "${tmpdir}/${project}-pull.log" 'git pull'
+        Action -i "Pulling latest updates. (${project})" -c -l "${tmpdir}/${project}-pull.log" 'git pull --all'
+        Action -i "Updating submodules. (${project})" -a -l "${tmpdir}/${project}-pull.log" 'git submodule update --init --recursive'
 
         Trace 'Check for status. (%s)' "${gitstatus}"
         if ${gitstatus}

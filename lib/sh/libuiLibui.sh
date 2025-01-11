@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 2.009 -m 1.17
+Version -r 2.010 -m 1.18
 
 ##### configuration
 
@@ -978,7 +978,7 @@ LibuiNew () { # [-e] =t <template_file>
     ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_target}"
     local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
     ${_Util_empty} && Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'" || \
-        Action -F "cat '${_Util_template}' | sed -e '/demo content/s/^/# /' > '${_Util_target}'"
+        Action -F "cat '${_Util_template}' | sed -e '/^\(#.*\)# demo content/s//\1  # demo content/' | sed -e '/^[^#].*# demo content/s/^/# /' > '${_Util_target}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
     Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_target}'"
     Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line description for the script header:'
@@ -986,7 +986,7 @@ LibuiNew () { # [-e] =t <template_file>
     Action -F "sed ${_Util_sedi} -e 's/<NAME HERE>/${NAME:-${USER}}/g' '${_Util_target}'"
     Action -F "sed ${_Util_sedi} -e 's/<TIMESTAMP HERE>/$(date)/g' '${_Util_target}'"
     Action -F "sed ${_Util_sedi} -e 's/<REQUIRED LIBUI HERE>/${LIBUI_VERSION}/g' '${_Util_target}'"
-    Action -F "sed ${_Util_sedi} -e 's/<SCRIPT VERSION HERE>/0.0/g' '${_Util_target}'"
+    Action -F "sed ${_Util_sedi} -e 's/<SCRIPT VERSION HERE>/1.0/g' '${_Util_target}'"
     Action -F "chmod +x '${_Util_target}'"
 
     Tell -A 'New file has been created. (%s)' "${_Util_target}"
