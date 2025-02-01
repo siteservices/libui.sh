@@ -4,6 +4,7 @@
 
 ### New Features / Enhancements
 
+* Add SH environment variable containing the path of the current shell.
 * Improve libui -n (New Script) / template handling.
 * Update no update wording in repopull.
 * Merge updatevimprojects into updateprojects (removing updatevimprojects).
@@ -17,6 +18,7 @@
 
 ### Incompatibilities
 
+* No change to SHELL environment variable. SHELL now "standard" (default shell).
 * Merged updatevimpackages into updateprojects and removed updatevimpackages.
 
 ## v2.009

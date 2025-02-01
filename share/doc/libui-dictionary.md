@@ -1127,7 +1127,7 @@ intervening period). Note: If the executing shell is the Z shell, BV will be set
 * **${NROPT}** - The number of options provided on the command line.
 * **${NRPARAM}** - The number of parameters provided on the command line.
 * **${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
-* **${SHELL}** - The path of the shell being executed (limited to: zsh, bash, or sh).
+* **${SH}** - The path of the shell being executed (limited to: zsh, bash, or sh).
 * **${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if standard out is not to a terminal. When standard out is to a terminal, the libui library generates color text and additional user cues including questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or "false" before executing the script (or sourcing libui.sh) to force enabling / disabling these terminal effects. Note: The ${TERMINAL} variable is only set during initialization and should not be used to determine if output is actually to a terminal. Use the [[ -t 1 ]] construct to determine if STDOUT is actually to a terminal.
 * **${UICMD}** - An array containing the names of (available) libui commands (including libui mod provided commands).
 * **${UIMOD}** - An array containing the filenames of loaded libui mods.
@@ -1154,7 +1154,7 @@ file to ```set filetype=bash```.
 
 ## Copyright and License
 
-Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 domain. Permission is unconditionally granted to anyone with an interest, the
 rights to use, modify, publish, distribute, sublicense, and/or sell this
 content and associated files.

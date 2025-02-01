@@ -18,7 +18,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -493,7 +493,7 @@ LibuiDemo () {
   Tell "\tOperating system (OS):           ${DFc}%s${D}" "${OS}"
   Tell "\tProgram name (CMD):              ${DFc}%s${D}" "${CMD}"
   Tell "\tSupports printf -v (PV):         ${DFc}%s${D}" "${PV}"
-  Tell "\tShell (SHELL):                   ${DFc}%s${D}" "${SHELL}"
+  Tell "\tShell (SH):                      ${DFc}%s${D}" "${SH}"
   Tell "\tOutput to terminal (TERMINAL):   ${DFc}%s${D}" "${TERMINAL}"
   Tell "\tLoaded UI mods (UIMOD):          ${DFc}%s${D}" "${UIMOD[*]}"
 # Tell "\tTracked UI functions (UICMD):    ${DFc}%s${D}" "${UICMD[*]}"

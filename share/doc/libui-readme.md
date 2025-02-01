@@ -162,7 +162,7 @@ file to ```set filetype=bash```.
 
 ## Copyright and License
 
-Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 domain. Permission is unconditionally granted to anyone with an interest, the
 rights to use, modify, publish, distribute, sublicense, and/or sell this content
 and associated files.

@@ -55,7 +55,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -1787,7 +1787,7 @@ Initialize () {
   ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'Verbose actions enabled. (%s)' "${_xdb}"
   ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'Wait debug enabled. (%s)' "${_xdb}"
 
-  ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SHELL}"
+  ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SH}"
   ${_T} && _Trace 'loaded mods: %s' "${UIMODS[*]}"
 
   ${_T} && _Trace 'Check for required options. (%s)' "${_r[*]}"
@@ -2186,10 +2186,10 @@ Exit () { # [<return_value>]
     ${_multiuser} && _f=1 && _File_ip=${_File_libui_ip} Open -a "-${_f}" "${_l}" && _l=
     if [[ -n "${_f}" ]]
     then
-      _File_ip=${_File_libui_ip} Write -${_f} -p '%s "%s" in %s seconds on %s.\n' "${SHELL}" "${CMDLINE[*]}" "${_ctime}" "$(date)" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
+      _File_ip=${_File_libui_ip} Write -${_f} -p '%s "%s" in %s seconds on %s.\n' "${SH}" "${CMDLINE[*]}" "${_ctime}" "$(date)" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
     elif [[ -n "${_l}" ]]
     then
-      printf '%s "%s" in %s seconds on %s.\n' "${SHELL}" "${CMDLINE[*]}" "${_ctime}" "$(date)" >> "${_l}" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
+      printf '%s "%s" in %s seconds on %s.\n' "${SH}" "${CMDLINE[*]}" "${_ctime}" "$(date)" >> "${_l}" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
     fi
     ${_multiuser} && _File_ip=${_File_libui_ip} Close "-${_f}"
   fi
@@ -2401,7 +2401,7 @@ LIBUI_LOCAL="${LIBUI_LOCAL:-${HOME}/.local/libui}"
 
 # defaults
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
-ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${commands[zsh]}" || SHELL="${BASH:-sh}"
+ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SH="${commands[zsh]}" || SH="${BASH:-sh}"
 BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
 ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"

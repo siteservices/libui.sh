@@ -1,13 +1,13 @@
 #!/usr/bin/env libui
 #####
 #
-# test_SHELL
+# test_SH
 #
 #####
 
-test_SHELL () {
+test_SH () {
   ${ZSH} && local sh="${commands[zsh]}" || local sh="${BASH:-sh}"
-  LibuiPerformTest 'Tell -- "${SHELL}"'
+  LibuiPerformTest 'Tell -- "${SH}"'
   LibuiValidateTest ${?} 0 "${sh}"
   return ${?}
 }
