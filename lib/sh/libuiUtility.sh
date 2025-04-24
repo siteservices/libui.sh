@@ -14,7 +14,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.009 -m 1.5
+Version -r 2.010 -m 1.6
 
 ##### configuration
 
@@ -160,7 +160,7 @@ _Terminal () {
   local _rv=0
 
   ${_T} && _Trace 'Check for terminal. (%s)' "${TERMINAL}"
-  if ${TERMINAL} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
+  if ${TERMINAL} && [[ -n "${TERM}" ]] && tput cols &> /dev/null && ((8 <= $(tput colors 2> /dev/null)))
   then
     ${_T} && _Trace 'Define display codes.'
     _display=true

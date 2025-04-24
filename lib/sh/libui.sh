@@ -55,7 +55,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.009 # Tue Apr 2 19:48:32 EDT 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.010 # Mon Apr 29 21:27:21 EDT 2024
 
 #####
 #
@@ -537,7 +537,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   do
     case ${_opt} in
       [1-9])
-        ${_T} && _Trace 'File ID. (%s)' "${_opt}"
+        ${_T} && _Trace 'Log file ID. (%s)' "${_opt}"
         _f="${_opt}"
         ${_vdb} && _t=true
         ;;
@@ -573,7 +573,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
         ;;
 
       l)
-        ${_T} && _Trace 'File path. (%s)' "${OPTARG}"
+        ${_T} && _Trace 'Log file path. (%s)' "${OPTARG}"
         ${ZSH} && _l=${~OPTARG} || _l=${OPTARG}
         ${_vdb} && _t=true
         ;;
@@ -1113,6 +1113,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
       if [[ -z "${ANSWER}" ]]
       then
         ANSWER="${_d}"
+        ${ZSH} || ((${#_a[@]})) || printf "\n"
         break
       else
         ${_T} && _Trace 'Validate answer. (%s)' "${ANSWER}"
@@ -1458,7 +1459,7 @@ Error () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value
   ${_S} && ((_cError++))
   ${_T} && _Trace 'Error [%s]' "${*}"
 
-  ((0 == ${#})) && _Trace 'Return error state. (%s)' "${_error}" && return $(${_error})
+  ((0 == ${#})) && _Trace 'Return error / help state. (%s / %s)' "${_error}" "${_help}" && return $(${_error} || ${_help})
 
   Tell -E "${@}"
   local _rv=${?}
@@ -1787,7 +1788,7 @@ Initialize () {
   ((2 <= _xdb)) && _vdb=true && ${_T} && _Trace 'Verbose actions enabled. (%s)' "${_xdb}"
   ((1 <= _xdb)) && _wdb=true && ${_T} && _Trace 'Wait debug enabled. (%s)' "${_xdb}"
 
-  ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SHELL}"
+  ${_T} && _Trace 'libui %s. (%s)' "${LIBUI_VERSION}" "${SHENV}"
   ${_T} && _Trace 'loaded mods: %s' "${UIMODS[*]}"
 
   ${_T} && _Trace 'Check for required options. (%s)' "${_r[*]}"
@@ -2186,10 +2187,10 @@ Exit () { # [<return_value>]
     ${_multiuser} && _f=1 && _File_ip=${_File_libui_ip} Open -a "-${_f}" "${_l}" && _l=
     if [[ -n "${_f}" ]]
     then
-      _File_ip=${_File_libui_ip} Write -${_f} -p '%s "%s" in %s seconds on %s.\n' "${SHELL}" "${CMDLINE[*]}" "${_ctime}" "$(date)" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
+      _File_ip=${_File_libui_ip} Write -${_f} -p '%s "%s" in %s seconds on %s.\n' "${SHENV}" "${CMDLINE[*]}" "${_ctime}" "$(date)" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
     elif [[ -n "${_l}" ]]
     then
-      printf '%s "%s" in %s seconds on %s.\n' "${SHELL}" "${CMDLINE[*]}" "${_ctime}" "$(date)" >> "${_l}" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
+      printf '%s "%s" in %s seconds on %s.\n' "${SHENV}" "${CMDLINE[*]}" "${_ctime}" "$(date)" >> "${_l}" || Tell -W 'Unable to write ledger file. (%s)' "${_l}"
     fi
     ${_multiuser} && _File_ip=${_File_libui_ip} Close "-${_f}"
   fi
@@ -2376,9 +2377,9 @@ _WINCH () {
   ${_S} && ((_c_WINCH++))
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
-  HEIGHT=$(tput lines)
+  HEIGHT=$(tput lines 2> /dev/null)
   MAXROW=$((HEIGHT - 1))
-  WIDTH=$(tput cols)
+  WIDTH=$(tput cols 2> /dev/null) || WIDTH=1
   MAXCOL=$((WIDTH - 1))
   declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
@@ -2401,7 +2402,7 @@ LIBUI_LOCAL="${LIBUI_LOCAL:-${HOME}/.local/libui}"
 
 # defaults
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
-ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHELL="${commands[zsh]}" || SHELL="${BASH:-sh}"
+ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
 BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
 ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
@@ -2458,8 +2459,8 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 # terminal setup
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
 ${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
-${LIBUI_PLAIN} && TERM=
-${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors))) && \
+${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
+${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors 2> /dev/null))) && \
     _display=true && source "${LIBUI_CONFIG}/display-${TERM}" || _display=false
 
 # debug

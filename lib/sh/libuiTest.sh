@@ -13,7 +13,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.009 -m 1.7
+Version -r 2.010 -m 1.8
 
 ##### configuration
 
@@ -202,14 +202,14 @@ LibuiTest () {
     if declare -f ${1} > /dev/null
     then
       ${_M} && _Trace 'Start test. (%s)' "${1}"
-      Tell '=====\nStarted "%s"%s in %s with: %s' "${1}" "${COUNT:+ (${COUNT})}" "${SHELL}" "${CMDLINE[*]}"
+      Tell '=====\nStarted "%s"%s in %s with: %s' "${1}" "${COUNT:+ (${COUNT})}" "${SHENV}" "${CMDLINE[*]}"
 
-      ${_M} && _Trace 'Execute %s test. (%s)' "${SHELL}" "${1}"
+      ${_M} && _Trace 'Execute %s test. (%s)' "${SHENV}" "${1}"
       ${1}
       _Test_rv=${?}
 
       ${_M} && _Trace 'Finish test. (%s)' "${1}"
-      Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHELL}" "${CMDLINE[*]}"
+      Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHENV}" "${CMDLINE[*]}"
     else
       ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
       ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"

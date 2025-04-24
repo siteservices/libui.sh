@@ -13,7 +13,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -293,14 +293,15 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     local _File_z; _File_z=(  )
 
     ${_M} && _Trace 'Obtain list. (%s)' "${_File_s}"
-    eval "_File_l+=( ${_File_s/ /\\ }(N${_File_g}) )"
+    eval "_x_l=( ${_File_s// /\\ }(N${_File_g}) )"
+    eval "_File_l+=( ${_File_s// /\\ }(N${_File_g}) )"
     ((_File_rv+=${?}))
     ${_M} && _Trace 'Subdir %s list: %s' "${_File_s}" "${_File_l[*]}"
 
     ${_M} && _Trace 'Check for recursive. (%s)' "${_File_r}"
     if ${_File_r}
     then
-      eval "_File_z=( ${_File_s/ /\\ }(N/) )"
+      eval "_File_z=( ${_File_s// /\\ }(N/) )"
       ${_M} && _Trace 'Subdirs: %s' "${#_File_z[@]}"
       for _File_i in "${_File_z[@]}"
       do
@@ -317,13 +318,29 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
   BashSubdirFileList () { # <subdir>
     ${_M} && _Trace 'BashSubdirFileList [%s]' "${*}"
     local _File_rv;
+    local _File_g;
     local _File_i;
+    local _File_n;
+    local _File_p;
     local _File_s="${*}";
     local _File_z; _File_z=(  )
 
-
     ${_M} && _Trace 'Obtain list. (%s)' "${_File_s}"
-    eval "_File_z=( ${_File_s/ /\\ } )"
+    if [[ ${_File_s} =~ .*/.* ]]
+    then
+      _File_p="${_File_s%/*}"
+      _File_n="${_File_s##*/}"
+    else
+      _File_n="${_File_s}"
+    fi
+    if [[ ${_File_n:0:1} =~ [.?*] ]]
+    then
+      eval "_File_z=( ${_File_s// /\\ } )"
+    else
+      _File_g="@(${_File_n:0:1})"
+      _File_n="${_File_n:1}"
+      eval "_File_z=( ${_File_p:+${_File_p// /\\ }/}${_File_g}${_File_n// /\\ } )"
+    fi
     ((_File_rv+=${?}))
     if ${_File_f} || ${_File_d}
     then

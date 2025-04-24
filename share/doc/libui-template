@@ -11,7 +11,7 @@
 #
 #####
 #                                                                                                   # demo content
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public                       # demo content
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public                       # demo content
 # domain. Permission is unconditionally granted to anyone with an interest, the                     # demo content
 # rights to use, modify, publish, distribute, sublicense, and/or sell this                          # demo content
 # content and associated files.                                                                     # demo content
@@ -31,23 +31,24 @@
 Version -r <REQUIRED LIBUI HERE> <SCRIPT VERSION HERE>
 
 # load mods
+LoadMod File                                                                                        # demo content
 LoadMod Spinner                                                                                     # demo content
-# <LIBUI MODS HERE>
+<LIBUI MODS HERE>
 
 ##### configuration
 
 # defaults
 statuslevel=0                                                                                       # demo content
 GetTmp tmpdir                                                                                       # demo content
-# <DEFAULT VALUES HERE>
-retval=0
+retval=0                                                                                            # demo content
+<DEFAULT VALUES HERE>
 
 ##### options - libui already uses options h, H, X:
 
 AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show option status.' s              # demo content
 AddOption -n lines -i 100 -k 'Lines' -d 'Specify the number of lines to include in each batch.' l:  # demo content
 AddParameter -n files -r -m -k 'Files' -d 'Files to be processed.' files                            # demo content
-# <ADD OPTIONS AND PARAMETERS HERE>
+<ADD OPTIONS AND PARAMETERS HERE>
 
 ##### callbacks
 
@@ -64,8 +65,7 @@ InfoCallback () {
   Trace 'Usage information.'
   cat << EOF
 This is a template script intended to provide a starting point for development.                     # demo content
-# note: this function is optional                                                                   # demo content
-<ADDITIONAL SCRIPT USAGE INFORMATION HERE>
+<ADDITIONAL USAGE INFORMATION HERE>
 EOF
 }
 
@@ -74,8 +74,7 @@ ExitCallback () {
 
   Trace 'Exit cleanup.'
   [[ -e "${HOME}/demo.out" ]] && rm ${FMFLAGS} "${HOME}/demo.out"                                   # demo content
-  # note: this function is optional                                                                 # demo content
-  # <EXIT CLEANUP ACTIONS HERE>
+  <EXIT CLEANUP ACTIONS HERE>
 }
 
 InitCallback () {
@@ -83,14 +82,13 @@ InitCallback () {
 
   Trace 'Confirm and initialize environment.'                                                       # demo content
   [[ 0 -lt "${lines}" ]] || Error 'Batches must be one or more lines.'                              # demo content
-  # note: this function is recommended                                                              # demo content
-  # <STARTUP CONFIRMATION HERE>
+  <STARTUP CONFIRMATION HERE>
 }
 
 ##### functions
 
-# note: additional functions are not required                                                       # demo content
-# <MAIN SCRIPT FUNCTIONS HERE>
+# note: additional script functions are not required                                                # demo content
+<SCRIPT FUNCTIONS HERE>
 
 ##### initialization
 
@@ -122,7 +120,7 @@ do                                                                              
 done                                                                                               # demo content
 ls -l "${tmpdir}"                                                                                  # demo content
                                                                                                    # demo content
-# <MAIN SCRIPT HERE>
+<MAIN SCRIPT HERE>
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
 Exit "${retval}"

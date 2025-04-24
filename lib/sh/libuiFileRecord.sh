@@ -13,7 +13,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -32,9 +32,9 @@
 #
 #####
 
-Version -r 2.000 -m 1.5
+Version -r 2.010 -m 1.6
 
-${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHELL}"
+${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHENV}"
 
 # load mods
 LoadMod File

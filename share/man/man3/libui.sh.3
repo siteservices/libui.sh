@@ -2,7 +2,7 @@
 .\" Please contact fharvell@siteservices.net to correct errors or typos. Please
 .\" note that the libui library is young and under active development.
 .\"
-.\" Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+.\" Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 .\" domain.  Permission is unconditionally granted to anyone with an interest,
 .\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
 .\" content and associated files.
@@ -498,9 +498,8 @@ The
 .Ar <callback>
 must be provided in the main script.
 .It Fl C
-Include the option in the
-.Sx CHFLAGS
-variable.
+Include the option in the chain flags variable,
+.Sx CHFLAGS .
 The
 .Sx CHFLAGS
 variable provides the ability to chain provided options to embedded
@@ -2112,8 +2111,8 @@ The number of parameters provided on the command line.
 .It Dv ${OS}
 The name of the operating system.
 Typical values are Darwin, Linux, SunOS, Solaris, etc.
-.It Dv ${SHELL}
-The path of the shell being executed (limited to: zsh, bash, or sh).
+.It Dv ${SHENV}
+The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
 Set to "true" if standard out is to a terminal, "false" if standard out is not
 to a terminal.

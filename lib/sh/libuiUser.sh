@@ -13,7 +13,7 @@
 #
 #####
 #
-# Copyright 2018-2024 siteservices.net, Inc. and made available in the public
+# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
 # domain. Permission is unconditionally granted to anyone with an interest, the
 # rights to use, modify, publish, distribute, sublicense, and/or sell this
 # content and associated files.
@@ -27,11 +27,11 @@
 #
 #####
 
-Version -r 2.006 -m 1.12
+Version -r 2.010 -m 1.13
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' 'SH' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
 
 # Set user information
 #
@@ -183,24 +183,6 @@ _SetUserInfo () {
           fi
           ;;
 
-        SH)
-          local _User_shells; _User_shells=( "default (${SHELL##*/})" )
-          if ${ZSH}
-          then
-            _User_shells+=( ${commands[zsh]##*/} ${commands[bash]##*/} )
-          else
-            $(command -v zsh 2> /dev/null) && _User_shells+=( 'zsh' );
-            $(command -v bash 2> /dev/null) && _User_shells+=( 'bash' );
-          fi
-          Alert 'The default shell for this acount is "%s".' "${SHELL##*/}"
-          Tell 'Select "%s" unless you cannot use "chsh" and need a different shell.' "${_User_shells[${AO}]}"
-          Ask -n SH -S _User_shells -d "${_User_shells[${AO}]}" 'Use login shell:'
-          if AnswerMatches 'default'
-          then
-            SH=
-          fi
-          ;;
-
         *)
           ${ZSH} && Ask -n ${_User_entry} -d "${(P)_User_entry}" 'Enter value for %s:' "${_User_entry}"
           ${ZSH} || Ask -n ${_User_entry} -d "${!_User_entry}" 'Enter value for %s:' "${_User_entry}"
@@ -216,12 +198,17 @@ _SetUserInfo () {
       printf 'userinfo=('
       printf " '%s'" "${userinfo[@]}"
       printf ' )\n'
+      local _User_export; _User_export=( )
       for _User_entry in "${userinfo[@]}"
       do
-        ${ZSH} && printf "%s='%s'\n" "${_User_entry}" "${(P)_User_entry}"
-        ${ZSH} || printf "%s='%s'\n" "${_User_entry}" "${!_User_entry}"
+        if ${ZSH}
+        then
+          [[ -n "${(P)_User_entry}" ]] && printf "%s='%s'\n" "${_User_entry}" "${(P)_User_entry}" && _User_export+=( ${_User_entry} )
+        else
+          [[ -n "${!_User_entry}" ]] && printf "%s='%s'\n" "${_User_entry}" "${!_User_entry}" && _User_export+=( ${_User_entry} )
+        fi
       done
-      printf 'export %s\n' "${userinfo[*]}"
+      printf 'export %s\n' "${_User_export[*]}"
     } > "${userdotfile}"
     if ((${?}))
     then
