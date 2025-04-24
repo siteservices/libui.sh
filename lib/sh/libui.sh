@@ -1459,7 +1459,7 @@ Error () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value
   ${_S} && ((_cError++))
   ${_T} && _Trace 'Error [%s]' "${*}"
 
-  ((0 == ${#})) && _Trace 'Return error state. (%s)' "${_error}" && return $(${_error})
+  ((0 == ${#})) && _Trace 'Return error / help state. (%s / %s)' "${_error}" "${_help}" && return $(${_error} || ${_help})
 
   Tell -E "${@}"
   local _rv=${?}
@@ -2377,9 +2377,9 @@ _WINCH () {
   ${_S} && ((_c_WINCH++))
   ${_T} && _Trace '_WINCH [%s]' "${*}"
 
-  HEIGHT=$(tput lines)
+  HEIGHT=$(tput lines 2> /dev/null)
   MAXROW=$((HEIGHT - 1))
-  WIDTH=$(tput cols)
+  WIDTH=$(tput cols 2> /dev/null) || WIDTH=1
   MAXCOL=$((WIDTH - 1))
   declare -f WINCHCallback > /dev/null && _Trace 'Call WINCHCallback.' && WINCHCallback
 
@@ -2459,8 +2459,8 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 # terminal setup
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
 ${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
-${LIBUI_PLAIN} && TERM=
-${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors))) && \
+${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
+${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors 2> /dev/null))) && \
     _display=true && source "${LIBUI_CONFIG}/display-${TERM}" || _display=false
 
 # debug

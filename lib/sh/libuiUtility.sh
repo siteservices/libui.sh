@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.009 -m 1.5
+Version -r 2.010 -m 1.6
 
 ##### configuration
 
@@ -160,7 +160,7 @@ _Terminal () {
   local _rv=0
 
   ${_T} && _Trace 'Check for terminal. (%s)' "${TERMINAL}"
-  if ${TERMINAL} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
+  if ${TERMINAL} && [[ -n "${TERM}" ]] && tput cols &> /dev/null && ((8 <= $(tput colors 2> /dev/null)))
   then
     ${_T} && _Trace 'Define display codes.'
     _display=true
