@@ -34,7 +34,7 @@
 
 Version -r 2.010 -m 1.6
 
-${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SH}"
+${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHENV}"
 
 # load mods
 LoadMod File

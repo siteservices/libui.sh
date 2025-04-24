@@ -498,9 +498,8 @@ The
 .Ar <callback>
 must be provided in the main script.
 .It Fl C
-Include the option in the
-.Sx CHFLAGS
-variable.
+Include the option in the chain flags variable,
+.Sx CHFLAGS .
 The
 .Sx CHFLAGS
 variable provides the ability to chain provided options to embedded
@@ -2112,8 +2111,8 @@ The number of parameters provided on the command line.
 .It Dv ${OS}
 The name of the operating system.
 Typical values are Darwin, Linux, SunOS, Solaris, etc.
-.It Dv ${SH}
-The path of the shell being executed (limited to: zsh, bash, or sh).
+.It Dv ${SHENV}
+The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
 Set to "true" if standard out is to a terminal, "false" if standard out is not
 to a terminal.

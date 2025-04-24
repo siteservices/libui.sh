@@ -13,7 +13,7 @@ test_ConfirmVar-A_AA () {
     LibuiPerformTest 'ConfirmVar -A testvar'
     LibuiValidateTest ${?} 0
   else
-    Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SH}" "${BASH_VERSION}"
+    Tell -W -r 33 'Associative arrays are not supported in %s. (%s)' "${SHENV}" "${BASH_VERSION}"
   fi
   return ${?}
 }

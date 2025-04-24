@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.008 2.6
+Version -r 2.010 2.7
 
 # load mods
 LoadMod Convert
@@ -40,6 +40,7 @@ LoadMod File
 ##### configuration
 
 # defaults
+text_extensions=( txt vim )
 ts=$(date +%s)
 groupmode='g+wX'
 long=false
@@ -53,6 +54,7 @@ AddOption -n create -f -k 'Create' -d 'Create archive.' c
 AddOption -n archive -k 'File' -d 'Archive file path.' f:
 AddOption -n group -f -k 'Group' -d 'Make created files / directories group writable.' g
 AddOption -c ListCallback -n list -f -k 'List' -d 'List files in an archive, twice for file info.' l
+AddOption -n text_extensions -m -k 'Text Ext' -d 'Valid text extensions.' t:
 AddOption -n verbose -f -k 'Verbose' -d 'Verbose operation.' v
 AddOption -n extract -f -k 'Extract' -d 'Extract files from archive.' x
 AddParameter -n pathlist -m -k 'Path' -d 'Source (with -c) or target (with -x) file path.'
@@ -141,8 +143,13 @@ CreateArchive () { # <archive> <files> ...
   do
     if [[ ! $(file --mime "${file}") =~ .*(ascii|text|empty).* ]]
     then
-      Caution 'File may not be text. Skipping. (%s)' "${file}"
-      continue
+      if Contains text_extensions "${file##*.}"
+      then
+        Warn 'File may not be text, including but should be validated. (%s)' "${file}"
+      else
+        Caution 'File may not be text, skipping. (%s) ' "${file}"
+        continue
+      fi
     fi
     [[ '/' == "${file:0:1}" ]] && prefix='.' || prefix=
     [[ 'GNU' == "${UNIX}" ]] && dirperms="$(stat -c '%a' "${file%/*}")" || dirperms="$(stat -f '%Mp%Lp' "${file%/*}")"

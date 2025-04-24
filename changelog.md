@@ -4,82 +4,90 @@
 
 ### New Features / Enhancements
 
-* Add SH environment variable containing the path of the current shell.
-* Improve libui -n (New Script) / template handling.
-* Update no update wording in repopull.
-* Merge updatevimprojects into updateprojects (removing updatevimprojects).
+* Add `${SHENV}` environment variable containing the path of the current shell.
+* Improve `libui -n` (New Script) / template handling.
+* Improve "not updated" wording in repopull.
+* Improve `star` non-text file handling and add valid extension option.
+* Update copyright dates (again, maybe not a feature / enhancement, but...).
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
-* Fix liubi -n (New Script) demo content bugs.
+* Fix `liubi -n` (New Script) demo content bugs.
 * Fix package compression bug in libui Package mod.
+* Fix libui File mod `GetFileList` bug when subdirectory names have spaces.
+* Fix libui File mod `GetFileList` bug when run in bash.
+* Fix libui User mod preferred shell selection bug when run in bash.
+* Fix `Ask` selection not displayed correctly when using bash.
+* Fix `Ask` newline issue when the default answer is selected in bash.
 
 ### Incompatibilities
 
-* No change to SHELL environment variable. SHELL now "standard" (default shell).
-* Merged updatevimpackages into updateprojects and removed updatevimpackages.
+* No longer changes `${SHELL}` environment variable (logic now sets `${SHENV}`).
+* `${SHELL}` environment variable is now "Unix standard" (i.e., default shell).
+* Delete unused `${SHELL}` variable from libui User mod and `${HOME}/.config/user`.
+* Merge `updatevimpackages` into `updateprojects` and removed `updatevimpackages`.
 
 ## v2.009
 
 ### New Features / Enhancements
 
-* New LIBUI_WAITONERROR variable enables / disables waiting on exit with errors.
-* New LIBUI_PLAIN variable enables / disables enhanced display effects.
-* New HEIGHT and WIDTH variables for terminal height (rows) and width (columns).
+* `${LIBUI_WAITONERROR}` variable enables / disables waiting on exit with errors.
+* `${LIBUI_PLAIN}` variable enables / disables enhanced display effects.
+* `${HEIGHT}` and `${WIDTH}` variables for terminal height (rows) / width (columns).
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
-* Fix Ask varedit "question mark line" issue.
+* Fix `Ask` zsh varedit "question mark line" issue.
 * Fix test invalid source file errors.
 
 ## v2.008
 
 ### New Features / Enhancements
 
-* Improve help performance in createpackage when over large directory tree.
+* Improve help performance in `createpackage` when over large directory tree.
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
-* Fix star -v (Verbose) output text overwrite issue.
+* Fix `star -v` (Verbose) output text overwrite issue.
 
 ## v2.007
 
 ### New Features / Enhancements
 
-* Add -u (unique) option to libui Sort mod Sort command.
+* Add `-u` (unique) option to libui Sort mod `Sort` command.
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
 * Fix libui package / installer duplicate file in tarball.
-* Fix multi-word handling in libui Sort mod Sort command. (Bash)
-* Fix awk math processing in libui Timer mod. (Bash)
-* Use awk math processing in libui.sh if bc is not available. (Bash)
+* Fix multi-word handling in libui Sort mod `Sort` command. (Bash)
+* Fix `awk` math processing in libui Timer mod. (Bash)
+* Use `awk` math processing in libui.sh if `bc` is not available. (Bash)
 
 ## v2.006
 
 ### New Features / Enhancements
 
-* Add -C (Chain Flag) option to AddOption to include option in CHFLAGS variable.
-* Add verbose option to createpackage self extraction header.
-* Improve star command archive vs. paths error messages and handling.
-* Ignore options in starx command (to support embedded self-extraction header).
-* Add preferred shell handling in libui User mod (when chsh is not available).
+* Add `-C` (Chain Flag) option to `AddOption` and include in `${CHFLAGS}` variable.
+* Add verbose option to `createpackage` self extraction header.
+* Improve `star` command archive vs. paths error messages and handling.
+* Ignore options in `starx` command (to support embedded self-extraction header).
+* Add preferred shell handling in libui User mod (when `chsh` is not available).
 * Add and update regression tests.
 * Update documentation.
 
 ### Bug Fixes
 
 * Create empty array when no parameters passed to a multiple-parameter script.
-* Fix no compression handling in libui Package mod CreatePackage command.
-* Fix file path handling in createpackage.
+* Fix no compression handling in libui Package mod `CreatePackage` command.
+* Fix file path handling in `createpackage`.
 
 ## v2.005
 
@@ -93,9 +101,9 @@
 
 ### Bug Fixes
 
-* Fix ConvertDate missing source date error handling.
+* Fix `ConvertDate` missing source date error handling.
 * Fix git update checking in `updateprojects` and `updatevimpackages`.
-* Fix `${LIBUI_XDB}` environment variable bleedthrough into executed (libui) commands.
+* Fix `${LIBUI_XDB}` environment variable bleed into executed (libui) commands.
 
 ## v2.004
 

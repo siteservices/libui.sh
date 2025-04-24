@@ -85,7 +85,7 @@ the option, and the keyword and description for the usage information.
 
 * **-a** - automatically default if only one selection option
 * **-c** - option callback called when processing option
-* **-C** - include option in chain flag (CHFLAGS) variable
+* **-C** - include option in the chain flag (CHFLAGS) variable
 * **-d** - option description
 * **-f** - initial value "false", provided value "true"
 * **-i** - initial value to use when option is not provided
@@ -1127,7 +1127,7 @@ intervening period). Note: If the executing shell is the Z shell, BV will be set
 * **${NROPT}** - The number of options provided on the command line.
 * **${NRPARAM}** - The number of parameters provided on the command line.
 * **${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
-* **${SH}** - The path of the shell being executed (limited to: zsh, bash, or sh).
+* **${SHENV}** - The path of the currently executing shell (limited to: zsh, bash, or sh).
 * **${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if standard out is not to a terminal. When standard out is to a terminal, the libui library generates color text and additional user cues including questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or "false" before executing the script (or sourcing libui.sh) to force enabling / disabling these terminal effects. Note: The ${TERMINAL} variable is only set during initialization and should not be used to determine if output is actually to a terminal. Use the [[ -t 1 ]] construct to determine if STDOUT is actually to a terminal.
 * **${UICMD}** - An array containing the names of (available) libui commands (including libui mod provided commands).
 * **${UIMOD}** - An array containing the filenames of loaded libui mods.

@@ -493,7 +493,7 @@ LibuiDemo () {
   Tell "\tOperating system (OS):           ${DFc}%s${D}" "${OS}"
   Tell "\tProgram name (CMD):              ${DFc}%s${D}" "${CMD}"
   Tell "\tSupports printf -v (PV):         ${DFc}%s${D}" "${PV}"
-  Tell "\tShell (SH):                      ${DFc}%s${D}" "${SH}"
+  Tell "\tShell (SHENV):                   ${DFc}%s${D}" "${SHENV}"
   Tell "\tOutput to terminal (TERMINAL):   ${DFc}%s${D}" "${TERMINAL}"
   Tell "\tLoaded UI mods (UIMOD):          ${DFc}%s${D}" "${UIMOD[*]}"
 # Tell "\tTracked UI functions (UICMD):    ${DFc}%s${D}" "${UICMD[*]}"

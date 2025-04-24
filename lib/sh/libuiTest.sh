@@ -202,14 +202,14 @@ LibuiTest () {
     if declare -f ${1} > /dev/null
     then
       ${_M} && _Trace 'Start test. (%s)' "${1}"
-      Tell '=====\nStarted "%s"%s in %s with: %s' "${1}" "${COUNT:+ (${COUNT})}" "${SH}" "${CMDLINE[*]}"
+      Tell '=====\nStarted "%s"%s in %s with: %s' "${1}" "${COUNT:+ (${COUNT})}" "${SHENV}" "${CMDLINE[*]}"
 
-      ${_M} && _Trace 'Execute %s test. (%s)' "${SH}" "${1}"
+      ${_M} && _Trace 'Execute %s test. (%s)' "${SHENV}" "${1}"
       ${1}
       _Test_rv=${?}
 
       ${_M} && _Trace 'Finish test. (%s)' "${1}"
-      Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SH}" "${CMDLINE[*]}"
+      Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHENV}" "${CMDLINE[*]}"
     else
       ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
       ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
