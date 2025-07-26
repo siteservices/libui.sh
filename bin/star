@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.010 2.7
+Version -r 2.011 2.8
 
 # load mods
 LoadMod Convert
@@ -45,7 +45,7 @@ ts=$(date +%s)
 groupmode='g+wX'
 long=false
 retval=0
-sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
+sign="$(command -v sha1sum 2> /dev/null)"; sign="${sign:-$(command -v shasum 2> /dev/null)}"
 GetTmp tmpdir
 
 ##### options - libui already uses options h, H, X:

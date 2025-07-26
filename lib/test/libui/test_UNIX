@@ -12,11 +12,11 @@ test_UNIX () {
       tunix='GNU'
       ;;
 
-    Solaris)
-      tunix='SYSV'
+    SunOS|Solaris)
+      ${BSDPATH}grep -q 'Solaris' /etc/release && tunix='SYSV' || tunix='BSD'
       ;;
 
-    *) # Darwin|FreeBSD|SunOS
+    *) # Darwin|FreeBSD
       tunix='BSD'
       ;;
 

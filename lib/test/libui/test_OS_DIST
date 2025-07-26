@@ -1,0 +1,33 @@
+#!/usr/bin/env libui
+#####
+#
+# test_OS_DIST
+#
+#####
+
+test_OS_DIST () {
+  local tos="${tos:-$(uname -s)}"
+  local tosd
+  case "${tos}" in
+    Darwin)
+      tosd="$(sw_vers --ProductName)"
+      ;;
+
+    Linux)
+      eval $(eval $(grep -h '=' /etc/*release* 2> /dev/null) && printf 'tosd=%s\n' "${ID}")
+      ;;
+
+    SunOS|Solaris)
+      grep 'Solaris' /etc/release &> /dev/null && tosd='Solaris' || tosd='SunOS'
+      ;;
+
+    *)
+      ;;
+
+  esac
+  LibuiPerformTest 'Tell -- "${OS_DIST}"'
+  LibuiValidateTest -r ${?} 0 "${tosd}"
+  return ${?}
+}
+
+return 0

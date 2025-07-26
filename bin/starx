@@ -32,9 +32,9 @@
 # defaults
 ts=$(date +%s)
 rv=0
-TMPDIR=${TMPDIR:-/tmp}
+TMPDIR="${TMPDIR:-/tmp}"
 tmpdir="$(mktemp -d "${TMPDIR%/}/${0##*/}.XXXXXX")"
-sign="$(command -v sha1sum 2> /dev/null)"; sign=${sign:-$(command -v shasum 2> /dev/null)}
+sign="$(command -v sha1sum 2> /dev/null)"; sign="${sign:-$(command -v shasum 2> /dev/null)}"
 archive="${1}"
 
 # error handler

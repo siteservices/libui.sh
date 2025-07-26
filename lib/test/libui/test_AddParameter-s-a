@@ -6,7 +6,7 @@
 #####
 
 test_AddParameter-s-a () {
-  LibuiPerformTest 'TERMINAL=true libui -x pa -h'
+  LibuiPerformTest 'TERMINAL=true ${SHENV} ${LIBUIEXE} -x pa -h'
   LibuiValidateTest -r ${?} 2 '.*<testparam> *- Test Param: Test parameter a\. \(testparam: a\).*'
   return ${?}
 }

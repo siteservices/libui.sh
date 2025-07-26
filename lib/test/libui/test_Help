@@ -6,7 +6,7 @@
 #####
 
 test_Help () {
-  LibuiPerformTest 'TERMINAL=true TERM= libui -XC -XF -XH -XO -XN -XQ -XY '
+  LibuiPerformTest 'TERMINAL=true TERM= ${SHENV} ${LIBUIEXE} -XC -XF -XH -XO -XN -XQ -XY '
   LibuiValidateTest -i ${?} 2 "${helptext}"
   return ${?}
 }
@@ -67,6 +67,8 @@ regression testing, capabilities demonstration, and usage statistics reports.
 
 Hints: Use the \"-n\" (New Script) option to generate a new liubi script.
        Use the \"-d\" (Demo) option to see the display formats available.
+
+Shell environment: ${SHENV}
 
 Current test mode options:
     AddOption F/T test. (b: false)

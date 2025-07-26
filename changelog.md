@@ -1,5 +1,31 @@
 # Change Log
 
+## v2.011
+
+### New Features / Enhancements
+
+* Add new `${ARCH}` variable that provides the system architecture.
+* Add new `${BSDPATH}` variable that provides the path for BSD command versions.
+* Add new `${OS_DIST}` variable that provides the OS distribution.
+* Ignore `.DS_Store` files when comparing directories with `libui -[uvV]`.
+* Improve `mless` multi-line handling.
+* Multiple tweaks for better support in bash on Solaris 10 (zsh not supported).
+* Add "gtarp" package type in libui Package mod for gtar installation (Solaris).
+* Add and update regression tests.
+* Update documentation.
+
+### Bug Fixes
+
+* Fix libui File mod `GetFileList` bug on filenames with leading period in bash.
+* Use ls -i instead of stat for inodes in libui File mod `PathMatches` (Solaris).
+* Tweak libui Package mod package header use of head -n / tail -n (Solaris).
+* Round fractional `sleep` values up one second if the fractional sleep fails.
+* Add quotes in a few variable assignments to reduce security exposure.
+
+### Incompatibilities
+
+* The `${OS}` on Solaris is now "SunOS" (and `${OS_DIST}` is "Solaris").
+
 ## v2.010
 
 ### New Features / Enhancements

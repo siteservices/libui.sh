@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetFileList-c_Hidden_Show
+#
+#####
+
+test_GetFileList-c_Hidden_Show () {
+  Action -W "mkdir -p ${TESTDIR}/hidden"
+  Action -W "touch ${TESTDIR}/hidden/.paths"
+  Action -W "mkdir -p ${TESTDIR}/hidden/.user"
+  Action -W "mkdir -p ${TESTDIR}/hidden/tmp"
+  LibuiPerformTest "GetFileList -c '${TESTDIR}/hidden' testhidden .env .paths .user .wsenv test tmp nope; Tell -- '%s' \"\${testhidden[*]}\""
+  LibuiValidateTest ${?} 0 ".paths .user tmp"
+  return ${?}
+}
+
+return 0

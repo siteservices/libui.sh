@@ -6,7 +6,7 @@
 #####
 
 test_AddParameter_Missing () {
-  LibuiPerformTest 'TERMINAL=true libui -p'
+  LibuiPerformTest 'TERMINAL=true ${SHENV} ${LIBUIEXE} -p'
   LibuiValidateTest -r ${?} 2 '.*ERROR: Missing parameter\. \(.*\).*'
   return ${?}
 }

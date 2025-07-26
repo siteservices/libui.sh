@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_ARCH
+#
+#####
+
+test_ARCH () {
+  local tarch="$(uname -m)"
+  LibuiPerformTest 'Tell -- "${ARCH}"'
+  LibuiValidateTest -r ${?} 0 "${tarch}"
+  return ${?}
+}
+
+return 0

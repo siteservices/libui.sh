@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.004 -m 1.13
+Version -r 2.011 -m 1.14
 
 # defaults
 _File_ip=
@@ -333,9 +333,13 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     else
       _File_n="${_File_s}"
     fi
-    if [[ ${_File_n:0:1} =~ [.?*] ]]
+    if ((${#_File_n} == 1))
     then
-      eval "_File_z=( ${_File_s// /\\ } )"
+      eval "_File_z=( ${_File_p:+${_File_p// /\\ }/}${_File_n} )"
+    elif ((40 > BV)) && [[ ${_File_n:0:1} =~ [.?*] ]]
+    then
+      local _File_a="${_File_n:0:1}" && _File_g="@(${_File_n:1:1})" && _File_n="${_File_n:2}"
+      eval "_File_z=( ${_File_p:+${_File_p// /\\ }/}${_File_a}${_File_g}${_File_n// /\\ } )"
     else
       _File_g="@(${_File_n:0:1})"
       _File_n="${_File_n:1}"
@@ -600,7 +604,8 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
     then
       ${_M} && _Trace 'Get real path. (%s)' "${_File_s}"
       eval "${1}='$(realpath "${_File_s}" 2> /dev/null)${_File_f}'"
-    else
+    elif ${ZSH} && ((${+commands[readlink]})) || command -v readlink &> /dev/null
+    then
       ${_M} && _Trace 'Check for links. (%s)' "${_File_s}"
       local _File_l="$(readlink "${_File_s}")"
       _File_s="${_File_l:-${_File_s}}"
@@ -617,6 +622,8 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
 
       ${_M} && _Trace 'Save real path. (%s%s)' "${_File_s}" "${_File_f}"
       eval "${1}='${_File_s}${_File_f}'"
+    else # Solaris
+      eval "${1}=\"\$(perl -e \"use Cwd 'abs_path'; print abs_path('${_File_s}');\")${_File_f}\""
     fi
   fi
 
@@ -765,7 +772,6 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
     local _File_d
     local _File_n; [[ '/' == "${1:0:1}" ]] || _File_n="${PWD}"
     local _File_p
-    local _File_e
     ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -a _File_p <<< "${1}"
     for _File_d in "${_File_p[@]}"
     do
@@ -782,10 +788,17 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
         ((${?})) && _File_rv=1 && ${_File_w} && Tell -W '(MkDir) Unable to create directory path. (%s)' "${_File_n}"
 
         ${_M} && _Trace 'Set directory group. (%s)' "${_File_g}"
-        [[ 'GNU' == "${UNIX}" ]] && _File_e="$(stat -c '%G' "${_File_n}")" || _File_e="$(stat -f '%Sg' "${_File_n}")"
-        if [[ -n "${_File_g}" && "${_File_g}" != "${_File_e}" ]]
+        if [[ -n "${_File_g}" ]]
         then
-          ! chgrp "${_File_g}" "${_File_n}" && ${_File_w} && Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
+          local _File_e
+          if ${ZSH} && ((${+commands[stat]})) || command -v stat &> /dev/null
+          then
+            [[ 'GNU' == "${UNIX}" ]] && _File_e="$(stat -c '%G' "${_File_n}")" || _File_e="$(stat -f '%Sg' "${_File_n}")"
+          fi
+          if [[ "${_File_g}" != "${_File_e}" ]]
+          then
+            ! chgrp "${_File_g}" "${_File_n}" && ${_File_w} && Tell -W '(MkDir) Unable to change directory group. (%s)' "${_File_n}"
+          fi
         fi
 
         ${_M} && _Trace 'Set directory setgid bit. (%s)' "${_File_s}"
@@ -947,7 +960,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       ((_File_t <= _File_e)) && Tell -C 'Unable to obtain flock %s. (%s)' "${_File_f}" "${_File_n}" && return 1
       ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for flock %s. (%s)' "${_File_f}" "${_File_n}" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for flock %s. (%s)' "${_File_f}" "${_File_e}"
-      sleep "0.1$((RANDOM % 10))"
+      sleep "0.1$((RANDOM % 10))" 2> /dev/null || sleep 1
     done
   else
     ${_M} && _Trace 'Create lock file. (%s)' "${_File_n}.lock"
@@ -957,7 +970,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       ((_File_t <= _File_e)) && Tell -C 'Unable to create lock file. (%s)' "${_File_n}.lock" && return 1
       ((_File_w <= _File_e)) && Tell -C 'WAIT: Waiting for lock file. (%s)' "${_File_n}.lock" && _File_w="${MAXINT}"
       ${_M} && _Trace 'Wait for lock file removal. (%s)' "${_File_e}"
-      sleep "0.1$((RANDOM % 10))"
+      sleep "0.1$((RANDOM % 10))" 2> /dev/null || sleep 1
     done
     local _File_d="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
     [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
@@ -1011,17 +1024,17 @@ PathMatches () { # [-P] <path_specification_1> <path_specification_2>
   shift $((OPTIND - 1))
   ((2 != ${#})) && Tell -E -f -L '(PathMatches) Invalid parameter count.'
 
+  local _File_rv=1
   if ${_File_p}
   then
     local _File_1; GetRealPath _File_1 "${1}"
     local _File_2; GetRealPath _File_2 "${2}"
-    [[ "${_File_1%/*}/" == "${_File_2%/*}"/* || "${_File_2%/*}/" == "${_File_1%/*}"/* ]]
+    [[ "${_File_1%/*}/" == "${_File_2%/*}"/* || "${_File_2%/*}/" == "${_File_1%/*}"/* ]] && _File_rv=${?}
   else
     ${_M} && _Trace 'Find path inodes. (%s)' "${*}"
-    [[ 'GNU' == "${UNIX}" ]] && _File_s="-c" || _File_s="-f"
-    [[ -e "${1}" && -e "${2}" && "$(stat -L ${_File_s} %i "${1}")" == "$(stat -L ${_File_s} %i "${2}")" ]]
+    [[ -d "${1}" && -d "${2}" && "$(ls -Hid "${1}" | cut -f 1 -d ' ')" == "$(ls -Hid "${2}" | cut -f 1 -d ' ')" ]] && _File_rv=${?}
+    [[ -f "${1}" && -f "${2}" && "$(ls -Li "${1}" | cut -f 1 -d ' ')" == "$(ls -Li "${2}" | cut -f 1 -d ' ')" ]] && _File_rv=${?}
   fi
-  local _File_rv=${?}
 
   ${_M} && _Trace 'PathMatches return. (%s)' "${_File_rv}"
   return ${_File_rv}

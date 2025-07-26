@@ -6,7 +6,7 @@
 #####
 
 test_GROUP () {
-  local grp="$(id -gn)"
+  local grp="$(${BSDPATH}id -gn)"
   LibuiPerformTest 'Tell -- "${GROUP}"'
   LibuiValidateTest ${?} 0 "${grp}"
   return ${?}

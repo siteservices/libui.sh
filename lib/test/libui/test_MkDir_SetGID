@@ -1,0 +1,16 @@
+#!/usr/bin/env libui
+#####
+#
+# test_MkDir_SetGID
+#
+#####
+
+test_MkDir_SetGID () {
+  groups=( $(groups) )
+  Action -W "MkDir -g ${groups[((AO + 1))]} -s ${TESTDIR}/dir_setgid/dir2"
+  LibuiPerformTest "ls -l ${TESTDIR}/dir_setgid"
+  LibuiValidateTest -r ${?} 0 "d.....s.* ${groups[((AO + 1))]} .* dir2"
+  return ${?}
+}
+
+return 0

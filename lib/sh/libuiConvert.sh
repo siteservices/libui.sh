@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.005 -m 2.2
+Version -r 2.011 -m 2.3
 
 # defaults
 
@@ -86,17 +86,17 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
   ((${#_Convert_date[@]})) || Tell -E '(ConvertDate) Called without a soure date.'
 
   ${_M} && _Trace 'Converting date. (%s -> %s)' "${_Convert_ifmt}" "${_Convert_ofmt}"
-  case "${UNIX}" in
-    BSD) # BSD / macOS
-      eval "${_Convert_var}=\"\$(date -j -f '${_Convert_ifmt}' \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
-      ;;
-
-    *) # Linux / GNU
-      [[ '%s' == "${_Convert_ifmt}" ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
-          eval "${_Convert_var}=\"\$(date -d \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
-      ;;
-
-  esac
+  if date -d &> /dev/null
+  then
+    [[ '%s' == "${_Convert_ifmt}" ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
+        eval "${_Convert_var}=\"\$(date -d \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
+  elif date -j &> /dev/null
+  then
+    eval "${_Convert_var}=\"\$(date -j -f '${_Convert_ifmt}' \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
+  else
+    eval "${_Convert_var}=\"\$(perl -e 'use Date::Parse; use POSIX qw(strftime); print strftime(\"${_Convert_ofmt}\", localtime(str2time(\"${_Convert_date[@]}\")));')\"" 2> /dev/null || \
+        Error "Date conversion not available. (Installing Perl's Date::Parse module may provide support.)"
+  fi
 
   ${M} && Trace 'ConvertDate return. (%s)' 0
   return 0

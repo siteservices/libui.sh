@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_BSDPATH
+#
+#####
+
+test_BSDPATH () {
+  local tos="$(uname -s)"
+  [[ 'SunOS' == "${tos}" ]] && ${BSDPATH}grep -q 'Solaris' /etc/release 2> /dev/null && tbd='/usr/xpg4/bin/'
+  LibuiPerformTest 'Tell -- "B${BSDPATH}P"'
+  LibuiValidateTest -r ${?} 0 "B${tbd}P"
+}
+
+return 0

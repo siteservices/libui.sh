@@ -69,7 +69,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.010 # Mon Apr 29 21:27:21 EDT 2024
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.011 # Wed Apr 30 15:12:17 EDT 2025
 
 #####
 #
@@ -353,18 +353,19 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
   if [[ -z "${_n}" ]]
   then
     _om+=( false )
-    _od+=( "${_d}" ) # desc
+    _od+=( "${_d//\"/\\\"}" ) # desc
   else
     if ${_m}
     then
       ${_T} && _Trace 'Multiple option setup. (%s=( %s ))' "${_n}" "${_i[*]}"
       _om+=( true )
-      ${ZSH} && _od+=( "${_d} (${_n}: \${(j:, :)${_n}})" ) || _od+=( "${_d} (${_n}: \${${_n}[*]})" ) # desc
+      ${ZSH} && _od+=( "${_d//\"/\\\"} (${_n}: \${(j:, :)${_n}})" ) || \
+          _od+=( "${_d//\"/\\\"} (${_n}: \$(d=\"\$(printf '%s, ' \"\${${_n}[@]}\")\" && printf '%s\n' \"\${d%, }\"))" ) # dec
       [[ -n "${_i}" ]] && eval "${_n}=( \"\${_i[@]}\" )"
     else
       ${_T} && _Trace 'Single option setup. (%s="%s")' "${_n}" "${_i[*]}"
       _om+=( false )
-      _od+=( "${_d} (${_n}: \${${_n}})" ) # desc
+      _od+=( "${_d//\"/\\\"} (${_n}: \${${_n}})" ) # desc
       [[ -n "${_i}" ]] && eval "${_n}='${_i[${AO}]}'"
     fi
   fi
@@ -734,7 +735,10 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
             if ((_rv))
             then
               ${_T} && _Trace 'Attempt failed, sleep before retry. (%s / %s)' "${_s}" "${_r}"
-              ((0 < _r)) && sleep ${_s}
+              if ((0 < _r))
+              then
+                sleep ${_s} 2> /dev/null || sleep $((${_s%.*} + 1))
+              fi
             fi
           done
 
@@ -1858,7 +1862,7 @@ Initialize () {
   fi
 
   ${_T} && _Trace 'Check if root. (%s)' "${EUID}"
-  if ((0 == EUID || 0 == $(id -u)))
+  if ((0 == EUID || 0 == $(${BSDPATH}id -u)))
   then
     ${_allowroot} || Tell -E 'You cannot execute %s as root.' "${CMD}"
   else
@@ -2408,7 +2412,6 @@ ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((5
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
-GROUP="${GROUP:-$(id -gn)}"
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
@@ -2432,21 +2435,38 @@ then
 else
   ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
 fi
+ARCH="${ARCH:-$(uname -m)}"
 OS="${OS:-$(uname -s)}"
 case "${OS}" in
-  Linux|CYGWIN*)
-    UNIX='GNU'
-    ;;
-
-  Solaris)
-    UNIX='SYSV'
-    ;;
-
-  *) # Darwin|FreeBSD|SunOS
+  Darwin)
+    OS_DIST="$(sw_vers --ProductName)"
+    OS_VERSION="$(sw_vers --ProductVersion)"
     UNIX='BSD'
     ;;
 
+  Linux|CYGWIN*)
+    eval $(eval $(grep -h '=' /etc/*release* 2> /dev/null) && printf 'OS_DIST=%s\nOS_VERSION=%s\n' "${ID}" "${VERSION_ID}")
+    UNIX='GNU'
+    ;;
+
+  SunOS|Solaris)
+    OS_VERSION="$(uname -r | cut -f 2 -d .)"
+    if grep 'Solaris' /etc/release &> /dev/null
+    then
+      OS_DIST='Solaris'
+      UNIX='SYSV'
+      BSDPATH='/usr/xpg4/bin/'
+    else
+      OS_DIST='SunOS'
+      UNIX='BSD'
+    fi
+    ;;
+
+  *)
+    ;;
+
 esac
+GROUP="${GROUP:-$(${BSDPATH}id -gn)}"
 TMPDIR="${TMPDIR:-/tmp}"
 MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647
 CHFLAGS=

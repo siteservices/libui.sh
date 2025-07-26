@@ -150,6 +150,7 @@ LibuiTest () {
   local _Test_rv=0
   local _Test_success=true
   local _Test_testdir
+  local LIBUIEXE; ${ZSH} && LIBUIEXE="${commands[libui]}" || LIBUIEXE="$(command -v libui)"
 
   # get options
   ${_M} && _Trace 'Check for LibuiTest options. (%s)' "${*}"
@@ -275,7 +276,6 @@ LibuiTest () {
         ${_M} && _Trace 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
         ${_Test_debug} && Tell 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
         eval "Action -W -s ${_Test_warn} \"${_Test_env}${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}\" ${_Test_log}"
-
 
         ${_M} && _Trace 'Check return value. (%s)' "${_Test_result}"
         case "${_Test_result}" in

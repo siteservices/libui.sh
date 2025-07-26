@@ -6,12 +6,17 @@
 #####
 
 test_ConvertDate () {
-  LoadMod Convert
-  local short="$(date)"
-  local td="$(date '+%Y-%m-%d')"
-  ConvertDate short
-  LibuiPerformTest 'Tell "Date: %s" "${short}"'
-  LibuiValidateTest ${?} 0 "Date: ${td}"
+  if date -d &> /dev/null || date -j &> /dev/null || perl -e 'use Date::Parse;'
+  then
+    LoadMod Convert
+    local short="$(date)"
+    local td="$(date '+%Y-%m-%d')"
+    ConvertDate short
+    LibuiPerformTest 'Tell "Date: %s" "${short}"'
+    LibuiValidateTest ${?} 0 "Date: ${td}"
+  else
+    Tell -W -r 33 'Date conversions are not supported in %s. (%s)' "${OS}" "${OS_VERSION}"«
+  fi
   return ${?}
 }
 
