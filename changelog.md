@@ -5,7 +5,7 @@
 ### New Features / Enhancements
 
 * Add new `${ARCH}` variable that provides the system architecture.
-* Add new `${BSDPATH}` variable that provides path for BSD command versions.
+* Add new `${BSDPATH}` variable that provides the path for BSD command versions.
 * Add new `${OS_DIST}` variable that provides the OS distribution.
 * Ignore `.DS_Store` files when comparing directories with `libui -[uvV]`.
 * Improve `mless` multi-line handling.
