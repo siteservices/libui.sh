@@ -2030,18 +2030,20 @@ library:
 .Bl -tag -offset 4n -width 12n
 .It Dv ${AA}
 Associative Array: Set to "true" if the shell supports associative arrays.
+.It Dv ${ANSWER}
+The last answer provided by the user via an Ask command.
 .It Dv ${AO} Pq as in A O, not A zero
 Array Offset: Set to "1" (one) if the shell is Z shell (zsh) and "0" (zero)
 otherwise.
-.It Dv ${ANSWER}
-The last answer provided by the user via an Ask command.
-.It Dv ${IWD}
-The path of the directory where the script was initially executed.
+.It Dv ${ARCH}
+The system architecture (as reported by the system).
 .It Dv ${BV}
 Bash Version: Set to the major and minor version of the Bash shell (without the
 intervening period).
 .Pp
 Note: If the executing shell is the Z shell, BV will be set to "0" (zero).
+.It Dv ${BSDPATH}
+The path to the BSD version of an application (for Solaris).
 .It Dv ${CHFLAGS}
 Chain flags: This variable collects command line flags (options) that should be
 passed on to chained scripts.
@@ -2086,6 +2088,8 @@ The primary group of the user.
 Terminal window height in rows.
 .It Dv ${HOST}
 The hostname of the current machine (hostname only, not fully qualified).
+.It Dv ${IWD}
+The path of the directory where the script was initially executed.
 .It Dv ${LIBUI}
 The absolute path of the included
 .Nm
@@ -2111,6 +2115,8 @@ The number of parameters provided on the command line.
 .It Dv ${OS}
 The name of the operating system.
 Typical values are Darwin, Linux, SunOS, Solaris, etc.
+.It Dv ${OS_DIST}
+The operating system distribution. Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
 .It Dv ${SHENV}
 The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
@@ -2147,7 +2153,7 @@ An array containing the filenames and versions of the loaded scripts and
 mods in alternating "pairs": <file> <version> ...
 .It Dv ${UNIX}
 The type of the operating system.
-The possible values are BSD, SYSV, or GNU (e.g. Linux).
+The possible values are BSD, SYSV, or GNU (i.e. Linux).
 .It Dv ${WIDTH}
 Terminal window width in colums.
 .It Dv ${ZSH}

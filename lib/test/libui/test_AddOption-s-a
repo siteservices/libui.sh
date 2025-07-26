@@ -6,7 +6,7 @@
 #####
 
 test_AddOption-s-a () {
-  LibuiPerformTest 'TERMINAL=true libui -x oa -h'
+  LibuiPerformTest 'TERMINAL=true ${SHENV} ${LIBUIEXE} -x oa -h'
   LibuiValidateTest -r ${?} 2 '.*-Z *Test a *- Test option a\. \(opta: a\).*'
   return ${?}
 }

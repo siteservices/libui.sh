@@ -32,7 +32,7 @@
 #
 #####
 
-Version -r 2.010 -m 1.18
+Version -r 2.011 -m 1.19
 
 ##### configuration
 
@@ -288,6 +288,8 @@ regression testing, capabilities demonstration, and usage statistics reports.
 
 Hints: ${D0}Use the "-n" (New Script) option to generate a new liubi script.${D}
        Use the "-d" (Demo) option to see the display formats available.
+
+Shell environment: ${SHENV}
 
 Current test mode options:
     AddOption F/T test. (b: ${_Util_addoptft})
@@ -852,7 +854,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
   StartSpinner 'Comparing "%s" with commonroot "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
 
   ${_M} && _Trace 'Verify %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-  for _Util_file in $(find . -name '*.sw*' -prune -o -type f -print)
+  for _Util_file in $(find . -name '*.sw*' -o -name '.DS_Store*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     if [[ -f "${COMMONROOT}/${_Util_file}" ]]

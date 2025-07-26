@@ -28,7 +28,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 1.7
+Version -r 2.011 1.8
 
 # load mods
 LoadMod File
@@ -143,7 +143,7 @@ do
         s/^>>\s/  |  |  /;
         s/^>\s/  |  /;
       }" | \
-      sed -E '/^\s*$/{N; /^\s*\n\s*$/s///}' | \
+      sed '/^$/N;/^\n$/D' | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/{/\`\`\`/d; s/^/    ${code}/; s/$/${D}/;}" | \
       sed -E 's/\\\\/\\/g' | \
       sed -E 's/\\([^\\])/\1/g' | \

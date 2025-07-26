@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_MkDir_Mask
+#
+#####
+
+test_MkDir_Mask () {
+  Action -W "MkDir -m '002' ${TESTDIR}/dir_mask/dir2"
+  LibuiPerformTest "ls -l ${TESTDIR}/dir_mask"
+  LibuiValidateTest -r ${?} 0 "drwxrwxr-x.* dir2"
+  return ${?}
+}
+
+return 0

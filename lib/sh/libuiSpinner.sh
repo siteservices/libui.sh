@@ -27,7 +27,7 @@
 #
 #####
 
-Version -r 2.009 -m 1.18
+Version -r 2.011 -m 1.19
 
 # defaults
 
@@ -81,7 +81,7 @@ StartSpinner () { # [<info_message>]
             for _Spinner_i in '|' '/' '-' '\'
             do
               printf " ${DSpinner} %s${D}${DCEL}\b\b\b" ${_Spinner_i} >&4 # duplicate stderr
-              sleep 0.1
+              sleep 0.1 2> /dev/null || sleep 1
             done
           done
         ) &
@@ -288,7 +288,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
     while ((0 < (_Spinner_c-=${_Spinner_u})))
     do
       printf "${DJBL}${DInfo}${_Spinner_i}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
-      sleep ${_Spinner_u}
+      sleep ${_Spinner_u} 2> /dev/null || sleep $((${_Spinner_u%.*} + 1))
     done
     printf "${DJBL}${DCEL}" >&4 # duplicate stderr
   else

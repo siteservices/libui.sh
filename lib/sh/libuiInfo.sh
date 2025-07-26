@@ -113,8 +113,7 @@ UsageInfo () {
     for _UsageInfo_p in "${_ou[@]}"
     do
       _UsageInfo_d="$(printf "  -%s  %-${_UsageInfo_x}s - %s" "${_UsageInfo_p}" "${_ok[${_UsageInfo_i}]}" "${_od[${_UsageInfo_i}]}")"
-      eval "_UsageInfo_d=\"${_UsageInfo_d//\"/\\\"}\""
-      printf '%s\n' "${_UsageInfo_d}"
+      eval "printf '%s\n' \"${_UsageInfo_d}\""
       ((_UsageInfo_i++))
     done
 

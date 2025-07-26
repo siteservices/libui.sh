@@ -6,10 +6,9 @@
 #####
 
 test_MkDir () {
-  groups=( $(groups) )
-  Action -W "MkDir -g ${groups[((AO + 1))]} -m '000' -s ${TESTDIR}/dir1/dir2"
+  Action -W "MkDir ${TESTDIR}/dir1/dir2"
   LibuiPerformTest "ls -l ${TESTDIR}/dir1"
-  LibuiValidateTest -r ${?} 0 "drwxrwsrwx.* ${groups[((AO + 1))]} .* dir2"
+  LibuiValidateTest -r ${?} 0 "d.* dir2"
   return ${?}
 }
 
