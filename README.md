@@ -67,9 +67,29 @@ Information on the core library is available with `man 3 libui.sh`.
 
 ## Installation
 
-The recommended installation of the User Interface Library is provided by the
-libui script. The easiest installation is to use git to pull down the repository
-and then execute:
+To install from the libui package, use a command line shell and and execute
+(replacing `<path/to/install>` with the destination path):
+
+```
+sh libui-v2.010.tarp -i <path/to/install>
+```
+
+This will install the libui library into the directory provided as
+`<path/to/install>`. It will create `bin`, `lib`, `share`, and `var`
+subdirectories within that destination path. To support proper execution, both
+the `<path/to/install>/bin` and `<path/to/install>/lib/sh` subdirectories will
+need to be added to the shell's `$(PATH}` environment variable. (This is not
+done automatically.)
+
+If you wish to install both the library and its regression test suite, please
+use `-I` (uppercase I) instead of `-I` (lowercase i) when installing. The
+regression test suite will be installed in the
+`<path/to/install>/lib/test/libui` directory. The regression tests can be
+executed with `libui -t`.
+
+To install the libui User Interface Library from a git repo, the libui script
+can be used. After cloning the repository, the library can be installed by
+executing:
 
 ```
 make install
@@ -91,9 +111,13 @@ directly from within the repo:
 lib/sh/libui -i <COMMONROOT>
 ```
 
-Notes: To include all of the regression tests, use `libui -I` (Install With
-Tests) instead of `libui -i` (Install). Also, the provided \<COMMONROOT\> path
-must be writable by the user performing the installation.
+Notes:
+
+To include all of the regression tests, use the `-I` option flag (Install With
+Tests) instead of the `-i` option flag (Install).
+
+When installing, the provided \<COMMONROOT\> path must be writable by the user
+performing the installation.
 
 ## Post Installation
 
