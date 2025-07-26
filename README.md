@@ -68,10 +68,11 @@ Information on the core library is available with `man 3 libui.sh`.
 ## Installation
 
 To install from the libui package, use a command line shell and and execute
-(replacing `<path/to/install>` with the destination path):
+(replacing `<release>` with the current release package version and
+`<path/to/install>` with the destination path):
 
 ```
-sh libui-v2.010.tarp -i <path/to/install>
+sh libui-<release>.tarp -i <path/to/install>
 ```
 
 This will install the libui library into the directory provided as
