@@ -6,12 +6,8 @@
 #####
 
 test_Action-s-i () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp" 4>&1'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest -r "${tv}" 0 '/tmp...*'
+  TERMINAL=true LibuiPerformTest 'Action -s -i "Test info." "ls -d /tmp" 4>&1'
+  LibuiValidateTest -r ${?} 0 '/tmp...*'
   return ${?}
 }
 

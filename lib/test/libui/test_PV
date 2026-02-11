@@ -6,11 +6,15 @@
 #####
 
 test_PV () {
+  LibuiGetDisplayTestValues
   local pv=true
   local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0; ${ZSH} && ((53 > zv)) && pv=false
   LibuiPerformTest 'Tell -- "${PV}"'
   LibuiValidateTest ${?} 0 "${pv}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

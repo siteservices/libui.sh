@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Brief_No_Term
+#
+#####
+
+test_Brief_No_Term () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Brief "Test 1."; Brief "Test 2."'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x T '
+
+return 0

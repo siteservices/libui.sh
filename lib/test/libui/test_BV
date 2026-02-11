@@ -6,10 +6,14 @@
 #####
 
 test_BV () {
+  LibuiGetDisplayTestValues
   local bv="${BASH_VERSION%.*}"; [[ -n "${bv}" ]] && bv="${bv//.}" || bv=0
   LibuiPerformTest 'Tell -- "${BV}"'
   LibuiValidateTest ${?} 0 "${bv}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

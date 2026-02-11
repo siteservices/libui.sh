@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_File () {
+  LibuiGetDisplayTestValues
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local rp
   local td
@@ -16,5 +17,8 @@ test_GetRealPath_File () {
   LibuiValidateTest ${?} 0 "${mp}${td}/filepath1"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

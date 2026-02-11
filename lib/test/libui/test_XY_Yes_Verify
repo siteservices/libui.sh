@@ -6,16 +6,13 @@
 #####
 
 test_XY_Yes_Verify () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Verify "Test verify?"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 'Test verify? (y/n) [yes] yes'
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Verify "Test verify?"'
+  LibuiValidateTest ${?} 0 'Test verify? (y/n) [yes] yes'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X Y '
+_Test_opt+='-x P -X Y '
 
 return 0

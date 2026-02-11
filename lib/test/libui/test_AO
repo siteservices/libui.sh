@@ -6,6 +6,7 @@
 #####
 
 test_AO () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${AO}"'
   local tv=${?}
   if ${ZSH}
@@ -16,5 +17,8 @@ test_AO () {
   fi
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

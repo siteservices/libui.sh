@@ -13,17 +13,18 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
@@ -99,46 +100,37 @@ SSHSend () { # [-q|-v] -d <destination> [-p <password>] [-P <port>] [-t <target>
         ${_M} && _Trace 'Destination. (%s)' "${OPTARG}"
         _SSH_dest="${OPTARG}"
         ;;
-
       p)
         ${_M} && _Trace 'Password. (%s)' "${OPTARG}"
         _SSH_pass="${OPTARG}"
         ;;
-
       P)
         ${_M} && _Trace 'Port. (%s)' "${OPTARG}"
         _SSH_port="-P ${OPTARG}"
         ;;
-
       q)
         ${_M} && _Trace 'Quiet.'
         _SSH_quiet=true
         ;;
-
       t)
         ${_M} && _Trace 'Target. (%s)' "${OPTARG}"
         _SSH_targets+=( "${OPTARG}" )
         ;;
-
       T)
         ${_M} && _Trace 'Target variable. (%s)' "${OPTARG}"
         ${ZSH} && _SSH_targets=( "${(P@)OPTARG}" ) || eval "_SSH_targets=( \"\${${OPTARG}[@]}\" )"
         ;;
-
       u)
         ${_M} && _Trace 'User. (%s)' "${OPTARG}"
         _SSH_user="${OPTARG}"
         ;;
-
       v)
         ${_M} && _Trace 'Verbose.'
         _SSH_verbose=true
         ;;
-
       *)
         Tell -E -f -L '(SSHSend) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -222,51 +214,41 @@ SSHExec () { # [-d|-q|-v] [-i <message>] [-p <password>] [-P <port>] [-t <target
         ${_M} && _Trace 'Enable display.'
         _SSH_disp='-t'
         ;;
-
       i)
         ${_M} && _Trace 'Info. (%s)' "${OPTARG}"
         _SSH_info="${OPTARG}"
         ;;
-
       p)
         ${_M} && _Trace 'Password. (%s)' "${OPTARG}"
         _SSH_pass="${OPTARG}"
         ;;
-
       P)
         ${_M} && _Trace 'Port. (%s)' "${OPTARG}"
         _SSH_port="-p ${OPTARG}"
         ;;
-
       q)
         ${_M} && _Trace 'Quiet.'
         _SSH_quiet=true
         ;;
-
       t)
         ${_M} && _Trace 'Target. (%s)' "${OPTARG}"
         _SSH_targets+=( "${OPTARG}" )
         ;;
-
       T)
         ${_M} && _Trace 'Target variable. (%s)' "${OPTARG}"
         ${ZSH} && _SSH_targets=( "${(P@)OPTARG}" ) || eval "_SSH_targets=( \"\${${OPTARG}[@]}\" )"
         ;;
-
       u)
         ${_M} && _Trace 'User. (%s)' "${OPTARG}"
         _SSH_user="${OPTARG}"
         ;;
-
       v)
         ${_M} && _Trace 'Verbose.'
         _SSH_verbose=true
         ;;
-
       *)
         Tell -E -f -L '(SSHExec) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))

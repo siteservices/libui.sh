@@ -6,13 +6,11 @@
 #####
 
 test_Ask_Confirm_False () {
-  local t="${TERMINAL}"
-  TERMINAL=true
   Yes -e
-  LibuiPerformTest 'Ask -C "Test Ask -C with Confirm false?"'
+  TERMINAL=true LibuiPerformTest 'Ask -C "Test Ask -C with Confirm false?"'
+  local tv=${?}
   Yes -E
-  TERMINAL="${t}"
-  LibuiValidateTest ${?} 0 ''
+  LibuiValidateTest "${tv}" 0 ''
   return ${?}
 }
 

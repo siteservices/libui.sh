@@ -6,9 +6,13 @@
 #####
 
 test_Tell-N_No_Newline () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -N "Test 1."; Tell -N "Test 2."'
   LibuiValidateTest ${?} 0 'Test 1.Test 2.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

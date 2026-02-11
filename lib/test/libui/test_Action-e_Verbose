@@ -6,10 +6,14 @@
 #####
 
 test_Action-e_Verbose () {
+  LibuiGetDisplayTestValues
   _vdb=true
   LibuiPerformTest 'Action -e "Test failure." "false"'
   LibuiValidateTest ${?} 1 "(Action) false (PWD: ${TESTDIR})${N}WARNING: (Action) Test failure. (false, PWD: ${TESTDIR})"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

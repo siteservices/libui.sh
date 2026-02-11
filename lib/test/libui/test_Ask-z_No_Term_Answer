@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask-z_No_Term_Answer
+#
+#####
+
+test_Ask-z_No_Term_Answer () {
+  LibuiGetDisplayTestValues
+  Ask -z 'Test question?' <<< 'answer'
+  LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
+  LibuiValidateTest ${?} 0 'The answer is: '
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x T '
+
+return 0

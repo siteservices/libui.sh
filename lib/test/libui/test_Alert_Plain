@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Alert_Plain
+#
+#####
+
+test_Alert_Plain () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Alert "Test 1."; Alert "Test 2."'
+  LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

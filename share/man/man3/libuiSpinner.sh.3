@@ -2,19 +2,18 @@
 .\" Please contact fharvell@siteservices.net to correct errors or typos.
 .\" Please note that the libui library is young and under active development.
 .\"
-.\" Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-.\" domain.  Permission is unconditionally granted to anyone with an interest,
-.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
-.\" content and associated files.
+.\" This content and associated files are published by siteservices.net, Inc.
+.\" are marked CCO 1.0. Permission is unconditionally granted to anyone with the
+.\" interest the full rights to use, modify, publish, distribute, sublicense,
+.\" and/or sell this content and all associated files. To view a copy of CCO
+.\" 1.0, visit https://creativecommons.org/publicdomain/zero/1.0/.
 .\"
-.\" All content is provided "as is", without warranty of any kind, expressed or
-.\" implied, including but not limited to merchantability, fitness for a
-.\" particular purpose, and noninfringement.  In no event shall the authors or
-.\" copyright holders be liable for any claim, damages, or other liability,
-.\" whether in an action of contract, tort, or otherwise, arising from, out of,
-.\" or in connection with this content or use of the associated files.
+.\" purpose, and noninfringement. In no event shall the authors or publishers be
+.\" liable for any claim, damages, or other liability, whether in an action of
+.\" contract, tort, or otherwise, arising from, out of, or in connection with
+.\" the use of this content or any of the associated files.
 .\"
-.Dd April 2, 2024
+.Dd February 8, 2026
 .Dt LIBUISPINNER.SH 3
 .Os
 .Sh NAME
@@ -26,6 +25,7 @@ user interface library
 .Sy LoadMod Spinner
 .Pp
 .Sy StartSpinner
+.Op Ar <message>
 .Pp
 .Sy PauseSpinner
 .Pp
@@ -68,10 +68,11 @@ mod provides the following commands:
 The following command starts a visual spinner on stderr in the background.
 .Bd -ragged -offset 4n
 .Sy StartSpinner
+.Op Ar <message>
 .Ed
 .Pp
-Starts a background subshell that displays a spinner on stderr and captures the
-background process ID ($!) for the
+Starts a background subshell that displays the optional <message> and a spinner
+on stderr and captures the background process ID ($!) for the
 .Sx StopSpinner
 command.
 .Pp
@@ -79,14 +80,9 @@ Note: The
 .Sx StartSpinner
 and
 .Sx StopSpinner
-commands can only work with one spinner at a time.
-If
-.Sx StartSpinner
-is called twice,
-.Sx StopSpinner
-will only be able to stop the last spinner
-This can result in a spinner still being displayed (even after the script ends).
-Also, because the system uses background processes and process management, it is
+commands only support one spinner at a time.
+.Pp
+Note: Because the system uses background processes and process management, it is
 possible to start and stop a spinner too quickly leaving a running spinner in
 the background.
 .Ss PauseSpinner

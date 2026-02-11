@@ -8,13 +8,7 @@
 test_Info () {
   LibuiGetDisplayTestValues
   TERMINAL=true LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
-  local tv=${?}
-  if ${LIBUI_PLAIN}
-  then
-    LibuiValidateTest "${tv}" 0
-  else
-    LibuiValidateTest "${tv}" 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}${TJBL}${TJBL}${TInfo}Test 2.${T}${TCEL}${TJBL}"
-  fi
+  LibuiValidateTest ${?} 0 "${TJBL}${TInfo}Test 1.${T}${TCEL}${N}${TJBL}${TInfo}Test 2.${T}${TCEL}"
   return ${?}
 }
 

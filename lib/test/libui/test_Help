@@ -13,28 +13,32 @@ test_Help () {
 
 # help compare text
 helptext="
-USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
+USAGE: libui [-c|-C|-d|-D|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-P|-s|-S|-t|-T|-u|-U|-v|-V ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.config/libui/libui.conf\". (config: false)
+  -C  Cache Reset      - Reset (clear) library caches. (cachereset: false)
   -d  Demo             - Provide capabilities demonstration. (demo: false)
+  -D  Defer            - Defer user environment by preferring COMMONROOT (or provided directory). (defer: false)
   -e  Execution        - Specify shell for regression testing (otherwise both bash and zsh). (shells: zsh, bash)
   -g  Group            - Make installed files / directories group writable. (group: false)
-  -i  Install          - Install libui into provided directory (or COMMONROOT). (install: false)
-  -I  Install Tests    - Install libui and tests into provided directory (or COMMONROOT). (installtests: false)
+  -i  Install Tests    - Install libui and tests into provided directory (or COMMONROOT). (installtests: false)
+  -I  Install          - Install libui into provided directory (or COMMONROOT). (install: false)
   -l  List             - List files that would be included in a libui package. (list: false)
   -L  Lockfiles        - Remove leftover lockfiles. (unlock: false)
-  -m  Man Page         - Display man page. (manpage: false)
-  -M  Update Man Pages - Update man page timestamps to match respective script timestamp. (updateman: false)
+  -m  Man Page         - Display man page. (mpage: false)
+  -M  Man Path         - Return the libui manpath. (mpath: false)
   -n  New Script       - Create a new libui script with the provided filename. (new: false)
   -N  New Empty Script - Create a libui script with the provided filename without demo content. (empty: false)
   -p  Package          - Create a libui.sh package with the provided filename. (package: false)
-  -R  Reset Caches     - Reset display and user information caches. (cachereset: false)
+  -P  Pre-package      - Update documentation / datestamps in preparation for packaging. (prepackage: false)
   -s  Stats            - Display stats. (stats: false)
+  -S  State Reset      - Reset (clear) state (i.e., stats, logs, and ledger). (statereset: false)
   -t  Test             - Perform libui regression testing. (testing: false)
   -T  (Single) Test    - Perform single test. (singletest: false)
   -u  Update           - Update libui in COMMONROOT (or provided directory). (update: false)
-  -U  Unify            - Unify environment by removing files already in COMMONROOT (or provided directory). (unify: false)
-  -v  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
+  -U  User Reset       - Reset user information. (userreset: false)
+  -v  Version          - Obtain version information. (Please use -Xv in applications.) (version: false)
+  -V  Verify           - Verify libui in COMMONROOT (or provided directory). (vlevel: )
   -x  Test Option      - (Only for test.) Set test mode. (testopt: X)
   -H  Help             - Display usage message, also available with -h. (help: true)
   -X  XOption          - XOptions, use -XH for details. (level: 0, confirm, force, help, overwrite, noaction, quiet, yes)
@@ -60,13 +64,14 @@ USAGE: libui [-c|-d|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-R|-s|-t|-T|-u|-U|-v ...|-h|-H
 
   Available option values:
     For -e (Execution): zsh, bash
-    For -x (Test Option): b, B, d, m, n, o, oa, oA, oc, oC, os, oS, ov, p, pa, pA, ps, pS, pv, r, R, t, w, X, aot, one, two, three, four, five
+    For -x (Test Option): b, B, d, m, n, o, oa, oA, oc, oC, os, oS, ov, p, P, pa, pA, ps, pS, pv, r, R, t, T, w, X, aot, one, two, three, four, five
 
 This script provides support functionality for the libui library including
 regression testing, capabilities demonstration, and usage statistics reports.
 
 Hints: Use the \"-n\" (New Script) option to generate a new liubi script.
        Use the \"-d\" (Demo) option to see the display formats available.
+       Use the \"-v\" (Verify) option more than once to increase verbosity.
 
 Shell environment: ${SHENV}
 

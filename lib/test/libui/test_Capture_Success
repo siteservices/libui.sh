@@ -6,11 +6,15 @@
 #####
 
 test_Capture_Success () {
+  LibuiGetDisplayTestValues
   TestFunction () { printf 'Out\n'; return 0; }
   Action 'Capture so se sr TestFunction'
   LibuiPerformTest "Tell 'rv: %s, OUT: %s, ERR: %s, RV: %s.' '${?}' '${so}' '${se}' '${sr}'"
   LibuiValidateTest ${?} 0 'rv: 0, OUT: Out, ERR: , RV: 0.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

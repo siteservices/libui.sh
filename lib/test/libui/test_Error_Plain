@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Error_Plain
+#
+#####
+
+test_Error_Plain () {
+  LibuiGetDisplayTestValues
+  _exitcleanup=false
+  LibuiPerformTest 'Error "Test 1."'
+  local tv=${?}
+  _exitcleanup=true
+  LibuiValidateTest "${tv}" 1 "ERROR: Test 1."
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

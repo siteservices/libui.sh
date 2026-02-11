@@ -6,10 +6,14 @@
 #####
 
 test_NROPT () {
-  ${_Test_debug} && local p=2 || local p=1
+  LibuiGetDisplayTestValues
+  ${_Test_debug} && local p=3 || local p=2
   LibuiPerformTest 'Tell -- "${NROPT}"'
   LibuiValidateTest ${?} 0 "${p}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

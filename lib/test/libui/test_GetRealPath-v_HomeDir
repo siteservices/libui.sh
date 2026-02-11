@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath-v_HomeDir () {
+  LibuiGetDisplayTestValues
   local mp="${HOME}/non-exsiting"
   local rp='~/non-exsiting'
   GetRealPath -v rp
@@ -13,5 +14,8 @@ test_GetRealPath-v_HomeDir () {
   LibuiValidateTest ${?} 0 "${mp}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -6,14 +6,15 @@
 #####
 
 test_ConfirmVar-n_Question () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   unset response
-  ConfirmVar -q 'Test question?' -n response <<< '/tmp'
-  TERMINAL="${t}"
+  TERMINAL=true ConfirmVar -q 'Test question?' -n response <<< '/tmp'
   LibuiPerformTest 'Tell "The value is: %s" "${response}"'
   LibuiValidateTest ${?} 0 'The value is: /tmp'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

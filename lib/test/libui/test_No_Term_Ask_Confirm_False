@@ -6,15 +6,16 @@
 #####
 
 test_No_Term_Ask_Confirm_False () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   Yes -e
   LibuiPerformTest 'Ask -C "Test No Term Ask -C with Confirm false?"'
   local tv=${?}
   Yes -E
-  TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 ''
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

@@ -2,19 +2,18 @@
 .\" Please contact fharvell@siteservices.net to correct errors or typos.
 .\" Please note that the libui library is young and under active development.
 .\"
-.\" Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-.\" domain.  Permission is unconditionally granted to anyone with an interest,
-.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
-.\" content and associated files.
+.\" This content and associated files are published by siteservices.net, Inc.
+.\" are marked CCO 1.0. Permission is unconditionally granted to anyone with the
+.\" interest the full rights to use, modify, publish, distribute, sublicense,
+.\" and/or sell this content and all associated files. To view a copy of CCO
+.\" 1.0, visit https://creativecommons.org/publicdomain/zero/1.0/.
 .\"
-.\" All content is provided "as is", without warranty of any kind, expressed or
-.\" implied, including but not limited to merchantability, fitness for a
-.\" particular purpose, and noninfringement.  In no event shall the authors or
-.\" copyright holders be liable for any claim, damages, or other liability,
-.\" whether in an action of contract, tort, or otherwise, arising from, out of,
-.\" or in connection with this content or use of the associated files.
+.\" purpose, and noninfringement. In no event shall the authors or publishers be
+.\" liable for any claim, damages, or other liability, whether in an action of
+.\" contract, tort, or otherwise, arising from, out of, or in connection with
+.\" the use of this content or any of the associated files.
 .\"
-.Dd January 2, 2024
+.Dd February 8, 2026
 .Dt LIBUI 1
 .Os
 .Sh NAME
@@ -24,10 +23,9 @@
 library utility actions
 .Sh SYNOPSIS
 .Sy libui
-.Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl h Fl H
+.Op Fl c Fl C Fl d Fl D Fl g Fl i Fl I Fl l Fl L Fl m Fl M Fl n Fl N Fl p Fl P Fl s Fl S Fl t Fl T Fl u Fl U Fl v Fl V Fl h Fl H
 .Op Fl e Ar <shell> ...
-.Op Fl n Ar <script_path>
-.Op Fl N Ar <script_path>
+.Op Fl x Ar <test_option>
 .Op Fl X Ar <option>
 .Op Ar <parameter>
 .Sh DESCRIPTION
@@ -51,48 +49,30 @@ Some of the primary utility functions are:
 Create a default
 .Xr libui.sh 3
 configuration file«
+.It Fl C
+Reset (clear) the
+.Xr libui.sh 3
+caches
 .It Fl d
 Demonstrate some
 .Xr libui.sh 3
 capabilities«
 .It Fl i
-Install a
+Install the
 .Xr libui.sh 3
-library into the COMMONROOT directory«
-.It Fl L
-Delete stale lock files
+library into the COMMONROOT directory with libui test suite
 .It Fl m
 Access the
 .Xr libui.sh 3
 man page«
-.It Fl p
-Create a
+.It Fl n
+Create a new
 .Xr libui.sh 3
-distribution "package"
-.It Fl R
-Reset
-.Xr libui.sh 3
-cache files
+script from the template
 .It Fl s
 Display
 .Xr libui.sh 3
 statistics
-.It Fl t
-Regression tests on
-.Xr libui.sh 3
-functionality«
-.It Fl u
-Update the
-.Xr libui.sh 3
-in the COMMONROOT directory«
-.It Fl U
-Unify the
-.Xr libui.sh 3
-environment with COMMONROOT by removing duplicate files from ~/.env«
-.It Fl v
-Verify the
-.Xr libui.sh 3
-in the COMMONROOT directory«
 .El
 .Pp
 The
@@ -100,10 +80,9 @@ The
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy libui
-.Op Fl c Fl d Fl i Fl I Fl l Fl L Fl m Fl M Fl p Fl R Fl s Fl t Fl T Fl u Fl U Fl v Fl x Fl h Fl H
+.Op Fl c Fl C Fl d Fl D Fl g Fl i Fl I Fl l Fl L Fl m Fl M Fl n Fl N Fl p Fl P Fl s Fl S Fl t Fl T Fl u Fl U Fl v Fl V Fl h Fl H
 .Op Fl e Ar <shell> ...
-.Op Fl n Ar <script_path>
-.Op Fl N Ar <script_path>
+.Op Fl x Ar <test_option>
 .Op Fl X Ar <option>
 .Op Ar <parameter>
 .Ed
@@ -118,70 +97,111 @@ Create a default
 configuration file in the
 .Qq Sy .libui
 directory in the user's home directory.
+.It Fl C
+Cache Reset
+.Pp
+Reset the
+.Xr libui.sh 3
+Caches.
+.Pp
+This will reset the
+.Xr libui.sh 3
+caches.
+Currently, only display code caches are created.
+The display codes cache for the current display will be regenerated upon the
+next
+.Xr libui.sh 3
+execution.
+See the
+.Sx FILES
+section below for more information.
 .It Fl d
 Demo
 .Pp
 Provide a simple
 .Xr libui.sh 3
 capabilities demonstration.
+.It Fl D
+Defer
+.Pp
+Defer the user's local environment by moving files already in the
+.Ar <parameter>
+directory into a subdirectory named "Deferred".
+.Pp
+This option moves any file that exist in the user's local environment, i.e., the
+directory from which the
+.Nm
+command has been executed, if the file also exist in the
+.Ar <parameter>
+directory.
+If a
+.Ar <parameter>
+is not provided, the
+.Ev COMMONROOT
+environment variable is used.
 .It Fl e Ar <shell> ...
-Execute Shell
+Execution Shell
 .Pp
 Perform regression testing using the provided
 .Ar <shell> .
 The option can be used more than once to test with multiple shells.
-The default is testing with both Z shell and Bash.
+The default is testing with both zsh and bash.
 Note: the
 .Xr libui.sh 3
 library was only designed to work with the Z shell and Bash shells.
+.It Fl g
+Group
+.Pp
+Set the permissions on the installed files and directories to be group writable.
 .It Fl i
-Install (without tests)
-.Pp
-Install the
-.Xr libui.sh 3
-utility files (without tests) into the directory specified by
-.Ar <parameter> ,
-if provided, or into the directory path from the
-.Ev COMMONROOT
-environment variable.
-.Pp
-This option installs
-.Xr libui.sh 3
-files from the current libui source directory into the directory path specified
-in
-.Ar <parameter> ,
-if provided, or into the directory path from the
-.Ev COMMONROOT
-environment variable.
-If a parameter is not provided and COMMONROOT is empty, an error will be
-generated.
-The library
-.Xr libui.sh 3
-and
-.Nm
-library utility will be installed in the lib/sh subdirectory.
-Man pages will be installed into the share/man/man1 and share/man/man3
-subdirectories.
-.Pp
-Note:
-This option is also available when installing from a libui created package.
-When used, it performs an install but does not create a new package.
-.It Fl I
 Install (with tests)
 .Pp
 Install the
 .Xr libui.sh 3
-utility files (with tests).
+utility files along with the with
+.Xr libui.sh 3
+test suite into the directory specified by
+.Ar <parameter> .
+If a
+.Ar <parameter>
+is not provided, the directory specified by the
+.Ev COMMONROOT
+environment variable is used.
+If a parameter is not provided and
+.Ev COMMONROOT
+is empty, an error will be generated.
+.Pp
+During installation, the
+.Nm
+utility will be installed in the bin subdirectory.
+The
+.Xr libui.sh 3
+library files will be installed in the lib/sh subdirectory.
+.Xr libui.sh 3
+documentation will be installed into the share/doc subdirectory.
+The man pages will be installed into the share/man/man1 and share/man/man3
+subdirectories.
+.It Fl I
+Install (without tests)
+.Pp
+Install the
+.Xr libui.sh 3
+utility files (without the
+.Xr libui.sh 3
+test suite) into the directory specified by
+.Ar <parameter> .
+If a
+.Ar <parameter>
+is not provided, the directory specified by the
+.Ev COMMONROOT
+environment variable is used.
+.Pp
 This is the same installation as performed when using the
 .Fl i
 (Install) option.
 Please see the
 .Sx Fl i
 (Install) option for more details.
-.Pp
-Note:
-This option is also available when installing from a libui created package.
-When used, it performs an install but does not create a new package.
 .It Fl l
 List
 .Pp
@@ -191,7 +211,9 @@ List the files that would be included in a
 .It Fl L
 (Remove) Lock Files
 .Pp
-Remove leftover lock files.
+Remove leftover
+.Xr libui.sh 3
+lock files.
 .It Fl m
 Man Page
 .Pp
@@ -199,64 +221,78 @@ Display the
 .Xr libui.sh 3
 man page.
 .It Fl M
-Update Man Pages
+Manpath
 .Pp
-Update man page timestamps to match the respective script modification dates.
-.It Fl n Ar <script_path>
+Generate a MANPATH command line that includes the
+.Nm
+and
+.Xr libui.sh 3
+man page subdirectory.
+The generated manpath command line can be evaluated by the shell using a command
+similar to:
+.Sy eval Qq Sy libui Fl M
+.It Fl n
 New Script
 .Pp
-Creates a new script at the provided
-.Ar <script_path>
-from the share/doc/libui-template template file.
-The new script provides the basic (recommended) outline of a
+Creates a new script from the share/doc/libui-template template file at the file
+path provided by the
+.Ar <parameter> .
+The new script will provide the recommended outline of a
 .Xr libui.sh 3
-script and includes some sample statements (demo content).
-.It Fl N Ar <script_path>
-New Script Without Demo Content
+script and includes some sample statements (identified as demo content).
+.It Fl N
+New Script (without demo content)
 .Pp
-Creates a new script at the provided
-.Ar <script_path>
-from the share/doc/libui-template template file without the demo content.
-The new script provides the basic (recommended) outline of a
-.Xr libui.sh 3
-script.
+Creates a new script from the share/doc/libui-template template file (without
+the demo content) at the file path provided by the
+.Ar <parameter> .
 .It Fl p
 Package
 .Pp
 Create a
 .Xr libui.sh 3
-"package" using the file path provided by
+"tar package" at the file path provided by
 .Ar <parameter> .
 .Pp
-This option creates a self-extracting "package" containing the
+This option creates a self-extracting "tar package"
+in the file path provided by the
+.Ar <parameter>
+containing the
 .Xr libui.sh 3
-files from the current libui source directory in the file pointed to by
-.Ar <parameter> .
-.It Fl R
-Reset Caches
+files from the current libui source directory.
+.It Fl P
+Pre-package
 .Pp
-Reset
+Update the
 .Xr libui.sh 3
-caches.
-.Pp
-This will reset the display variable cache, statistics, and user information.
-The display variables cache will be regenerated and statistic collection will
-start over.
-User information questions will be asked to reset the user information file.
-See the
-.Sx FILES
-section below for more information.
+files and man page datestamps in preparation for packaging.
 .It Fl s
 Stats
 .Pp
-Display
+Display the
 .Xr libui.sh 3
 usage stats.
 .Pp
-Displays a set of usage statistics for the
+Displays a large set of usage statistics collected about the
 .Xr libui.sh 3
-user interface library.
-This includes overall use information as well as per-function usage.
+usage since the last installation or reset.
+This includes overall usage information as well as per-function usage.
+.It Fl S
+State Reset
+.Pp
+Reset
+.Xr libui.sh 3
+state.
+.Pp
+This will reset the
+.Xr libui.sh 3
+state.
+Currently this includes statistics and the executed command ledger.
+A new statistics file and executed command ledger will be recreated and data
+collection will restart.
+See the
+.Sx FILES
+section below for more information about the associated files.
 .It Fl t
 Test
 .Pp
@@ -269,8 +305,7 @@ regression tests.
 Perform a single
 .Xr libui.sh 3
 regression test.
-.Pp
-Requires the name of the test as the first parameter.
+The name of the test must be provided as the first parameter.
 .It Fl u
 Update
 .Pp
@@ -280,34 +315,34 @@ in COMMONROOT.
 .Pp
 This option updates files in the
 .Ar <parameter>
-directory with files that exist in the directory containing the
-.Xr libui.sh 3
-library from which
+directory with files that exist in the directory from which
 .Nm
 is being executed.
 If a
 .Ar <parameter>
-is not provided, the
+is not provided, the directory specified by the
 .Ev COMMONROOT
 environment variable is used.
 .It Fl U
-Unify
+User Reset
 .Pp
-Unify the user's environment by removing files already in COMMONROOT.
+Reset user information.
 .Pp
-This option deletes files that exist in the directory containing the
-.Xr libui.sh 3
-library from which
-.Nm
-is being executed where the files also exist in the
-.Ar <parameter>
-directory.
-If a
-.Ar <parameter>
-is not provided, the
-.Ev COMMONROOT
-environment variable is used.
+This will reset (recreate) the stored user information.
+The current user information file is removed and the user information questions
+will be asked to recreate a new user information file.
+See the
+.Sx FILES
+section below for more information.
 .It Fl v
+Version
+.Pp
+Provide version information for both the
+.Nm
+command and the loaded
+.Xr libui.sh 3
+mods.
+.It Fl V
 Verify
 .Pp
 Verify
@@ -323,23 +358,23 @@ library from which
 is being executed.
 If a
 .Ar <parameter>
-is not provided, the
+is not provided, the directory specified by the
 .Ev COMMONROOT
 environment variable is used.
 .Pp
 When
-.Fl v
+.Fl V
 is provided twice, displays differences (using diff) between the directories.
 .It Fl x
-Test Mode Setup
+Test Mode Options
 .Pp
 Only for testing.
-Set various test modes.
+Set various test mode options.
 The option utilizes various sub-options to support specific tests.
 .Xr libui.sh 3 .
 .It Op Ar <parameter>
-The name of the test to perform, the package filename, or the COMMONROOT
-directory depending upon the options selected.
+The name of the test to perform, the package filename, or the "COMMONROOT"
+directory depending upon the option flags used.
 .El
 .Ss STANDARD OPTIONS
 This script was built using the
@@ -379,7 +414,11 @@ Unless otherwise defined, the
 .Xr libui.sh 3
 library will default
 .Ev LIBUI_CONFIG
-to be
+to
+.Qq Sy ${XDG_CONFIG_HOME}/libui ,
+or if
+.Qq Sy ${XDG_CONFIG_HOME}
+is not set, then to
 .Qq Sy ${HOME}/.config/libui .
 The configuration filename is
 .Qq Sy libui.conf .
@@ -403,17 +442,44 @@ and
 subdirectories.
 .Pp
 When used with the
-.Fl R
-(Reset) option, libui will delete the display codes cache, the statistics file,
-and (re)create the user information file.
-The display codes cache and the statistics files are also stored in the
-.Ev LIBUI_CONFIG
-directory (see above).
-The display codes cache filename is
+.Fl C
+(Cache Reset) option, libui will delete the display codes caches.
+The display codes caches are stored in the
+.Ev LIBUI_CACHE
+directory.
+The display codes cache filenames are in the form
 .Qq Sy display-${TERM} .
+.Pp
+When used with the
+.Fl S
+(State Reset) option, libui will delete the statistics files from the
+.Ev LIBUI_STATE
+directory.
+Unless otherwise defined, the
+.Xr libui.sh 3
+library will default
+.Ev LIBUI_STATE
+to
+.Qq Sy ${XDG_STATE_HOME}/libui ,
+If
+.Qq Sy ${XDG_STATE_HOME}
+is not set, then
+.Ev LIBUI_STATE
+will default to
+.Qq Sy ${HOME}/.local/state .
 The statistics file name is
-.Qq Sy stats .
+.Qq Sy stats
+and the command ledger file name is
+.Qq Sy ledger .
+.Pp
+When used with the
+.Fl U
+(User Reset) option, libui will reset (recreate) the user information.
 The user information is stored in the
+.Qq Sy ${XDG_CONFIG_HOME}/user
+file, or if
+.Qq Sy ${XDG_CONFIG_HOME}
+is not set, then to the
 .Qq Sy ${HOME}/.config/user
 file.
 .Pp

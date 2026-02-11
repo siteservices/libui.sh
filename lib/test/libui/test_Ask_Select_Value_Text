@@ -6,13 +6,14 @@
 #####
 
 test_Ask_Select_Value_Text () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  Ask -s one -s two -s three 'Test question?' <<< 'two'
-  TERMINAL="${t}"
+  LibuiGetDisplayTestValues
+  TERMINAL=true Ask -s one -s two -s three 'Test question?' <<< 'two'
   LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
   LibuiValidateTest ${?} 0 'The answer is: two'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -6,9 +6,13 @@
 #####
 
 test_Quiet_False_Show () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell "Test Quiet Show."'
   LibuiValidateTest ${?} 0 'Test Quiet Show.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

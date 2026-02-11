@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_Current () {
+  LibuiGetDisplayTestValues
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local rp
   local td
@@ -17,5 +18,8 @@ test_GetRealPath_Current () {
   LibuiValidateTest ${?} 0 "${mp}${td}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

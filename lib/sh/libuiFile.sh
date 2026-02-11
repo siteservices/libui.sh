@@ -13,21 +13,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.011 -m 1.14
+Version -r 2.012 -m 1.15
 
 # defaults
 _File_ip=
@@ -62,16 +63,13 @@ Close () { #  [-0|-1..-9] [<file_path>]
         ${_M} && _Trace 'File ID. (10)'
         _File_i+=( 10 )
         ;;
-
       [1-9])
         ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
         _File_i+=( "${_File_ip}${_opt}" )
         ;;
-
       *)
         Tell -E -f -L '(Close) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -133,7 +131,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
       fi
     done
   else
-    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
+    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_STATE}/lock}"
     for _File_l in "${_File_i[@]}"
     do
       if [[ -n "${_File_fd[${_File_l}]}" ]]
@@ -184,16 +182,13 @@ Flush () { #  [-0|-1..-9] [<file_path>]
         ${_M} && _Trace 'File ID. (10)'
         _File_i+=( 10 )
         ;;
-
       [1-9])
         ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
         _File_i+=( "${_File_ip}${_opt}" )
         ;;
-
       *)
         Tell -E -f -L '(Flush) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -388,52 +383,42 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
         ${_M} && _Trace 'Change directory. (%s)' "${OPTARG}"
         _File_c="${OPTARG}"
         ;;
-
       d)
         ${_M} && _Trace 'Directories only.'
         _File_d=true
         ;;
-
       e)
         ${_M} && _Trace 'Error on empty.'
         _File_e=true
         ;;
-
       f)
         ${_M} && _Trace 'Files only.'
         _File_f=true
         ;;
-
       h)
         ${_M} && _Trace 'Recursive search with hidden directories.'
         _File_h=true
         _File_r=true
         ;;
-
       n)
         ${_M} && _Trace 'Return names.'
         _File_n=true
         ;;
-
       p)
         ${_M} && _Trace 'Return paths.'
         _File_p=true
         ;;
-
       r)
         ${_M} && _Trace 'Recursive search.'
         _File_r=true
         ;;
-
       w)
         ${_M} && _Trace 'Warn on empty.'
         _File_w=true
         ;;
-
       *)
         Tell -E -f -L '(GetFileList) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -551,16 +536,13 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
         ${_M} && _Trace 'Test path.'
         _File_p=true
         ;;
-
       v)
         ${_M} && _Trace 'Validate specification.'
         _File_v=true
         ;;
-
       *)
         Tell -E -f -L '(GetRealPath) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -659,21 +641,17 @@ GetTmp () { # [-d|-f|-s] <var_name>
         ${_M} && _Trace 'Temp directory.'
         # default
         ;;
-
       f)
         ${_M} && _Trace 'Temp file.'
         _File_f=true
         ;;
-
       s)
         ${_M} && _Trace 'Temp subdirectory.'
         _File_s=true
         ;;
-
       *)
         Tell -E -f -L '(GetTmp) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -741,26 +719,21 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
         ${_M} && _Trace 'Group. (%s)' "${OPTARG}"
         _File_g="${OPTARG}"
         ;;
-
       m)
         ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
         _File_m="${OPTARG}"
         ;;
-
       s)
         ${_M} && _Trace 'Set setgid bit.'
         _File_s=true
         ;;
-
       W)
         ${_M} && _Trace 'Suppress Warning.'
         _File_w=false
         ;;
-
       *)
         Tell -E -f -L '(MkDir) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -848,47 +821,38 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
         ${_M} && _Trace 'File ID. (10)'
         _File_i=10
         ;;
-
       [1-9])
         ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
         _File_i="${_File_ip}${_opt}"
         ;;
-
       a|c)
         ${_M} && _Trace 'File mode. (%s)' "${_opt}"
         [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
         ;;
-
       b)
         ${_M} && _Trace 'Backup file.'
         _File_b=true
         ;;
-
       B)
         ${_M} && _Trace 'Backup path. (%s)' "${OPTARG}"
         _File_b=true
         _File_z="${OPTARG}"
         ;;
-
       m)
         ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
         _File_m="${OPTARG}"
         ;;
-
       t)
         ${_M} && _Trace 'Lock timeout. (%s)' "${OPTARG}"
         _File_t="${OPTARG}"
         ;;
-
       w)
         ${_M} && _Trace 'Warning timeout. (%s)' "${OPTARG}"
         _File_w="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(Open) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -972,7 +936,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       ${_M} && _Trace 'Wait for lock file removal. (%s)' "${_File_e}"
       sleep "0.1$((RANDOM % 10))" 2> /dev/null || sleep 1
     done
-    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
+    local _File_d="${LIBUI_LOCKDIR:-${LIBUI_STATE}/lock}"
     [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
     [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
     printf '%s\n' "${_File_n}.lock" >"${_File_d}/${_File_n##*/}.lock"
@@ -1014,11 +978,9 @@ PathMatches () { # [-P] <path_specification_1> <path_specification_2>
         ${_M} && _Trace 'Path match.'
         _File_p=true
         ;;
-
       *)
         Tell -E -f -L '(PathMatches) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -1067,11 +1029,9 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
         ${_M} && _Trace 'Force remove.'
         _File_f='-f'
         ;;
-
       *)
         Tell -E -f -L '(RemoveFileList) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -1143,7 +1103,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
   local _File_f
   local _File_i
   local _File_p
-  local _File_r=$'\n'
+  local _File_r
   local _File_rv=0
 
   ${_M} && _Trace 'Process Write options. (%s)' "${*}"
@@ -1157,58 +1117,51 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
         ${_M} && _Trace 'File ID. (10)'
         _File_i=10
         ;;
-
       [1-9])
         ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
         _File_i="${_File_ip}${_opt}"
         [[ -z "${_File_fd[${_File_i}]}" ]] && Tell -E 'File ID not open. (%s)' "${_File_i}"
         ;;
-
       a|c)
         ${_M} && _Trace 'File mode. (%s)' "${_opt}"
         [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
         ;;
-
       f)
         ${_M} && _Trace 'File path. (%s)' "${OPTARG}"
         ${ZSH} && _File_f=${~OPTARG} || _File_f=${OPTARG}
         ;;
-
       p)
         ${_M} && _Trace 'Print format. (%s)' "${OPTARG}"
         _File_p="${OPTARG}"
         ;;
-
       r)
         ${_M} && _Trace 'Record marker. (%s)' "${OPTARG}"
         _File_r="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(Write) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
   ((${#})) || Tell -E -f -L '(Write) Called without data.'
-  [[ -z "${_File_p}" ]] && _File_p="%s${_File_r}"
+  [[ -z "${_File_p}" ]] && _File_p="%s" && [[ -z "${_File_r}" ]] && _File_r=$'\n'
 
   ${_M} && _Trace -I 'WRITE: %s' "${*}"
 
   if [[ -n "${_File_i}" ]]
   then
     ${_M} && _Trace 'Write using ID %s to file %s via descriptor %s. (%s)' "${_File_i}" "${_File_fp[${_File_i}]}" "${_File_fd[${_File_i}]}" "${*}"
-    printf -- "${_File_p}" "${@}" >&${_File_fd[${_File_i}]}
+    printf -- "${_File_p}${_File_r}" "${@}" >&${_File_fd[${_File_i}]}
     ((${?})) && Tell -E '(Write) Unable to write to file via file ID. (%s)' "${_File_i}"
   elif [[ -n "${_File_f}" ]]
   then
     ${_M} && _Trace 'Write to file %s. (%s)' "${_File_f}" "${*}"
     if ${_File_c}
     then
-      printf -- "${_File_p}" "${@}" > "${_File_f}"
+      printf -- "${_File_p}${_File_r}" "${@}" > "${_File_f}"
     else
-      printf -- "${_File_p}" "${@}" >> "${_File_f}"
+      printf -- "${_File_p}${_File_r}" "${@}" >> "${_File_f}"
     fi
     _File_rv=${?}
     ((${_File_rv})) && Tell -E '(Write) Unable to write to file. (%s)' "${_File_f}"

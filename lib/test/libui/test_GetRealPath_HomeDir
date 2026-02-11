@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_HomeDir () {
+  LibuiGetDisplayTestValues
   local mp="${HOME}/.config/libui"
   local rp='~/.config/libui'
   GetRealPath rp
@@ -13,5 +14,8 @@ test_GetRealPath_HomeDir () {
   LibuiValidateTest ${?} 0 "${mp}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

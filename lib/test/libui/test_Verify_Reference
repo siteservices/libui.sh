@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify_Reference
+#
+#####
+
+test_Verify_Reference () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Verify "This %s is good?" "string" <<< "yes"'
+  LibuiValidateTest ${?} 0 'This string is good? (y/n) [yes] '
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

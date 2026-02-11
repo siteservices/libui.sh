@@ -6,6 +6,7 @@
 #####
 
 test_LoadProfile_None () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${profile_data}"'
   LibuiValidateTest ${?} 0 ''
   return ${?}
@@ -13,5 +14,8 @@ test_LoadProfile_None () {
 
 # test setup
 printf '%s\n' "profile_data='Profile data loaded.'" > "${TESTDIR}/test.profile"
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

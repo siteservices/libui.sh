@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_Symlink_EndFile () {
+  LibuiGetDisplayTestValues
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local rp
   local td
@@ -18,5 +19,8 @@ test_GetRealPath_Symlink_EndFile () {
   LibuiValidateTest ${?} 0 "${mp}${td}/pathdir3/filepath3"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

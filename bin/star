@@ -14,24 +14,25 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
 ##### libui setup
 
 # script version
-Version -r 2.011 2.8
+Version -r 2.012 2.9
 
 # load mods
 LoadMod Convert
@@ -155,7 +156,7 @@ CreateArchive () { # <archive> <files> ...
     [[ 'GNU' == "${UNIX}" ]] && dirperms="$(stat -c '%a' "${file%/*}")" || dirperms="$(stat -f '%Mp%Lp' "${file%/*}")"
     [[ 'GNU' == "${UNIX}" ]] && fileperms="$(stat -c '%a' "${file}")" || fileperms="$(stat -f '%Mp%Lp' "${file}")"
     timestamp="$(date -r "${file}" +%s)"
-    ${verbose} && Info 'Archiving %s' "${file}" >&6
+    ${verbose} && Brief 'Archiving %s...' "${file}" >&6
     printf '===== file:%s:%s:%s:%s:file %s =====\n' "${prefix}${file}" "${dirperms}" "${fileperms}" "${timestamp}" "${ts}"
     if [[ -s "${file}" ]]
     then
@@ -164,7 +165,7 @@ CreateArchive () { # <archive> <files> ...
     fi
   done >> "${tmp}"
   ((rv+=${?}))
-  ${verbose} && Info >&6
+  ${verbose} && Brief >&6
   exec 6>&-
 
   Trace 'Sign archive. (%s)' "${tmp}"
@@ -239,7 +240,7 @@ ExtractArchive () { # <archive>
     Trace 'Process file info. (%s)' "${line}"
     [[ -z "${line}" ]] && break
     ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
-    ${verbose} && Info 'Extracting %s' "${fileinfo[((AO + 1))]}"
+    ${verbose} && Brief 'Extracting %s...' "${fileinfo[((AO + 1))]}"
 
     Trace 'Process directory. (%s)' "${fileinfo[((AO + 1))]%/*}"
     if [[ ! -d "${fileinfo[((AO + 1))]%/*}" ]]
@@ -260,7 +261,7 @@ ExtractArchive () { # <archive>
     ((rv+=${?}))
   done
   exec 8<&-
-  ${verbose} && Info
+  ${verbose} && Brief
 
   Trace 'ExtractArchive return. (%s)' "${rv}"
   return ${rv}

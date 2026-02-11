@@ -7,8 +7,8 @@
 
 test_Alert () {
   LibuiGetDisplayTestValues
-  LibuiPerformTest 'Alert "Test 1."'
-  LibuiValidateTest ${?} 0 "${TJBL}${TAlert}Test 1.${T}${TCEL}"
+  TERMINAL=true LibuiPerformTest 'Alert "Test 1."; Alert "Test 2."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TAlert}Test 1.${T}${TCEL}${N}${TJBL}${TAlert}Test 2.${T}${TCEL}"
   return ${?}
 }
 

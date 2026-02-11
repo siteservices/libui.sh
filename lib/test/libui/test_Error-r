@@ -6,6 +6,7 @@
 #####
 
 test_Error-r () {
+  LibuiGetDisplayTestValues
   _exitcleanup=false
   LibuiPerformTest 'Error -r 5 "Test 1."'
   local tv=${?}
@@ -13,5 +14,8 @@ test_Error-r () {
   LibuiValidateTest "${tv}" 5 'ERROR: Test 1.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

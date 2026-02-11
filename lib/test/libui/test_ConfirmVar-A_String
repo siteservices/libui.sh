@@ -6,6 +6,7 @@
 #####
 
 test_ConfirmVar-A_String () {
+  LibuiGetDisplayTestValues
   testvar='test'
   _exitcleanup=false
   LibuiPerformTest 'ConfirmVar -A testvar'
@@ -14,5 +15,8 @@ test_ConfirmVar-A_String () {
   LibuiValidateTest "${tv}" 1 'ERROR: The variable "testvar" is not an associative array.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

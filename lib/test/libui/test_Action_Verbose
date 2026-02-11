@@ -6,12 +6,13 @@
 #####
 
 test_Action_Verbose () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action "ls -d /tmp"'
   LibuiValidateTest -r ${?} 0 "\(Action\) ls -d /tmp \(PWD: .*\)${N}/tmp"
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X 2 '
+_Test_opt+='-x T -X 2 ' # no terminal
 
 return 0

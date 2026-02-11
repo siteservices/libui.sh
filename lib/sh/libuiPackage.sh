@@ -13,21 +13,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.011 -m 1.22
+Version -r 2.012 -m 1.23
 
 # defaults
 
@@ -73,23 +74,19 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
         ${_M} && _Trace 'Description. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_desc="${OPTARG}"
         ;;
-
       G)
         ${_M} && _Trace 'Make gtar.'
         _Package_archive='tar'
         _Package_unarchive='gtar xf'
         ;;
-
       i)
         ${_M} && _Trace 'Installer path. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_installer="${OPTARG}"
         ;;
-
       I)
         ${_M} && _Trace 'Installer prep. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_prep="${OPTARG}"
         ;;
-
       P)
         ${_M} && _Trace 'Make star.'
         _Package_archive='star'
@@ -97,33 +94,27 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
             _Package_prep='s="$(command -v star 2> /dev/null)"; s="${s:-$(command -v starx 2> /dev/null)}"; s="${s:-error}"'
         _Package_unarchive='${s} -x -f'
         ;;
-
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_srcdir="${OPTARG}"
         ;;
-
       S)
         ${_M} && _Trace 'Make shar.'
         _Package_archive='shar'
         _Package_unarchive='sh'
         ;;
-
       T)
         ${_M} && _Trace 'Make tar.'
         _Package_archive='tar'
         _Package_unarchive='tar xf'
         ;;
-
       X)
         ${_M} && _Trace 'No extract.'
         _Package_extract=false
         ;;
-
       *)
         Tell -E -f -L '(_CreatePackageHeader) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -234,17 +225,14 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         [[ -n "${_Package_compression}" ]] &&[[ "${_Package_compression:0:1}" != '-' ]] && \
             _Package_compression="${_Package_compression:+-${_Package_compression}}"
         ;;
-
       d)
         ${_M} && _Trace 'Description. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_desc="${OPTARG}"
         ;;
-
       f)
         ${_M} && _Trace 'File list. (%s)' "${OPTARG}"
         ${ZSH} && _Package_files=( "${(P@)OPTARG}" ) || eval "_Package_files=( \"\${${OPTARG}[@]}\" )"
         ;;
-
       G)
         ${_M} && _Trace 'Make gtar package.'
         _Package_sharp=false
@@ -252,33 +240,27 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         _Package_starp=false
         _Package_tarp=false
         ;;
-
       h)
         ${_M} && _Trace 'Header function / command name. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_header="${OPTARG}"
         ;;
-
       i)
         ${_M} && _Trace 'Installer file path. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_installer="${OPTARG}"
         ;;
-
       I)
         ${_M} && _Trace 'Installer prep. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_prep="${OPTARG}"
         ;;
-
       l)
         ${_M} && _Trace 'List files flag.'
         _Package_list=true
         ;;
-
       n)
         ${_M} && _Trace 'Encoding. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_encoding="${OPTARG}" && [[ "${_Package_encoding:0:1}" != '-' ]] && \
             _Package_encoding="${_Package_encoding:+-${_Package_encoding}}"
         ;;
-
       N)
         ${_M} && _Trace 'No package, tarball only.'
         _Package_gtarp=false
@@ -286,7 +268,6 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         _Package_starp=false
         _Package_tarp=false
         ;;
-
       P)
         ${_M} && _Trace 'Make star package.'
         _Package_gtarp=false
@@ -294,12 +275,10 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         _Package_starp=true
         _Package_tarp=false
         ;;
-
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_srcdir="${OPTARG}"
         ;;
-
       S)
         ${_M} && _Trace 'Make shar package.'
         _Package_gtarp=false
@@ -307,7 +286,6 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         _Package_starp=false
         _Package_tarp=false
         ;;
-
       T)
         ${_M} && _Trace 'Make tar package.'
         _Package_gtarp=false
@@ -315,21 +293,17 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         _Package_starp=false
         _Package_tarp=true
         ;;
-
       x)
         ${_M} && _Trace 'Exclude list. (%s)' "${OPTARG}"
         ${ZSH} && _Package_excludes=( "${(P@)OPTARG}" ) || eval "_Package_excludes=( \"\${${OPTARG}[@]}\" )"
         ;;
-
       X)
         ${_M} && _Trace 'No extract.'
         _Package_extract='-X'
         ;;
-
       *)
         Tell -E -f -L '(CreatePackage) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -418,7 +392,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
       local _Package_tarball
       GetTmp -f _Package_tarball
       ${_M} && _Trace 'Create tar archive. (%s)' "${_Package_files[*]}"
-      Action -f -q 'Create tar archive?' -i 'Creating tar archive.' "tar ${_Package_cmd} ${_Package_compression} -cf '${_Package_tarball}' \"\${_Package_files[@]}\""
+      Action -f -q 'Create tar archive?' -i 'Creating tar archive...' "tar ${_Package_cmd} ${_Package_compression} -chf '${_Package_tarball}' \"\${_Package_files[@]}\""
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
@@ -436,15 +410,15 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         local _Package_subdir
         GetTmp -s _Package_subdir
         pushd ${_Package_subdir} > /dev/null
-        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
         if [[ 'GNU' == "${UNIX}" ]]
         then
-          Action -q "Create shar package archive for ${_Package_package}?" -i 'Creating shar archive.' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
+          Action -q "Create shar package archive for ${_Package_package}?" -i 'Creating shar archive...' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         else
-          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive.' "shar \$(find .) >> '${_Package_package}'"
+          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive...' "shar \$(find .) >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
@@ -455,11 +429,11 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         local _Package_subdir
         GetTmp -s _Package_subdir
         pushd ${_Package_subdir} > /dev/null
-        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive.' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -P -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
-        Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive.' "star -c . >> '${_Package_package}'"
+        Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive...' "star -c . >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created starp package: %s' "${_Package_package}"
         popd > /dev/null
@@ -513,7 +487,7 @@ ListPackage () { # <package>
       GetTmp -s _Package_subdir
       pushd "${_Package_subdir}" > /dev/null
       ${_M} && _Trace 'Extract shar. (%s)' "${_Package_subdir}"
-      Action -q 'Extract shar.' -i 'Extracting shar.' "sh '${_Package_package}' > /dev/null"
+      Action -q 'Extract shar?' -i 'Extracting shar...' "sh '${_Package_package}' > /dev/null"
       Action -q 'Remove shar?' "rm ${FMFLAGS} '${_Package_package}'"
       _Package_list=( $(ls -A | sed 's|^|./|') )
       popd - > /dev/null

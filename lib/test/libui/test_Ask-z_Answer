@@ -6,10 +6,14 @@
 #####
 
 test_Ask-z_Answer () {
+  LibuiGetDisplayTestValues
   Ask -z 'Test question?' <<< 'answer'
   LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
-  LibuiValidateTest ${?} 0 'The answer is: '
+  LibuiValidateTest ${?} 0 'The answer is: answer'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

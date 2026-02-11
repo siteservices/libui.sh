@@ -13,21 +13,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.011 -m 2.3
+Version -r 2.012 -m 2.4
 
 # defaults
 
@@ -57,16 +58,13 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
         ${_M} && _Trace 'Input format. (%s)' "${OPTARG}"
         _Convert_ifmt="${OPTARG}"
         ;;
-
       o)
         ${_M} && _Trace 'Output format. (%s)' "${OPTARG}"
         _Convert_ofmt="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(ConvertDate) Unknnown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -86,7 +84,7 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
   ((${#_Convert_date[@]})) || Tell -E '(ConvertDate) Called without a soure date.'
 
   ${_M} && _Trace 'Converting date. (%s -> %s)' "${_Convert_ifmt}" "${_Convert_ofmt}"
-  if date -d &> /dev/null
+  if date -d 20250729 &> /dev/null
   then
     [[ '%s' == "${_Convert_ifmt}" ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
         eval "${_Convert_var}=\"\$(date -d \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
@@ -193,28 +191,22 @@ PermsToOctal () { # <variable> [<perms_string>]
       r)
         ((_Convert_x+=4))
         ;;
-
       w)
         ((_Convert_x+=2))
         ;;
-
       x)
         ((_Convert_x+=1))
         ;;
-
       s|S)
         ((_Convert_s+=(8 - _Convert_i) / 3 * 2))
         ((_Convert_x+=1))
         ;;
-
       t|T)
         ((_Convert_s+=1))
         ((_Convert_x+=1))
         ;;
-
       *)
         ;;
-
     esac
     ((0 == ++_Convert_i % 3)) && _Convert_octal+="${_Convert_x}" && _Convert_x=0
   done

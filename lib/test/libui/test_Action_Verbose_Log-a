@@ -6,6 +6,7 @@
 #####
 
 test_Action_Verbose_Log-a () {
+  LibuiGetDisplayTestValues
   local lfile; GetTmp -f lfile
   LibuiPerformTest "Action -l '${lfile}' 'ls -d /tmp'; cat '${lfile}'"
   LibuiValidateTest -r ${?} 0 "\(Action\) ls -d /tmp \(PWD: .*\)${N}/tmp${N}ACTION \(.*\): ls -d /tmp${N}/tmp"
@@ -13,6 +14,6 @@ test_Action_Verbose_Log-a () {
 }
 
 # test setup
-_Test_opt+='-X2 '
+_Test_opt+='-x T -X2 ' # no terimnal
 
 return 0

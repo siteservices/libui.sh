@@ -13,21 +13,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.010 -m 1.8
+Version -r 2.012 -m 1.9
 
 ##### configuration
 
@@ -88,16 +89,13 @@ LibuiValidateTest () {
         ${_M} && _Trace 'Make parameter initial.'
         _Test_initial=true
         ;;
-
       r)
         ${_M} && _Trace 'Make parameter regex.'
         _Test_regex=true
         ;;
-
       *)
         Tell -E '(validate) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -122,8 +120,8 @@ LibuiValidateTest () {
     ((_Test_tv == vr)) && [[ "${_Test_input}" == "${*}" ]] || _Test_rv=1
   fi
 
-  ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-  ${_Test_debug} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
+  ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CACHE}/display-${TERM}"
+  ${_Test_debug} && [[ -f "${LIBUI_CACHE}/display-${TERM}" ]] && source "${LIBUI_CACHE}/display-${TERM}"
 
   if ((_Test_rv))
   then
@@ -164,16 +162,13 @@ LibuiTest () {
         ${_M} && _Trace 'Debug.'
         _Test_debug=true
         ;;
-
       t)
         ${_M} && _Trace 'Test directory. (%s)' "${OPTARG}"
         _Test_testdir="${OPTARG}"
         ;;
-
       *)
         Tell -E '(LibuiTest) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -184,6 +179,7 @@ LibuiTest () {
   local _Test_errout
   local _Test_failedtests; _Test_failedtests=( )
   local _Test_opt
+  local _Test_na=0
   local _Test_param
   local _Test_pass
   local _Test_result
@@ -212,8 +208,8 @@ LibuiTest () {
       ${_M} && _Trace 'Finish test. (%s)' "${1}"
       Tell '\nCompleted "%s"%s in %s with: %s\n=====' "${1}" "${COUNT:+ (${COUNT})}" "${SHENV}" "${CMDLINE[*]}"
     else
-      ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-      ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
+      ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CACHE}/display-${TERM}"
+      ! ${TERMINAL} && [[ -f "${LIBUI_CACHE}/display-${TERM}" ]] && source "${LIBUI_CACHE}/display-${TERM}"
       Tell -E -f 'Test not available: %s.' "${1}"
       _Test_rv=1
     fi
@@ -239,10 +235,11 @@ LibuiTest () {
     ${_M} && _Trace 'Execute tests. (%s)' "${#_Test_tests[@]}"
     for _Test_test in "${_Test_tests[@]}"
     do
-      Tell -I -N 'Preparing test %s: (%s)...' "${_Test_count}" "${_Test_test}"
+      Tell -B -N 'Preparing test %s: (%s)...' "${_Test_count}" "${_Test_test}"
 
       ${_M} && _Trace 'Prepare for test %s: (%s)' "${_Test_count}" "${_Test_test}"
       _Test_env="LIBUI_TRACE=false COUNT=${_Test_count} "
+#      _Test_opt='-x T '
       _Test_opt='-T '
       ${_Test_debug} && _Test_opt+='-x d '
       ((0 < _xdb)) && _Test_opt+="-X ${_xdb} "
@@ -264,14 +261,14 @@ LibuiTest () {
         _Test_pass=true
       fi
 
-      ${_M} && _Trace 'Execute test: %s %s%s%s.' "${CMD}" "${_Test_opt}" "${_Test_test}" "${_Test_param}"
-      ${_Test_debug} && Tell 'Execute test: %s %s%s%s.' "${CMD}" "${_Test_opt}" "${_Test_test}" "${_Test_param}"
+      ${_M} && _Trace 'Execute test: %s %s%s%s.' "${CMD}" ${_Test_opt}"${_Test_test}" "${_Test_param}"
+      ${_Test_debug} && Tell 'Execute test: %s %s%s%s.' "${CMD}" ${_Test_opt}"${_Test_test}" "${_Test_param}"
       _Test_run=0
       _Test_result=99
       StartTimer _Test_testtimer
       for _Test_shell in "${shells[@]}"
       do
-        Tell -I -N 'Running test %s: (%s)...' "${_Test_count}" "${_Test_test}"
+        Tell -B -N 'Running test %s: (%s)...' "${_Test_count}" "${_Test_test}"
 
         ${_M} && _Trace 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
         ${_Test_debug} && Tell 'Test command: %s' "${_Test_shell} ${CMDPATH} ${_Test_opt}${_Test_test}${_Test_param}"
@@ -282,16 +279,19 @@ LibuiTest () {
           0)
             #${_Test_debug} && ${_Test_pass} && Tell -A 'Test passed in %s. (%s)' "${_Test_shell}" "${_Test_test}"
             ;;
-
           33)
             Tell "${DFy}Associative arrays are not available in this version of %s. (%s)${D}" "${_Test_shell}" "${_Test_test}"
             _Test_result=0
+            ((_Test_na++))
             ;;
-
+          34)
+            Tell "${DFy}Date Conversion not available in this version of %s. (%s)${D}" "${_Test_shell}" "${_Test_test}"
+            _Test_result=0
+            ((_Test_na++))
+            ;;
           *)
             ${_Test_pass} && Tell "${DFr}Test failed in %s with %s. (%s)${D}" "${_Test_shell}" "${_Test_result}" "${_Test_test}"
             ;;
-
         esac
 
         ((_Test_run+=_Test_result))
@@ -326,10 +326,20 @@ LibuiTest () {
     ${_M} && _Trace 'Report. (%s)' "${_Test_success}"
     if ${_Test_success}
     then
-      Tell -A 'Test suite successful. Passed %s tests.' "${#_Test_tests[@]}"
+      if ((_Test_na))
+      then
+        Tell -A 'Test suite successful. Passed %s tests with %s warnings.' "${#_Test_tests[@]}" "${_Test_na}"
+      else
+        Tell -A 'Test suite successful. Passed %s tests.' "${#_Test_tests[@]}"
+      fi
     else
       Tell -E -F 'Test suite not successful.'
-      Tell 'Failed %s out of %s tests:' "${#_Test_failedtests[@]}" "${#_Test_tests[@]}"
+      if ((_Test_na))
+      then
+        Tell 'Failed %s out of %s tests with %s warnings:' "${#_Test_failedtests[@]}" "${#_Test_tests[@]}" "${_Test_na}"
+      else
+        Tell 'Failed %s out of %s tests:' "${#_Test_failedtests[@]}" "${#_Test_tests[@]}"
+      fi
       for ((i = AO; i < $((${#_Test_failedtests[@]} + AO)); i++))
       do
         Tell '  %s %s' "${_Test_failedids[${i}]}" "${_Test_failedtests[${i}]}"
@@ -376,14 +386,14 @@ LibuiGetDisplayTestValues () {
   ${_S} && ((_cDisplayTestValues++))
   ${_M} && _Trace 'LibuiGetDisplayTestValues [%s]' "${*}"
 
-  if [[ -n "${TERM}" ]] && ((8 <= $(tput colors)))
+  if ${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors 2> /dev/null)))
   then
     ${_M} && _Trace 'Define display values.'
     TCS="$(tput clear)" # clear screen (jump home)
     TCEL="$(tput el)" # clear end of line
-    TCES="$(tput ed)" # clear end of screen
+    TCES="$(tput ed || tput cd)" # clear end of screen
     [[ -n "$(tput u7)" ]] && TCP="$(tput u7)" || TCP=$'\e[6n' # read cursor position
-    [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\\r' # jump to begining of line
+    [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\r' # jump to begining of line
     TJH="$(tput cup 0 0)" # jump home (0, 0)
     TRC="$(tput rc)" # restore cursor
     TSC="$(tput sc)" # save cursor
@@ -435,10 +445,11 @@ LibuiGetDisplayTestValues () {
     TAlarm="${Td}${Tfr}"
     TAlert="${Tb}${TFg:-${Tfg}}"
     TAnswer="${Tfy}"
+    TBrief="${TFc:-${Tfc}}"
     TCaution="${TFm:-${Tfm}}"
     TConfirm="${Tb}${TFy:-${Tfy}}"
     TError="${Tbr}${Tb}${TFy:-${Tfy}}"
-    TInfo="${TFc:-${Tfc}}"
+    TInfo="${Tb}${TFc:-${Tfc}}"
     TOptions="${Tb}"
     TQuestion="${TFc:-${Tfc}}${Tsu}"
     TSpinner="${Tb}${TFc:-${Tfc}}"
@@ -456,8 +467,8 @@ LibuiGetDisplayTestValues () {
     T8="${T}"
     T9="${T}${Td}"
 
-    ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CONFIG}/display-${TERM}"
-    ! ${TERMINAL} && [[ -f "${LIBUI_CONFIG}/display-${TERM}" ]] && source "${LIBUI_CONFIG}/display-${TERM}"
+    ${_M} && _Trace 'Load display cache. (%s)' "${LIBUI_CACHE}/display-${TERM}"
+    ! ${TERMINAL} && [[ -f "${LIBUI_CACHE}/display-${TERM}" ]] && source "${LIBUI_CACHE}/display-${TERM}"
 
     ${_M} && _Trace 'GetDisplayTestValues return. (%s)' 0
     return 0

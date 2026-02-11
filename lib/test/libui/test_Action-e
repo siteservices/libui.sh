@@ -6,9 +6,13 @@
 #####
 
 test_Action-e () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action -e "Test failure." "false"'
   LibuiValidateTest ${?} 1 "WARNING: (Action) Test failure. (false)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0
