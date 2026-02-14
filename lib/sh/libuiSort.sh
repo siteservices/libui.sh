@@ -13,17 +13,18 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
@@ -74,53 +75,43 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> .
         LC_ALL=C
         _Sort_cmp='cmpa'
         ;;
-
       A)
         ${_M} && _Trace 'ASCII descending.'
         _Sort_locale=${LC_ALL}
         LC_ALL=C
         _Sort_cmp='cmpA'
         ;;
-
       c)
         ${_M} && _Trace 'Compare function. (%s)' "${OPTARG}"
         _Sort_cmp="${OPTARG}"
         ;;
-
       l)
         ${_M} && _Trace 'Lexically ascending.'
         _Sort_cmp='cmpl'
         ;;
-
       L)
         ${_M} && _Trace 'Lexically descending.'
         _Sort_cmp='cmpL'
         ;;
-
       n)
         ${_M} && _Trace 'Numeric ascending.'
         _Sort_cmp='cmpn'
         ;;
-
       N)
         ${_M} && _Trace 'Numeric descending.'
         _Sort_cmp='cmpN'
         ;;
-
       p)
         ${_M} && _Trace 'Path depth-first.'
         _Sort_cmp='cmpp'
         ;;
-
       u)
         ${_M} && _Trace 'Unique.'
         _Sort_unique='u'
         ;;
-
       *)
         Tell -E -f -L '(Sort) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -145,31 +136,24 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> .
           cmpa)
             eval "_Sort_results=( \"\${(o${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           cmpA)
             eval "_Sort_results=( \"\${(O${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           cmpl)
             eval "_Sort_results=( \"\${(i${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           cmpL)
             eval "_Sort_results=( \"\${(Oi${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           cmpn)
             eval "_Sort_results=( \"\${(n${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           cmpN)
             eval "_Sort_results=( \"\${(On${_Sort_unique})_Sort_results[@]}\" )"
             ;;
-
           *)
             _Sort_source=( ${AO} $((${#_Sort_results[@]} + AO - 1)) )
             ;;
-
         esac
       else
         if command -v sort &> /dev/null
@@ -180,36 +164,29 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> .
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             cmpA)
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | LC_ALL=C sort -r ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             cmpl)
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             cmpL)
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -f -r ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             cmpn)
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             cmpN)
               _Sort_results=( $(printf '%s\n' "${_Sort_results[@]}" | sort -n -r ${_Sort_unique:+-${_Sort_unique}}) )
               _Sort_unique=
               ;;
-
             *)
               _Sort_source=( ${AO} $((${#_Sort_results[@]} + AO - 1)) )
               ;;
-
           esac
           IFS="${_Sort_ifs}"
         else

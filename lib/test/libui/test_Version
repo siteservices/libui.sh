@@ -6,11 +6,15 @@
 #####
 
 test_Version () {
+  LibuiGetDisplayTestValues
   Version 1.0
   local v="$(Version)"
   LibuiPerformTest 'Tell "Version %s." "${v}"'
   LibuiValidateTest ${?} 0 'Version 1.0.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

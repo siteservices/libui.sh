@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_d_Bad () {
+  LibuiGetDisplayTestValues
   local mp="$(readlink /var 2> /dev/null)"; [[ -n "${mp}" ]] && mp="/${mp%/*}"
   local rp
   local td
@@ -19,5 +20,8 @@ test_GetRealPath_d_Bad () {
   LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) Invalid path provided. (badpath)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

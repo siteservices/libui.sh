@@ -6,12 +6,13 @@
 #####
 
 test_FMFLAGS_XF () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${FMFLAGS}"'
   LibuiValidateTest ${?} 0 '-f'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X F '
+_Test_opt+='-x P -X F '
 
 return 0

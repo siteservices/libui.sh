@@ -6,6 +6,7 @@
 #####
 
 test_DOMAIN () {
+  LibuiGetDisplayTestValues
   local h="$(/bin/hostname -f 2> /dev/null)"
   local d; ${ZSH} && d="${(L)h#*\.}" || d="$(printf '%s\n' "${h#*\.}" | tr '[:upper:]' '[:lower:]')"
   [[ 'local' == "${d}" ]] && d=
@@ -14,5 +15,8 @@ test_DOMAIN () {
   LibuiValidateTest ${?} 0 "${d}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

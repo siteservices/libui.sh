@@ -1,14 +1,18 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Alert_NoTerm
+# test_Alert_No_Term
 #
 #####
 
-test_Alert_NoTerm () {
+test_Alert_No_Term () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Alert "Test 1."; Alert "Test 2."'
   LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

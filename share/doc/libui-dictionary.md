@@ -1,8 +1,10 @@
-# Dictionary of Libui Library Commands
+# Dictionary of Libui.sh Commands
+
+This dictionary provides an overview of the commands provided by the libui.sh user interface library. Some of the commands are made available through the loading of mods that provide additional capabilities.
 
 ## Libui Mods
 
-Basic libui library functionality can be extended with the following mods:
+Basic libui.sh library functionality can be extended by loading mods. Many of the commands documented come from these mods:
 
 * Convert (man libuiConvert.sh) - Conversion Utilities
 * File (man libuiFile.sh) - File Support
@@ -23,22 +25,21 @@ Basic libui library functionality can be extended with the following mods:
 * Utility (no man page) - Libui Utilities (libui internal use only)
 * Workspace (man libuiWorkspace.sh) - Workspace Support
 
-Man pages are available for the above: man 3 libui{Mod}.sh
+Man pages are available for each of the above. Use: man 3 libui{Mod}.sh
 
-Use the following to load a mod prior to use:
+Use the following command to load a mod prior to use:
 
-```
+```sh
 LoadMod <mod_name>
 ```
 
-## Libui Commands
+Note: New mods can be created and loaded to support new functionality and doing so is recommended. When implemented properly, the new modules offer additional reusable functionality. The paths in `${LIBUI_PATH}` and `${PATH}` are searched for the mods when using `LoadMod`.
+
+## Libui.sh Commands
 
 ### Action (man libui.sh) - Perform tasks using the libui library.
 
-Primary function for performing tasks while using the libui library. The Action
-command should be used for any task that might make persistent changes. It
-provides support for tracing, confirmation, debugging, etc. It will generate a
-warning message on an action failure.
+Primary function for performing tasks while using the libui library. The Action command should be used for any task that might make persistent changes. It provides support for tracing, confirmation, debugging, etc. It will generate a warning message on an action failure.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -57,31 +58,23 @@ warning message on an action failure.
 * **-w** - wait time between retries (use with -r)
 * **-W** - do not generate a warning on failure
 
-```
+```sh
 Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 ```
 
 ### At (man libuiTerm.sh) - Execute a command at a position on the terminal.
 
-This support command saves the current cursor position, moves to the provided
-position, executes the provided command, and restores the original cursor
-position. Useful for displaying specific messages at a specific location on the
-display. The command can be multiple words.
+This support command saves the current cursor position, moves to the provided position, executes the provided command, and restores the original cursor position. Useful for displaying specific messages at a specific location on the display. The command can be multiple words.
 
-Note: Most of the libui.sh provided message commands jump to the beginning of
-the current row before displaying the message. Most support the **-i** (In Place)
-option flag allowing the message to be displayed "in place" at the current
-cursor position.
+Note: Most of the libui.sh provided message commands jump to the beginning of the current row before displaying the message. Most support the **-i** (In Place) option flag allowing the message to be displayed "in place" at the current cursor position.
 
-```
+```sh
 At <row> <col> <command>
 ```
 
 ### AddOption (man libui.sh) - Add command line option flags for the script.
 
-Defines option flags for the script. The AddOption command defines the option
-flag, any associated option arguments, the name of the variable associated with
-the option, and the keyword and description for the usage information.
+Defines option flags for the script. The AddOption command defines the option flag, any associated option arguments, the name of the variable associated with the option, and the keyword and description for the usage information.
 
 * **-a** - automatically default if only one selection option
 * **-c** - option callback called when processing option
@@ -101,16 +94,13 @@ the option, and the keyword and description for the usage information.
 * **-t** - initial value "true", provided value "false"
 * **-v** - validation callback called after all parameters have been processed
 
-```
+```sh
 AddOption [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] <option>[:]
 ```
 
 ### AddParameter (man libui.sh) - Add command line parameters for the script.
 
-Defines parameters for the script. The AddParameter command defines the
-parameters for the script, i.e., the values following the command and any option
-flags, including the name of the variable associated with the parameter(s), and
-the keyword and description for the usage information.
+Defines parameters for the script. The AddParameter command defines the parameters for the script, i.e., the values following the command and any option flags, including the name of the variable associated with the parameter(s), and the keyword and description for the usage information.
 
 * **-a** - automatically default if only one selection option
 * **-c** - option callback called when processing option
@@ -126,14 +116,13 @@ the keyword and description for the usage information.
 * **-S** - get selection of values from provided variable name
 * **-v** - validation callback called after all parameters have been processed
 
-```
+```sh
 AddParameter [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_variable>] [-k <keyword>] [-n <variable_name>] [-P <path>] [-s <selection_values>] [-S <selection_variable>] [-v <callback>] [<variable_name>]
 ```
 
 ### Alert (man libui.sh) - Display a highlighted alert message for the user.
 
-Sends a highlighted text message to STDOUT. By default this message is displayed
-in green text. The message can also be logged to a log file.
+Sends a highlighted text message to STDOUT. By default this message is displayed in green text. The message can also be logged to a log file.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -146,44 +135,37 @@ in green text. The message can also be logged to a log file.
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
-```
+```sh
 Alert [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### AllowRoot (man libuiRoot.sh) - Allow the root user to execute the script.
 
-By default, the libui library prevents the root user from executing the script.
-When called prior to calling the Initialize command, this command allows the
-root user to execute the script. When called after Initialize, Returns 0 if the
-root user is allowed, otherwise it returns 1.
+By default, the libui library prevents the root user from executing the script. When called prior to calling the Initialize command, this command allows the root user to execute the script. When called after Initialize, Returns 0 if the root user is allowed, otherwise it returns 1.
 
-```
+```sh
 AllowRoot
 ```
 
 ### AnswerMatches (man libui.sh) - Checks an answer against a match string.
 
-When the Ask command is used to request a response from the user, this command
-can be used to validate the response. The answer match string can be either an
-absolute match string or, with the **-r** option flag, a regular expression.
+When the Ask command is used to request a response from the user, this command can be used to validate the response. The answer match string can be either an absolute match string or, with the **-r** option flag, a regular expression.
 
 * **-r** - process answer match string as a regular expression
 
-```
+```sh
 AnswerMatches [-r] <answer_match_string>
 ```
 
 ### Ask (man libui.sh) - Displays a question to the user and obtains an answer.
 
-The Ask command displays a highlighted question to the user and waits to collect
-a response. The Ask command supports answer validation, multiple-choice
-questions, default answers, and more. The answer is available in the ANSWER
-variable and can optionally be assigned to a named variable.
+The Ask command displays a highlighted question to the user and waits to collect a response. The Ask command supports answer validation, multiple-choice questions, default answers, and more. The answer is available in the ANSWER variable and can optionally be assigned to a named variable.
 
 * **-b** - boolean, yes/no response
 * **-C** - only ask when the **-C** (Confirm) command line option flag was used
 * **-d** - default answer
 * **-E** - disable echo on the terminal when asking a question
+* **-l** - treat the question as a literal string, not a format string
 * **-n** - variable name to save the answer
 * **-N** - default answer to "no"
 * **-o** - output file descriptor
@@ -194,23 +176,39 @@ variable and can optionally be assigned to a named variable.
 * **-Y** - default answer to "yes"
 * **-z** - allow an empty answer (empty string)
 
+```sh
+Ask [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <variable_name>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_variable>] <question_text>
 ```
-Ask [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <variable_name>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_variable>] <question_text>
+
+### Brief (man libui.sh) - Display a brief highlighted info message for the user.
+
+Sends a highlighted text message to STDOUT. By default this message is displayed in cyan text and does not include a trailing newline. The message can also be logged to a log file.
+
+* **-1..-9** - file id
+* **-a** | **-c** - append to / create log
+* **-f** - force script to exit after displaying the message (see Error command)
+* **-F** - Disable exit after displaying the message (see Error command)
+* **-i** - display the message "in place", i.e., where the cursor currently is
+* **-l** - log message to file
+* **-L** - include the location of the message request (see Error command)
+* **-N** - do not include a trailing linefeed
+* **-r** - use provided return value
+
+```sh
+Brief [-1..-9|-a|-c|-f|-F|-i|-L|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### Capture (man libui.sh) - Special function to capture output from a command.
 
 Captures STDOUT, STDERR, and the return value from the executed command string.
 
-```
+```sh
 Capture <stdout_variable> <stderr_variable> <rv_variable> <command_string>
 ```
 
 ### Caution (man libui.sh) - Display a highlighted caution message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed
-in magenta text. The message can also be logged to a log file. A return value
-can provided with the **-r** (Return Value) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in magenta text. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -223,40 +221,31 @@ can provided with the **-r** (Return Value) option flag.
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
-```
+```sh
 Caution [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### Close (man libuiFile.sh) - Closes a file ID opened with the Open command.
 
-Closes a file ID that was previously opened using the Open command. The library
-will automatically close any open file ID when the Exit command is used to exit
-the script. The library uses shorthand flags **-1** through **-9** when accessing
-the file ID in a libui library command. Please note that the -0 file ID flag is
-a reserved flag for library use only. It is also possible to close using the
-file path.
+Closes a file ID that was previously opened using the Open command. The library will automatically close any open file ID when the Exit command is used to exit the script. The library uses shorthand flags **-1** through **-9** when accessing the file ID in a libui library command. Please note that the -0 file ID flag is a reserved flag for library use only. It is also possible to close using the file path.
 
 * **-1..-9** - file id
 
-```
+```sh
 Close [-1..-9] [<file_path>]
 ```
 
 ### Confirm (man libui.sh) - Check if in Confirm (-XC) mode.
 
-Returns 0 if the "-XC" or "-Xc" (Confirm) option flag was provided on the
-command line, otherwise it returns 1.
+Returns 0 if the "-XC" or "-Xc" (Confirm) option flag was provided on the command line, otherwise it returns 1.
 
-```
+```sh
 Confirm
 ```
 
 ### ConfirmVar (man libui.sh) - Confirms the value contained within a variable.
 
-Performs some tests on a variable to ensure that the value contained within the
-variable meets some limited criteria. Optionally, if the value does not meet the
-criteria, a question can be asked and a response collected for the variable. The
-tests currently available include:
+Performs some tests on a variable to ensure that the value contained within the variable meets some limited criteria. Optionally, if the value does not meet the criteria, a question can be asked and a response collected for the variable. The tests currently available include:
 
 * **-A** - check if the variable is an associative array
 * **-d** - check if the value is a directory
@@ -271,44 +260,34 @@ tests currently available include:
 * **-S** - get selection of values from provided variable name
 * **-s** - selection of values that can be used
 
-Note: The ConfirmVar command uses the Ask command when asking the question
-provided with the **-q** (Optional Question) or **-Q** (Always Question) option flags.
+Note: The ConfirmVar command uses the Ask command when asking the question provided with the **-q** (Optional Question) or **-Q** (Always Question) option flags.
 
-```
+```sh
 ConfirmVar [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <question>] [-s <selection_value>] [-S <selection_variable>] <variable_name> ...
 ```
 
 ### Contains (man libui.sh) - Utility function to check an array for a value.
 
-The Contains command returns 0 if a value is contained within the array with the
-provided array variable name otherwise it returns 1.
+The Contains command returns 0 if a value is contained within the array with the provided array variable name otherwise it returns 1.
 
-```
+```sh
 Contains <array_variable> <value>
 ```
 
 ### ConvertDate (man libuiConvert.sh) - Converts a date string between formats.
 
-This command provides an interface to the "date" command to convert data strings
-from one format to another. The default input format is "%a %b %d %T %Z %Y"
-(which is the default date command output format) and the default output format
-is "%Y-%m-%d". If \<date\> is not provided, the date will be obtained from the
-\<var\_name\> variable.
+This command provides an interface to the "date" command to convert data strings from one format to another. The default input format is "%a %b %d %T %Z %Y" (which is the default date command output format) and the default output format is "%Y-%m-%d". If \<date\> is not provided, the date will be obtained from the \<var\_name\> variable.
 
 * **-i** - input format (man 1 date for details)
 * **-o** - output format (man 1 date for details)
 
-```
+```sh
 ConvertDate [-i <input_format>] [-o <output_format>] <var_name> [<date>]
 ```
 
 ### CreatePackage (man libuiPackage.sh) - Creates a self-extracting package.
 
-The library supports the creation of self-extracting .tarp (tar package) and
-.sharp (shar package) packages. This command creates the package file. The
-environment specification is a variable name that contains an environment string
-prepended when executing the provided installer command. It is expected that the
-installer is a libui script.
+The library supports the creation of self-extracting .tarp (tar package) and .sharp (shar package) packages. This command creates the package file. The environment specification is a variable name that contains an environment string prepended when executing the provided installer command. It is expected that the installer is a libui script.
 
 * **-c** - tar compression option flag to use
 * **-d** - description to use in package header
@@ -326,30 +305,31 @@ installer is a libui script.
 * **-x** - array variable name containing file list to exclude from package
 * **-X** - do not extract the archive before running the installer
 
-```
+```sh
 CreatePackage [-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>] [-f <filelist_array_variable_name>] [-h <header_command>] [-i <installer>] [-I <installer_prep>] [-n <encoding>] [-s <source_directory>] [-x <exclude_array_variable_name>] <package_filename>
+```
+
+### Credentials (man libui.sh) - Check if the credentials files was successfully sourced.
+
+Returns 0 (true) if the credentials file for the script was successfully sourced. Returns non-zero (false) if the credentials file could not be sourced. The return value will be 1 if the file could not be found. The return value will be 2 if the file was empty. The return value will be 3 if the file was found but did not have the correct permissions.
+
+```sh
+Credentials
 ```
 
 ### Drop (man libui.sh) - Utility function to drop a value from an array.
 
-The Drop command removes the provided values from the array with the provided
-array variable name. If the value contains a colon (:) at the end, both the
-provided value and the following value will be removed. This is useful for
-removing option values from an argument list like CMDARGS.
+The Drop command removes the provided values from the array with the provided array variable name. If the value contains a colon (:) at the end, both the provided value and the following value will be removed. This is useful for removing option values from an argument list like CMDARGS.
 
 * **-r** - treat the provided value / value: is a regular expression pattern
 
-```
+```sh
 Drop <array_variable> <value>|<value>: ...
 ```
 
 ### Error (man libui.sh) - Display a highlighted error message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed
-in yellow text on a red background. The message can also be logged to a log
-file. A return value can provided with the **-r** (Return Value) option flag.
-Normally the Error command will exit the script (using the Exit command). This
-can be disabled with the **-E** (Disable Exit) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in yellow text on a red background. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag. Normally the Error command will exit the script (using the Exit command). This can be disabled with the **-E** (Disable Exit) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -362,16 +342,15 @@ can be disabled with the **-E** (Disable Exit) option flag.
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
-```
+```sh
 Error [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### ExitCallback (man libui-template) - Optional function in main script.
 
-If an ExitCallback function is defined in the script, it will be called when the
-script is exited using the Exit command.
+If an ExitCallback function is defined in the script, it will be called when the script is exited using the Exit command.
 
-```
+```sh
 ExitCallback () {
   Trace 'In user exit callback.'
 }
@@ -379,74 +358,59 @@ ExitCallback () {
 
 ### Exit (man libui.sh) - Exits the main script.
 
-The Exit command cleans up script resources, calls any exit callbacks, and
-terminates the script. It returns the provided return value when provided or the
-return value from the last executed command.
+The Exit command cleans up script resources, calls any exit callbacks, and terminates the script. It returns the provided return value when provided or the return value from the last executed command.
 
-```
+```sh
 Exit [<return_value>]
 ```
 
 ### Flush (man libuiFile.sh) - Flushes a file ID opened with the Open command.
 
-Flushes a file ID that was previously opened using the Open command. This is
-accomplished by closing and re-opening the associated file ID. The library uses
-shorthand flags **-1** through **-9** when accessing the file ID in a libui library
-command. Please note that the -0 file ID flag is a reserved flag for library use
-only. It is also possible to flush using the file path.
+Flushes a file ID that was previously opened using the Open command. This is accomplished by closing and re-opening the associated file ID. The library uses shorthand flags **-1** through **-9** when accessing the file ID in a libui library command. Please note that the -0 file ID flag is a reserved flag for library use only. It is also possible to flush using the file path.
 
 * **-1..-9** - file id
 
-```
+```sh
 Close [-1..-9] [<file_path>]
 ```
 
 ### Force (man libui.sh) - Check if in Force (-XF) mode.
 
-Returns 0 if the "-XF" or "-Xf" (Force) option flag was provided on the command
-line, otherwise it returns 1.
+Returns 0 if the "-XF" or "-Xf" (Force) option flag was provided on the command line, otherwise it returns 1.
 
-```
+```sh
 Force
 ```
 
 ### FormatElapsed (man libuiTimer.sh) - Formats ELAPSED to be human readable.
 
-Converts the number of seconds in ELAPSED to a human readable format of
-"HH:MM:SS.SSS". See the StartTimer and GetElapsed commands for more information.
+Converts the number of seconds in ELAPSED to a human readable format of "HH:MM:SS.SSS". See the StartTimer and GetElapsed commands for more information.
 
 * **-d** - also display "D days" for the elapsed time is greater than 24 hours
 
-```
+```sh
 FormatElapsed [-d]
 ```
 
 ### GetCursor (man libuiTerm.sh) - Get the current cursor position.
 
-Gets the current cursor position which is then available in the variables "ROW"
-and "COL".
+Gets the current cursor position which is then available in the variables "ROW" and "COL".
 
-```
+```sh
 GetCursor
 ```
 
 ### GetElapsed (man libuiTimer.sh) - Get the elapsed time from a timer.
 
-Captures the time elapsed in seconds since the timer identified by the variable
-name was started using the StartTimer command.
+Captures the time elapsed in seconds since the timer identified by the variable name was started using the StartTimer command.
 
-```
+```sh
 GetElapsed [<variable_name>]
 ```
 
 ### GetFileList (man libuiFile.sh) - Get a list of file into an array.
 
-Collects the file paths associated with the provided file specification and
-loads them into an array variable with the provided variable name. The
-collection of paths can optionally be recursive. Recursive searches only search
-non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is
-used. The file specification can be further refined with the option flags to
-limit the array results to:
+Collects the file paths associated with the provided file specification and loads them into an array variable with the provided variable name. The collection of paths can optionally be recursive. Recursive searches only search non-hidden subdirectories unless the -h (Hidden Recursive Search) option flag is used. The file specification can be further refined with the option flags to limit the array results to:
 
 * **-c** - cd to provided directory before capturing list
 * **-d** - directories only
@@ -458,48 +422,36 @@ limit the array results to:
 * **-r** - perform a recursive directory search
 * **-w** - generate a warning if the list collected is empty
 
-```
+```sh
 GetFileList [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <variable_name> <file_specification> ...
 ```
 
 ### GetRealPath (man libuiFile.sh) - Get the real, absolute path for a file.
 
-Gets the absolute path for provided path specification, bypassing any symbolic
-links. With the **-P** (Path) option flag, GetRealPath will only test the directory
-portion of the path, excluding the filename (to support the creation of new
-files). With the -v (Validate Specification), the variable is updated with a
-valid path, changing an initial "~" to ${HOME} and an initial "." to ${IWD} (the
-initial (starting) working directory).
+Gets the absolute path for provided path specification, bypassing any symbolic links. With the **-P** (Path) option flag, GetRealPath will only test the directory portion of the path, excluding the filename (to support the creation of new files). With the -v (Validate Specification), the variable is updated with a valid path, changing an initial "~" to ${HOME} and an initial "." to ${IWD} (the initial (starting) working directory).
 
 * **-P** - only check the directory path portion of the provided specification
 * **-v** - only validate path, changing "~" to ${HOME} and "." to ${IWD}
 
-```
+```sh
 GetRealPath [-P] <variable_name> [<path_specification>]
 ```
 
 ### GetTmp (man libuiFile.sh) - Get a temporary directory, subdirectory or file.
 
-Creates a temporary directory, subdirectory, or file and returns the path in the
-provided variable name. The temporary files will be created in the path defined
-by TMPDIR, if set, or "/tmp". Only one temporary directory will be created and
-it, along with any contents, will automatically be removed when the Exit command
-is called. Multiple subdirectories and files may be created, but all of them
-will exist within the one temporary directory.
+Creates a temporary directory, subdirectory, or file and returns the path in the provided variable name. The temporary files will be created in the path defined by TMPDIR, if set, or "/tmp". Only one temporary directory will be created and it, along with any contents, will automatically be removed when the Exit command is called. Multiple subdirectories and files may be created, but all of them will exist within the one temporary directory.
 
 * **-d** - create a temporary directory (limited to 1 directory)
 * **-f** - create a temporary file (inside the main temporary directory)
 * **-s** - create a temporary subdirectory (inside the main temporary directory)
 
-```
+```sh
 GetTmp [-d|-f|-s] <variable_name>
 ```
 
 ### Info (man libui.sh) - Display a highlighted info message for the user.
 
-Sends a highlighted text message to STDOUT. By default this message is displayed
-in cyan text and does not include a trailing newline. The message can also be
-logged to a log file.
+Sends a highlighted text message to STDOUT. By default this message is displayed in bold cyan text. The message can also be logged to a log file.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -511,16 +463,15 @@ logged to a log file.
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
-```
+```sh
 Info [-1..-9|-a|-c|-f|-F|-i|-L|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### InfoCallback (man libui-template) - Optional function in main script.
 
-If an InfoCallback function is defined in the script, it will be called when the
-script displays usage information using the UsageInfo command.
+If an InfoCallback function is defined in the script, it will be called when the script displays usage information using the UsageInfo command.
 
-```
+```sh
 InfoCallback () {
   Trace 'In user info callback.'
 }
@@ -528,10 +479,9 @@ InfoCallback () {
 
 ### InitCallback (man libui-template) - Optional function in main script.
 
-If an InitCallback function is defined in the script, it will be called when the
-script is initialized using the Initialize command.
+If an InitCallback function is defined in the script, it will be called when the script is initialized using the Initialize command.
 
-```
+```sh
 InitCallback () {
   Trace 'In user init callback.'
 }
@@ -539,22 +489,17 @@ InitCallback () {
 
 ### Initialize (man libui.sh) - Initializes the libui library after configuration.
 
-Sets up the libui library to support main script operation. The Initialize
-command must be called after all configuration commands have been executed and
-before the first Actions are taken. Any command line option flags and parameters
-are captured and checked for errors during initialization. Any defined
-initialization callbacks are also called.
+Sets up the libui library to support main script operation. The Initialize command must be called after all configuration commands have been executed and before the first Actions are taken. Any command line option flags and parameters are captured and checked for errors during initialization. Any defined initialization callbacks are also called.
 
-```
+```sh
 Initialize
 ```
 
 ### IsRemote (man libuiSSH.sh) - Performs checks to confirm target is remote.
 
-Performs some basic checks on the provided host name to ensure it is a valid
-remote host and not the localhost.
+Performs some basic checks on the provided host name to ensure it is a valid remote host and not the localhost.
 
-```
+```sh
 IsRemote <target>
 ```
 
@@ -562,80 +507,68 @@ IsRemote <target>
 
 Generates a listing of files contained in a package.
 
-```
+```sh
 ListPackage <package>
 ```
 
 ### LoadMod (man libui.sh) - Loads a libui mod.
 
-The libui library supports mods that add new and/or change existing
-functionality. This command loads a mod for use. It normally searches PATH but
-another path can be provided using the **-P** (Path) option flag.
+The libui library supports mods that add new and/or change existing functionality. This command loads a mod for use. It normally searches PATH but another path can be provided using the **-P** (Path) option flag.
 
 * **-P** - load mod from the provided directory (otherwise use PATH)
 
-```
+```sh
 LoadMod [-P <path>] <libui_mod_name>
 ```
 
 ### LoadProfile (man libuiProfile.sh) - Manually load a profile.
 
-The libui library supports runtime profiles. This command will manually load a
-profile.
+The libui library supports runtime profiles. This command will manually load a profile.
 
-```
+```sh
 LoadProfile <file_path>
 ```
 
 ### MkDir (man libuiFile.sh) - Create a directory path with special permissions.
 
-Creates any necessary directories in the provided path and sets the permissions
-according to the provided flags:
+Creates any necessary directories in the provided path and sets the permissions according to the provided flags:
 
 * **-g** - set the group ownership of the directories to the provided group
 * **-m** - use the provided mask as the umask when creating the directories
 * **-s** - set the setgid bit for the created directories
 * **-W** - Do not generate a warning on failure
 
-```
+```sh
 MkDir [-s|-W] [-g <group>] [-m <mask>] <path>
 ```
 
 ### Multiuser (man libuiMultiuser.sh) - Check if multiuser mode is enabled.
 
-Returns 0 if multiuser mode has been enabled (by loading the Multiuser mod),
-otherwise it returns 1.
+Returns 0 if multiuser mode has been enabled (by loading the Multiuser mod), otherwise it returns 1.
 
-```
+```sh
 Multiuser
 ```
 
 ### NoAction (man libui.sh) - Check if in No Action (-XN) mode.
 
-Returns 0 if the "-XN" or "-Xn" (No Action) option flag was provided on the
-command line, otherwise it returns 1.
+Returns 0 if the "-XN" or "-Xn" (No Action) option flag was provided on the command line, otherwise it returns 1.
 
-```
+```sh
 NoAction
 ```
 
 ### OctalToPerms (man libuiConvert.sh) - Converts octal perms to perms string.
 
-This command converts the provided octal permissions int a permissions string
-similar to what "ls" presents. If \<octal\_perms\> is not provided, the octal
-value will be obtained from the \<var\_name\> variable.
+This command converts the provided octal permissions int a permissions string similar to what "ls" presents. If \<octal\_perms\> is not provided, the octal value will be obtained from the \<var\_name\> variable.
 
-```
+```sh
 OctalToPerms <var_name> [<octal_perms>]
 ```
 
 ### Open (man libuiFile.sh) - Open a file ID for use within the script.
 
-The libui library supports file locking, enables file access shorthand, and can
-automatically back up files through the Open command. The file ID to use should
-be passed to the Open command and are restricted between 1 and 9. Please note
-that the **-0** file ID flag is a reserved flag for library use only. Open file IDs
-should be closed using the Close command.
+The libui library supports file locking, enables file access shorthand, and can automatically back up files through the Open command. The file ID to use should be passed to the Open command and are restricted between 1 and 9. Please note that the **-0** file ID flag is a reserved flag for library use only. Open file IDs should be closed using the Close command.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -645,90 +578,70 @@ should be closed using the Close command.
 * **-t** - file lock timeout in seconds (default is 30 seconds)
 * **-w** - file lock wait warning message timeout (default is 5 seconds)
 
-```
+```sh
 Open [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
 ```
 
 ### Overwrite (man libui.sh) - Check if in Overwrite (-XO) mode.
 
-Returns 0 if the "-XO" or "-Xo" (overwrite) option flag was provided on the
-command line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option
-flags can be used to enable and disable the Yes mode within the script.
+Returns 0 if the "-XO" or "-Xo" (overwrite) option flag was provided on the command line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option flags can be used to enable and disable the Yes mode within the script.
 
 * **-e** - enable "Yes" mode, i.e., auto answer questions with default or "yes"
 * **-E** - disable "Yes" mode
 
-```
+```sh
 Overwrite [-e|-E]
 ```
 
 ### PathMatches (man libuiFile.sh) - Compares two provided filesystem paths.
 
-Compares the absolute path for provided path specifications, bypassing any
-symbolic links. With the **-P** (Path) option flag, PathMatches will only test the
-directory portion of the paths.
+Compares the absolute path for provided path specifications, bypassing any symbolic links. With the **-P** (Path) option flag, PathMatches will only test the directory portion of the paths.
 
 * **-P** - match paths only, ignoring filenames
 
-```
+```sh
 PathMatches [-P] <path_specification_1> <path_specification_2>
 ```
 
 ### PauseSpinner (man libuiSpinner.sh) - Pause a running progress spinner.
 
-Pauses a running progress spinner. It can be restarted by using the
-ResumeSpinner command. This is primarily used when asking for user input in the
-middle of a task.
+Pauses a running progress spinner. It can be restarted by using the ResumeSpinner command. This is primarily used when asking for user input in the middle of a task.
 
-```
+```sh
 PauseSpinner
 ```
 
 ### Quiet (man libui.sh) - Check if in Quiet (-XQ) mode.
 
-Returns 0 if the "-XQ" or "-Xq" (Quiet) option flag was provided on the command
-line, otherwise it returns 1.
+Returns 0 if the "-XQ" or "-Xq" (Quiet) option flag was provided on the command line, otherwise it returns 1.
 
-```
+```sh
 Quiet
 ```
 
 ### RecordClose (man libuiFileRecord.sh) - Close file IDs opened by RecordOpen.
 
-Closes a file ID that was previously opened using the RecordOpen command. The
-library will automatically close any open file ID when the Exit command is used
-to exit the script. The library uses shorthand flags -1 through **-9** when
-accessing the file ID in a libui library command. Please note that the **-0** file
-ID flag is a reserved flag for library use only. It is also possible to close
-using the file path. Note: Uses the same parameters as the Close command.
+Closes a file ID that was previously opened using the RecordOpen command. The library will automatically close any open file ID when the Exit command is used to exit the script. The library uses shorthand flags -1 through **-9** when accessing the file ID in a libui library command. Please note that the **-0** file ID flag is a reserved flag for library use only. It is also possible to close using the file path. Note: Uses the same parameters as the Close command.
 
 * **-1..-9** - file id
 
-```
+```sh
 RecordClose [-1..-9] [<file_path>]
 ```
 
 ### RecordEntry (man libuiFileRecord.sh) - Create an entry in a Record File.
 
-Creates a comma separated values (CSV) record in an open record file. If the
-data associative array or the column array is not provided, RecordEntry will use
-the array variables "RecordData" and "RecordColumns", respectively. The data
-associative array should use the same names as are included in the column array.
+Creates a comma separated values (CSV) record in an open record file. If the data associative array or the column array is not provided, RecordEntry will use the array variables "RecordData" and "RecordColumns", respectively. The data associative array should use the same names as are included in the column array.
 
 * **-1..-9** - file id
 
-```
+```sh
 RecordEntry [-1..-9] [<data_assoc_array>] [<column_array>]
 ```
 
 ### RecordOpen (man libuiFileRecord.sh) - Open a record-based file ID.
 
-The libui library supports file locking, enables file access shorthand, and can
-automatically back up files through the Open command. The file ID to use should
-be passed to the Open command and are restricted between 1 and 9. Please note
-that the **-0** file ID flag is a reserved flag for library use only. Open file IDs
-should be closed using the Close command. Note: Uses the same parameters as the
-Open command.
+The libui library supports file locking, enables file access shorthand, and can automatically back up files through the Open command. The file ID to use should be passed to the Open command and are restricted between 1 and 9. Please note that the **-0** file ID flag is a reserved flag for library use only. Open file IDs should be closed using the Close command. Note: Uses the same parameters as the Open command.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -737,39 +650,33 @@ Open command.
 * **-t** - file lock timeout
 * **-w** - file lock wait warning message interval (displayed when less than -t)
 
-```
+```sh
 RecordOpen [-1..-9|-a|-b|-c] [-B <path>] [-t <timeout>] [-w <interval>] <file_path>
 ```
 
 ### RemoveFileList (man libuiFile.sh) - Removes files in the provided array.
 
-Removes the file paths contained in the array with the provided variable name.
-RemoveFileList will attempt to quietly force the removal when the **-f** (Force)
-option is provided.
+Removes the file paths contained in the array with the provided variable name. RemoveFileList will attempt to quietly force the removal when the **-f** (Force) option is provided.
 
 * **-f** - force removal (i.e., use "rm -f")
 
-```
+```sh
 RemoveFileList [-f] <name_of_array_variable> ...
 ```
 
 ### RequireRoot (man libuiRoot.sh) - Require the root user to execute the script.
 
-By default, the libui library prevents the root user from executing the script.
-When called prior to calling the Initialize command, this command requires the
-root user to execute the script. When called after Initialize, Returns 0 if the
-root user is required, otherwise it returns 1.
+By default, the libui library prevents the root user from executing the script. When called prior to calling the Initialize command, this command requires the root user to execute the script. When called after Initialize, Returns 0 if the root user is required, otherwise it returns 1.
 
-```
+```sh
 RequireRoot
 ```
 
 ### RestoreCursor (man libuiTerm.sh) - Restores cursor to last saved position.
 
-Tells the terminal to restore the cursor to the last saved position. The cursor
-position needs to have been previously saved using the SaveCursor command.
+Tells the terminal to restore the cursor to the last saved position. The cursor position needs to have been previously saved using the SaveCursor command.
 
-```
+```sh
 RestoreCursor
 ```
 
@@ -777,34 +684,30 @@ RestoreCursor
 
 Resumes a running progress spinner that was paused by the PauseSpinner command.
 
-```
+```sh
 ResumeSpinner
 ```
 
 ### SaveCursor (man libuiTerm.sh) - Saves the current cursor position.
 
-Tells the terminal to save the current cursor position. The cursor can then be
-restored to the last saved postion using the RestoreCursor command.
+Tells the terminal to save the current cursor position. The cursor can then be restored to the last saved postion using the RestoreCursor command.
 
-```
+```sh
 SaveCursor
 ```
 
 ### Sleep (man libuiSpinner.sh) - Sleeps a script with an optional countdown.
 
-Pauses execution and optionally provides a countdown. The countdown is updated
-at the interval provided by the **-u** (Update) option flag. The countdown message
-displayed is provided by the **-m** (Message) option flag should include a "%s" for
-the remaining seconds and defaults to:
+Pauses execution and optionally provides a countdown. The countdown is updated at the interval provided by the **-u** (Update) option flag. The countdown message displayed is provided by the **-m** (Message) option flag should include a "%s" for the remaining seconds and defaults to:
 
-```
+```sh
 Waiting %s...
 ```
 
 * **-i** - the message to display in sleep (include "%s" for seconds remaining)
 * **-u** - the number of seconds to sleep between updates to the message
 
-```
+```sh
 Sleep [-m "<message>"] [-u <interval>] [<sleep>]
 ```
 
@@ -812,15 +715,13 @@ Sleep [-m "<message>"] [-u <interval>] [<sleep>]
 
 Sets (i.e., moves) the cursor to the provided position.
 
-```
+```sh
 SetCursor <row> <col>
 ```
 
 ### Sort (man libuiSort.sh) - Sorts an array.
 
-Sorts the array variable with the provided name. Depending upon the provided
-option flag, the sort can be ascending or descending, ASCII, lexical, numeric,
-path, or custom.
+Sorts the array variable with the provided name. Depending upon the provided option flag, the sort can be ascending or descending, ASCII, lexical, numeric, path, or custom.
 
 * **-a** - ASCII ascending
 * **-A** - ASCII decending
@@ -832,15 +733,13 @@ path, or custom.
 * **-p** - filesystem path depth-first sort
 * **-u** - only keep unique values
 
-```
+```sh
 Sort [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_variable_name> ...
 ```
 
 ### SSHExec (man libuiSSH.sh) - Execute a command on a remote server via ssh.
 
-Sends a command to a remote server (using -t) or a list of remote servers (using
--T) and collects the response into SSH_OUT (STDOUT), SSH_ERR (STDERR), and
-SSH_RV (return value) variables.
+Sends a command to a remote server (using -t) or a list of remote servers (using -T) and collects the response into SSH_OUT (STDOUT), SSH_ERR (STDERR), and SSH_RV (return value) variables.
 
 * **-d** - enable display output (i.e., open a tty)
 * **-i** - info message to display while executing
@@ -852,15 +751,13 @@ SSH_RV (return value) variables.
 * **-u** - target system username
 * **-v** - verbose execution (capture results and display output in real time)
 
-```
+```sh
 SSHExec [-q|-v] [-p <password>] [-P <port>] [-t <target>] [-T <target_array_variable>] [-u <user>] <command> ...
 ```
 
 ### SSHSend (man libuiSSH.sh) - Sends files to a remote server via scp.
 
-Sends files to a remote server (using -t) or a list of remote servers (using
--T), placing the file into the provided destination, and collects the response
-into SSH_OUT (STDOUT), SSH_ERR (STDERR), and SSH_RV (return value) variables.
+Sends files to a remote server (using -t) or a list of remote servers (using -T), placing the file into the provided destination, and collects the response into SSH_OUT (STDOUT), SSH_ERR (STDERR), and SSH_RV (return value) variables.
 
 * **-d** - target system target directory
 * **-p** - target system password
@@ -871,60 +768,47 @@ into SSH_OUT (STDOUT), SSH_ERR (STDERR), and SSH_RV (return value) variables.
 * **-u** - target system username
 * **-v** - verbose execution (capture results and display output in real time)
 
-```
+```sh
 SSHSend [-q|-v] **-d** <destination> [-p <password>] [-P <port>] [-t <target>] [-T <target_variable>] [-u <user>] <file> ...
 ```
 
 ### StartSpinner (man libuiSpinner.sh) - Start a progress spinner.
 
-Starts a progress spinner that is displayed a space after the current cursor
-position. The spinner should be stopped with the StopSpinner command. An
-informational message can be optionally displayed. Note: the spinner should also
-stop when the program ends with the Exit command. (Under certain error
-conditions, it is possible for the Spinner to persist beyond the script and
-would need to be killed manually.)
+Starts a progress spinner that is displayed a space after the current cursor position. The spinner should be stopped with the StopSpinner command. An informational message can be optionally displayed. Note: the spinner should also stop when the program ends with the Exit command. (Under certain error conditions, it is possible for the Spinner to persist beyond the script and would need to be killed manually.)
 
-```
+```sh
 StartSpinner [<info_message>]
 ```
 
 ### StartTimer (man libuiTimer.sh) - Start a timer.
 
-Starts a timer. There is a default timer or, a variable name can be provided to
-support multiple timers.
+Starts a timer. There is a default timer or, a variable name can be provided to support multiple timers.
 
-```
+```sh
 StartTimer [<variable_name>]
 ```
 
 ### StopSpinner (man libuiSpinner.sh) - Stop a progress spinner.
 
-Stops a progress spinner that was started by the StartSpinner command. Note: the
-spinner should also stop when the program ends with the Exit command. (Under
-certain error conditions, it is possible for the Spinner to persist beyond the
-script and would need to be killed manually.)
+Stops a progress spinner that was started by the StartSpinner command. Note: the spinner should also stop when the program ends with the Exit command. (Under certain error conditions, it is possible for the Spinner to persist beyond the script and would need to be killed manually.)
 
-```
+```sh
 StopSpinner
 ```
 
 ### Syslog (man libuiSyslog.sh) - Send a message to the system log.
 
-Sends a message with the provided priority to the system log. The default
-priority is "user.notice".
+Sends a message with the provided priority to the system log. The default priority is "user.notice".
 
 * **-p** - unix syslog priority label (man 3 syslog)
 
-```
+```sh
 Syslog [-p <priority>] [<message>]
 ```
 
 ### Tell (man libui.sh) - Display a highlighted message for the user.
 
-Sends a highlighted text message to STDOUT. By default this message is displayed
-in bold white text. The message can also be logged to a log file. Normally Tell
-adds a newline after printing the message. This can be disabled with the **-n** (No
-Newline) option.
+Sends a highlighted text message to STDOUT. By default this message is displayed in bold white text. The message can also be logged to a log file. Normally Tell adds a newline after printing the message. This can be disabled with the **-n** (No Newline) option.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -943,70 +827,55 @@ Newline) option.
 * **-r** - use provided return value
 * **-W** - display the message as a "Warning" message (see also Warn)
 
-```
+```sh
 Tell [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### \_Trace (man libui.sh) - Internal libui trace command.
 
-The \_Trace command is an internal libui trace command. It is included here
-because this form should be used in libui mods with the following form:
+The \_Trace command is an internal libui trace command. It is included here because this form should be used in libui mods with the following form:
 
-```
+```sh
 ${_M} && _Trace 'Trace message. (%s)' "${var}"
 ```
 
 ### Trace (man libui.sh) - Runtime trace command.
 
-Trace provides debug messages when debugging is enabled with the **-X** (Xdebug)
-command line option. For this to be effective, it is recommended that the Trace
-command be used in place of comments within the code. That way when debugging is
-enabled, it will be easy to trace the operation of the script to determine where
-the error exists. Trace should be used with the following form:
+Trace provides debug messages when debugging is enabled with the **-X** (Xdebug) command line option. For this to be effective, it is recommended that the Trace command be used in place of comments within the code. That way when debugging is enabled, it will be easy to trace the operation of the script to determine where the error exists. Trace should be used with the following form:
 
-```
+```sh
 Trace 'Trace message. (%s)' "${var}"
 ```
 
 ### UsageInfo (man libuiInfo.sh) - Display usage information (i.e. help) to the user.
 
-Displays usage information, i.e. help information, to the user. This function is
-automatically provided by the libui library with the **-H** or **-h** (Help) command
-line option flags. The usage information is built from the AddOption and
-AddParameter commands. The UsageInfo command will also call a provided
-InfoCallback function if one is available.
+Displays usage information, i.e. help information, to the user. This function is automatically provided by the libui library with the **-H** or **-h** (Help) command line option flags. The usage information is built from the AddOption and AddParameter commands. The UsageInfo command will also call a provided InfoCallback function if one is available.
 
-```
+```sh
 UsageInfo
 ```
 
 ### ValidateWorkspace (man libuiWorkspace.sh) - Validate and load workspace info.
 
-A workspace is considered to be the directory that contains one or more (git)
-repositories. This functions loads configuration information and sets
-environment variables that are used by other libui supported commands.
+A workspace is considered to be the directory that contains one or more (git) repositories. This functions loads configuration information and sets environment variables that are used by other libui supported commands.
 
 * **-w** - remain in the workspace directory after validation
 
-```
+```sh
 ValidateWorkspace [-w]
 ```
 
 ### Verbose (man libui.sh) - Check if in Verbose (-XV) mode.
 
-Returns 0 if the "-XV" or "-Xv" (Verbose) option flag was provided on the
-command line, otherwise it returns 1.
+Returns 0 if the "-XV" or "-Xv" (Verbose) option flag was provided on the command line, otherwise it returns 1.
 
-```
+```sh
 Verbose
 ```
 
 ### Verify (man libui.sh) - Ask a yes/no question and return 0 for yes, 1 for no.
 
-Uses Ask to ask the user a question and waits for a yes / no response. Returns 0
-on a "yes" response and 1 on a "no" response. If a "q" is provided, the main
-script will exit. The default answer is "yes". Note that other Ask command
-options are also available.
+Uses Ask to ask the user a question and waits for a yes / no response. Returns 0 on a "yes" response and 1 on a "no" response. If a "q" is provided, the main script will exit. The default answer is "yes". Note that other Ask command options are also available.
 
 * **-C** - only ask when the **-C** (Confirm) command line option flag was used
 * **-d** - set default answer to argument
@@ -1015,26 +884,19 @@ options are also available.
 * **-r** - regular expression that the answer must match
 * **-Y** - set default answer to "yes"
 
-```
+```sh
 Verify [-C|-N|-Y] [-d <default>] [-n <variable_name>] [-r <required_regex>] <question_text>
 ```
 
 ### Version (man libui.sh) - Version information.
 
-When a version number is provided, registers the version for the script. If the
-**-r** (Required) option flag is provided, confirms that the libui.sh library
-version being used is at least that version. If the **-m** (Mod) option flag is
-provided, the script file is defined as a mod. If the **-a** (All) option flag
-is provided, version information for all script files is displayed. When used
-with no parameters, displays the version of the requesting script file. The
-version information is included with the usage information provided by the libui
-library with the **-H** or -h (Help) command line option flags.
+When a version number is provided, registers the version for the script. If the **-r** (Required) option flag is provided, confirms that the libui.sh library version being used is at least that version. If the **-m** (Mod) option flag is provided, the script file is defined as a mod. If the **-a** (All) option flag is provided, version information for all script files is displayed. When used with no parameters, displays the version of the requesting script file. The version information is included with the usage information provided by the libui library with the **-H** or -h (Help) command line option flags.
 
 * **-a** - display all registered script file versions
 * **-m** - the script file is a libui mod
 * **-r** - libui.sh library version must be at least provided version
 
-```
+```sh
 Version [-a|-m] [-r <required_libui_version>] <script_version>
 ```
 
@@ -1042,15 +904,13 @@ Version [-a|-m] [-r <required_libui_version>] <script_version>
 
 Starts a spinner and waits for the last executed background task to complete.
 
-```
+```sh
 WaitSpinner
 ```
 
 ### Warn (man libui.sh) - Display a highlighted warning message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed
-in black text on a yellow background. The message can also be logged to a log
-file. A return value can provided with the **-r** (Return Value) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in black text on a yellow background. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -1063,17 +923,13 @@ file. A return value can provided with the **-r** (Return Value) option flag.
 * **-N** - do not include a trailing linefeed
 * **-r** - use provided return value
 
-```
+```sh
 Warn [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
 ```
 
 ### Write (man libuiFile.sh) - Write text to a file.
 
-Writes the provided data to a file identified by the provided file ID
-(previously opened with the Open command) or the **-f** (File) option flag. The
-Write command defaults to a printf format of "%s" and newline as a record
-marker. These can be changed with the **-p** (Printf) and **-r** (Record Marker) option
-flags.
+Writes the provided data to a file identified by the provided file ID (previously opened with the Open command) or the **-f** (File) option flag. The Write command defaults to a printf format of "%s" and newline as a record marker. These can be changed with the **-p** (Printf) and **-r** (Record Marker) option flags.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create file
@@ -1081,119 +937,62 @@ flags.
 * **-p** - printf format string for writing data
 * **-r** - record marker to write after data, defaults to newline
 
-```
+```sh
 Write [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker>] <data>
 ```
 
 ### Yes (man libui.sh) - Check if in Yes (-XY) mode.
 
-Returns 0 if the "-XY" or "-Xy" (Yes) option flag was provided on the command
-line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option
-flags can be used to enable and disable the Yes mode within the script.
+Returns 0 if the "-XY" or "-Xy" (Yes) option flag was provided on the command line, otherwise it returns 1. The **-e** (Enable) and the **-E** (Disable) option flags can be used to enable and disable the Yes mode within the script.
 
 * **-e** - enable "Yes" mode, i.e., auto answer questions with default or "yes"
 * **-E** - disable "Yes" mode
 
-```
+```sh
 Yes [-e|-E]
 ```
 
 ## Variables
 
-The libui library defines the following variables for use in scripts. Please
-note that, while most are all caps, they are not environment variables.
+The libui library defines the following variables for use in scripts. Please note that, while most are all caps, they are not environment variables.
 
-* **${AA}** - Associative Array: Set to "true" if the shell supports associative
-  arrays.
-* **${ANSWER}** - The last answer provided by the user via an Ask command.
-* **${AO}** - (Pq as in A O, not A zero) Array Offset: Set to "1" (one) if the
-  shell is Z shell (zsh) and "0" (zero) otherwise.
-* **${ARCH}** - The system architecture (as reported by the system).
-* **${BSDPATH}** - The path to the BSD version of an application (for Solaris).
-* **${BV}** - Bash Version: Set to the major and minor version of the Bash shell
-  (without the intervening period). Note: If the executing shell is the Z shell,
-  BV will be set to "0" (zero).
-* **${CHFLAGS}** - Chain flags: This variable collects command line flags
-  (options) that should be passed on to chained scripts. (Chained scripts are
-  scripts executed by the main script.) To properly use ${CHFLAGS}, place it as
-  if it were a command line option for the script to be executed (e.g.: script
-  ${CHFLAGS}). By default, the -XC, -XF, -XN, -XQ, and -XY options are
-  automatically captured. Additional flags can be added as needed using the -C
-  (Chain) option flag with AddOption.
-* **${CMD}** - The command name, i.e., the filename of the main script.
-* **${CMDARGS}** - An array containing the arguments provided on the command line.
-* **${CMDLINE}** - The full command line string used to call the current script.
-  This is the same as: ${CMD} "${CMDARGS[@]}"
-* **${CMDPATH}** - The absolute path of the main script file.
-* **${DOMAIN}** - The domain of the current machine.
-* **${FMFLAGS}** - File management flags: For use by cp, mv, rm. Note:
-  ${FMFLAGS} is set to "-i" by -C (Confirm) and to "-f" by-F (Force) options.
-* **${GROUP}** - The primary group of the user.
-* **${HEIGHT}** - Terminal window height in rows.
-* **${HOST}** - The hostname of the current machine (hostname only, not fully
-  qualified).
-* **${IWD}** - The path of the directory where the script was initially executed.
-* **${LIBUI}** - The absolute path of the included libui.sh source file.
-* **${MAXCOL}** - Maximum terminal window column. Equivalent to WIDTH - 1. Note:
-  Terminal columns start at 0.
-* **${MAXINT}** - Maximum integer: Set to the shell's maximum integer value.
-* **${MAXROW}** - Maximum terminal window row. Equivalent to HEIGHT - 1. Note:
-  Terminal rows start at 0.
-* **${N}** - The newline character. This is equivalent to $'\n' but, available
-  for use in string assignments.
-* **${NROPT}** - The number of options provided on the command line.
-* **${NRPARAM}** - The number of parameters provided on the command line.
-* **${OS}** - The name of the operating system. Typical values are Darwin,
-  Linux, SunOS, Solaris, etc.
-* **${OS_DIST}** - The operating system distribution. Typical values are
-  almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
-* **${SHENV}** - The path of the currently executing shell (limited to: zsh,
-  bash, or sh).
-* **${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if
-  standard out is not to a terminal. When standard out is to a terminal, the
-  libui library generates color text and additional user cues including
-  questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or
-  "false" before executing the script (or sourcing libui.sh) to force enabling /
-  disabling these terminal effects. Note: The ${TERMINAL} variable is only set
-  during initialization and should not be used to determine if output is
-  actually to a terminal. Use the [[ -t 1 ]] construct to determine if STDOUT is
-  actually to a terminal.
-* **${UICMD}** - An array containing the names of (available) libui commands
-  (including libui mod provided commands).
-* **${UIMOD}** - An array containing the filenames of loaded libui mods.
-* **${UIVERSION}** - An array containing the filenames and versions of the
-  loaded scripts and libui mods in alternating "pairs": \<file\> \<version\> ...
-* **${UNIX}** - The type of the operating system. The possible values are BSD,
-  SYSV, or GNU (i.e. Linux).
-* **${WIDTH}** - Terminal window width in colums.
-* **${ZSH}** - Z shell - Set to "true" if the shell is Z shell (zsh).
+* **\${AA}** - Associative Array: Set to "true" if the shell supports associative arrays.
+* **\${ANSWER}** - The last answer provided by the user via an Ask command.
+* **\${AO}** - (Pq as in A O, not A zero) Array Offset: Set to "1" (one) if the shell is Z shell (zsh) and "0" (zero) otherwise.
+* **\${ARCH}** - The system architecture (as reported by the system).
+* **\${BSDPATH}** - The path to the BSD version of an application (for Solaris).
+* **\${BV}** - Bash Version: Set to the major and minor version of the Bash shell (without the intervening period). Note: If the executing shell is the Z shell, BV will be set to "0" (zero).
+* **\${CHFLAGS}** - Chain flags: This variable collects command line flags (options) that should be passed on to chained scripts. (Chained scripts are scripts executed by the main script.) To properly use ${CHFLAGS}, place it as if it were a command line option for the script to be executed (e.g.: script ${CHFLAGS}). By default, the -XC, -XF, -XN, -XQ, and -XY options are automatically captured. Additional flags can be added as needed using the -C (Chain) option flag with AddOption.
+* **\${CMD}** - The command name, i.e., the filename of the main script.
+* **\${CMDARGS}** - An array containing the arguments provided on the command line.
+* **\${CMDLINE}** - The full command line string used to call the current script. This is the same as: `${CMD} "${CMDARGS[\@]}"`
+* **\${CMDPATH}** - The absolute path of the main script file.
+* **\${DOMAIN}** - The domain of the current machine.
+* **\${FMFLAGS}** - File management flags: For use by cp, mv, rm. Note: `${FMFLAGS}` is set to "-i" by -XC (Confirm) and to "-f" by-XF (Force) options.
+* **\${GROUP}** - The primary group of the user.
+* **\${HEIGHT}** - Terminal window height in rows.
+* **\${HOST}** - The hostname of the current machine (hostname only, not fully qualified).
+* **\${IWD}** - The path of the directory where the script was initially executed.
+* **\${LIBUI}** - The absolute path of the included libui.sh source file.
+* **\${MAXCOL}** - Maximum terminal window column. Equivalent to WIDTH - 1. Note: Terminal columns start at 0.
+* **\${MAXINT}** - Maximum integer: Set to the shell's maximum integer value.
+* **\${MAXROW}** - Maximum terminal window row. Equivalent to HEIGHT - 1. Note: Terminal rows start at 0.
+* **\${N}** - The newline character. This is equivalent to $'\n' but, available for use in string assignments.
+* **\${NROPT}** - The number of options provided on the command line.
+* **\${NRPARAM}** - The number of parameters provided on the command line.
+* **\${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
+* **\${OS_DIST}** - The operating system distribution. Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
+* **\${SHENV}** - The path of the currently executing shell (limited to: zsh, bash, or sh).
+* **\${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if standard out is not to a terminal. When standard out is to a terminal, the libui library generates color text and additional user cues including questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or "false" before executing the script (or sourcing libui.sh) to force enabling / disabling these terminal effects. Note: The ${TERMINAL} variable is only set during initialization and should not be used to determine if output is actually to a terminal. Use the `[[ -t 1 ]]` construct to determine if STDOUT is actually to a terminal.
+* **\${UICMD}** - An array containing the names of (available) libui commands (including libui mod provided commands).
+* **\${UIMOD}** - An array containing the filenames of loaded libui mods.
+* **\${UIVERSION}** - An array containing the filenames and versions of the loaded scripts and libui mods in alternating "pairs": \<file\> \<version\> ...
+* **\${UNIX}** - The type of the operating system. The possible values are BSD, SYSV, or GNU (i.e. Linux).
+* **\${WIDTH}** - Terminal window width in colums.
+* **\${ZSH}** - Z shell - Set to "true" if the shell is Z shell (zsh).
 
-## Vim Note
+## License
 
-When using the ```#!/usr/bin/env libui``` shebang, syntax highlighting and
-formatting can be improved by creating a ```~/.vim/ftdetect/libui.vim``` file
-and adding the following to set the filetype to zsh (or bash):
+This content and associated files as published by siteservices.net, Inc. are marked CCO 1.0. Permission is unconditionally granted to anyone with the interest, full rights to use, modify, publish, distribute, sublicense, and/or sell this content and all associated files. To view a copy of CCO 1.0, visit https://creativecommons.org/publicdomain/zero/1.0/.
 
-```
-autocmd BufRead *
-            \ if getline(1) =~ '^#!/usr/bin/env libui' |
-            \   set filetype=zsh |
-            \ endif
-```
-
-If you prefer Bash syntax highlighting, change ```set filetype=zsh``` in the
-file to ```set filetype=bash```.
-
-## Copyright and License
-
-Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-domain. Permission is unconditionally granted to anyone with an interest, the
-rights to use, modify, publish, distribute, sublicense, and/or sell this
-content and associated files.
-
-All content is provided "as is", without warranty of any kind, expressed or
-implied, including but not limited to merchantability, fitness for a
-particular purpose, and noninfringement. In no event shall the authors or
-copyright holders be liable for any claim, damages, or other liability,
-whether in an action of contract, tort, or otherwise, arising from, out of,
-or in connection with this content or use of the associated files.
+All content is provided "as is", without warranty of any kind, expressed or implied, including but not limited to merchantability, fitness for a particular purpose, and noninfringement. In no event shall the authors or publishers be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the use of this content or any of the associated files.

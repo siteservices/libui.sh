@@ -6,6 +6,7 @@
 #####
 
 test_ZSH () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${ZSH}"'
   local tv=${?}
   if ${ZSH}
@@ -16,5 +17,8 @@ test_ZSH () {
   fi
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

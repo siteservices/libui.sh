@@ -6,10 +6,14 @@
 #####
 
 test_MAXINT () {
+  LibuiGetDisplayTestValues
   local maxint=9223372036854775807; ((2147483647 > maxint)) && maxint=2147483647
   LibuiPerformTest 'Tell -- "${MAXINT}"'
   LibuiValidateTest ${?} 0 "${maxint}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

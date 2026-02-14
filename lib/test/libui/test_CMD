@@ -6,9 +6,13 @@
 #####
 
 test_CMD () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${CMD}"'
   LibuiValidateTest ${?} 0 "${script##*/}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

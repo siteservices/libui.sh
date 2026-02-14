@@ -6,14 +6,14 @@
 #####
 
 test_ConfirmVar-n_Full_Question-Q () {
+  LibuiGetDisplayTestValues
   response='/tmp'
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'ConfirmVar -Q "Full question?" -n response <<< "/tmp"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 'Full question? [/tmp] '
+  TERMINAL=true LibuiPerformTest 'ConfirmVar -Q "Full question?" -n response <<< "/tmp"'
+  LibuiValidateTest ${?} 0 'Full question? [/tmp] '
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

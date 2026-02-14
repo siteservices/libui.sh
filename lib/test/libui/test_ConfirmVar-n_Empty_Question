@@ -6,14 +6,14 @@
 #####
 
 test_ConfirmVar-n_Empty_Question () {
+  LibuiGetDisplayTestValues
   unset response
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'ConfirmVar -q "Empty question?" -n response <<< "/tmp"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 'Empty question? [] '
+  TERMINAL=true LibuiPerformTest 'ConfirmVar -q "Empty question?" -n response <<< "/tmp"'
+  LibuiValidateTest ${?} 0 'Empty question? [] '
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

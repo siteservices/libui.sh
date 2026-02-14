@@ -13,7 +13,7 @@
 #
 # Alternatively, to source libui.sh in a zsh or bash script, include the line:
 #
-#   source "${LIBUI:-libui.sh}" "${0}" "${@}"
+#   source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 #
 # Every libui script (or libui mod) should contain the following command:
 #
@@ -55,21 +55,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.011 # Wed Apr 30 15:12:17 EDT 2025
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.012 # Sat Feb 14 11:28:40 EST 2026
 
 #####
 #
@@ -107,7 +108,7 @@ Contains () { # <array_var> <value>
 
 # drop value from array
 UICMD+=( 'Drop' )
-Drop () { # <array_var> <value>|<value>: ...
+Drop () { # [-r] <array_var> <value>|<value:> ...
   ${_S} && ((_cDrop++))
   ${_T} && _Trace 'Drop [%s]' "${*}"
 
@@ -141,21 +142,17 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
         printf '%s %s\n' "${UIVERSION[@]}"
         return 0
         ;;
-
       m)
         ${_T} && _Trace 'Module version. (%s)' "${_s}"
         _m=true
         ;;
-
       r)
         ${_T} && _Trace 'Required libui version. (%s)' "${OPTARG}"
         _r="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(Version) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -215,28 +212,23 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
         ${_T} && _Trace 'Autodefault.'
         _a=true
         ;;
-
       c)
         ${_T} && _Trace 'Option callback. (%s)' "${OPTARG}"
         _c="${OPTARG}"
         ;;
-
       C)
         ${_T} && _Trace 'Chain flag.'
         _f=true
         ;;
-
       d)
         ${_T} && _Trace 'Option description. (%s)' "${OPTARG}"
         _d="${OPTARG}"
         ;;
-
       f)
         ${_T} && _Trace 'Set initial false, provided true.'
         _i=( 'false' )
         _u='true'
         ;;
-
       i|I)
         ${_T} && _Trace 'Initial option value. (%s)' "${OPTARG}"
         if [[ 'I' == "${_opt}" ]]
@@ -246,62 +238,50 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
           [[ -z "${_i}" ]] && _i=( "${OPTARG}" ) || _i=( "${_i[@]}" "${OPTARG}" )
         fi
         ;;
-
       k)
         ${_T} && _Trace 'Option keyword. (%s)' "${OPTARG}"
         _k="${OPTARG}"
         ;;
-
       m)
         ${_T} && _Trace 'Allow multiple option entries.'
         _m=true
         ;;
-
       n)
         ${_T} && _Trace 'Option variable name. (%s)' "${OPTARG}"
         _n="${OPTARG}"
         ;;
-
       p)
         ${_T} && _Trace 'Option value when provided. (%s)' "${OPTARG}"
         _u="${OPTARG}"
         ;;
-
       P)
         ${_T} && _Trace 'Path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
         ;;
-
       r)
         ${_T} && _Trace 'Required option.'
         _r=true
         ;;
-
       s)
         ${_T} && _Trace 'Option selection value. (%s)' "${OPTARG}"
         [[ -z "${_l}" ]] && _l=( "${OPTARG}" ) || _l=( "${_l[@]}" "${OPTARG}" )
         ;;
-
       S)
         ${_T} && _Trace 'Option selection variable. (%s)' "${OPTARG}"
         _s="${OPTARG}"
         ;;
-
       t)
         ${_T} && _Trace 'Set initial true, provided false.'
         _i=( 'true' )
         _u='false'
         ;;
-
       v)
         ${_T} && _Trace 'Option validation callback. (%s)' "${OPTARG}"
         _v="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(AddOption) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -313,7 +293,6 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
     *${1:0:1}*)
       Tell -E -f -L '(AddOption) Option %s is already defined. (%s)' "${1:0:1}" "${_opts}"
       ;;
-
   esac
 
   ${_T} && _Trace 'Get option type for usage. (%s)' "${1}"
@@ -325,13 +304,11 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
       _oavar+=( "${_n}" ) # array variable
       [[ -z "${_u}" ]] && _u='${OPTARG}'
       ;;
-
     *)
       ${_T} && _Trace 'Add simple option. (-%s)' "${1}"
       _os+=( "${1:0:1}" ) # simple opt
       _osm+=( "${_m}" ) # multiple
       ;;
-
   esac
 
   ${_T} && _Trace 'Add option. (%s)' "${*}"
@@ -405,17 +382,14 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
         ${_T} && _Trace 'Autodefault.'
         _a=true
         ;;
-
       c)
         ${_T} && _Trace 'Parameter callback. (%s)' "${OPTARG}"
         _c="${OPTARG}"
         ;;
-
       d)
         ${_T} && _Trace 'Parameter description. (%s)' "${OPTARG}"
         _d="${OPTARG}"
         ;;
-
       i|I)
         ${_T} && _Trace 'Initial parameter value. (%s)' "${OPTARG}"
         if [[ 'I' == "${_opt}" ]]
@@ -425,51 +399,41 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
           [[ -z "${_i}" ]] && _i=( "${OPTARG}" ) || _i=( "${_i[@]}" "${OPTARG}" )
         fi
         ;;
-
       k)
         ${_T} && _Trace 'Parameter keyword. (%s)' "${OPTARG}"
         _k="${OPTARG}"
         ;;
-
       m)
         ${_T} && _Trace 'Allow multiple (last) parameter entries.'
         _pm=true
         ;;
-
       n)
         ${_T} && _Trace 'Parameter variable. (%s)' "${OPTARG}"
         _n="${OPTARG}"
         ;;
-
       P)
         ${_T} && _Trace 'Path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
         ;;
-
       r)
         ${_T} && _Trace 'Required parameter.'
         _pr=true
         ;;
-
       s)
         ${_T} && _Trace 'Parameter selection value. (%s)' "${OPTARG}"
         [[ -z "${_l}" ]] && _l=( "${OPTARG}" ) || _l=( "${_l[@]}" "${OPTARG}" )
         ;;
-
       S)
         ${_T} && _Trace 'Parameter selection variable. (%s)' "${OPTARG}"
         _s="${OPTARG}"
         ;;
-
       v)
         ${_T} && _Trace 'Parameter validation callback. (%s)' "${OPTARG}"
         _v="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(AddParameter) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -542,89 +506,72 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
         _f="${_opt}"
         ${_vdb} && _t=true
         ;;
-
       a|c)
         ${_T} && _Trace 'File mode. (%s)' "${_opt}"
         _c="-${_opt}"
         ;;
-
       C)
         ${_T} && _Trace 'Confirm action.'
         _v=true
         ;;
-
       e)
         ${_T} && _Trace 'Error message. (%s)' "${OPTARG}"
         _h="${OPTARG}"
         ;;
-
       f)
         ${_T} && _Trace 'Action failure exit.'
         _e=true
         ;;
-
       F)
         ${_T} && _Trace 'Skip action if prior failure.'
         _a=false
         ;;
-
       i)
         ${_T} && _Trace 'Info message. (%s)' "${OPTARG}"
         _i="${OPTARG}"
         ;;
-
       l)
         ${_T} && _Trace 'Log file path. (%s)' "${OPTARG}"
         ${ZSH} && _l=${~OPTARG} || _l=${OPTARG}
         ${_vdb} && _t=true
         ;;
-
       p)
         ${_T} && _Trace 'Use pipe element return value. (%s)' "${OPTARG}"
         _pe="${OPTARG}"
         ;;
-
       q)
         ${_T} && _Trace 'Question. (%s)' "${OPTARG}"
         _q="${OPTARG}"
         ;;
-
       r)
         ${_T} && _Trace 'Retry. (%s)' "${OPTARG}"
         _r="${OPTARG}"
         ;;
-
       R)
         ${_T} && _Trace 'Reset action state.'
         _action=true
         ;;
-
       s)
         ${_T} && _Trace 'Use spinner.'
         LoadMod Spinner
         _m=true
         _n=
         ;;
-
       t)
         ${_T} && _Trace 'Tee log output.'
         _t=true
         ;;
-
       w)
         ${_T} && _Trace 'Retry wait. (%s)' "${OPTARG}"
         _s="${OPTARG}"
         ;;
-
       W)
         ${_T} && _Trace 'No warnings.'
         _w=false
         ;;
-
       *)
         Tell -E -f -L '(Action) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -649,15 +596,15 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       [[ -n "${*//[^|]/}" ]] && _pe="${_pe:-${AO}}" || _pe=-1
 
       ${_T} && _Trace 'Check if confirming action. (%s)' "${_v}"
-      if ! ${_v} || Verify "${DConfirm}(Confirm)${D} ${_q:-${*}}"
+      if ! ${_v} || Verify $([[ -z "${_q}" ]] && printf '-l') "${DConfirm}(Confirm)${D} ${_q:-${*}}"
       then
-        ${_T} && _Trace 'Process info message. (%s)' "${_i}"
-        ${TERMINAL} && ! ${_quiet} && [[ -n "${_i}" ]] && printf "${DJBL}${DInfo}%s${D}${DCEL}${_n}" "${_i}" >&4 # duplicate stderr
+        ${_T} && _Trace 'Process message. (%s)' "${_i}"
+        ${TERMINAL} && ! ${_quiet} && [[ -n "${_i}" ]] && printf "${DJBL}${DBrief}%s${D}${DCEL}${_n}" "${_i}" >&4 # duplicate stderr
 
         ${_T} && _Trace 'Check for no action. (%s)' "${_noaction}"
         if ${_noaction}
         then
-          ${_T} && _Trace -I 'NO ACTION: %s' "${*}"
+          ${_T} && _Trace -B 'NO ACTION: %s' "${*}"
           ${_vdb} && printf "${DJBL}${DCaution}(No Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}" >&4 || \
               printf "${DJBL}${DCaution}(No Action) %s${D}${DCEL}\n" "${*}" >&4 # duplicate stderr
           _rv=0
@@ -799,68 +746,56 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
         _a=true
         _m='The variable "%s%s" is not an associative array.'
         ;;
-
       d)
         ${_T} && _Trace 'Directory exists test.'
         _h=true
         _t='d'
         _m='The directory "%s" does not exist. (%s)'
         ;;
-
       D)
         ${_T} && _Trace 'Default answer. (%s)' "${OPTARG}"
         _d="${OPTARG}"
         ;;
-
       e)
         ${_T} && _Trace 'Path exists test.'
         _h=true
         _t='e'
         _m='The path "%s" does not exist. (%s)'
         ;;
-
       E)
         ${_T} && _Trace 'Disable echo.'
         _c='-E'
         ;;
-
       f)
         ${_T} && _Trace 'File exists test.'
         _h=true
         _t='f'
         _m='The file "%s" does not exist. (%s)'
         ;;
-
       n)
         ${_T} && _Trace 'Not empty test.'
         # default
         ;;
-
       P)
         ${_T} && _Trace 'Path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
         ;;
-
       q|Q)
         ${_T} && _Trace 'Question. (%s)' "${OPTARG}"
         _q="${OPTARG}"
         [[ 'Q' == "${_opt}" ]] && _f=true
         ;;
-
       s|S)
         ${_T} && _Trace 'Selection value. (%s)' "${OPTARG}"
         _s+=" -${_opt} \"${OPTARG}\""
         ;;
-
       z)
         ${_T} && _Trace 'Allow empty response.'
         _z='-z'
         ;;
-
       *)
         Tell -E -f -L '(ConfirmVar) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -928,7 +863,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
 # ask a question and return a response
 _yes=false
 UICMD+=( 'Ask' )
-Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
+Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path>] [-r <required_regex>] [-s <selection_value>] [-S <selection_var>] <question_text>
   ${_S} && ((_cAsk++))
   ${_T} && _Trace 'Ask [%s]' "${*}"
 
@@ -937,6 +872,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
   local _c=false
   local _d="${LIBUI_DEFAULT:-}"; ${_yes} && _d="${_d:-yes}"
   local _e=true
+  local _l=false
   local _n
   local _o=1
   local _p
@@ -947,7 +883,7 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':bCd:En:No:P:r:s:S:Yz' _opt
+  while getopts ':bCd:Eln:No:P:r:s:S:Yz' _opt
   do
     case ${_opt} in
       b)
@@ -955,72 +891,62 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
         _b=' (y/n)'
         _r='[nNyY]'
         ;;
-
       C)
         ${_T} && _Trace 'Confirm only. (%s)' "${_confirm}"
         ${_confirm} || _c=true
         ;;
-
       d)
         ${_T} && _Trace 'Default answer. (%s)' "${OPTARG}"
         _d="${OPTARG}"
         ;;
-
       E)
         ${_T} && _Trace 'Disable echo.'
         _e=false
         ;;
-
+      l)
+        ${_T} && _Trace 'Literal.'
+        _l=true
+        ;;
       n)
         ${_T} && _Trace 'Answer variable name. (%s)' "${OPTARG}"
         _n="${OPTARG}"
         ${ZSH} && _d="${_d:-${(P)_n}}" || _d="${_d:-${!_n}}"
         ;;
-
       N)
         ${_T} && _Trace 'No.'
         _d='no'
         ;;
-
       o)
         ${_T} && _Trace 'Output file descriptor. (%s)' "${OPTARG}"
         _o="${OPTARG}"
         ;;
-
       P)
         ${_T} && _Trace 'Path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
         ;;
-
       r)
         ${_T} && _Trace 'Required regex. (%s)' "${OPTARG}"
         _r="${OPTARG}"
         ;;
-
       s)
         ${_T} && _Trace 'Answer selection value. (%s)' "${OPTARG}"
         [[ -z "${_a}" ]] && _a=( "${OPTARG}" ) || _a=( "${_a[@]}" "${OPTARG}" )
         ;;
-
       S)
         ${_T} && _Trace 'Answer selection variable. (%s)' "${OPTARG}"
         ${ZSH} && _a=( "${(P@)OPTARG}" ) || eval "_a=( \"\${${OPTARG}[@]}\" )"
         ;;
-
       Y)
         ${_T} && _Trace 'Yes.'
         _d='yes'
         ;;
-
       z)
         ${_T} && _Trace 'Allow empty response.'
         _z=true
         ;;
-
       *)
         Tell -E -f -L '(Ask) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -1033,20 +959,13 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
 
   ${_T} && _Trace -I 'ASK: %s' "${*}"
 
-  local _m
   local _q
-  local _s
-  ${ZSH} && _m='.' || _m='?'
-  if [[ "${1}" =~ (^|[^%])%([^%]|$) ]]
+  local _s='%s'
+  if ${_l}
   then
-    _s="${1}"
-    shift
-  elif [[ "${1}" =~ \\\\${_m} ]]
-  then
-    _s="${1}%s"
-    shift
+    _s="${1//\\/\\\\\\\\}" && _s="${_s//\%/%%%%}" && shift
   else
-    _s='%s'
+    [[ "${1}" =~ (^|[^%])%([^%]|$) ]] && _s="${1}" && shift
   fi
   ${PV} && printf -v _q "${DJBL}${DQuestion}${_s}${_b:+${D}${DOptions}${_b}}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}" || \
       _q="$(printf "${DJBL}${DQuestion}${_s}${_b:+${D}${DOptions}${_b}}${D} ${DAnswer}[%s]${D} ${DCEL}" "${@}" "${_d/${_p:+${_p%\/}\/}}")"
@@ -1081,12 +1000,12 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
     ANSWER="${_d}"
     ${_quiet} || printf "${_q}${DAnswer}%s${D}\n" "${ANSWER}" >&${_o}
   else
-    local _l=true
+    local _f=true
     local _g=false
     local _x
     local _t
     ${_T} && _Trace 'Prompt for answer. (%s)' "${_s} ${*}"
-    while ${_l}
+    while ${_f}
     do
       if [[ -t ${_o} ]] && ${_e}
       then
@@ -1134,7 +1053,6 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
               [0-9]*) # number
                 ANSWER="${_p:+${_p%/}/}${_a[$((ANSWER + AO - 1))]/${_p:+${_p%\/}\/}}" && _g=true
                 ;;
-
               *) # nan
                 _t="${_p:+${_p%/}/}${ANSWER/${_p:+${_p%\/}\/}}"
                 if ${ZSH}
@@ -1147,17 +1065,16 @@ Ask () { # [-b|-C|-E|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <path
                   done
                 fi
                 ;;
-
             esac
           fi
           ${_g} || ANSWER=
         fi
         if [[ -n "${ANSWER}" ]] || ${_z}
         then
-          [[ -n "${_r}" && ! "${ANSWER}" =~ ${_r} ]] || _l=false
+          [[ -n "${_r}" && ! "${ANSWER}" =~ ${_r} ]] || _f=false
         fi
       fi
-      ${_l} && Tell 'Invalid response provided.'
+      ${_f} && Tell 'Invalid response provided.'
     done
   fi
 
@@ -1191,11 +1108,9 @@ AnswerMatches () { # [-r] <answer_match_string>
         ${_T} && _Trace 'Regex match.'
         _e=true
         ;;
-
       *)
         Tell -E -f -L '(AnswerMatches) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -1222,7 +1137,7 @@ AnswerMatches () { # [-r] <answer_match_string>
 # ask a question and verify a positive response
 UICMD+=( 'Verify' )
 _verify=false
-Verify () { # [-C|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] <question_text>
+Verify () { # [-C|-l|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] <question_text>
   ${_S} && ((_cVerify++))
   ${_T} && _Trace 'Verify [%s]' "${*}"
 
@@ -1239,7 +1154,7 @@ Verify () { # [-C|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] <qu
 
 # send user message
 UICMD+=( 'Tell' )
-Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o <fd>] [-r <return_value>] <message>
+Tell () { # [-1..-9|-a|-A|-B|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o <fd>] [-r <return_value>] <message>
   ${_S} && ((_cTell++))
   ${_T} && _Trace 'Tell [%s]' "${*}"
 
@@ -1248,6 +1163,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
   local _d="${DTell}"
   local _e=false
   local _f
+  local _h
   local _i="${DJBL}"
   local _l
   local _n=$'\n'
@@ -1261,25 +1177,27 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':123456789aAcCEfFiIl:LnNo:r:W' _opt
+  while getopts ':123456789aABcCEfFiIl:LnNo:r:W' _opt
   do
     case ${_opt} in
       [1-9])
         ${_T} && _Trace 'File ID. (%s)' "${_opt}"
         _f="${_opt}"
         ;;
-
       a|c)
         ${_T} && _Trace 'File mode. (%s)' "${_opt}"
         _c="-${_opt}"
         ;;
-
       A)
         ${_T} && _Trace 'Alert.'
         _d="${DAlert}"
         _t='ALERT'
         ;;
-
+      B)
+        ${_T} && _Trace 'Brief.'
+        ${TERMINAL} && ! ${LIBUI_PLAIN} || return 0 # only if on a known terminal
+        _d="${DBrief}"
+        ;;
       C)
         ${_T} && _Trace 'Caution.'
         _d="${DCaution}CAUTION"
@@ -1287,7 +1205,6 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
         _w=true
         ((_rv)) || _rv=1
         ;;
-
       E)
         ${_T} && _Trace 'Error.'
         _d="${DError}ERROR"
@@ -1297,58 +1214,47 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
         ${_init} && _x=false || _x=true
         ((_rv)) || _rv=1
         ;;
-
       f)
         ${_T} && _Trace 'Force exit.'
         _x=true
         ;;
-
       F)
         ${_T} && _Trace 'Cancel exit.'
         _x=false
         ;;
-
       i)
         ${_T} && _Trace 'In place.'
         _i=
         ;;
-
       I)
         ${_T} && _Trace 'Info.'
-        ${TERMINAL} && ! ${LIBUI_PLAIN} || return 0 # only if on a known terminal
         _d="${DInfo}"
+        _t='Info'
         ;;
-
       l)
         ${_T} && _Trace 'File path. (%s)' "${OPTARG}"
         ${ZSH} && _l=${~OPTARG} || _l=${OPTARG}
         ;;
-
       L)
         ${_T} && _Trace 'Location.'
-        _b=true
+        _h=true
         ;;
-
       n)
         ${_T} && _Trace 'No linefeed.'
-        _n="${DJBL}"
+        ((${_spinner:-0})) && _n= || _n="${DJBL}"
         ;;
-
       N)
         ${_T} && _Trace 'No carrage return.'
         _n=
         ;;
-
       o)
         ${_T} && _Trace 'Output file descriptor. (%s)' "${OPTARG}"
         _o="${OPTARG}"
         ;;
-
       r)
         ${_T} && _Trace 'Return value. (%s)' "${OPTARG}"
         _rv="${OPTARG}"
         ;;
-
       W)
         ${_T} && _Trace 'Warn.'
         _d="${DWarn}WARNING"
@@ -1356,28 +1262,26 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
         _w=true
         ((_rv)) || _rv=1
         ;;
-
       *)
         Tell -E -f -L '(Tell) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
 
-  if ${_e} && ((0 < _xdb)) || [[ -n "${_b}" ]]
+  if ${_e} && ((0 < _xdb)) || [[ -n "${_h}" ]]
   then
     ${_T} && _Trace 'Get location.'
     if ${ZSH}
     then
-      _b=" in ${funcfiletrace[2]}"
+      _h=" in ${funcfiletrace[2]}"
     else
-      _b=( $(caller 1 || caller) )
-      _b=" in ${_b[2]:-${_b[1]}}:${_b[0]}"
+      _h=( $(caller 1 || caller) )
+      _h=" in ${_h[2]:-${_h[1]}}:${_h[0]}"
     fi
   fi
 
-  ${_T} && _Trace -I '%s%s: %s' "${_t:-TELL}" "${_b}" "${*}"
+  ${_T} && _Trace -I '%s%s: %s' "${_t:-TELL}" "${_h}" "${*}"
 
   local _m
   local _p
@@ -1398,7 +1302,7 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
   if [[ -n "${_f}" || -n "${_l}" ]]
   then
     ${_T} && _Trace 'Log message. (%s)' "${_f:-${_l}}"
-    ${PV} && printf -v _m "%s%s%s${_s}" "${_t}" "${_b}" "${_t:+: }" "${@}" || _m="$(printf "%s%s%s${_s}" "${_t}" "${_b}" "${_t:+: }" "${@}")"
+    ${PV} && printf -v _m "%s%s%s${_s}" "${_t}" "${_h}" "${_t:+: }" "${@}" || _m="$(printf "%s%s%s${_s}" "${_t}" "${_h}" "${_t:+: }" "${@}")"
     ((_File_libui_ip)) || LoadMod File
     if [[ -n "${_f}" ]]
     then
@@ -1413,8 +1317,8 @@ Tell () { # [-1..-9|-a|-A|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] [-o
   ${_T} && _Trace 'Check for error. (%s)' "${_rv}"
   if ${_e} || ${_w}
   then
-    [[ -t 2 ]] && printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_b}" "${@}" >> /dev/stderr || \
-        printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_b}" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
+    [[ -t 2 ]] && printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_h}" "${@}" >> /dev/stderr || \
+        printf -- "${_i}${_d}%s: ${_s}${D}${DCEL}${_n}" "${_h}" "${@}" | tee -a /dev/stderr >&4 # duplicate stderr
   else
     ${_quiet} || printf -- "${_i}${_d}${_s}${D}${DCEL}${_n}" "${@}" >&${_o}
   fi
@@ -1440,6 +1344,19 @@ Alert () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value
   local _rv=${?}
 
   ${_T} && _Trace 'Alert return. (%s)' "${_rv}"
+  return ${_rv}
+}
+
+# send brief message
+UICMD+=( 'Brief' )
+Brief () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>] <message>
+  ${_S} && ((_cBrief++))
+  ${_T} && _Trace 'Brief [%s]' "${*}"
+
+  Tell -B -n "${@}"
+  local _rv=${?}
+
+  ${_T} && _Trace 'Brief return. (%s)' "${_rv}"
   return ${_rv}
 }
 
@@ -1478,7 +1395,7 @@ Info () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value>
   ${_S} && ((_cInfo++))
   ${_T} && _Trace 'Info [%s]' "${*}"
 
-  Tell -I -n "${@}"
+  Tell -I "${@}"
   local _rv=${?}
 
   ${_T} && _Trace 'Info return. (%s)' "${_rv}"
@@ -1514,7 +1431,7 @@ Trace () { # <message>
 }
 
 # library trace
-typeset -F SECONDS # use zsh to improve profiling
+typeset -F SECONDS # use zsh to improve profiling (Bash 5.3 introduces EPOCHREALTIME)
 UICMD+=( '_Trace' )
 _Trace () { # [-I|-u] <message>
   ${_S} && ((_c_Trace++))
@@ -1534,15 +1451,12 @@ _Trace () { # [-I|-u] <message>
         I) # don't interpret
           _I=true
           ;;
-
         u) # user
           _u=true
           ;;
-
         *)
           Tell -E -f -L '(_Trace) Option error. (-%s)' "${OPTARG}"
           ;;
-
       esac
     done
     shift $((OPTIND - 1))
@@ -1700,7 +1614,6 @@ Initialize () {
         ${_T} && _Trace 'Display usage.'
         _error=true
         ;;
-
       X)
         ${_T} && _Trace 'XOption value. (%s)' "${OPTARG}"
         case ${OPTARG} in
@@ -1709,7 +1622,6 @@ Initialize () {
             _xdb="${OPTARG}"
             CHFLAGS+="-X ${_xdb} "
             ;;
-
           c|C)
             Confirm
             ${_T} && _Trace 'Confirm operation.'
@@ -1717,66 +1629,54 @@ Initialize () {
             CHFLAGS+='-X C '
             FMFLAGS='-i'
             ;;
-
           f|F)
             ${_T} && _Trace 'Force operation.'
             _force=true
             CHFLAGS+='-X F '
             FMFLAGS='-f'
             ;;
-
           h|H)
             ${_T} && _Trace 'Display debug help.'
             _error=true
             _help=true
             ;;
-
           n|N)
             ${_T} && _Trace 'Perform no actions.'
             _noaction=true
             CHFLAGS+='-X N '
             ;;
-
           o|O)
             ${_T} && _Trace 'Overwrite mode.'
             CHFLAGS+='-X O '
             _overwrite=true
             ;;
-
           q|Q)
             ${_T} && _Trace 'Quiet operation.'
             _quiet=true
             CHFLAGS+='-X Q '
             ;;
-
           v|V)
             LoadMod Info
             Version -a
             Exit 0
             ;;
-
           y|Y)
             ${_T} && _Trace 'Provide "yes" response.'
             _yes=true
             CHFLAGS+='-X Y '
             ;;
-
           *)
             ${_T} && _Trace 'Profile. (%s)' "${OPTARG}"
             _profile="${OPTARG}"
             ;;
-
         esac
         ;;
-
       \:)
         Tell -E 'Option argument missing. (%s)' "${OPTARG}"
         ;;
-
       \?)
         Tell -E 'Invalid option provided. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   ${ZSH} && shift $((OPTIND - 1)) _a || _a=( "${_a[@]:$((OPTIND - 1))}" )
@@ -1987,11 +1887,11 @@ Initialize () {
   fi
 
   ${_T} && _Trace 'Check for default init hook. (%s)' "${LIBUI_HOOKDIR}/init"
-  [[ -f "${LIBUI_HOOKDIR}/init" ]] && _Trace 'Source default init hook. (%s)' "${LIBUI_HOOKDIR}/init" && source "${LIBUI_HOOKDIR}/init"
+  test -f "${LIBUI_HOOKDIR}/init" && _Trace 'Source default init hook. (%s)' "${_}" && source "${_}"
   ${_T} && _Trace 'Check for global program init hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-init"
-  [[ -f "${LIBUI_HOOKDIR}/${CMD}-init" ]] && _Trace 'Source global program init hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-init" && source "${LIBUI_HOOKDIR}/${CMD}-init"
+  test -f "${LIBUI_HOOKDIR}/${CMD}-init" && _Trace 'Source global program init hook. (%s)' "${_}" && source "${_}"
   ${_T} && _Trace 'Check for local program init hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}init"
-  [[ -f "${IWD}/${LIBUI_HOOKPREFIX}init" ]] && _Trace 'Source local program init hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}init" && source "${IWD}/${LIBUI_HOOKPREFIX}init"
+  test -f "${IWD}/${LIBUI_HOOKPREFIX}init" && _Trace 'Source local program init hook. (%s)' "${_}" && source "${_}"
 
   if ${_error}
   then
@@ -2005,6 +1905,16 @@ Initialize () {
 
   ${_T} && _Trace 'Initialize return. (%s)' 0
   return 0
+}
+
+# credentials check
+UICMD+=( 'Credentials' )
+Credentials () {
+  ${_S} && ((_cCredentials++))
+  ${_T} && _Trace 'Credentials [%s]' "${*}"
+
+  ${_T} && _Trace 'Return Credentials state. (%s)' "${_confirm}"
+  ${_credentials} && return 0 || return 1
 }
 
 # confirm check
@@ -2054,16 +1964,13 @@ Overwrite () {
         ${_T} && _Trace 'Enable. (%s)' "${_opt}"
         _overwrite=true
         ;;
-
       E)
         ${_T} && _Trace 'Disable. (%s)' "${_opt}"
         _overwrite=false
         ;;
-
       *)
         Tell -E -f -L '(Overwrite) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -2109,16 +2016,13 @@ Yes () { # [-e|-E]
         ${_T} && _Trace 'Enable. (%s)' "${_opt}"
         _yes=true
         ;;
-
       E)
         ${_T} && _Trace 'Disable. (%s)' "${_opt}"
         _yes=false
         ;;
-
       *)
         Tell -E -f -L '(Yes) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -2153,11 +2057,11 @@ Exit () { # [<return_value>]
   fi
 
   ${_T} && _Trace 'Check for local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit"
-  [[ -f "${IWD}/${LIBUI_HOOKPREFIX}exit" ]] && _Trace 'Source local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit" && source "${IWD}/${LIBUI_HOOKPREFIX}exit"
+  test -f "${IWD}/${LIBUI_HOOKPREFIX}exit" && _Trace 'Source local program exit hook. (%s)' "${_}" && source "${_}"
   ${_T} && _Trace 'Check for global program exit hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-exit"
-  [[ -f "${LIBUI_HOOKDIR}/${CMD}-exit" ]] && _Trace 'Source global program exit hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-exit" && source "${LIBUI_HOOKDIR}/${CMD}-exit"
+  test -f "${LIBUI_HOOKDIR}/${CMD}-exit" && _Trace 'Source global program exit hook. (%s)' "${_}" && source "${_}"
   ${_T} && _Trace 'Check for default exit hook. (%s)' "${LIBUI_HOOKDIR}/exit"
-  [[ -f "${LIBUI_HOOKDIR}/exit" ]] && _Trace 'Source default exit hook. (%s)' "${LIBUI_HOOKDIR}/exit" && source "${LIBUI_HOOKDIR}/exit"
+  test -f "${LIBUI_HOOKDIR}/exit" && _Trace 'Source default exit hook. (%s)' "${_}" && source "${_}"
 
   ${_T} && _Trace 'Check for cleanup. (%s)' "${_exitcleanup}"
   if ${_exitcleanup} # for debug
@@ -2171,7 +2075,7 @@ Exit () { # [<return_value>]
     done
 
     ${_T} && _Trace 'Remove temp directory. (%s)' "${_tmpdir}"
-    [[ -d "${_tmpdir}" ]] && rm -rf "${_tmpdir}"
+    test -d "${_tmpdir}" && rm -rf "${_}"
   fi
 
   local _ctime="${SECONDS}"
@@ -2180,11 +2084,11 @@ Exit () { # [<return_value>]
   ${_T} && _Trace 'Check for ledger. (%s)' "${_ldb}"
   if ${_ldb}
   then
-    local _l="${LIBUI_LEDGERFILE:-${LIBUI_LOCAL}/ledger}"
+    local _l="${LIBUI_LEDGERFILE:-${LIBUI_STATE}/ledger}"
     if [[ ! -f "${_l}" && "${_l}" =~ .*/.* ]]
     then
       ${_T} && _Trace 'Check ledger dir. (%s)' "${_l}"
-      [[ -d "${_l%/*}" ]] || mkdir -p "${_l%/*}" || Tell -E 'Invalid LIBUI_LEDGERFILE path. (%s)' "${_l}"
+      test -d "${_l%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_LEDGERFILE path. (%s)' "${_l}"
     fi
 
     ${_T} && _Trace 'Save ledger entry. (%s)' "${_l}"
@@ -2225,7 +2129,7 @@ Exit () { # [<return_value>]
       eval "_c+=( \"${_l}\" )"
     done
 
-    local _s="${LIBUI_STATSFILE:-${LIBUI_LOCAL}/stats}"
+    local _s="${LIBUI_STATSFILE:-${LIBUI_STATE}/stats}"
     if [[ -f "${_s}" ]]
     then
       ${_T} && _Trace 'Merge stats. (%s)' "${_s}"
@@ -2235,7 +2139,7 @@ Exit () { # [<return_value>]
       if [[ "${_s}" =~ .*/.* ]]
       then
         ${_T} && _Trace 'Check stats dir. (%s)' "${_s}"
-        [[ -d "${_s%/*}" ]] || mkdir -p "${_s%/*}" || Tell -E 'Invalid LIBUI_STATSFILE path. (%s)' "${_s}"
+        test -d "${_s%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_STATSFILE path. (%s)' "${_s}"
         _cstart="$(date)"
       fi
     fi
@@ -2284,17 +2188,17 @@ Exit () { # [<return_value>]
   ${_T} && _Trace 'Check for trace. (%s)' "${_tdb}"
   if ${_tdb}
   then
-    local _t="${LIBUI_TRACEFILE:-${LIBUI_LOCAL}/trace}"
+    local _t="${LIBUI_TRACEFILE:-${LIBUI_STATE}/trace}"
     if [[ ! -f "${_t}" && "${_t}" =~ .*/.* ]]
     then
       ${_T} && _Trace 'Check trace dir. (%s)' "${_t}"
-      [[ -d "${_t%/*}" ]] || mkdir -p "${_t%/*}" || Tell -E 'Invalid LIBUI_TRACEFILE path. (%s)' "${_t}"
+      test -d "${_t%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_TRACEFILE path. (%s)' "${_t}"
     fi
     ${_T} && _Trace 'Save trace file. (%s)' "${_t}"
     mv -f "${_tfile}" "${_t}" || Tell -W 'Unable to save trace file. (%s)' "${_t}"
     _tdb=false
   fi
-  [[ -e "${_tfile}" ]] && rm -f "${_tfile}"
+  test -e "${_tfile}" && rm -f "${_}"
 
   ${_T} && _Trace 'Program exit. (%s)' "${_rv}"
   exit ${_rv}
@@ -2320,11 +2224,9 @@ LoadMod () { # [-P <path>] <libui_mod_name>
         ${_T} && _Trace 'libui mod path. (%s)' "${OPTARG}"
         _p="${OPTARG%/}"
         ;;
-
       *)
         Tell -E -f -L '(LoadMod) Option error. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -2355,7 +2257,7 @@ LoadMod () { # [-P <path>] <libui_mod_name>
       _rv=${?}
       _f=true
     else
-      ! ${ZSH} && _p && IFS=: read -a _p <<< "${PATH}"
+      ! ${ZSH} && _p && IFS=: read -a _p <<< "${LIBUI_PATH:+${LIBUI_PATH}:}${PATH}"
       local _s
       for _s in "${path[@]}"
       do
@@ -2399,10 +2301,12 @@ _WINCH () {
 #####
 
 # load config
-LIBUI_CONFIG="${LIBUI_CONFIG:-${HOME}/.config/libui}"
-[[ -d "${LIBUI_CONFIG}" ]] || mkdir -p "${LIBUI_CONFIG}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${LIBUI_CONFIG}"
-[[ -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" ]] && source "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}"
-LIBUI_LOCAL="${LIBUI_LOCAL:-${HOME}/.local/libui}"
+LIBUI_CONFIG="${LIBUI_CONFIG:-${XDG_CONFIG_HOME:-${HOME}/.config}/libui}"
+test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
+test -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" && source "${_}"
+LIBUI_CREDENTIALS="${LIBUI_CREDENTIALS:-${XDG_CONFIG_HOME:-${HOME}/.config}/credentials}"
+LIBUI_STATE="${LIBUI_STATE:-${XDG_STATE_HOME:-${HOME}/.local/state}/libui}"
+LIBUI_CACHE="${LIBUI_CACHE:-${XDG_CACHE_HOME:-${HOME}/.cache}/libui}"
 
 # defaults
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
@@ -2428,7 +2332,7 @@ fi
 HOST="${HOST:-${HOSTNAME}}"
 HOST="${HOST:-$(hostname -s 2> /dev/null)}"
 HOST="${HOST:-$(uname -n 2> /dev/null)}"
-HOST="${HOST%\.*}"
+HOST="${HOST%%\.*}"
 if ${ZSH}
 then
   HOST="${(L)HOST}"
@@ -2443,12 +2347,14 @@ case "${OS}" in
     OS_VERSION="$(sw_vers --ProductVersion)"
     UNIX='BSD'
     ;;
-
   Linux|CYGWIN*)
     eval $(eval $(grep -h '=' /etc/*release* 2> /dev/null) && printf 'OS_DIST=%s\nOS_VERSION=%s\n' "${ID}" "${VERSION_ID}")
     UNIX='GNU'
     ;;
-
+  FreeBSD)
+    eval $(eval $(grep -h '=' /etc/*release* 2> /dev/null) && printf 'OS_DIST=%s\nOS_VERSION=%s\n' "${ID}" "${VERSION_ID}")
+    UNIX='BSD'
+    ;;
   SunOS|Solaris)
     OS_VERSION="$(uname -r | cut -f 2 -d .)"
     if grep 'Solaris' /etc/release &> /dev/null
@@ -2461,10 +2367,8 @@ case "${OS}" in
       UNIX='BSD'
     fi
     ;;
-
   *)
     ;;
-
 esac
 GROUP="${GROUP:-$(${BSDPATH}id -gn)}"
 TMPDIR="${TMPDIR:-/tmp}"
@@ -2480,8 +2384,8 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
 ${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
 ${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
-${TERMINAL} && [[ -n "${TERM}" && -f "${LIBUI_CONFIG}/display-${TERM}" ]] && ((8 <= $(tput colors 2> /dev/null))) && \
-    _display=true && source "${LIBUI_CONFIG}/display-${TERM}" || _display=false
+${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((0$(tput colors 2> /dev/null) >= 8)) && \
+    source "${LIBUI_CACHE}/display-${TERM}" 2> /dev/null && _display=true || _display=false
 
 # debug
 _tdb="${LIBUI_TRACE:-false}"; _T="${_tdb}"
@@ -2504,12 +2408,17 @@ _M=false; ((8 <= _xdb)) && _mdb=true && _M=true && _Trace 'Mod debug enabled.' |
 _sdb="${LIBUI_STATS:-true}"; _S="${_sdb}"; ${_sdb} && _Trace 'Stats enabled.'
 _ldb="${LIBUI_LEDGER:-true}"; ${_ldb} && _Trace 'Ledger enabled.'
 
-# build terminal cache
+# build terminal cache (after debug setup)
 if ! ${_display}
 then
   LoadMod Utility
   _Terminal
 fi
+
+# credentials
+[[ 'GNU' == "${UNIX}" ]] && _perm='-c "%a"' || _perm='-f "%Lp"'
+((0$(eval 'stat ${_perm} "${LIBUI_CREDENTIALS}/${CMD}"' 2> /dev/null) == 600)) && \
+    source "${LIBUI_CREDENTIALS}/${CMD}" && _credentials=true || _credentials=false
 
 # global log
 _L=false
@@ -2533,7 +2442,7 @@ trap 'Tell -E -f -r 131 "Received QUIT signal. ($(date))"' QUIT #3
 trap 'Tell -E -f -r 137 "Received KILL signal. ($(date))"' KILL #9
 ${TERMINAL} && trap 'printf "${DAlarm}Received ALRM signal. ($(date))${D} " >> /dev/stderr' ALRM #14
 trap 'Tell -E -f -r 143 "Received TERM signal. ($(date))"' TERM #15
-${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH #28
+${TERMINAL} && [[ -n "${TERM}" ]] && _WINCH && trap '_WINCH' WINCH || WIDTH=1 #28
 
 # duplicate stderr
 exec 3>&1

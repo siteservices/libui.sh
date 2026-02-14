@@ -6,12 +6,13 @@
 #####
 
 test_NoAction_Verbose () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action "ls /tmp.tst" 4>&1'
   LibuiValidateTest -r ${?} 0 '\(No Action\) ls /tmp.tst \(PWD: .*\)'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X 2 -X N '
+_Test_opt+='-x T -X 2 -X N ' # no terminal
 
 return 0

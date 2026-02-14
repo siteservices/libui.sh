@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Brief
+#
+#####
+
+test_Brief () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Brief "Test 1."; Brief "Test 2."'
+  LibuiValidateTest ${?} 0 "${TJBL}${TBrief}Test 1.${T}${TCEL}${TJBL}${TJBL}${TBrief}Test 2.${T}${TCEL}${TJBL}"
+  return ${?}
+}
+
+return 0

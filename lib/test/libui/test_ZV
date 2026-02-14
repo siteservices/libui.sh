@@ -6,10 +6,14 @@
 #####
 
 test_ZV () {
+  LibuiGetDisplayTestValues
   local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0
   LibuiPerformTest 'Tell -- "${ZV}"'
   LibuiValidateTest ${?} 0 "${zv}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

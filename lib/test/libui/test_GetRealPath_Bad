@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_Bad () {
+  LibuiGetDisplayTestValues
   local rp
   _exitcleanup=false
   LibuiPerformTest 'GetRealPath rp /badpath'
@@ -14,5 +15,8 @@ test_GetRealPath_Bad () {
   LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) Invalid path provided. (/badpath)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

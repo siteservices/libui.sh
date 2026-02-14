@@ -6,6 +6,7 @@
 #####
 
 test_No_Stats_File () {
+  LibuiGetDisplayTestValues
   local sdb="${LIBUI_STATS:-true}"
   LibuiPerformTest 'Tell "Test no stats file. (%s)" "${_sdb}"'
   LibuiValidateTest ${?} 0 "Test no stats file. (${sdb})"
@@ -13,6 +14,6 @@ test_No_Stats_File () {
 }
 
 # test setup
-_Test_opt+='-x n '
+_Test_opt+='-x n -x P '
 
 return 0

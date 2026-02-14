@@ -6,6 +6,7 @@
 #####
 
 test_GetFileList-c_Hidden_Show () {
+  LibuiGetDisplayTestValues
   Action -W "mkdir -p ${TESTDIR}/hidden"
   Action -W "touch ${TESTDIR}/hidden/.paths"
   Action -W "mkdir -p ${TESTDIR}/hidden/.user"
@@ -14,5 +15,8 @@ test_GetFileList-c_Hidden_Show () {
   LibuiValidateTest ${?} 0 ".paths .user tmp"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

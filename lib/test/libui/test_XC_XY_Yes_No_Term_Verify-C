@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_XC_XY_Yes_No_Term_Verify-C
+#
+#####
+
+test_XC_XY_Yes_No_Term_Verify-C () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Verify -C "Test verify?"'
+  LibuiValidateTest ${?} 0 'Test verify? (y/n) [yes] yes'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x T -X C -X Y '
+
+return 0

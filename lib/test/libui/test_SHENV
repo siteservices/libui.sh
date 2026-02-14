@@ -6,10 +6,14 @@
 #####
 
 test_SHENV () {
+  LibuiGetDisplayTestValues
   ${ZSH} && local sh="${commands[zsh]}" || local sh="${BASH:-sh}"
   LibuiPerformTest 'Tell -- "${SHENV}"'
   LibuiValidateTest ${?} 0 "${sh}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

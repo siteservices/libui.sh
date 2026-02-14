@@ -11,17 +11,18 @@
 #
 #####
 #                                                                                                   # demo content
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public                       # demo content
-# domain. Permission is unconditionally granted to anyone with an interest, the                     # demo content
-# rights to use, modify, publish, distribute, sublicense, and/or sell this                          # demo content
-# content and associated files.                                                                     # demo content
-#                                                                                                   # demo content
+# This content and associated files as published by siteservices.net, Inc. are                      # demo content
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the                          # demo content
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or                     # demo content
+# sell this content and all associated files. To view a copy of CCO 1.0, visit                      # demo content
+# https://creativecommons.org/publicdomain/zero/1.0/.                                               # demo content
+#
 # All content is provided "as is", without warranty of any kind, expressed or                       # demo content
 # implied, including but not limited to merchantability, fitness for a                              # demo content
 # particular purpose, and noninfringement. In no event shall the authors or                         # demo content
-# copyright holders be liable for any claim, damages, or other liability,                           # demo content
-# whether in an action of contract, tort, or otherwise, arising from, out of,                       # demo content
-# or in connection with this content or use of the associated files.                                # demo content
+# publishers be liable for any claim, damages, or other liability, whether in an                    # demo content
+# action of contract, tort, or otherwise, arising from, out of, or in connection                    # demo content
+# with the use of this content or any of the associated files.                                      # demo content
 #                                                                                                   # demo content
 #####                                                                                               # demo content
 
@@ -31,20 +32,42 @@
 Version -r <REQUIRED LIBUI HERE> <SCRIPT VERSION HERE>
 
 # load mods
-LoadMod File                                                                                        # demo content
-LoadMod Spinner                                                                                     # demo content
+#LoadMod [Convert|File|FileRecord|Info|Libui|Multiuser|Package|Root|Sort|Spinner|SSH|Syslog|Term|Test|Timer|User|Utility|Workspace]
 <LIBUI MODS HERE>
+LoadMod Convert                                                                                     # demo content
+LoadMod File                                                                                        # demo content
+LoadMod FileRecord                                                                                  # demo content
+LoadMod Info                                                                                        # demo content
+LoadMod Libui                                                                                       # demo content
+LoadMod Multiuser                                                                                   # demo content
+LoadMod Package                                                                                     # demo content
+LoadMod Root                                                                                        # demo content
+LoadMod Sort                                                                                        # demo content
+LoadMod Spinner                                                                                     # demo content
+LoadMod SSH                                                                                         # demo content
+LoadMod Syslog                                                                                      # demo content
+LoadMod Term                                                                                        # demo content
+LoadMod Test                                                                                        # demo content
+LoadMod Timer                                                                                       # demo content
+LoadMod User                                                                                        # demo content
+LoadMod Utility                                                                                     # demo content
+LoadMod Workspace                                                                                   # demo content
 
 ##### configuration
 
 # defaults
 statuslevel=0                                                                                       # demo content
 GetTmp tmpdir                                                                                       # demo content
-retval=0                                                                                            # demo content
 <DEFAULT VALUES HERE>
+retval=0
 
 ##### options - libui already uses options h, H, X:
 
+#AddOption [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-p <provided_value>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] <option>[:]
+# Ex: AddOption -n <var> -f -k '<Keyword>' -d '<Short Description.>' <x>
+# Ex: AddOption -n <var> -i <initial_value> -k '<Keyword>' -d '<Short Description.>' <x>:
+#AddParameter [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] [-I <initial_var>] [-k <keyword>] [-n <var>] [-P <path>] [-s <selection_values>] [-S <selection_var>] [-v <callback>] [<var>]
+# EX: AddParameter -n <var> -r -m -k '<Keyword>' -d '<Short description.>' <var>
 AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show option status.' s              # demo content
 AddOption -n lines -i 100 -k 'Lines' -d 'Specify the number of lines to include in each batch.' l:  # demo content
 AddParameter -n files -r -m -k 'Files' -d 'Files to be processed.' files                            # demo content
@@ -57,6 +80,8 @@ StatusCallback () {                                                             
                                                                                                     # demo content
   Trace 'Increment status level.'                                                                   # demo content
   ((statuslevel++))                                                                                 # demo content
+                                                                                                    # demo content
+  Trace 'Exit Status Callback.'                                                                     # demo content
 }                                                                                                   # demo content
 
 InfoCallback () {
@@ -67,14 +92,18 @@ InfoCallback () {
 This is a template script intended to provide a starting point for development.                     # demo content
 <ADDITIONAL USAGE INFORMATION HERE>
 EOF
+
+  Trace 'Exit info callback.'
 }
 
 ExitCallback () {
   Trace 'In user exit callback.'
 
-  Trace 'Exit cleanup.'
+  Trace 'Exit cleanup.'                                                                             # demo content
   [[ -e "${HOME}/demo.out" ]] && rm ${FMFLAGS} "${HOME}/demo.out"                                   # demo content
   <EXIT CLEANUP ACTIONS HERE>
+
+  Trace 'Exit exit callback.'
 }
 
 InitCallback () {
@@ -83,6 +112,8 @@ InitCallback () {
   Trace 'Confirm and initialize environment.'                                                       # demo content
   [[ 0 -lt "${lines}" ]] || Error 'Batches must be one or more lines.'                              # demo content
   <STARTUP CONFIRMATION HERE>
+
+  Trace 'Exit init callback.'
 }
 
 ##### functions
@@ -104,6 +135,7 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
+#Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 Trace 'Check for show status. (%s)' "${showstatus}"                                                # demo content
 if ${showstatus}                                                                                   # demo content
 then                                                                                               # demo content
@@ -115,12 +147,17 @@ GetFileList files                                                               
 for file in "${files[@]}"                                                                          # demo content
 do                                                                                                 # demo content
   printf 'File: %s' "${file}"                                                                      # demo content
-  Action -s -i "Copy file: ${file}" "cp ${FMFLAGS} '${file}' '${tmpdir}'"                          # demo content
-  ((retval+=${?}))                                                                                 # demo content
+  Action -q "Copy ${file}?" -i "Copying file... (${file})" "cp ${FMFLAGS} '${file}' '${tmpdir}'"   # demo content
 done                                                                                               # demo content
+((retval+=${?}))                                                                                   # demo content
+                                                                                                   # demo content
 ls -l "${tmpdir}"                                                                                  # demo content
                                                                                                    # demo content
 <MAIN SCRIPT HERE>
+
+((retval+=${?})) # note: Action errors cascade forward unless reset with -R
+
+! ((retval)) && Alert 'Done.' || Warn -r "${retval}" 'A processing error occured.'
 
 Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
 Exit "${retval}"

@@ -7,28 +7,30 @@
 #
 #####
 #
-# Display a markdown file in xterm using less.
+# {libui tool} Simple libui script that displays a markdown file in a terminal
+# using less.
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
 ##### libui setup
 
 # script version
-Version -r 2.011 1.8
+Version -r 2.012 1.9
 
 # load mods
 LoadMod File
@@ -36,7 +38,7 @@ LoadMod File
 ##### configuration
 
 # defaults
-MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.local/env/share/doc"
+MLESSPATH="${MLESSPATH:+${MLESSPATH}:}${COMMONROOT:+${COMMONROOT}/share/doc:}${HOME}/.local/env/share/doc:${LIBUI%/*/*/*}/share/doc"
 ${ZSH} && docpath=( "${(@s[:])MLESSPATH}" ) || IFS=: docpath=( ${MLESSPATH} )
 width=${COLUMNS:-80}
 rule=; for i in {1..$((width - 1))}; do rule+='_'; done
@@ -125,11 +127,11 @@ do
   Trace 'Display file. (%s)' "${file}"
   cat "${file}" | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/!{
-        s/^\s{0,3}[\*_\-]\s*[\*_\-]\s*[\*_\-]\s*[\*_\-]*\s*$/${rule}/;
-        s/^#\s(.*)$/${heading1}\1${D}\n/;
-        s/^##\s(.*)$/${heading2}\1${D}\n/;
-        s/^###\s(.*)$/${heading3}\1${D}\n/;
-        s/^#####*\s(.*)$/${heading4}\1${D}\n/;
+        s/^[[:space:]]{0,3}[\*_\-][[:space:]]*[\*_\-][[:space:]]*[\*_\-][[:space:]]*[\*_\-]*[[:space:]]*$/${rule}/;
+        s/^#[[:space:]](.*)$/${heading1}\1${D}\n/;
+        s/^##[[:space:]](.*)$/${heading2}\1${D}\n/;
+        s/^###[[:space:]](.*)$/${heading3}\1${D}\n/;
+        s/^#####*[[:space:]](.*)$/${heading4}\1${D}\n/;
         s/\*\*([^\*]+)\*\*/${strong}\1${D}/g;
         s/__([^_]+)__/${strong}\1${D}/g;
         s/\*([^\*]+)\*/${emphasis}\1${D}/g;
@@ -137,19 +139,19 @@ do
         s/\`\`\`([^\`]+)\`\`\`/${code}\1${D}/g;
         s/(^|[^\`])\`([^\`]+)\`([^\`]|$)/\1${code}\2${D}\3/g;
         s/(^|[^\\])<[^>]*([^\\])>/\1/g;
-        s/^(\s*)[\*+\-]\s(.*)$/\1  o  \2/;
-        s/^>>>>\s/  |  |  |  |  /;
-        s/^>>>\s/  |  |  |  /;
-        s/^>>\s/  |  |  /;
-        s/^>\s/  |  /;
+        s/^([[:space:]]*)[\*\-][[:space:]](.*)$/\1  o  \2/;
+        s/^>>>>[[:space:]]/  |  |  |  |  /;
+        s/^>>>[[:space:]]/  |  |  |  /;
+        s/^>>[[:space:]]/  |  |  /;
+        s/^>[[:space:]]/  |  /;
       }" | \
       sed '/^$/N;/^\n$/D' | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/{/\`\`\`/d; s/^/    ${code}/; s/$/${D}/;}" | \
       sed -E 's/\\\\/\\/g' | \
       sed -E 's/\\([^\\])/\1/g' | \
-      sed -E '/^\s*[0-9]{1,9}[.)]/,/^\s*$/{s/^(\s*)([0-9]{1,9})([.)])(.*)$/\1  .\2\3  \4/;}' | \
-      awk 'BEGIN { i = 1 } /^\s*\.[0-9]{1,9}[\.\)]/ { if (sub(/\.[0-9]{1,9}/, i++, $0)) print $0; next } { i = 1; print }' | \
-      awk "BEGIN { cols = ${width} - 1; line = \"\" } { if (/^(\s|$)/) { if (length(line) > 0) { print line } line = \$0; if (/^\s*$/) { printf \"\n\" } } else { for (i = 1; i <= NF; i++) { if (length(line) > 0) { if (length(line) + length(\$i) < cols) { line = (line \" \" \$i) } else { print line; line = \$i } } else { line = \$i } } } } END { if ( length(line) > 0 ) printf \"%s\", line }" | \
+      sed -E '/^[[:space:]]*[0-9]{1,9}[.)]/,/^[[:space:]]*$/{s/^([[:space:]]*)([0-9]{1,9})([.)])(.*)$/\1  .\2\3  \4/;}' | \
+      awk 'BEGIN { i = 1 } /^[[:space:]]*\.[0-9]{1,9}[\.\)]/ { if (sub(/\.[0-9]{1,9}/, i++, $0)) print $0; next } { i = 1; print }' | \
+      awk "BEGIN { cols = ${width} - 1; line = \"\" } { if (/^([[:space:]]|$)/) { if (length(line) > 0) { print line } line = \$0; if (/^[[:space:]]*$/) { printf \"\n\" } } else { for (i = 1; i <= NF; i++) { if (length(line) > 0) { if (length(line) + length(\$i) < cols) { line = (line \" \" \$i) } else { print line; line = \$i } } else { line = \$i } } } } END { if ( length(line) > 0 ) printf \"%s\", line }" | \
       less -R
 done
 

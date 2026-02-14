@@ -6,6 +6,7 @@
 #####
 
 test_AA () {
+  LibuiGetDisplayTestValues
   local bv="${BASH_VERSION%.*}"; [[ -n "${bv}" ]] && bv="${bv//.}" || bv=0
   LibuiPerformTest 'Tell -- "${AA}"'
   local tv=${?}
@@ -17,5 +18,8 @@ test_AA () {
   fi
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

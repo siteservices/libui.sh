@@ -6,15 +6,15 @@
 #####
 
 test_ConfirmVar_Select_Var_Number () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   unset response
   testlist=( 'one' 'two' 'three' )
-  LibuiPerformTest 'ConfirmVar -S testlist -q "Test question?" response <<< "2"; printf "%s\n" "${response}"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
+  TERMINAL=true LibuiPerformTest 'ConfirmVar -S testlist -q "Test question?" response <<< "2"; printf "%s\n" "${response}"'
+  LibuiValidateTest ${?} 0 "${N}The possible responses are:${N}   1. one${N}   2. two${N}   3. three${N}${N}Test question? [] two"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

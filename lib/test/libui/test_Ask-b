@@ -6,13 +6,13 @@
 #####
 
 test_Ask-b () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Ask -b "Test boolean?" <<< "yes"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 'Test boolean? (y/n) [] '
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Ask -b "Test boolean?" <<< "yes"'
+  LibuiValidateTest ${?} 0 'Test boolean? (y/n) [] '
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

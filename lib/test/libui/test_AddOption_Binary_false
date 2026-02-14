@@ -6,12 +6,13 @@
 #####
 
 test_AddOption_Binary_false () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${binaryft}"'
   LibuiValidateTest ${?} 0 'false'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-x b '
+_Test_opt+='-x b -x P '
 
 return 0

@@ -6,9 +6,13 @@
 #####
 
 test_Action-f () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action -f "false"'
   LibuiValidateTest ${?} 1 "ERROR: (Action) Failure while evaluating command. (false)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

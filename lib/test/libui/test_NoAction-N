@@ -6,12 +6,13 @@
 #####
 
 test_NoAction-N () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action "ls -lad /tmp" 4>&1'
   LibuiValidateTest ${?} 0 '(No Action) ls -lad /tmp'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X N '
+_Test_opt+='-x P -X N '
 
 return 0

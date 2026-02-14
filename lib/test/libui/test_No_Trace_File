@@ -6,6 +6,7 @@
 #####
 
 test_No_Trace_File () {
+  LibuiGetDisplayTestValues
   local tdb="${LIBUI_TRACE:-true}"
   LibuiPerformTest 'Tell "Test no trace file. (%s)" "${_tdb}"'
   LibuiValidateTest ${?} 0 "Test no trace file. (${tdb})"
@@ -13,6 +14,6 @@ test_No_Trace_File () {
 }
 
 # test setup
-_Test_opt+='-x n '
+_Test_opt+='-x n -x P '
 
 return 0

@@ -6,10 +6,7 @@
 #####
 
 test_Verify_Failure () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  Verify "Test verify?" <<< "no"
-  TERMINAL="${t}"
+  TERMINAL=true Verify "Test verify?" <<< "no"
   LibuiPerformTest 'Verify'
   LibuiValidateTest ${?} 1
   return ${?}

@@ -6,9 +6,13 @@
 #####
 
 test_Action_Warning () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action "false"'
   LibuiValidateTest ${?} 1 "WARNING: (Action) Failure while evaluating command. (false)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

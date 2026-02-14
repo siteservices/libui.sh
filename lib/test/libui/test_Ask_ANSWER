@@ -6,15 +6,16 @@
 #####
 
 test_Ask_ANSWER () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   Yes -e
-  Ask -d 'default answer' -n testvar 'Test Ask with testvar?'
+  TERMINAL=true Ask -d 'default answer' -n testvar 'Test Ask with testvar?'
   Yes -E
-  TERMINAL="${t}"
   LibuiPerformTest 'Tell "Test variable: ${ANSWER}."'
   LibuiValidateTest ${?} 0 'Test variable: default answer.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

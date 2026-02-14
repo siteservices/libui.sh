@@ -6,6 +6,7 @@
 #####
 
 test_ConfirmVar-e_Empty () {
+  LibuiGetDisplayTestValues
   testvar="${TESTDIR}/invalid-cvfile"
   _exitcleanup=false
   LibuiPerformTest 'ConfirmVar -e testvar'
@@ -14,5 +15,8 @@ test_ConfirmVar-e_Empty () {
   LibuiValidateTest "${tv}" 1 "ERROR: The path \"${TESTDIR}/invalid-cvfile\" does not exist. (testvar)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

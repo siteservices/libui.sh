@@ -6,6 +6,7 @@
 #####
 
 test_Version-a () {
+  LibuiGetDisplayTestValues
   local all; all="$(printf '%s %s\n' "${UIVERSION[@]}")"
   Version 1.0
   local v="$(Version -a)"
@@ -13,5 +14,8 @@ test_Version-a () {
   LibuiValidateTest ${?} 0 "Versions ${all}${N}test_Version-a 1.0."
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

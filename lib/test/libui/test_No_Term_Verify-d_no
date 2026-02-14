@@ -6,13 +6,13 @@
 #####
 
 test_No_Term_Verify-d_no () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Verify -d "no" "Test verify?"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 1 'Test verify? (y/n) [no] no'
+  LibuiValidateTest ${?} 1 'Test verify? (y/n) [no] no'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

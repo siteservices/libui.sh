@@ -6,9 +6,13 @@
 #####
 
 test_GetFileList_Empty_Show () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest "GetFileList testlist '${TESTDIR}/invalid*'; Tell -- '%s' \"\${testlist}\""
   LibuiValidateTest ${?} 0
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -21,24 +21,25 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
 ##### libui setup
 
 # script version
-Version -r 2.010 1.14
+Version -r 2.012 1.15
 
 # load mods
 LoadMod File
@@ -131,7 +132,7 @@ do
       if Force || [[ ! "${pullstatus}" =~ .*Already\ up[-\ ]to[-\ ]date\..* ]]
       then
         Trace 'Build project. (%s)' "${project}"
-        if Action -q "Build project? (${project})" -i "Building project. (${project})" -c -l "${tmpdir}/${project}-build.log" "source ${recipefile}"
+        if Action -q "Build project? (${project})" -i "Building project... (${project})" -c -l "${tmpdir}/${project}-build.log" "source ${recipefile}"
         then
           processed=true
           Alert 'Project %s has been updated.' "${project}"
@@ -151,7 +152,8 @@ done
 
 GetFileList logs "${tmpdir}/*.log"
 Trace 'Check for errors. (%s)' "${logs[*]}"
-egrep -q '(Abort|WARNING|ERROR)' "${logs[@]}" && failure=true && Warn 'Problems were encountered during processing.'
+((${#logs[@]})) && egrep -q '(Abort|WARNING|ERROR)' "${logs[@]}" && failure=true && \
+    Warn 'Problems were encountered during processing.'
 
 Trace 'Check for processed projects. (%s)' "${processed}"
 if ${processed}

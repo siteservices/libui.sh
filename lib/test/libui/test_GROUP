@@ -6,10 +6,14 @@
 #####
 
 test_GROUP () {
+  LibuiGetDisplayTestValues
   local grp="$(${BSDPATH}id -gn)"
   LibuiPerformTest 'Tell -- "${GROUP}"'
   LibuiValidateTest ${?} 0 "${grp}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -18,21 +18,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.011 -m 1.19
+Version -r 2.012 -m 1.22
 
 ##### configuration
 
@@ -52,12 +53,12 @@ ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
 _Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/lib/test/libui}"
-_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}\${sh} \"\${d}/lib/sh/libui\" \${@}"
+_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}\${sh} \"\${d}/bin/libui\" \${@}"
 _Util_groupmode='g+wX'
 _Util_configfile="${LIBUI_CONFIG}/libui.conf"
-_Util_dcprefix="${LIBUI_CONFIG}/display-"
-_Util_statsfile="${LIBUI_LOCAL}/stats"
-_Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_LOCAL}/lock}"
+_Util_dcprefix="${LIBUI_CACHE}/display-"
+_Util_statsfile="${LIBUI_STATE}/stats"
+_Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_STATE}/lock}"
 _Util_workdir="${PWD}"
 GetTmp _Util_tmpdir
 
@@ -104,7 +105,7 @@ _LibuiSetup () {
   local Sparam
   local vparam
 
-  ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}}"
+  ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}"
   [[ " ${arg[*]} " =~ .*\ -x\ *oa\ .* ]] && aopt=true || aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oA\ .* ]] && Aopt=true || Aopt=false
   [[ " ${arg[*]} " =~ .*\ -x\ *oc\ .* ]] && copt=true || copt=false
@@ -128,26 +129,30 @@ _LibuiSetup () {
   [[ " ${arg[*]} " =~ .*\ -x\ *b\ .* ]] && AddOption -n binaryft -f -k 'Binary F/T' -d '(Only for test.) For testing AddOption -f option.' b
   [[ " ${arg[*]} " =~ .*\ -x\ *B\ .* ]] && AddOption -n binarytf -t -k 'Binary T/F' -d '(Only for test.) For testing AddOption -t option.' B
   AddOption -n config -f -k 'Config' -d 'Create default configuration file "${_Util_configfile}".' c
+  AddOption -n cachereset -f -k 'Cache Reset' -d 'Reset (clear) library caches.' C
   AddOption -n demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
+  AddOption -n defer -f -k 'Defer' -d 'Defer user environment by preferring COMMONROOT (or provided directory).' D
   AddOption -n shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
   AddOption -n group -f -k 'Group' -d 'Make installed files / directories group writable.' g
-  AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
-  AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' I
+  AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' i
+  AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' I
   AddOption -n list -f -k 'List' -d 'List files that would be included in a libui package.' l
   AddOption -n unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
-  AddOption -n manpage -c ManualCallback -f -k 'Man Page' -d 'Display man page.' m
-  AddOption -n updateman -f -k 'Update Man Pages' -d 'Update man page timestamps to match respective script timestamp.' M
+  AddOption -n mpage -f -k 'Man Page' -d 'Display man page.' m
+  AddOption -n mpath -f -k 'Man Path' -d 'Return the libui manpath.' M
   AddOption -n new -f -k 'New Script' -d 'Create a new libui script with the provided filename.' n
   AddOption -n empty -f -k 'New Empty Script' -d 'Create a libui script with the provided filename without demo content.' N
   AddOption -n package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
-  AddOption -n cachereset -f -k 'Reset Caches' -d 'Reset display and user information caches.' R
+  AddOption -n prepackage -f -k 'Pre-package' -d 'Update documentation / datestamps in preparation for packaging.' P
   AddOption -n stats -f -k 'Stats' -d 'Display stats.' s
+  AddOption -n statereset -f -k 'State Reset' -d 'Reset (clear) state (i.e., stats, logs, and ledger).' S
   AddOption -n testing -f -k 'Test' -d 'Perform libui regression testing.' t
   AddOption -n singletest -c SingleTestCallback -f -k '(Single) Test' -d 'Perform single test.' T
   AddOption -n update -f -k 'Update' -d 'Update libui in COMMONROOT (or provided directory).' u
-  AddOption -n unify -f -k 'Unify' -d 'Unify environment by removing files already in COMMONROOT (or provided directory).' U
-  AddOption -n vlevel -c VerifyCallback -m -p true -k 'Verify' -d 'Verify libui in COMMONROOT (or provided directory).' v
-  availopt=( b B d m n o oa oA oc oC os oS ov p pa pA ps pS pv r R t w X aot one two three four five )
+  AddOption -n userreset -f -k 'User Reset' -d 'Reset user information.' U
+  AddOption -n version -f -k 'Version' -d 'Obtain version information. (Please use -Xv in applications.)' v
+  AddOption -n vlevel -c VerifyCallback -m -p true -k 'Verify' -d 'Verify libui in COMMONROOT (or provided directory).' V
+  availopt=( b B d m n o oa oA oc oC os oS ov p P pa pA ps pS pv r R t T w X aot one two three four five )
   testopt=( X )
   AddOption -n testopt -c TestModeCallback -m -S availopt -k 'Test Option' -d '(Only for test.) Set test mode.' x:
   testvalues=( x y z )
@@ -181,90 +186,50 @@ _LibuiSetup () {
         ${_M} && _Trace 'Set up AddOption False / True test.'
         _Util_addoptft=true
         ;;
-
       B)
         ${_M} && _Trace 'Set up AddOption True / False test.'
         _Util_addopttf=true
         ;;
-
       d)
         ${_M} && _Trace 'Set up test debug.'
         debug=true
         ;;
-
       m)
         ${_M} && _Trace 'Set up for multiuser testing.'
         _Util_multiuser=true
         ;;
-
       n)
         ${_M} && _Trace 'Set up no log testing.'
         _Util_nolog=true
         ;;
-
       o)
         ${_M} && _Trace 'Increment option count.'
         ((_Util_optcnt++))
         ;;
-
       p)
         ${_M} && _Trace 'Set up multiple parameter test.'
         multiparam=true
         ;;
-
       r)
         ${_M} && _Trace 'Set up allow root test.'
         _Util_allowroot=true
         ;;
-
       R)
         ${_M} && _Trace 'Set up require root test.'
         _Util_requireroot=true
         ;;
-
       t)
         ${_M} && _Trace 'Set up terminal test.'
         _Util_terminal=true
         ;;
-
       w)
         ${_M} && _Trace 'Set up hello world test.'
         helloworld=true
         ;;
-
       *)
         ${_M} && _Trace 'Received additional argument. (%s)' "${1}"
         ;;
-
     esac
-  }
-
-  # for -m - display manual callback
-  ManualCallback () {
-    ${_M} && _Trace 'Display manual.'
-    man() {
-      LESS_TERMCAP_mb="$(tput bold; tput setaf 5)" \
-      LESS_TERMCAP_md="$(tput bold; tput setaf 6)" \
-      LESS_TERMCAP_me="$(tput sgr0)" \
-      LESS_TERMCAP_se="$(tput sgr0)" \
-      LESS_TERMCAP_so="$(tput bold; tput setaf 1)" \
-      LESS_TERMCAP_ue="$(tput rmul; tput sgr0)" \
-      LESS_TERMCAP_us="$(tput smul; tput bold; tput setaf 3)" \
-      command man "$@"
-    }
-
-    if man libui.sh &> /dev/null
-    then
-      man libui.sh
-    elif man ${LIBUI%/*}/../../man/man3/libui.sh.3 &> /dev/null
-    then
-      man ${LIBUI%/*}/../../man/man3/libui.sh.3
-    elif man ${LIBUI%/*}/libui.sh.3 &> /dev/null
-    then
-      man ${LIBUI%/*}/libui.sh.3
-    fi
-
-    Exit 0
   }
 
   # valid callback
@@ -288,6 +253,7 @@ regression testing, capabilities demonstration, and usage statistics reports.
 
 Hints: ${D0}Use the "-n" (New Script) option to generate a new liubi script.${D}
        Use the "-d" (Demo) option to see the display formats available.
+       Use the "-v" (Verify) option more than once to increase verbosity.
 
 Shell environment: ${SHENV}
 
@@ -317,14 +283,14 @@ EOF
 
     ${installtests} && install=true
 
-    if ${install} || ${verify} || ${update} || ${unify}
+    if ${install} || ${verify} || ${update} || ${defer}
     then
       ${_M} && _Trace 'Check for multiple actions error.'
       local _Util_x=0
       ${install} && ((_Util_x++))
       ${verify} && ((_Util_x++))
       ${update} && ((_Util_x++))
-      ${unify} && ((_Util_x++))
+      ${defer} && ((_Util_x++))
       ((1 < _Util_x)) && Tell -E 'Only one COMMONROOT action can be performed at a time.'
 
       ${_M} && _Trace 'Obtaining commonroot info. (%s / %s)' "${COMMONROOT}" "${param}"
@@ -392,64 +358,14 @@ LibuiDemo () {
   ${_S} && ((_cLibuiDemo++))
   ${_M} && _Trace 'LibuiDemo [%s]' "${*}"
 
-  if ${TERMINAL}
-  then
-    Tell 'Available display codes:'
-    [[ -z "${DCS}" ]] && Tell -W 'Clear screen (DCS) not defined.' || printf '\t%s\n' 'Clear screen (DCS).'
-    [[ -z "${DCEL}" ]] && Tell -W 'Clear to end of line (DCEL) not defined.' || printf '\t%s\n' 'Clear to end of line (DCEL).'
-    [[ -z "${DCES}" ]] && Tell -W 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'Clear to end of screen (DCES).'
-    [[ -z "${DJBL}" ]] && Tell -W 'Jump to beginning of line (DJBL) not defined.' || printf '\t%s\n' 'Jump to beginning of line (DJBL).'
-    [[ -z "${DJH}" ]] && Tell -W 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'Jump to home (DJH).'
-    [[ -z "${DCP}" ]] && Tell -W 'Read cursor position (DCP) not defined.' || printf '\t%s\n' 'Read cursor position (DCP).'
-    [[ -z "${Db0}" ]] && Tell -W 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Black background (Db0).'
-    [[ -z "${Dbr}" ]] && Tell -W 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Red background (Dbr).'
-    [[ -z "${Dbg}" ]] && Tell -W 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Green background(Dbg).'
-    [[ -z "${Dby}" ]] && Tell -W 'Yellow background (Dby) not defined.' || printf "\t${Dby}%s${D}\n" 'Yellow background (Dby).'
-    [[ -z "${Dbb}" ]] && Tell -W 'Blue background (Dbb) not defined.' || printf "\t${Dbb}%s${D}\n" 'Blue background (Dbb).'
-    [[ -z "${Dbm}" ]] && Tell -W 'Magenta background (Dbm) not defined.' || printf "\t${Dbm}%s${D}\n" 'Magenta background (Dbm).'
-    [[ -z "${Dbc}" ]] && Tell -W 'Cyan background (Dbc) not defined.' || printf "\t${Dbc}%s${D}\n" 'Cyan background (Dbc).'
-    [[ -z "${Db7}" ]] && Tell -W 'White background (Db7) not defined.' || printf "\t${Db7}%s${D}\n" 'White background (Db7).'
-    [[ -z "${DB0}" ]] && Tell -W 'Bright black background (DB0) not defined.' || printf "\t${DB0}%s${D}\n" 'Bright black background (DB0).'
-    [[ -z "${DBr}" ]] && Tell -W 'Bright red background (DBr) not defined.' || printf "\t${DBr}%s${D}\n" 'Bright red background (DBr).'
-    [[ -z "${DBg}" ]] && Tell -W 'Bright green background (DBg) not defined.' || printf "\t${DBg}%s${D}\n" 'Bright green background (DBg).'
-    [[ -z "${DBy}" ]] && Tell -W 'Bright yellow background (DBy) not defined.' || printf "\t${DBy}%s${D}\n" 'Bright yellow background (DBy).'
-    [[ -z "${DBb}" ]] && Tell -W 'Bright blue background (DBb) not defined.' || printf "\t${DBb}%s${D}\n" 'Bright blue background (DBb).'
-    [[ -z "${DBm}" ]] && Tell -W 'Bright magenta background (DBm) not defined.' || printf "\t${DBm}%s${D}\n" 'Bright magenta background (DBm).'
-    [[ -z "${DBc}" ]] && Tell -W 'Bright cyan background (DBc) not defined.' || printf "\t${DBc}%s${D}\n" 'Bright cyan background (DBc).'
-    [[ -z "${DB7}" ]] && Tell -W 'Bright white background (DB7) not defined.' || printf "\t${DB7}%s${D}\n" 'Bright white background (DB7).'
-    [[ -z "${Df0}" ]] && Tell -W 'Black foreground (Df0) not defined.' || printf "\t${Df0}%s${D}\n" 'Black foreground (Df0).'
-    [[ -z "${Dfr}" ]] && Tell -W 'Red foreground (Dfr) not defined.' || printf "\t${Dfr}%s${D}\n" 'Red foreground (Dfr).'
-    [[ -z "${Dfg}" ]] && Tell -W 'Green foreground (Dfg) not defined.' || printf "\t${Dfg}%s${D}\n" 'Green foreground (Dfg).'
-    [[ -z "${Dfy}" ]] && Tell -W 'Yellow foreground (Dfy) not defined.' || printf "\t${Dfy}%s${D}\n" 'Yellow foreground (Dfy).'
-    [[ -z "${Dfb}" ]] && Tell -W 'Blue foreground (Dfb) not defined.' || printf "\t${Dfb}%s${D}\n" 'Blue foreground (Dfb).'
-    [[ -z "${Dfm}" ]] && Tell -W 'Magenta foreground (Dfm) not defined.' || printf "\t${Dfm}%s${D}\n" 'Magenta foreground (Dfm).'
-    [[ -z "${Dfc}" ]] && Tell -W 'Cyan foreground (Dfc) not defined.' || printf "\t${Dfc}%s${D}\n" 'Cyan foreground (Dfc).'
-    [[ -z "${Df7}" ]] && Tell -W 'White foreground (Df7) not defined.' || printf "\t${Df7}%s${D}\n" 'White foreground (Df7).'
-    [[ -z "${DF0}" ]] && Tell -W 'Bright black foreground (DF0) not defined.' || printf "\t${DF0}%s${D}\n" 'Bright black foreground (DF0).'
-    [[ -z "${DFr}" ]] && Tell -W 'Bright red foreground (DFr) not defined.' || printf "\t${DFr}%s${D}\n" 'Bright red foreground (DFr).'
-    [[ -z "${DFg}" ]] && Tell -W 'Bright green foreground (DFg) not defined.' || printf "\t${DFg}%s${D}\n" 'Bright green foreground (DFg).'
-    [[ -z "${DFy}" ]] && Tell -W 'Bright yellow foreground (DFy) not defined.' || printf "\t${DFy}%s${D}\n" 'Bright yellow foreground (DFy).'
-    [[ -z "${DFb}" ]] && Tell -W 'Bright blue foreground (DFb) not defined.' || printf "\t${DFb}%s${D}\n" 'Bright blue foreground (DFb).'
-    [[ -z "${DFm}" ]] && Tell -W 'Bright magenta foreground (DFm) not defined.' || printf "\t${DFm}%s${D}\n" 'Bright magenta foreground (DFm).'
-    [[ -z "${DFc}" ]] && Tell -W 'Bright cyan foreground (DFc) not defined.' || printf "\t${DFc}%s${D}\n" 'Bright cyan foreground (DFc).'
-    [[ -z "${DF7}" ]] && Tell -W 'Bright white foreground (DF7) not defined.' || printf "\t${DF7}%s${D}\n" 'Bright white foreground (DF7).'
-    [[ -z "${Db}" ]] && Tell -W 'Bold text (Db) not defined.' || printf "\t${Db}%s${D}\n" 'Bold text (Db).'
-    [[ -z "${Dd}" ]] && Tell -W 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dim text (Dd).'
-    [[ -z "${Dsu}" ]] && Tell -W 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Start underline (Dsu).'
-    [[ -z "${Deu}" ]] && Tell -W 'End underline (Deu) not defined.' || printf "\t${Deu}%s${D}\n" 'End underline (Deu).'
-    [[ -z "${Dr}" ]] && Tell -W 'Reverse display (Dr) not defined.' || printf "\t${Dr}%s${D}\n" 'Reverse display (Dr).'
-    [[ -z "${Dss}" ]] && Tell -W 'Start standout text (Dss) not defined.' || printf "\t${Dss}%s${D}\n" 'Start standout text (Dss).'
-    [[ -z "${Des}" ]] && Tell -W 'End standout text (Des) not defined.' || printf "\t${Des}%s${D}\n" 'End standout text (Des).'
-    [[ -z "${D}" ]] && Tell -W 'Reset hightlighting (D) not defined.' || printf "\t${D}%s${D}\n" 'Reset hightlighting (D).'
-  else
-    Tell -W 'Terminal display codes are not available without a terminal.'
-  fi
+  Tell 'Capabilities Demo'
 
   Tell '\nDisplay formats:'
   Tell "\t${DAction}Action format."
   Tell "\t${DAlarm}Alarm format."
   Tell "\t${DAlert}Alert format."
   Tell "\t${DAnswer}Answer format."
+  Tell "\t${DBrief}Brief format."
   Tell "\t${DCaution}Caution format."
   Tell "\t${DConfirm}Confirm format."
   Tell "\t${DError}Error format."
@@ -462,47 +378,114 @@ LibuiDemo () {
   Tell "\t${DWarn}Warning format."
 
   Tell '\nDisplay modes:'
-  Tell "\t${D0}Display mode %d. (D0)" 0
-  Tell "\t${D1}Display mode %d. (D1)" 1
-  Tell "\t${D2}Display mode %d. (D2)" 2
-  Tell "\t${D3}Display mode %d. (D3)" 3
-  Tell "\t${D4}Display mode %d. (D4)" 4
-  Tell "\t${D5}Display mode %d. (D5)" 5
-  Tell "\t${D6}Display mode %d. (D6)" 6
-  Tell "\t${D7}Display mode %d. (D7)" 7
-  Tell "\t${D8}Display mode %d. (D8)" 8
-  Tell "\t${D9}Display mode %d. (D9)" 9
+  Tell "\t${D0}D0 - Display mode %d." 0
+  Tell "\t${D1}D1 - Display mode %d." 1
+  Tell "\t${D2}D2 - Display mode %d." 2
+  Tell "\t${D3}D3 - Display mode %d." 3
+  Tell "\t${D4}D4 - Display mode %d." 4
+  Tell "\t${D5}D5 - Display mode %d." 5
+  Tell "\t${D6}D6 - Display mode %d." 6
+  Tell "\t${D7}D7 - Display mode %d." 7
+  Tell "\t${D8}D8 - Display mode %d." 8
+  Tell "\t${D9}D9 - Display mode %d." 9
+
+  if ${TERMINAL}
+  then
+    Tell '\nAvailable display codes:'
+    [[ -z "${DCS}" ]] && Tell -W 'Clear screen (DCS) not defined.' || printf '\t%s\n' 'DCS - Clear screen.'
+    [[ -z "${DCEL}" ]] && Tell -W 'Clear to end of line (DCEL) not defined.' || printf '\t%s\n' 'DCEL - Clear to end of line.'
+    [[ -z "${DCES}" ]] && Tell -W 'Clear to end of screen (DCES) not defined.' || printf '\t%s\n' 'DCES - Clear to end of screen.'
+    [[ -z "${DJBL}" ]] && Tell -W 'Jump to beginning of line (DJBL) not defined.' || printf '\t%s\n' 'DJBL - Jump to beginning of line.'
+    [[ -z "${DJH}" ]] && Tell -W 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'DJH - Jump to home.'
+    [[ -z "${DCP}" ]] && Tell -W 'Read cursor position (DCP) not defined.' || printf '\t%s\n' 'DCP - Read cursor position.'
+    [[ -z "${Db0}" ]] && Tell -W 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Db0 - Black background.'
+    [[ -z "${Dbr}" ]] && Tell -W 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Dbr - Red background.'
+    [[ -z "${Dbg}" ]] && Tell -W 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Dbg - Green backgroun.'
+    [[ -z "${Dby}" ]] && Tell -W 'Yellow background (Dby) not defined.' || printf "\t${Dby}%s${D}\n" 'Dby - Yellow background.'
+    [[ -z "${Dbb}" ]] && Tell -W 'Blue background (Dbb) not defined.' || printf "\t${Dbb}%s${D}\n" 'Dbb - Blue background.'
+    [[ -z "${Dbm}" ]] && Tell -W 'Magenta background (Dbm) not defined.' || printf "\t${Dbm}%s${D}\n" 'Dbm - Magenta background.'
+    [[ -z "${Dbc}" ]] && Tell -W 'Cyan background (Dbc) not defined.' || printf "\t${Dbc}%s${D}\n" 'Dbc - Cyan background.'
+    [[ -z "${Db7}" ]] && Tell -W 'White background (Db7) not defined.' || printf "\t${Db7}%s${D}\n" 'Db7 - White background.'
+    [[ -z "${DB0}" ]] && Tell -W 'Bright black background (DB0) not defined.' || printf "\t${DB0}%s${D}\n" 'DB0 - Bright black background.'
+    [[ -z "${DBr}" ]] && Tell -W 'Bright red background (DBr) not defined.' || printf "\t${DBr}%s${D}\n" 'DBr - Bright red background.'
+    [[ -z "${DBg}" ]] && Tell -W 'Bright green background (DBg) not defined.' || printf "\t${DBg}%s${D}\n" 'DBg - Bright green background.'
+    [[ -z "${DBy}" ]] && Tell -W 'Bright yellow background (DBy) not defined.' || printf "\t${DBy}%s${D}\n" 'DBy - Bright yellow background.'
+    [[ -z "${DBb}" ]] && Tell -W 'Bright blue background (DBb) not defined.' || printf "\t${DBb}%s${D}\n" 'DBb - Bright blue background.'
+    [[ -z "${DBm}" ]] && Tell -W 'Bright magenta background (DBm) not defined.' || printf "\t${DBm}%s${D}\n" 'DBm - Bright magenta background.'
+    [[ -z "${DBc}" ]] && Tell -W 'Bright cyan background (DBc) not defined.' || printf "\t${DBc}%s${D}\n" 'DBc - Bright cyan background.'
+    [[ -z "${DB7}" ]] && Tell -W 'Bright white background (DB7) not defined.' || printf "\t${DB7}%s${D}\n" 'DB7 - Bright white background.'
+    [[ -z "${Df0}" ]] && Tell -W 'Black foreground (Df0) not defined.' || printf "\t${Df0}%s${D}\n" 'Df0 - Black foreground.'
+    [[ -z "${Dfr}" ]] && Tell -W 'Red foreground (Dfr) not defined.' || printf "\t${Dfr}%s${D}\n" 'Dfr - Red foreground.'
+    [[ -z "${Dfg}" ]] && Tell -W 'Green foreground (Dfg) not defined.' || printf "\t${Dfg}%s${D}\n" 'Dfg - Green foreground.'
+    [[ -z "${Dfy}" ]] && Tell -W 'Yellow foreground (Dfy) not defined.' || printf "\t${Dfy}%s${D}\n" 'Dfy - Yellow foreground.'
+    [[ -z "${Dfb}" ]] && Tell -W 'Blue foreground (Dfb) not defined.' || printf "\t${Dfb}%s${D}\n" 'Dfb - Blue foreground.'
+    [[ -z "${Dfm}" ]] && Tell -W 'Magenta foreground (Dfm) not defined.' || printf "\t${Dfm}%s${D}\n" 'Dfm - Magenta foreground.'
+    [[ -z "${Dfc}" ]] && Tell -W 'Cyan foreground (Dfc) not defined.' || printf "\t${Dfc}%s${D}\n" 'Dfc - Cyan foreground.'
+    [[ -z "${Df7}" ]] && Tell -W 'White foreground (Df7) not defined.' || printf "\t${Df7}%s${D}\n" 'Df7 - White foreground.'
+    [[ -z "${DF0}" ]] && Tell -W 'Bright black foreground (DF0) not defined.' || printf "\t${DF0}%s${D}\n" 'DF0 - Bright black foreground.'
+    [[ -z "${DFr}" ]] && Tell -W 'Bright red foreground (DFr) not defined.' || printf "\t${DFr}%s${D}\n" 'DFr - Bright red foreground.'
+    [[ -z "${DFg}" ]] && Tell -W 'Bright green foreground (DFg) not defined.' || printf "\t${DFg}%s${D}\n" 'DFg - Bright green foreground.'
+    [[ -z "${DFy}" ]] && Tell -W 'Bright yellow foreground (DFy) not defined.' || printf "\t${DFy}%s${D}\n" 'DFy - Bright yellow foreground.'
+    [[ -z "${DFb}" ]] && Tell -W 'Bright blue foreground (DFb) not defined.' || printf "\t${DFb}%s${D}\n" 'DFb - Bright blue foreground.'
+    [[ -z "${DFm}" ]] && Tell -W 'Bright magenta foreground (DFm) not defined.' || printf "\t${DFm}%s${D}\n" 'DFm - Bright magenta foreground.'
+    [[ -z "${DFc}" ]] && Tell -W 'Bright cyan foreground (DFc) not defined.' || printf "\t${DFc}%s${D}\n" 'DFc - Bright cyan foreground.'
+    [[ -z "${DF7}" ]] && Tell -W 'Bright white foreground (DF7) not defined.' || printf "\t${DF7}%s${D}\n" 'DF7 - Bright white foreground.'
+    [[ -z "${Db}" ]] && Tell -W 'Bold text (Db) not defined.' || printf "\t${Db}%s${D}\n" 'Db - Bold text.'
+    [[ -z "${Dd}" ]] && Tell -W 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dd - Dim text.'
+    [[ -z "${Dsu}" ]] && Tell -W 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Dsu - Start underline.'
+    [[ -z "${Deu}" ]] && Tell -W 'End underline (Deu) not defined.' || printf "\t${Deu}%s${D}\n" 'Deu - End underline.'
+    [[ -z "${Dr}" ]] && Tell -W 'Reverse display (Dr) not defined.' || printf "\t${Dr}%s${D}\n" 'Dr - Reverse display.'
+    [[ -z "${Dss}" ]] && Tell -W 'Start standout text (Dss) not defined.' || printf "\t${Dss}%s${D}\n" 'Dss - Start standout text.'
+    [[ -z "${Des}" ]] && Tell -W 'End standout text (Des) not defined.' || printf "\t${Des}%s${D}\n" 'Des - End standout text.'
+    [[ -z "${D}" ]] && Tell -W 'Reset highlighting (D) not defined.' || printf "\t${D}%s${D}\n" 'D - Reset highlighting.'
+  else
+    Tell -W '\nTerminal display codes are not available without a terminal.'
+  fi
 
   GetCursor
 
+  Tell '\nTerminal Information:'
+  Tell "\tHEIGHT${D} - Terminal Height:        ${DFc}%s${D}" "${HEIGHT}"
+  Tell "\tWIDTH${D} - Terminal Width:          ${DFc}%s${D}" "${WIDTH}"
+  Tell "\tMAXROW${D} - Max row:                ${DFc}%s${D}" "${MAXROW}"
+  Tell "\tMAXCOL${D} - Max column:             ${DFc}%s${D}" "${MAXCOL}"
+  Tell "\tROW, COL${D} - Cursor position:      ${DFc}%s${D}" "${ROW}, ${COL}"
+
   Tell '\nExecution environment:'
-  Tell "\tAssociative array (AA):          ${DFc}%s${D}" "${AA}"
-  Tell "\tArray offset (AO):               ${DFc}%s${D}" "${AO}"
-  Tell "\tInitial working directory (IWD): ${DFc}%s${D}" "${IWD}"
-  Tell "\tBash version (BV):               ${DFc}%s${D}" "${BV}"
-  Tell "\tCommand line string (CMDLINE):   ${DFc}%s${D}" "${CMDLINE[*]}"
-  Tell "\tCursor position (ROW, COL):      ${DFc}%s${D}" "${ROW}, ${COL}"
-  Tell "\tDomain name (DOMAIN):            ${DFc}%s${D}" "${DOMAIN}"
-  Tell "\tEffective UID (EUID):            ${DFc}%s${D} (note: consumed, not generated)" "${EUID}"
-  Tell "\tPrimary Group (GROUP):           ${DFc}%s${D}" "${GROUP}"
-  Tell "\tHost name (HOST):                ${DFc}%s${D}" "${HOST}"
-  Tell "\tPath of libui library (LIBUI):   ${DFc}%s${D}" "${LIBUI}"
-  Tell "\tMax column (MAXCOL):             ${DFc}%s${D}" "${MAXCOL}"
-  Tell "\tMax integer (MAXINT):            ${DFc}%s${D}" "${MAXINT}"
-  Tell "\tMax row (MAXROW):                ${DFc}%s${D}" "${MAXROW}"
-  Tell "\tNumber of options (NROPT):       ${DFc}%s${D}" "${NROPT}"
-  Tell "\tNumber of parameters (NRPARAM):  ${DFc}%s${D}" "${NRPARAM}"
-  Tell "\tOperating system (OS):           ${DFc}%s${D}" "${OS}"
-  Tell "\tProgram name (CMD):              ${DFc}%s${D}" "${CMD}"
-  Tell "\tSupports printf -v (PV):         ${DFc}%s${D}" "${PV}"
-  Tell "\tShell (SHENV):                   ${DFc}%s${D}" "${SHENV}"
-  Tell "\tOutput to terminal (TERMINAL):   ${DFc}%s${D}" "${TERMINAL}"
-  Tell "\tLoaded UI mods (UIMOD):          ${DFc}%s${D}" "${UIMOD[*]}"
-# Tell "\tTracked UI functions (UICMD):    ${DFc}%s${D}" "${UICMD[*]}"
-  Tell "\tOperating system type (UNIX):    ${DFc}%s${D}" "${UNIX}"
-  Tell "\tUser name (USER):                ${DFc}%s${D} (note: consumed, not generated)" "${USER}"
-  Tell "\tUsing Z shell (ZSH):             ${DFc}%s${D}" "${ZSH}"
-  Tell "\tZ shell version (ZV):            ${DFc}%s${D}" "${ZV}"
+  Tell "\tAA${D} - Associative array:          ${DFc}%s${D}" "${AA}"
+  Tell "\tANSWER${D} - Last answer provided:   ${DFc}%s${D}" "${ANSWER}"
+  Tell "\tAO${D} - Array offset:               ${DFc}%s${D}" "${AO}"
+  Tell "\tARCH${D} - System architecture:      ${DFc}%s${D}" "${ARCH}"
+  Tell "\tBV${D} - Bash version:               ${DFc}%s${D}" "${BV}"
+  Tell "\tBSDPATH${D} - Path to BSD versions:  ${DFc}%s${D} (note: only for Solaris)" "${BSDPATH}"
+  Tell "\tCHFLAGS${D} - Chain flags:           ${DFc}%s${D}" "${CHFLAGS}"
+  Tell "\tCMD${D} - Command name:              ${DFc}%s${D}" "${CMD}"
+  Tell "\tCMDARGS${D} - Command arguments:     ${DFc}%s${D}" "${CMDARGS[*]}"
+  Tell "\tCMDLINE${D} - Command line string:   ${DFc}%s${D}" "${CMDLINE[*]}"
+  Tell "\tCMDPATH${D} - Command path:          ${DFc}%s${D}" "${CMDPATH}"
+  Tell "\tDOMAIN${D} - Domain name:            ${DFc}%s${D}" "${DOMAIN}"
+  Tell "\tEUID${D} - Effective UID:            ${DFc}%s${D} (note: consumed, not generated)" "${EUID}"
+  Tell "\tEGID${D} - Effective UID:            ${DFc}%s${D} (note: consumed, not generated)" "${EGID}"
+  Tell "\tFMFLAGS${D} - File Management flags: ${DFc}%s${D}" "${FMFLAGS}"
+  Tell "\tGROUP${D} - Primary Group:           ${DFc}%s${D}" "${GROUP}"
+  Tell "\tHOST${D} - Host name:                ${DFc}%s${D}" "${HOST}"
+  Tell "\tIWD${D} - Initial working directory: ${DFc}%s${D}" "${IWD}"
+  Tell "\tLIBUI${D} - Path to libui library:   ${DFc}%s${D}" "${LIBUI}"
+  Tell "\tMAXINT${D} - Max integer:            ${DFc}%s${D}" "${MAXINT}"
+  Tell "\tNROPT${D} - Number of options:       ${DFc}%s${D}" "${NROPT}"
+  Tell "\tNRPARAM${D} - Number of parameters:  ${DFc}%s${D}" "${NRPARAM}"
+  Tell "\tOS${D} - Operating system:           ${DFc}%s${D}" "${OS}"
+  Tell "\tOS_DIST${D} - OS distribution:       ${DFc}%s${D}" "${OS_DIST}"
+  Tell "\tPV${D} - Supports printf -v:         ${DFc}%s${D}" "${PV}"
+  Tell "\tSHENV${D} - Shell environment:       ${DFc}%s${D}" "${SHENV}"
+  Tell "\tTERMINAL${D} - Terminal available:   ${DFc}%s${D}" "${TERMINAL}"
+  Tell "\tUICMD${D} - Tracked UI functions:    ${DFc}%s${D} (note: only displaying variable count.)" "${#UICMD[*]}"
+  Tell "\tUIMOD${D} - Loaded UI mods:          ${DFc}%s${D}" "${UIMOD[*]}"
+  Tell "\tUIVERSION${D} - Version information: ${DFc}%s${D}" "${UIVERSION[*]}"
+  Tell "\tUNIX${D} - Unix system type:         ${DFc}%s${D}" "${UNIX}"
+  Tell "\tUSER${D} - Username:                 ${DFc}%s${D} (note: consumed, not generated)" "${USER}"
+  Tell "\tZSH${D} - Using Z shell:             ${DFc}%s${D}" "${ZSH}"
+  Tell "\tZV${D} - Z shell version:            ${DFc}%s${D}" "${ZV}"
 
   ${_M} && _Trace 'LibuiDemo return. (%s)' 0
   return 0
@@ -536,23 +519,12 @@ LibuiStats () {
   return 0
 }
 
-UICMD+=( 'LibuiResetCaches' )
-LibuiResetCaches () {
-  ${_S} && ((_cLibuiResetCaches++))
-  ${_M} && _Trace 'LibuiResetCaches [%s]' "${*}"
+UICMD+=( 'LibuiResetCache' )
+LibuiResetCache () {
+  ${_S} && ((_cLibuiResetCache++))
+  ${_M} && _Trace 'LibuiResetCache [%s]' "${*}"
 
-  ${_M} && _Trace 'Prepare to reset stats file %s.' "${_Util_statsfile}"
-  if [[ -e "${_Util_statsfile}" ]]
-  then
-    if Verify 'Really reset stats file %s?' "${_Util_statsfile}"
-    then
-      ${_M} && _Trace 'Remove stats file %s.' "${_Util_statsfile}"
-      Action "rm ${FMFLAGS} '${_Util_statsfile}'"
-      Tell -A 'Stats file has been removed. (%s)' "${_Util_statsfile}"
-    fi
-  fi
-
-  GetFileList cachefiles "${_Util_dcprefix}*"
+  GetFileList cachefiles "${LIBUI_CACHE}/*"
   ${_M} && _Trace 'Prepare to remove cache files. (%s)' "${cachefiles[*]}"
   if [[ -n "${cachefiles}" ]]
   then
@@ -561,20 +533,45 @@ LibuiResetCaches () {
       local _Util_file
       for _Util_file in "${cachefiles[@]}"
       do
-        if [[ -e "${_Util_file}" ]]
+        if [[ -f "${_Util_file}" ]]
         then
           ${_M} && _Trace 'Remove cache %s.' "${_Util_file}"
-          Action -q "Really remove ${_Util_file} cache?" "rm ${FMFLAGS} '${_Util_file}'"
+          Action -q "Really remove ${_Util_file}?" "rm ${FMFLAGS} '${_Util_file}'"
         fi
       done
       Tell -A 'Cache files have been removed. (%s)' "${cachefiles[*]}"
     fi
   fi
 
-  ${_M} && _Trace 'Reset user info.'
-  Verify 'Really update user info?' && _SetUserInfo -u
+  ${_M} && _Trace 'LibuiResetCache return. (%s)' 0
+  return 0
+}
 
-  ${_M} && _Trace 'LibuiResetCaches return. (%s)' 0
+UICMD+=( 'LibuiResetState' )
+LibuiResetState () {
+  ${_S} && ((_cLibuiResetState++))
+  ${_M} && _Trace 'LibuiResetState [%s]' "${*}"
+
+  GetFileList statefiles "${LIBUI_STATE}/*"
+  ${_M} && _Trace 'Prepare to remove state files. (%s)' "${statefiles[*]}"
+  if [[ -n "${statefiles}" ]]
+  then
+    if Verify 'Really remove state files? (%s)' "${statefiles[*]}"
+    then
+      local _Util_file
+      for _Util_file in "${statefiles[@]}"
+      do
+        if [[ -f "${_Util_file}" ]]
+        then
+          ${_M} && _Trace 'Remove state file %s.' "${_Util_file}"
+          Action -q "Really remove ${_Util_file}?" "rm ${FMFLAGS} '${_Util_file}'"
+        fi
+      done
+      Tell -A 'State files have been removed. (%s)' "${statefiles[*]}"
+    fi
+  fi
+
+  ${_M} && _Trace 'LibuiResetState return. (%s)' 0
   return 0
 }
 
@@ -619,6 +616,43 @@ LibuiUnlock () {
   return 0
 }
 
+UICMD+=( 'LibuiManpage' )
+LibuiManpage () {
+  ${_S} && ((_cLibuiManpage++))
+  ${_M} && _Trace 'LibuiManpage [%s]' "${*}"
+
+  ${_M} && _Trace 'Display man page.'
+  man() {
+    LESS_TERMCAP_mb="$(tput bold; tput setaf 5)" \
+    LESS_TERMCAP_md="$(tput bold; tput setaf 6)" \
+    LESS_TERMCAP_me="$(tput sgr0)" \
+    LESS_TERMCAP_se="$(tput sgr0)" \
+    LESS_TERMCAP_so="$(tput bold; tput setaf 1)" \
+    LESS_TERMCAP_ue="$(tput rmul; tput sgr0)" \
+    LESS_TERMCAP_us="$(tput smul; tput bold; tput setaf 3)" \
+    command man -M "${LIBUI%/*/*/*}/share/man:${MANPAGE}" "${@}"
+  }
+  man "${1:-libui}"
+
+  ${_M} && _Trace 'LibuiManpage return. (%s)' 0
+  return 0
+}
+
+UICMD+=( 'LibuiTimestamp' )
+LibuiTimestamp () {
+  ${_S} && ((_cLibuiTimestamp++))
+  ${_M} && _Trace 'LibuiTimestamp [%s]' "${*}"
+
+  ${_M} && _Trace 'Update %s timestamp.' "${LIBUI}"
+  local _Util_now=$(date '+%a %b %e %T %Z %Y' | sed 's/  / /g')
+  local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+  Action -q 'Update the libui.sh notation date?' "sed ${_Util_sedi} -e 's/ LIBUI_VERSION=\([0-9][0-9]*\.[0-9][0-9][0-9]\) # .* .* .* .*:.*:.* .* [0-9][0-9][0-9][0-9]$/ LIBUI_VERSION=\1 # ${_Util_now}/' '${LIBUI}'" && \
+      Tell -A '%s timestamp updated.' "${LIBUI}"
+
+  ${_M} && _Trace 'LibuiTimestamp return. (%s)' 0
+  return 0
+}
+
 UICMD+=( 'LibuiUpdateMan' )
 LibuiUpdateMan () {
   ${_S} && ((_cLibuiUpdateMan++))
@@ -632,7 +666,7 @@ LibuiUpdateMan () {
   local _Util_mp
   local _Util_mts
   local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
-  for _Util_file in $(find . -name 'man' -prune -o -name '*.sw*' -prune -o -type f -print)
+  for _Util_file in $(find . -name 'man' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     ${ZSH} && eval "_Util_mp=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.*(N) )" || \
@@ -674,8 +708,8 @@ LibuiPackageList () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'List libui package.'
-  local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
-  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
+  local _Util_files; _Util_files=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
@@ -707,11 +741,9 @@ LibuiPackage () {
         ${_M} && _Trace 'Installer. (%s)' "${OPTARG}"
         _Util_installer="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(LibuiPackage) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -723,8 +755,8 @@ LibuiPackage () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
-  local _Util_files; _Util_files=( $(find . -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
-  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '*.sw*' -prune -o -type f -print) )
+  local _Util_files; _Util_files=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
@@ -757,9 +789,9 @@ LibuiInstall () {
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
-    _Util_files=( $(find "${_Util_libuiroot}" -name '*.sw*' -prune -o -type f -name 'libui*' -print) )
+    _Util_files=( $(find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
     ${installtests} && [[ -d "${_Util_libuitest}" ]] && \
-        _Util_files+=( $(find "${_Util_libuitest}" -name '*.sw*' -prune -o -type f -print) )
+        _Util_files+=( $(find "${_Util_libuitest}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
@@ -778,8 +810,7 @@ LibuiInstall () {
     Quiet || cat << EOF
 To use the library, the following should be added to your environment:
 
-  * Add "${COMMONROOT}/lib/sh" to your PATH to access libui and libui.sh.
-  * Add "${COMMONROOT}/bin" to your PATH to access the example scripts.
+  * Add "${COMMONROOT}/bin" to your PATH to access libui and example scripts.
   * Add "${COMMONROOT}/share/man" to your MANPATH to access the man pages.
 
 Once added, you can use "man 3 libui.sh" or "libui -m" to view the man page.
@@ -790,10 +821,10 @@ EOF
     then
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using Z shell (zsh)."
     else
-      Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/lib/sh/libui"
+      Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/bin/libui"
       local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
-      Action -F "sed ${_Util_sedi} -e '1s|^#!/usr/bin/env zsh|#!/usr/bin/env bash|' '${COMMONROOT}/lib/sh/libui'"
-      Action -F "sed ${_Util_sedi} -e '3s|^#!/usr/bin/env bash|#!/usr/bin/env zsh|' '${COMMONROOT}/lib/sh/libui'"
+      Action -F "sed ${_Util_sedi} -e '1s|^#!/usr/bin/env zsh|#!/usr/bin/env bash|' '${COMMONROOT}/bin/libui'"
+      Action -F "sed ${_Util_sedi} -e '3s|^#!/usr/bin/env bash|#!/usr/bin/env zsh|' '${COMMONROOT}/bin/libui'"
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using bash."
     fi
   fi
@@ -802,49 +833,44 @@ EOF
   return 0
 }
 
-UICMD+=( 'LibuiUnity' )
-LibuiUnity () { # [-d|-u|-U|-v]
-  ${_S} && ((_cLibuiUnity++))
-  ${_M} && _Trace 'LibuiUnity [%s]' "${*}"
+UICMD+=( 'LibuiDefer' )
+LibuiDefer () { # [-d|-D|-u|-v]
+  ${_S} && ((_cLibuiDefer++))
+  ${_M} && _Trace 'LibuiDefer [%s]' "${*}"
 
   local _Util_diff=false
   local _Util_file
   local _Util_list; _Util_list=( )
-  local _Util_unify=false
+  local _Util_defer=false
   local _Util_update=false
   local _Util_verify=true
 
-  ${_M} && _Trace 'Process LibuiUnity options. (%s)' "${*}"
+  ${_M} && _Trace 'Process LibuiDefer options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':duUv' opt
+  while getopts ':dDuv' opt
   do
     case ${opt} in
       d)
         ${_M} && _Trace 'Diff.'
         _Util_diff=true
         ;;
-
       u)
         ${_M} && _Trace 'Update.'
         _Util_update=true
         ;;
-
-      U)
-        ${_M} && _Trace 'Unify.'
-        _Util_unify=true
+      D)
+        ${_M} && _Trace 'Defer.'
+        _Util_defer=true
         ;;
-
       v)
         ${_M} && _Trace 'Verify.'
         _Util_verify=true
         ;;
-
       *)
-        Tell -E -f -L '(LibuiUnity) Unknown option. (-%s)' "${OPTARG}"
+        Tell -E -f -L '(LibuiDefer) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -854,7 +880,7 @@ LibuiUnity () { # [-d|-u|-U|-v]
   StartSpinner 'Comparing "%s" with commonroot "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
 
   ${_M} && _Trace 'Verify %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-  for _Util_file in $(find . -name '*.sw*' -o -name '.DS_Store*' -prune -o -type f -print)
+  for _Util_file in $(find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -o -name '.DS_Store*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     if [[ -f "${COMMONROOT}/${_Util_file}" ]]
@@ -906,32 +932,33 @@ LibuiUnity () { # [-d|-u|-U|-v]
     Tell -A 'Verify complete, no file differences. (%s = %s)' "${COMMONROOT}" "${_Util_libuiroot}"
   fi
 
-  ${_M} && _Trace 'Check for unify. (%s)' "${_Util_unify}"
-  if ${_Util_unify} && Verify 'Are you sure you wish to remove files from %s that exist in %s?' "${_Util_libuiroot}" "${COMMONROOT}"
+  ${_M} && _Trace 'Check for defer. (%s)' "${_Util_defer}"
+  if ${_Util_defer} && Verify 'Are you sure you wish to defer files from %s that exist in %s?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
-    StartSpinner 'Unifying with commonroot "%s".' "${COMMONROOT}"
+    StartSpinner 'Deferring user environment to "%s".' "${COMMONROOT}"
 
-    ${_M} && _Trace 'Unify user environment with %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    ${_M} && _Trace 'Defer user environment to %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
     pushd "${_Util_libuiroot}" > /dev/null
-    for _Util_file in $(find . -name '*.sw*' -prune -o -name '*version' -prune -o -type f -print)
+    MkDir "${_Util_libuiroot}/Deferred"
+    for _Util_file in $(find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
     do
       _Util_file="${_Util_file#./}"
       if [[ -f "${COMMONROOT}/${_Util_file}" ]]
       then
-        ${_M} && _Trace 'Remove %s.' "${_Util_libuiroot}/${_Util_file}"
-        Action -q "The file ${COMMONROOT}/${_Util_file} exists, remove from ${_Util_libuiroot}? (y/n)" "rm ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}'"
+        ${_M} && _Trace 'Defer %s.' "${_Util_libuiroot}/${_Util_file}"
+        Action -q "The file ${COMMONROOT}/${_Util_file} exists, defer in ${_Util_libuiroot}? (y/n)" "mv ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${_Util_libuiroot}/Deferred/${_Util_file}'"
       fi
     done
     popd > /dev/null
 
     StopSpinner
 
-    Tell -A 'Unification with %s environment complete.' "${COMMONROOT}"
+    Tell -A 'Deferral to %s environment complete.' "${COMMONROOT}"
   fi
 
   popd > /dev/null
 
-  ${_M} && _Trace 'LibuiUnity return. (%s)' 0
+  ${_M} && _Trace 'LibuiDefer return. (%s)' 0
   return 0
 }
 
@@ -955,23 +982,20 @@ LibuiNew () { # [-e] =t <template_file>
         ${_M} && _Trace 'Empty.'
         _Util_empty=true
         ;;
-
       t)
         ${_M} && _Trace 'Template. (%s)' "${OPTARG}"
         _Util_template="${OPTARG}"
         ;;
-
       *)
         Tell -E -f -L '(LibuiNew) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
   local _Util_target="${1}"
   [[ -f "${_Util_template}" ]] || Tell -E 'Template libui script file is not available. (%s)' "${_Util_template}"
 
-  Overwrite || [[ ! -f "${_Util_configfile}" ]] || Error 'The script file already exists, use -XO to overwrite.'
+  Overwrite || [[ ! -f "${_Util_target}" ]] || Error 'The script file already exists, use -XO to overwrite.'
   if [[ ! -f "${_Util_target}" ]] || Verify -N 'Really overwrite existing script file %s?' "${_Util_target}"
   then
     ${_M} && _Trace 'Remove existing script. (%s)' "${_Util_target}"
@@ -980,7 +1004,7 @@ LibuiNew () { # [-e] =t <template_file>
     ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_target}"
     local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
     ${_Util_empty} && Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'" || \
-        Action -F "cat '${_Util_template}' | sed -e '/^\(#.*\)# demo content/s//\1  # demo content/' | sed -e '/^[^#].*# demo content/s/^/# /' > '${_Util_target}'"
+        Action -F "cat '${_Util_template}' | sed -e '/^\(#.*\)# demo content/s//\1  # demo content/' | sed -e '/^[^#].*# demo content/s/^/#/' > '${_Util_target}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
     Action -F "sed ${_Util_sedi} -e 's/<TITLE HERE>/${ANSWER}/g' '${_Util_target}'"
     Ask -d '<SHORT DESCRIPTION HERE>' 'Provide a short, one-line description for the script header:'
@@ -1028,6 +1052,17 @@ _LibuiProcess () {
     else
       LibuiTest -t "${_Util_libuitest}" "${param[@]}"
     fi
+  elif ${version}
+  then
+    Version -a
+    Tell "${Dfc}Note: For %s programs, please use -Xv to get version information.${D}" "${CMD}"
+  elif ${mpath}
+  then
+    [[ "${MANPATH}" =~ (.*:|^)"${LIBUI%/*/*/*}/share/man"($|:.*) ]] && printf 'MANPATH="%s"\n' "${MANPATH}" || \
+        printf 'MANPATH="%s/share/man%s"\n' "${LIBUI%/*/*/*}" "${MANPATH:+:${MANPATH}}"
+  elif ${mpage}
+  then
+    LibuiManpage "${param}"
   elif ${config}
   then
     LibuiConfig
@@ -1039,13 +1074,23 @@ _LibuiProcess () {
     LibuiStats
   elif ${cachereset}
   then
-    LibuiResetCaches
+    LibuiResetCache
+  elif ${statereset}
+  then
+    LibuiResetState
+  elif ${userreset}
+  then
+    ${_M} && _Trace 'Reset user info.'
+    Verify 'Really update user info?' && _SetUserInfo -u
   elif ${unlock}
   then
     LibuiUnlock
-  elif ${updateman}
+  elif ${prepackage}
   then
+    LibuiTimestamp
     LibuiUpdateMan
+    Action -q 'Remove readme?' "mv ${_Util_libuiroot}/README.md ${_Util_tmpdir}"
+    Action -q 'Copy readme?' "cp ${FMFLAGS} ${_Util_libuiroot}/share/doc/libui-readme.md ${_Util_libuiroot}/README.md"
   elif ${list}
   then
     LibuiPackageList
@@ -1055,13 +1100,13 @@ _LibuiProcess () {
   elif ${install}
   then
     LibuiInstall
-  elif ${verify} || ${update} || ${unify}
+  elif ${verify} || ${update} || ${defer}
   then
     if [[ -n "${vlevel[2]+x}" ]]
     then
-      LibuiUnity -d $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${unify} && printf -- '-U') | less -R
+      LibuiDefer -d $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${defer} && printf -- '-D') | less -R
     else
-      LibuiUnity $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${unify} && printf -- '-U')
+      LibuiDefer $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${defer} && printf -- '-D')
     fi
   elif ${new}
   then
@@ -1071,7 +1116,6 @@ _LibuiProcess () {
     LibuiNew -e -t "${_Util_template}" "${param}"
   else
     ${_M} && _Trace 'Display usage.'
-    LoadMod Info
     UsageInfo
     true # disable error wait
   fi

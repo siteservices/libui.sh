@@ -6,9 +6,13 @@
 #####
 
 test_Warn-r () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Warn -r 5 "Test 1."'
   LibuiValidateTest ${?} 5 'WARNING: Test 1.'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

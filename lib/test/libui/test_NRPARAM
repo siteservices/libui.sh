@@ -6,9 +6,13 @@
 #####
 
 test_NRPARAM () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${NRPARAM}"'
   LibuiValidateTest ${?} 0 "1" # assumes normal parameters
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

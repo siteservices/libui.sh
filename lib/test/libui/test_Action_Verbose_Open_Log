@@ -6,6 +6,7 @@
 #####
 
 test_Action_Verbose_Open_Log () {
+  LibuiGetDisplayTestValues
   local lfile; GetTmp -f lfile
   LoadMod File
   Open -1 -c "${lfile}"
@@ -19,6 +20,6 @@ test_Action_Verbose_Open_Log () {
 }
 
 # test setup
-_Test_opt+='-X2 '
+_Test_opt+='-x T -X2 ' # no terimnal
 
 return 0

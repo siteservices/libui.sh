@@ -6,16 +6,13 @@
 #####
 
 test_XC_Confirm_No_Term_Verify-C () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Verify -C "Test verify?"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 'Test verify? (y/n) [yes] yes'
+  LibuiValidateTest ${?} 0 'Test verify? (y/n) [yes] yes'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X C '
+_Test_opt+='-x T -X C '
 
 return 0

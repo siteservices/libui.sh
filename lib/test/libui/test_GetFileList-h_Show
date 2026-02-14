@@ -6,6 +6,7 @@
 #####
 
 test_GetFileList-h_Show () {
+  LibuiGetDisplayTestValues
   Action -W "mkdir -p ${TESTDIR}/list"
   Action -W "touch ${TESTDIR}/list/listfile-1"
   Action -W "touch ${TESTDIR}/list/listfile\ 2"
@@ -23,5 +24,8 @@ test_GetFileList-h_Show () {
   LibuiValidateTest ${?} 0 ". ./.listdir 3 ./.listfile 3 ./listdir 2 ./listdir-1 ./listfile 2 ./listfile-1 ./.listdir 3/dirfile 3 ./listdir-1/.listdir 4 ./listdir-1/dirfile 2 ./listdir-1/dirfile-1 ./listdir-1/testfile 1 ./listdir-1/.listdir 4/.testfile 2"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

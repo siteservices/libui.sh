@@ -6,16 +6,13 @@
 #####
 
 test_XC_Confirm_Action-q () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Action -q "Confirm question?" "ls -d /tmp" <<< "yes"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 '(Confirm) Confirm question? (y/n) [yes] /tmp'
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Action -q "Confirm question?" "ls -d /tmp" <<< "yes"'
+  LibuiValidateTest ${?} 0 '(Confirm) Confirm question? (y/n) [yes] /tmp'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X C '
+_Test_opt+='-x P -X C '
 
 return 0

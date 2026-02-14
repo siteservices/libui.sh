@@ -6,10 +6,14 @@
 #####
 
 test_LIBUI () {
+  LibuiGetDisplayTestValues
   local dir=$(command -v libui 2> /dev/null)
   LibuiPerformTest 'Tell -- "${LIBUI}"'
-  LibuiValidateTest ${?} 0 "${dir%/*}/libui.sh"
+  LibuiValidateTest ${?} 0 "${dir%/bin/*}/lib/sh/libui.sh"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -6,11 +6,12 @@
 #####
 
 test_Local_Hook () {
+  LibuiGetDisplayTestValues
   local ldir; GetTmp -s ldir
   Write -c -f "${ldir}/.libui-init" 'printf "Test local init hook.\\n"'
   Write -c -f "${ldir}/.libui-exit" 'printf "Test local exit hook.\\n"'
   cd "${ldir}"
-  LibuiPerformTest "libui -x w"
+  LibuiPerformTest "libui -x P -x w"
   LibuiValidateTest ${?} 0 "Test local init hook.${N}Hello World.${N}Test local exit hook."
   return ${?}
 }

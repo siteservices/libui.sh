@@ -6,10 +6,14 @@
 #####
 
 test_TERMINAL () {
+  LibuiGetDisplayTestValues
   [[ -t 1 ]] && local pass="${TERMINAL:-true}" || local pass="${TERMINAL:-false}"
   LibuiPerformTest 'Tell -- "${TERMINAL}"'
   LibuiValidateTest ${?} 0 "${pass}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

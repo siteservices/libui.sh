@@ -13,21 +13,22 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.011 -m 1.19
+Version -r 2.012 -m 1.20
 
 # defaults
 
@@ -43,7 +44,7 @@ Version -r 2.011 -m 1.19
 # Note: Care should be taken to never start more than one spinner.
 #
 UICMD+=( 'StartSpinner' )
-StartSpinner () { # [<info_message>]
+StartSpinner () { # [<message>]
   ${_S} && ((_cStartSpinner++))
   ${_M} && _Trace 'StartSpinner [%s]' "${*}"
 
@@ -70,7 +71,7 @@ StartSpinner () { # [<info_message>]
         else
           _s='%s'
         fi
-        [[ -n "${@}" ]] && printf "${DJBL}${DInfo}${_s}${D}${DCEL}" "${@}" >&4 # duplicate stderr
+        [[ -n "${@}" ]] && printf "${DJBL}${DBrief}${_s}${D}${DCEL}" "${@}" >&4 # duplicate stderr
 
         ${_M} && _Trace 'Starting spinner.'
         local _Spinner_i
@@ -117,7 +118,7 @@ PauseSpinner () {
   then
     ${_M} && _Trace 'Pausing spinner. (%s)' "${_spinner}"
     ((0 < ${_spinner:-0})) && kill -TSTP ${_spinner} &> /dev/null
-    ${_quiet} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
+    ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   fi
   local _Spinner_rv=${?}
 
@@ -146,7 +147,7 @@ ResumeSpinner () {
   if ${TERMINAL} && ! ${LIBUI_PLAIN}
   then
     ${_M} && _Trace 'Resuming spinner. (%s)' "${_spinner}"
-    ${_quiet} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
+    ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
     ((0 < ${_spinner:-0})) && kill -CONT ${_spinner} &> /dev/null
   fi
   local _Spinner_rv=${?}
@@ -173,7 +174,7 @@ StopSpinner () {
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
   ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
-  ${_quiet} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
+  ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   local _Spinner_rv=${?}
 
   ${_M} && _Trace 'StopSpinner return. (%s)' "${_Spinner_rv}"
@@ -269,16 +270,13 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
           ${_M} && _Trace 'Message. (%s)' "${OPTARG}"
           _Spinner_i="${OPTARG}"
           ;;
-
         u)
           ${_M} && _Trace 'Update interval. (%s)' "${OPTARG}"
           _Spinner_u="${OPTARG}"
           ;;
-
         *)
           Tell -E -f -L '(Sleep) Unknown option. (-%s)' "${OPTARG}"
           ;;
-
       esac
     done
     shift $((OPTIND - 1))
@@ -287,7 +285,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
     ${_M} && _Trace 'Verbose sleep. (%s)' "${_Spinner_c}"
     while ((0 < (_Spinner_c-=${_Spinner_u})))
     do
-      printf "${DJBL}${DInfo}${_Spinner_i}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
+      printf "${DJBL}${DBrief}${_Spinner_i}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
       sleep ${_Spinner_u} 2> /dev/null || sleep $((${_Spinner_u%.*} + 1))
     done
     printf "${DJBL}${DCEL}" >&4 # duplicate stderr

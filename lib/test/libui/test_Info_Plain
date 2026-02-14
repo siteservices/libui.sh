@@ -7,9 +7,12 @@
 
 test_Info_Plain () {
   LibuiGetDisplayTestValues
-  TERMINAL=true LIBUI_PLAIN=true LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
-  LibuiValidateTest ${?} 0
+  LibuiPerformTest 'Info "Test 1."; Info "Test 2."'
+  LibuiValidateTest ${?} 0 "Test 1.${N}Test 2."
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

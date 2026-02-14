@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Verify-l
+#
+#####
+
+test_Verify-l () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Verify -l "Is this %string not \t a good format \e string?" <<< "yes"'
+  LibuiValidateTest ${?} 0 'Is this %string not \t a good format \e string? (y/n) [yes] '
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

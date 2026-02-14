@@ -6,14 +6,15 @@
 #####
 
 test_Ask_Select_Var_Number () {
+  LibuiGetDisplayTestValues
   local select; select=( one two three )
-  local t="${TERMINAL}"
-  TERMINAL=true
-  Ask -S select 'Test question?' <<< '3'
-  TERMINAL="${t}"
+  TERMINAL=true Ask -S select 'Test question?' <<< '3'
   LibuiPerformTest 'Tell "The answer is: %s" "${ANSWER}"'
   LibuiValidateTest ${?} 0 'The answer is: three'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

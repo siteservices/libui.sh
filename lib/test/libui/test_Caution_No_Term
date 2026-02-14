@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Caution_No_Term
+#
+#####
+
+test_Caution_No_Term () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Caution "Test 1."; Caution "Test 2."'
+  LibuiValidateTest ${?} 1 "CAUTION: Test 1.${N}CAUTION: Test 2."
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x T '
+
+return 0

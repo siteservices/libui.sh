@@ -6,14 +6,16 @@
 #####
 
 test_Ask_Default () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   Yes -e
-  LibuiPerformTest 'Ask -d "default" "Test Ask with default?"'
+  TERMINAL=true LibuiPerformTest 'Ask -d "default" "Test Ask with default?"'
+  local tv=${?}
   Yes -E
-  TERMINAL="${t}"
-  LibuiValidateTest ${?} 0 'Test Ask with default? [default] default'
+  LibuiValidateTest "${tv}" 0 'Test Ask with default? [default] default'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

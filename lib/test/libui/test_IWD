@@ -6,9 +6,13 @@
 #####
 
 test_IWD () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Tell -- "${IWD}"'
   LibuiValidateTest ${?} 0 "${_Util_workdir}"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

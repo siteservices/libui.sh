@@ -6,9 +6,13 @@
 #####
 
 test_No_Term_Action-q () {
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action -q "Test question?" "ls -d /tmp"'
   LibuiValidateTest ${?} 0 '/tmp'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

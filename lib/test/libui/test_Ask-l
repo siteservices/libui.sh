@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask-l
+#
+#####
+
+test_Ask-l () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Ask -l "Is this %string not \t a good format string?" <<< "answer"'
+  LibuiValidateTest ${?} 0 'Is this %string not \t a good format string? [] '
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

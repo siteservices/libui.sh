@@ -6,14 +6,16 @@
 #####
 
 test_Ask_Yes () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   Yes -e
-  LibuiPerformTest 'Ask "Test Ask command?"'
+  TERMINAL=true LibuiPerformTest 'Ask "Test Ask command?"'
+  local tv=${?}
   Yes -E
-  TERMINAL="${t}"
-  LibuiValidateTest ${?} 0 'Test Ask command? [yes] yes'
+  LibuiValidateTest "${tv}" 0 'Test Ask command? [yes] yes'
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -1,5 +1,71 @@
 # Change Log
 
+## v2.012
+
+### New Features / Enhancements
+
+* Remove copyright and make public domain license CCO 1.0 Universal Deed.
+* Update default directories to use more standard XDG paths.
+* Display caches moved to `${LIBUI_CACHE}` and defaults to `${XDG_CACHE_HOME}`.
+* Stats and ledger moved to `${LIBUI_STATE}` and defaults to `${XDG_STATE_HOME}`.
+* Add support for searching `${LIBUO_PATH}` when loading mods with `LoadMod`.
+* Add source `${LIBUI_CREDENTIALS}/${CMD}`, default: `~/.config/credentials/${CMD}`.
+* Add -l (Literal) flag to Ask to treat the question as a literal string.
+* Add -l (Literal) flag to Verify to treat the question as a literal string.
+* Add -C (Cache Reset) flag to the libui command to reset the libui caches.
+* Add -M (Manpath) flag to the libui command to obtain libui man pages path.
+* Add -P (Pre-package) flag to the libui command to update timestamps, etc.
+* Add -S (State Reset) flag to the libui command to reset the libui state.
+* Add -U (User Reset) flag to the libui command to reset user information.
+* Add -v (Version) flag to the libui command to obtain version information.
+* Add -x P (LIBUI_PLAIN) flag to the libui command to test for plain terminals.
+* Update the "libui -d" (Demo) to provide better usage information.
+* Update the "libui -n" (New Script) template to improve user experience.
+* Add -h flag to source tar in libui Package mod to enable following symlinks.
+* Improve output and add missing / new variables to libui -d command.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+* Fix spelling typos.
+* Formatting cleanup.
+
+### Bug Fixes
+
+* Fix bug in `${HOST}` define.
+* Fix Brief so that it works as expected with the libui Spinner mod.
+* Fix overwrite test for new script in libui Libui mod.
+* Fix libui Convert mod `ConvertDate` bug on Linux (introduced in v2.011).
+* Fix empty projects directory bug in `updateprojects`.
+* Fix missing FreeBSD support for `${OS_DIST}`.
+* Fix FreeBSD display codes test. (Change default TJBL from `\\r` to `\r`.)
+* Add -l (literal) flag to Verify and Ask fixing Action Confirm without -q flag.
+* Improve `${LIBUI_PLAIN}` / plain terminal handling.
+
+### Incompatibilities
+
+* Change Info command to Brief. Info is now cyan "Tell" and Brief is transient.
+* Tell -I (Info) is now Tell -B (brief), requiring a change to existing scripts.
+* Move libui from {install}/lib/sh to {install}/bin. (Changes PATH requirement.)
+* Change `${LIBUI_LOCAL}` to `${LIBUI_STATE}` (Mostly non-breaking.)
+* Change SetUserInfo "COLORS" to "COLOR". (Note: COLOR is not used by libui.)
+* Change libui File package Write command to remove default '\n' record marker unless both -r and -p option flags are unused. (Mostly non-breaking.)
+* Update option flags for `libui` command. (Non-breaking for normal use cases.)
+* Swap libui -i / -I option flags to "install with tests" and "install without".
+* Change libui -M (Update Man Pages) to -P (Pre-package).
+* Split libui -R option flag into -C (cache), -S (state), and -U (user) options.
+* Change libui -U (Unify) to -D (Defer) local environment with / to COMMONROOT.
+* Change libui -v option flag to "version" and -V to "Verify".
+* (Breakling) Change the zsh / bash "include libui via source" command from:
+```
+-source "${LIBUI:-libui.sh}" "${0}" "${@}"
+```
+
+to:
+
+```
++source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
+```
+
 ## v2.011
 
 ### New Features / Enhancements

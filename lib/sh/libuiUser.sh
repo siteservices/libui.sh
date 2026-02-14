@@ -13,25 +13,26 @@
 #
 #####
 #
-# Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-# domain. Permission is unconditionally granted to anyone with an interest, the
-# rights to use, modify, publish, distribute, sublicense, and/or sell this
-# content and associated files.
+# This content and associated files as published by siteservices.net, Inc. are
+# marked CCO 1.0. Permission is unconditionally granted to anyone with the
+# interest, full rights to use, modify, publish, distribute, sublicense, and/or
+# sell this content and all associated files. To view a copy of CCO 1.0, visit
+# https://creativecommons.org/publicdomain/zero/1.0/.
 #
 # All content is provided "as is", without warranty of any kind, expressed or
 # implied, including but not limited to merchantability, fitness for a
 # particular purpose, and noninfringement. In no event shall the authors or
-# copyright holders be liable for any claim, damages, or other liability,
-# whether in an action of contract, tort, or otherwise, arising from, out of,
-# or in connection with this content or use of the associated files.
+# publishers be liable for any claim, damages, or other liability, whether in an
+# action of contract, tort, or otherwise, arising from, out of, or in connection
+# with the use of this content or any of the associated files.
 #
 #####
 
-Version -r 2.010 -m 1.13
+Version -r 2.012 -m 1.14
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLORS' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' )
 
 # Set user information
 #
@@ -79,11 +80,9 @@ _SetUserInfo () {
         done
         userinfo=( "${_User_info[@]}" )
         ;;
-
       *)
         Tell -E -f -L '(_SetUserInfo) Unknown option. (-%s)' "${OPTARG}"
         ;;
-
     esac
   done
   shift $((OPTIND - 1))
@@ -112,7 +111,6 @@ _SetUserInfo () {
             fi
           done
           ;;
-
         ORG)
           while ${_User_invalid}
           do
@@ -125,7 +123,6 @@ _SetUserInfo () {
             fi
           done
           ;;
-
         TITLE)
           while ${_User_invalid}
           do
@@ -138,7 +135,6 @@ _SetUserInfo () {
             fi
           done
           ;;
-
         EMAIL)
           while ${_User_invalid}
           do
@@ -151,7 +147,6 @@ _SetUserInfo () {
             fi
           done
           ;;
-
         PHONE)
           while ${_User_invalid}
           do
@@ -171,24 +166,21 @@ _SetUserInfo () {
             fi
           done
           ;;
-
-        COLORS)
-          COLORS="${COLORS:-y}"
-          Ask -n COLORS -d "${COLORS}" 'Override default colors?'
+        COLOR)
+          COLOR="${COLOR:-y}"
+          Ask -n COLOR -d "${COLOR}" 'Use upated colors?'
           if AnswerMatches 'y' || AnswerMatches 'true'
           then
-            COLORS=true
+            COLOR=true
           else
-            COLORS=false
+            COLOR=false
           fi
           ;;
-
         *)
           ${ZSH} && Ask -n ${_User_entry} -d "${(P)_User_entry}" 'Enter value for %s:' "${_User_entry}"
           ${ZSH} || Ask -n ${_User_entry} -d "${!_User_entry}" 'Enter value for %s:' "${_User_entry}"
           eval "${_User_entry}=\"\${${_User_entry}}\""
           ;;
-
       esac
     done
 

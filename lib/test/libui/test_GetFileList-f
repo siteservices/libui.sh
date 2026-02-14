@@ -6,6 +6,7 @@
 #####
 
 test_GetFileList-f () {
+  LibuiGetDisplayTestValues
   Action -W "mkdir -p ${TESTDIR}/list"
   Action -W "touch ${TESTDIR}/list/listfile-1"
   Action -W "touch ${TESTDIR}/list/listfile\ 2"
@@ -15,5 +16,8 @@ test_GetFileList-f () {
   LibuiValidateTest ${?} 0 "${TESTDIR}/list/listfile 2 ${TESTDIR}/list/listfile-1"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

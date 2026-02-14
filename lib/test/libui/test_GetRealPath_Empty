@@ -6,6 +6,7 @@
 #####
 
 test_GetRealPath_Empty () {
+  LibuiGetDisplayTestValues
   local rp
   local td
   GetTmp td
@@ -18,5 +19,8 @@ test_GetRealPath_Empty () {
   LibuiValidateTest "${tv}" 1 "ERROR: (GetRealPath) No path provided. (rp)"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

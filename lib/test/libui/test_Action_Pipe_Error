@@ -7,7 +7,7 @@
 
 test_Action_Pipe_Error () {
   LibuiPerformTest "Action -W -p ${AO} 'false | wc -w'"
-  LibuiValidateTest -r ${?} 1 '\s*0'
+  LibuiValidateTest -r ${?} 1 '[[:space:]]*0'
   return ${?}
 }
 

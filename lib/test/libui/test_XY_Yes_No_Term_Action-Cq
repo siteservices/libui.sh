@@ -6,16 +6,13 @@
 #####
 
 test_XY_Yes_No_Term_Action-Cq () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   LibuiPerformTest 'Action -C -q "Yes question?" "ls -d /tmp"'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 "(Confirm) Yes question? (y/n) [yes] yes${N}/tmp"
+  LibuiValidateTest ${?} 0 "(Confirm) Yes question? (y/n) [yes] yes${N}/tmp"
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X Y '
+_Test_opt+='-x T -X Y '
 
 return 0

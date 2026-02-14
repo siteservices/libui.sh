@@ -2,25 +2,23 @@
 .\" Please contact fharvell@siteservices.net to correct errors or typos. Please
 .\" note that the libui library is young and under active development.
 .\"
-.\" Copyright 2018-2025 siteservices.net, Inc. and made available in the public
-.\" domain.  Permission is unconditionally granted to anyone with an interest,
-.\" the rights to use, modify, publish, distribute, sublicense, and/or sell this
-.\" content and associated files.
+.\" This content and associated files are published by siteservices.net, Inc.
+.\" are marked CCO 1.0. Permission is unconditionally granted to anyone with the
+.\" interest the full rights to use, modify, publish, distribute, sublicense,
+.\" and/or sell this content and all associated files. To view a copy of CCO
+.\" 1.0, visit https://creativecommons.org/publicdomain/zero/1.0/.
 .\"
-.\" All content is provided "as is", without warranty of any kind, expressed or
-.\" implied, including but not limited to merchantability, fitness for a
-.\" particular purpose, and noninfringement.  In no event shall the authors or
-.\" copyright holders be liable for any claim, damages, or other liability,
-.\" whether in an action of contract, tort, or otherwise, arising from, out of,
-.\" or in connection with this content or use of the associated files.
+.\" purpose, and noninfringement. In no event shall the authors or publishers be
+.\" liable for any claim, damages, or other liability, whether in an action of
+.\" contract, tort, or otherwise, arising from, out of, or in connection with
+.\" the use of this content or any of the associated files.
 .\"
-.Dd April 2, 2024
+.Dd February 14, 2026
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
 .Nm libui.sh
 .Nd User interface support library for Z shell and Bash scripts
-.Pp
 .Sh SYNOPSIS
 .Bd -ragged -compact
 .Sy #!/usr/bin/env libui
@@ -29,7 +27,7 @@
 Alternatively, to source libui.sh in a Z shell or Bash script, include the line:
 .Pp
 .Bd -ragged -compact -offset 4n
-.Sy source \(dq${LIBUI:-libui.sh}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Sy source \(dq${LIBUI:-$(libui -\e?)}\(dq \(dq${0}\(dq \(dq${@}\(dq
 .Ed
 .Pp
 Every libui script should contain the following command:
@@ -77,12 +75,14 @@ Standard command line options provided by the
 .Nm
 library are:
 .Bl -tag -offset 4n -width 4n
-.It Fl H
+.It Fl H h
 Help
 .Pp
 Display usage information.
 .Pp
-Note: This options is also available as
+Note: This options is available using either
+.Fl H
+or
 .Fl h .
 .It Fl X Ar <level>
 XOption
@@ -173,7 +173,7 @@ Alternatively, to source
 in a Z shell or Bash script, include the line:
 .Pp
 .Bd -ragged -compact -offset 4n
-.Sy source \(dq${LIBUI:-libui.sh}\(dq \(dq${0}\(dq \(dq${@}\(dq
+.Sy source \(dq${LIBUI:-$(libui -\e?)}\(dq \(dq${0}\(dq \(dq${@}\(dq
 .Ed
 .Pp
 Please note that either syntax assumes:
@@ -181,9 +181,9 @@ Please note that either syntax assumes:
 .It
 The
 .Ev PATH
-environment variable includes the directory where
-.Nm
-resides, or
+environment variable includes the directory where the
+.Xr libui 1
+command resides, or
 .It
 The
 .Ev LIBUI
@@ -1094,7 +1094,7 @@ command.
 The following command asks the user a question:
 .Bd -ragged -offset 4n
 .Sy Ask
-.Op Fl b Fl C Fl E Fl N Fl Y Fl z
+.Op Fl b Fl C Fl E Fl l Fl N Fl Y Fl z
 .Op Fl d Ar <default_answer>
 .Op Fl n Ar <variable_name>
 .Op Fl o Ar <file_descriptor>
@@ -1129,6 +1129,10 @@ Set the default answer to
 (Used when the user does not provide an answer.)
 .It Fl E
 Do not echo characters when receiving a response to the question.
+.It Fl l
+Treat the
+.Ar <question>
+as a literal string, not a format string.
 .It Fl n Ar <variable_name>
 Save the answer to the
 .Ar <variable_name>
@@ -1197,6 +1201,23 @@ See also the
 command and the
 .Sx ${ANSWER}
 public variable.
+.Ss Brief
+The following command sends a brief message to the user:
+.Bd -ragged -offset 4n
+.Sy Brief
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl f Fl F Fl i Fl L Fl N
+.Op Fl l Ar <file_path>
+.Op Fl r Ar <return_value>
+.Ar <message>
+.Ed
+.Pp
+Sends a "brief" message to the user using the
+.Sx Tell
+.Fl B Fl n
+(Brief with No Newline) command.
+See the
+.Sx Tell
+command for more information.
 .Ss Capture
 The following command captures standard out, standard error, and the return
 value after executing the provided command string:
@@ -1394,6 +1415,19 @@ Returns 0 (true) if the
 .Ar <value>
 exists as an element in the array named
 .Ar <array_variable> .
+.Ss Credentials
+The following command indicates if the credentials file for the script was
+successfully sourced:
+.Bd -ragged -offset 4n
+.Sy Credentials
+.Ed
+.Pp
+Returns 0 (true) if the credentials file was successfully sourced.
+Returns non-zero (false) if the credentials file could not be sourced.
+The return value will be 1 if the file could not be found.
+The return value will be 2 if the file was empty.
+The return value will be 3 if the file was found but did not have the correct
+permissions.
 .Ss Drop
 The following command is a utility function for dropping a value from an array:
 .Bd -ragged -offset 4n
@@ -1401,7 +1435,6 @@ The following command is a utility function for dropping a value from an array:
 .Op Fl r
 .Ar <array_variable>
 .Ar <value>|<value>: ...
-.Ed
 .Ed
 .Pp
 The command options are as follows:
@@ -1501,6 +1534,8 @@ library mod using the
 .Nm
 mod name provided in the parameter.
 It normally searches
+.Ev LIBUI_PATH
+and
 .Ev PATH
 but another path can be provided using the
 .Fl P Ar <path>
@@ -1582,7 +1617,7 @@ standard command line option for more information.
 The following command sends a message to the user:
 .Bd -ragged -offset 4n
 .Sy Tell
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl c Fl C Fl E Fl f Fl F Fl i Fl I Fl L Fl n Fl N Fl W
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl B Fl c Fl C Fl E Fl f Fl F Fl i Fl I Fl L Fl n Fl N Fl W
 .Op Fl l Ar <file_path>
 .Op Fl o Ar <file_descriptor>
 .Op Fl r Ar <return_value>
@@ -1622,6 +1657,19 @@ If the
 (Return) option is not provided, the return value will be 0.
 .Sx ${DAlert}
 display format which by default is green.
+.It Fl B
+This option displays the
+.Ar <message>
+as an "brief" message for the user.
+The highlighted
+.Ar <message>
+is displayed on STDOUT.
+On color terminals (TTY), this text will be displayed using the
+.Sx ${DBrief}
+display format which by default is bold cyan.
+If the
+.Fl r
+(Return) option is not provided, the return value will be 0.
 .It Fl c
 Open the file, removing any existing data before writing
 .Ar <data> .
@@ -1698,7 +1746,7 @@ The highlighted
 is displayed on STDOUT.
 On color terminals (TTY), this text will be displayed using the
 .Sx ${DInfo}
-display format which by default is cyan.
+display format which by default is bold cyan.
 If the
 .Fl r
 (Return) option is not provided, the return value will be 0.
@@ -1837,7 +1885,7 @@ The following command asks the user to verify a question and returns true (yes)
 or false (no):
 .Bd -ragged -offset 4n
 .Sy Verify
-.Op Fl C Fl N Fl Y
+.Op Fl C Fl l Fl N Fl Y
 .Op Fl d Ar <default_answer>
 .Op Fl n Ar <variable_name>
 .Op Fl r Ar <required_regex>
@@ -1859,6 +1907,10 @@ Set the default answer to
 Save the answer to the
 .Ar <variable_name>
 variable.
+.It Fl l
+Treat the
+.Ar <question>
+as a literal string, not a format string.
 .It Fl N
 Set default answer to "no".
 .It Fl r Ar <required_regex>
@@ -2116,7 +2168,11 @@ The number of parameters provided on the command line.
 The name of the operating system.
 Typical values are Darwin, Linux, SunOS, Solaris, etc.
 .It Dv ${OS_DIST}
-The operating system distribution. Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
+The operating system distribution.
+Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
+.It Dv ${PV}
+Set to "true" if shell supports "print -v var", otherwise "false" (and use the
+"var=$(printf)" construct).
 .It Dv ${SHENV}
 The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
@@ -2302,7 +2358,9 @@ Alarm display format - defaults to dim red text.
 .It Dv ${DAlert}
 Alert display format - defaults to bold green text.
 .It Dv ${DAnswer}
-Answer display format - defaults to dim yellow text.
+Answer display format - defaults to yellow text.
+.It Dv ${DBrief}
+Brief display format - defaults to cyan text.
 .It Dv ${DCaution}
 Caution display format - defaults to magenta text.
 .It Dv ${DConfirm}
@@ -2310,17 +2368,17 @@ Confirm display format - defaults to bold yellow text.
 .It Dv ${DError}
 Error display format - defaults to bold yellow text on a red background.
 .It Dv ${DInfo}
-Info display format - defaults to bold magenta text.
+Info display format - defaults to bold cyan text.
 .It Dv ${DOptions}
-Options display format - defaults to bold white text.
+Options display format - defaults to bold default (white / black) text.
 .It Dv ${DQuestion}
-Question display format - defaults to bold cyan text.
+Question display format - defaults to underlined bold cyan text.
 .It Dv ${DSpinner}
 Spinner display format - defaults to bold cyan text.
 .It Dv ${DTell}
-Tell display format - defaults to bold white text.
+Tell display format - defaults to bold default (white / black) text.
 .It Dv ${DTrace}
-Trace display format - defaults to cyan text.
+Trace display format - defaults to dim (white / black) text.
 .It Dv ${DWarning}
 Warning display format - defaults to black text on a yellow background.
 .El
@@ -2339,11 +2397,11 @@ to enable / disable these terminal effects.
 Setting the
 .Sy TERMINAL
 variable to "false" disables terminal interactions including the enhanced text
-effects, Info messages, spinner, Ask, and Verify.
+effects, Brief messages, spinner, Ask, and Verify.
 It defaults answers and removes all other interactive actions.
 Alternatively, setting the
 .Sy LIBUI_PLAIN
-variable to "true" disables only the enhanced text effects, Info messages, and
+variable to "true" disables only the enhanced text effects, Brief messages, and
 spinner.
 All other terminal interactions remain operational.
 .Sh UIMOD
@@ -2365,10 +2423,31 @@ library mod using the
 .Nm
 mod name provided.
 It normally searches
+.Ev LIBUI_PATH
+and
 .Ev PATH
 but another path can be provided using the
 .Fl P Ar <path>
 (Path) option.
+Each path contained in the
+.Ev LIBUI_PATH
+and
+.Ev PATH
+variables must be separated by a colon (:).
+.Pp
+Each
+.Nm
+mod file should be named with the syntax:
+.Bd -ragged -offset 4n
+.Sy libui Ns Ar <ModName> Ns Sy .sh
+.Ed
+.Pp
+Where
+.Ar <ModName>
+is the mod name that will be used with the
+.Sx LoadMod
+command (e.g.: "libuiConvert.sh" for the Conversions mod).
+.Pp
 One or more commands (functions) may be provided in a single mod file.
 All
 .Nm
@@ -2382,21 +2461,8 @@ mods provided with the
 .Nm
 package that can be used as examples.
 .Pp
-Each
-.Nm
-mod file should be named with the syntax:
-.Bd -ragged -offset 4n
-.Sy libui Ar <ModName> Ns Sy .sh
-.Ed
-.Pp
-Where
-.Ar <ModName>
-is the mod name that will be used with the
-.Sx LoadMod
-command (e.g.: "libuiConvert.sh" for the Conversions mod).
-.Pp
 Each mod file should include the following command:
-.Bd -ragged -compact
+.Bd -ragged -offset 4n
 .Sy Version
 .Op Fl m
 .Op Fl r Ar <required_libui_version>
@@ -2591,21 +2657,21 @@ Set to "true" to enable the ledger file
 .It Sy LIBUI_LEDGERFILE= Ns Sq Ar <path>
 Ledger Log File Path -
 The default is
-.Sy ${LIBUI_LOCAL}/ledger
+.Sy ${LIBUI_STATE}/ledger
 .It Sy LIBUI_STATS=true
 Stats Collection Enable / Disable -
 Set to "true" to enable the stats file
 .It Sy LIBUI_STATSFILE= Ns Sq Ar <path>
 Stats File Path -
 The default is
-.Sy ${LIBUI_LOCAL}/stats
+.Sy ${LIBUI_STATE}/stats
 .It Sy LIBUI_TRACE=false
 Trace Log Enable / Disable -
 Set to "true" to enable the trace file
 .It Sy LIBUI_TRACEFILE= Ns Sq Ar <path>
 Trace Log File Path -
 The default is
-.Sy ${LIBUI_LOCAL}/trace
+.Sy ${LIBUI_STATE}/trace
 .El
 .Pp
 LIBUI_LEDGER and LIBUI_STATS are enabled (set to "true") by default.
@@ -2674,21 +2740,32 @@ option).
 .Sh FILES
 The
 .Nm
-library uses a config directory for storage of configuration files.
+library uses a config directory for the storage of configuration files.
 The directory path can be controlled by setting the
 .Ev LIBUI_CONFIG
 environment variable.
 The default path for the
 .Ev LIBUI_CONFIG
 environment variable is
-.Sy ${HOME}/.config/libui .
+.Qq Sy ${XDG_CONFIG_HOME}/libui ,
+or, if
+.Qq Sy ${XDG_CONFIG_HOME}
+is not available, then to
+.Qq Sy ${HOME}/.config/libui .
 .Pp
 Upon startup, the
 .Nm
 library sources the global
 .Sy ${LIBUI_CONFIG}/libui.conf
 configuration file, if it exists.
-The
+Alternatively, the
+.Nm
+library will use the file located at the path contained in the
+.Ev LIBUI_CONF
+environment variable, if it is set and exists.
+This can be useful if an alternative configuration is needed temporarily.
+.Pp
+Note: The
 .Sy libui
 utility can be used to create a default
 .Sy libui.conf
@@ -2699,7 +2776,34 @@ for more information.
 .Pp
 During initialization, the
 .Nm
-library sources the default
+library searches the credentials directory for a file with a filename matching
+the command name, i.e.,
+.Qq Sy ${CMD} .
+The directory path can be controlled by setting the
+.Ev LIBUI_CREDENTIALS
+environment variable.
+The default path for the
+.Ev LIBUI_CREDENTIALS
+environment variable is
+.Qq Sy ${XDG_CONFIG_HOME}/credentials ,
+or, if
+.Qq Sy ${XDG_CONFIG_HOME}
+is not available, then to
+.Qq Sy ${HOME}/.config/credentials .
+The
+.Sy ${LIBUI_CREDENTIALS}/${CMD}
+file must be readable by the user and have "600" (rw-------) permissions.
+The
+.Nm
+library sources the
+file so it may contain any shell command but should at least create variables
+containing the secrets and/or credentials required by the script.
+Note: The credentials file may be sourced by zsh or bash so the commands should
+be shell agnostic.
+.Pp
+During initialization, the
+.Nm
+library also sources the default
 .Sy ${LIBUI_HOOKDIR}/init
 library initialization hook file, if it exists, then sources the global
 .Sy ${LIBUI_HOOKDIR}/${CMD}/init
@@ -2735,20 +2839,53 @@ environment variable controls the local hook files prefix.
 The default prefix value is
 .Sy .${CMD}- .
 .Pp
-The display codes are cached in a display cache file.
+The
+.Nm
+library creates a cache directory for storage of cached files.
+The directory path can be controlled by setting the
+.Ev LIBUI_CACHE
+environment variable.
+The default path for the
+.Ev LIBUI_CACHE
+environment variable is
+.Qq Sy ${XDG_CACHE_HOME}/libui ,
+or, if
+.Qq Sy ${XDG_CACHE_HOME}
+is not available, then to
+.Qq Sy ${HOME}/.cache/libui .
+.Pp
+The
+.Nm
+provided display codes are cached in a display cache file.
 The default path for the display cache file is
-.Sy ${LIBUI_CONFIG}/display-${TERM} .
+.Sy ${LIBUI_CACHE}/display-${TERM} .
 If the display cache file does not exist, it will be created.
-To reset display code values, remove the display cache file.
+To reset display code values at any time, simply remove the existing display
+cache file.
+.Pp
+The
+.Nm
+library creates a directory for storage of state files.
+The directory path can be controlled by setting the
+.Ev LIBUI_STATE
+environment variable.
+The default path for the
+.Ev LIBUI_STATE
+environment variable is
+.Qq Sy ${XDG_STATE_HOME}/libui ,
+or, if
+.Qq Sy ${XDG_STATE_HOME}
+is not available, then to
+.Qq Sy ${HOME}/.local/state/libui .
 .Pp
 The default path for the ledger file is
-.Sy ${LIBUI_LOCAL}/ledger .
+.Sy ${LIBUI_STATE}/ledger .
 This can be changed by setting the
 .Ev LIBUI_LEDGERFILE
 environment variable to another path.
 .Pp
 The default path for the trace file is
-.Sy ${LIBUI_LOCAL}/trace .
+.Sy ${LIBUI_STATE}/trace .
 This can be changed by setting the
 .Ev LIBUI_TRACEFILE
 environment variable to another path.
@@ -2763,7 +2900,7 @@ Certain circumstances (e.g.: some crashes) prevent the _Cleanup handler from
 being executed leaving the errant trace file in place.
 .Pp
 The default path for the stats file is
-.Sy ${LIBUI_LOCAL}/stats .
+.Sy ${LIBUI_STATE}/stats .
 This can be changed by setting the
 .Ev LIBUI_STATSFILE
 environment variable to another path.

@@ -6,13 +6,13 @@
 #####
 
 test_Action-i () {
-  local t="${TERMINAL}"
-  TERMINAL=true
-  LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
-  local tv=${?}
-  TERMINAL="${t}"
-  LibuiValidateTest "${tv}" 0 "${TJBL}${TAction}Test info.${T}${TCEL}${TJBL}/tmp"
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Action -i "Test info." "ls -d /tmp" 4>&1'
+  LibuiValidateTest ${?} 0 "${TJBL}${TAction}Test info.${T}${TCEL}${TJBL}/tmp"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

@@ -6,17 +6,16 @@
 #####
 
 test_Ask_Confirm_True () {
-  local t="${TERMINAL}"
-  TERMINAL=true
+  LibuiGetDisplayTestValues
   Yes -e
-  LibuiPerformTest 'Ask -C "Test Ask -C with Confirm true?"'
+  TERMINAL=true LibuiPerformTest 'Ask -C "Test Ask -C with Confirm true?"'
+  local tv=${?}
   Yes -E
-  TERMINAL="${t}"
-  LibuiValidateTest ${?} 0 'Test Ask -C with Confirm true? [yes] yes'
+  LibuiValidateTest "${tv}" 0 'Test Ask -C with Confirm true? [yes] yes'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X C '
+_Test_opt+='-x P -X C '
 
 return 0

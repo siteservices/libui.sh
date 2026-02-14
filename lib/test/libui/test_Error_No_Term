@@ -1,11 +1,12 @@
 #!/usr/bin/env libui
 #####
 #
-# test_Error_NoTerm
+# test_Error_No_Term
 #
 #####
 
-test_Error_NoTerm () {
+test_Error_No_Term () {
+  LibuiGetDisplayTestValues
   _exitcleanup=false
   LibuiPerformTest 'Error "Test 1."'
   local tv=${?}
@@ -13,5 +14,8 @@ test_Error_NoTerm () {
   LibuiValidateTest "${tv}" 1 "ERROR: Test 1."
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

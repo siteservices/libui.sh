@@ -6,15 +6,16 @@
 #####
 
 test_No_Term_Ask () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   _exitcleanup=false
   LibuiPerformTest 'Ask "Test Ask command?"'
   local tv=${?}
   _exitcleanup=true
-  TERMINAL="${t}"
   LibuiValidateTest "${tv}" 1 "ERROR: (Ask) Question asked without a terminal, no default, and a response required."
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x T '
 
 return 0

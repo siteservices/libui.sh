@@ -6,10 +6,14 @@
 #####
 
 test_N () {
+  LibuiGetDisplayTestValues
   local n=$'\n'
   LibuiPerformTest 'Tell "|${N}|"'
   LibuiValidateTest ${?} 0 "|${n}|"
   return ${?}
 }
+
+# test setup
+_Test_opt+='-x P '
 
 return 0

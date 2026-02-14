@@ -6,18 +6,16 @@
 #####
 
 test_XC_No_Term_Ask_Confirm_True () {
-  local t="${TERMINAL}"
-  TERMINAL=false
+  LibuiGetDisplayTestValues
   Yes -e
   LibuiPerformTest 'Ask -C "Test No Term Ask -C with Confirm true?"'
   local tv=${?}
   Yes -E
-  TERMINAL="${t}"
   LibuiValidateTest "${tv}" 0 'Test No Term Ask -C with Confirm true? [yes] yes'
   return ${?}
 }
 
 # test setup
-_Test_opt+='-X C '
+_Test_opt+='-x T -X C '
 
 return 0
