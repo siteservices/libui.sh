@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.21
+Version -r 2.012 -m 1.22
 
 ##### configuration
 
@@ -53,7 +53,7 @@ ${ZSH} || shopt -s expand_aliases
 GetRealPath _Util_libuiroot "${LIBUI%/*}/../../"
 _Util_template="${_Util_libuiroot}/share/doc/libui-template"
 _Util_libuitest="${LIBUI_TEST:-${_Util_libuiroot}/lib/test/libui}"
-_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}\${sh} \"\${d}/lib/sh/libui\" \${@}"
+_Util_installer="sh=\"\${ZSH_NAME:t}\"; sh=\${sh:-bash}${N}\${sh} \"\${d}/bin/libui\" \${@}"
 _Util_groupmode='g+wX'
 _Util_configfile="${LIBUI_CONFIG}/libui.conf"
 _Util_dcprefix="${LIBUI_CACHE}/display-"

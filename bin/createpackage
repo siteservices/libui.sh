@@ -7,7 +7,7 @@
 #
 #####
 #
-# Used to create a self-extracting package from a file list.
+# {libui tool} Used to create a self-extracting package from a file list.
 #
 # Man page available for this script: man 1 createpackage
 #

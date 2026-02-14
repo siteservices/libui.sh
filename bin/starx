@@ -7,9 +7,9 @@
 #
 #####
 #
-# Extracts files from a simple archive of text only files created by the star
-# archive manager. The star arhive files are concatenated with the separation
-# line (with no leading / trailing whitespace):
+# {libui tool} Extracts files from a simple archive of text only files created
+# by the star archive manager. The star arhive files are concatenated with the
+# separation line (with no leading / trailing whitespace):
 #
 #   ===== file:<name>:<dir perms>:<file perms>:<timestamp>file <archivets>=====
 #

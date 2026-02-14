@@ -9,7 +9,7 @@ While identified as "pure-script" it does utilize several basic Unix / Linux com
 
 The easiest way to create a new script is to use the following command.
 
-```
+```sh
 libui -n <script_path>
 ```
 
@@ -19,19 +19,19 @@ Use `libui -m` or `man libui` for a man page with details on the libui command. 
 
 To create a libui script, use the following shebang in the first line of the script.
 
-```
+```sh
 #!/usr/bin/env libui
 ```
 
 Alternatively, to source libui.sh in a zsh or bash script, include the following line near the beginning of the script.
 
-```
+```sh
 source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 ```
 
 Every libui script (or libui mod) should contain the following command line, again near the beginning of the script.
 
-```
+```sh
 Version [-m] [-r <minimum_version>] <version>
 ```
 
@@ -39,13 +39,13 @@ Where `<version>` is the version of the script itself and `<minimum_version>`, i
 
 Every libui script _**must initialize the library**_ after configuration and before starting the main script by using the following command. If no configuration is required, the `Initialize` command can follow the `Version` command.
 
-```
+```sh
 Initialize
 ```
 
 Every libui script should exit using the following command. This command will perform any required cleanup.
 
-```
+```sh
 Exit [<return_value>]
 ```
 
@@ -65,57 +65,77 @@ Information on the core library is available with `man 3 libui.sh`.
 
 ## Installation
 
-The recommended installation of the User Interface Library is provided by the libui script. The easiest installation is to use git to pull down the repository and then execute the following command.
+The libui User Interface Library can be installed directly from a downloaded package or from the sources included in this repository.
 
+### Package Installation
+
+The easiest way to install the libui User Interface Library is download the libui release package from [https://github.com/siteservices/libui.sh/releases/](https://github.com/siteservices/libui.sh/releases/) and then execute the following command to install the downloaded libui package into the provided \<COMMONROOT\> path. (Replace \<version\> with the downloaded version and \<COMMONROOT\> with the desired installation path.)
+
+```sh
+sh libui-<version>.tarp -i <COMMONROOT>
 ```
+
+After installing, the following should be added to your environment:
+
+  * Add "\<COMMONROOT\>" to your PATH to access libui and example scripts.
+  * Add "\<COMMONROOT\>/share/man" to your MANPATH to access the man pages.
+
+Once added, you can use "man 3 libui.sh" or "libui -m" to view the libui man page.
+
+### Installation From Sources
+
+Use git to pull down the repository from [https://github.com/siteservices/libui.sh.git](https://github.com/siteservices/libui.sh.git). Once the repository is downloaded, the libui User Interface Library can be installed using the following command.
+
+```sh
 make install
 ```
 
-This will execute the libui script with the `-I` (Install) option. If the `${COMMONROOT}` environment variable has not been configured with the library installation path, a prompt will appear asking for the COMMONROOT directory. The default location for COMMONROOT is `~/.local/libui`.
+This will execute the libui script with the `-I` (Install) option. If the `${COMMONROOT}` environment variable contains a path, the libui User Interface Library will be installed into that path. If the `${COMMONROOT}` environment variable does not contain a path, a prompt will appear asking for the COMMONROOT directory. The default path is `~/.local/libui`. The installation path must be writable by the user performing the installation.
 
-The COMMONROOT environment variable should contain the absolute path for the libui.sh library files. The libui.sh library includes several subdirectories that are installed under the COMMONROOT path including: `bin`, `lib/sh`, `lib/test`, `share/doc`, `share/man/man1`, and `share/man/man3`.
+The libui.sh library installs files into several subdirectories under the provided path. These include: `bin`, `lib/sh`, `lib/test`, `share/doc`, `share/man/man1`, and `share/man/man3`.
 
-Note: The provided \<COMMONROOT\> path must be writable by the user performing the installation.
+### Manual Installation From Sources
 
-Alternatively, the libui library can be installed by executing the libui script directly from within the repo using the following command.
+The libui script may be used directly to install the library. To execute the libui script directly from within the downloaded repo, use the following command. It performs the same as the above `make install`.
 
-```
+```sh
 bin/libui -I <COMMONROOT>
 ```
 
-To include all the libui regression tests, use `libui -i <COMMONROOT>`, i.e., using the `-i` (Install With Tests) option flag instead of the `-I` (Install Without Tests) option flag.
+### Manual Installation With Regression Tests
+
+To include all the libui regression tests, use `libui -i <COMMONROOT>`, i.e., using the `-i` (Install With Tests) option flag instead of the `-I` (Install Without Tests) option flag. The regression tests can then be executed using the `libui -t` command.
 
 ## Post Installation
 
-Once installed, access to the library must be established. This is best accomplished by adding the following to your .zshrc / .bashrc file.
+Once installed, access to the library must be established. This is best accomplished by adding the following to your .zshrc / .bashrc file. Note that the \<path/to/commonroot\> should be the \<COMMONROOT\> path provided during installation.
 
-```
+```sh
 export COMMONROOT=<path/to/commonroot>
 [[ "${PATH}" =~ (.*:|^)"${COMMONROOT}/bin"($|:.*) ]] ||
     PATH="${COMMONROOT}/bin${PATH:+:${PATH}}"
 eval "$(libui -M)"
 ```
 
-The above (when you change <path/to/commonroot> to the libui install path):
+When added to your .zshrc / .bashrc file, the above commands:
 
-* Creates the COMMONROOT environment variable.
+* Assign the installation path to the COMMONROOT environment variable.
 * Adds `<COMMONROOT>/bin` to your `${PATH}` (if it's not already there) to gain access to the libui command and example scripts.
 * Uses `eval $(libui -M)` to add `<COMMONROOT>/share/man` to your `${MANPATH}` for access to the libui man pages.
 
 Once the `${PATH}` and `${MANPATH}` environment variables have been updated, you can use `man 3 libui.sh` or `libui -m` to view the core library man page.
 
-Also, the `mless <document>` command can be used to view the markdown documents available in the `<COMMONROOT>/share/doc` directory. (The full path does not need to
-be included, just the document name.)
-
-## Creating a Script
-
-The easiest way to create a new script is to use the `libui -n <script_path>` command. This command copies the `libui-template` file from the `share/doc` directory, asks a few questions, and creates a new, template-based script in the location identified by the "\<script_path\>" parameter. (Note: Experienced users may want to use the `libui -N <script_path>` form to create the new script without the extra demo content.)
+Also, the `mless <document>` command can be used to view the markdown documents available in the `<COMMONROOT>/share/doc` directory. (The full path does not need to be included, just the document name.)
 
 ## Next Steps
 
-It is recommended that every user reads through the `libui-dictionary.md` document to get a high-level overview of the available commands. This can be accessed using `mless libui-dictionary`. Additional details on each of the commands and option flags can be found in the associated man pages.
+It is recommended that every user reads through the `libui.md` and `libui-dictionary.md` documents to get a high-level overview of the available commands. These files can be accessed using `mless libui-dictionary` and `mless libui-dictionary` commands. Complete details on each of the libui provided commands and option flags can be found in the associated man pages, e.g., by executing the `man libui.sh` command.
 
-The example scripts available in the `bin` directory provide several real-world examples of libui scripts. Reviewing those scripts to build knowledge is highly recommended.
+Example scripts are also available in the `bin` directory and provide several real-world examples of libui scripts. Reviewing those scripts to build knowledge is highly recommended.
+
+## Creating a Script
+
+The easiest way to create a new script is to use the `libui -n <script_path>` command. This command copies the `libui-template` file from the `share/doc` directory, asks a few questions, and then creates a new script with the "\<script_path\>" filename. (Note: Experienced developers may want to use the `libui -N <script_path>` command to create new scripts without the extra demo content.)
 
 ## Contact and Contributions
 
@@ -123,14 +143,14 @@ The libui user interface library is intended to be a community project. As such,
 
 ## Notes
 
-* The Z shell (zsh) is the preferred shell for libui script development and will be selected by default. If zsh is not available, 'libui -i' will modify the installed `libui/sh/libui` support script to use bash.
+* The Z shell (zsh) is the preferred shell for libui script development and will be selected by default. If zsh is not available, 'libui -i' will modify the `bin/libui` utility script during installation to use the bash shell.
 
 ## Editors
 ### Neovim
 
 When using the `#!/usr/bin/env libui` shebang, syntax highlighting and formatting can be improved by creating a `~/.config/nvim/filetype.lua` file and adding the following to set the filetype to zsh (or bash):
 
-```
+```lua
 vim.filetype.add({
   pattern = {
     [".*"] = {
@@ -149,11 +169,11 @@ If you prefer bash syntax highlighting, change `return 'zsh'` in the file to `re
 
 When using the `#!/usr/bin/env libui` shebang, syntax highlighting and formatting can be improved by creating a `~/.vim/ftdetect/libui.vim` file and adding the following to set the filetype to zsh (or bash):
 
-```
+```vimrc
 autocmd BufRead *
-	\ if getline(1) =~ '^#!/usr/bin/env libui' |
-	\   set filetype=zsh |
-	\ endif
+  \ if getline(1) =~ '^#!/usr/bin/env libui' |
+  \   set filetype=zsh |
+  \ endif
 ```
 
 If you prefer bash syntax highlighting, change `set filetype=zsh` in the file to `set filetype=bash`.

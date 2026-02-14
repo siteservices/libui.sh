@@ -29,6 +29,7 @@ This command copies the `libui-template` file from the `share/doc` subdirectory,
 ```
 
 This shebang automatically loads the libui.sh library for use. See the libui.sh man page for more details.
+
 ## Main User Interface Commands
 
 While the libui library provides a large number of commands, there are a few key commands that almost every libui script will utilize. The following paragraphs provide an overview of these key commands.
@@ -67,10 +68,9 @@ While this covers the common commands, reviewing the libui-dictionary.md documen
 
 ## Next Steps
 
-It is recommended that every user reads through the libui-dictionary.md document to get a high-level overview of the currently available commands. Additional details on each of the commands and option flags can be found in the associated man pages.
+It is recommended that every user reads through the `libui.md` and `libui-dictionary.md` documents to get a high-level overview of the available commands. These files can be accessed using `mless libui-dictionary` and `mless libui-dictionary` commands. Complete details on each of the libui provided commands and option flags can be found in the associated man pages, e.g., by executing the `man libui.sh` command.
 
-The scripts available in the `bin` directory provide several real-world examples of libui scripts. Reviewing those scripts is highly recommended.
-
+Example scripts are also available in the `bin` directory and provide several real-world examples of libui scripts. Reviewing those scripts to build knowledge is highly recommended.
 ## Contact and Contributions
 
 The libui user interface library is intended to be a community project. As such, if you have a question, find an issue, identify a need, want a new command or mod, and/or wish to contribute, please submit a patch via github or reach out via email to fharvell@siteservices.net.
