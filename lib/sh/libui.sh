@@ -70,7 +70,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.012 # Sat Feb 14 11:26:41 EST 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.012 # Sat Feb 14 11:28:40 EST 2026
 
 #####
 #

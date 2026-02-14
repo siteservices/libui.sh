@@ -18,13 +18,13 @@ The easiest way to create a new script is to use the `libui -n <script>` command
 
 The easiest way to create a new script is to use the following command.
 
-```
+```sh
 libui -n <script_path>
 ```
 
 This command copies the `libui-template` file from the `share/doc` subdirectory, asks a few questions, and creates a new, templated script in the location identified by the "\<script_path\>" parameter. If the script will be created from scratch, the recommended shebang is:
 
-```
+```sh
 #!/usr/bin/env libui
 ```
 
