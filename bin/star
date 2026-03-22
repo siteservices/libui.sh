@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.012 2.9
+Version -r 2.013 2.10
 
 # load mods
 LoadMod Convert
@@ -41,11 +41,11 @@ LoadMod File
 ##### configuration
 
 # defaults
-text_extensions=( txt vim )
+mime_types="(ascii|charset=utf-8|empty|JSON|text)"
+text_extensions=( json lua md txt vim )
 ts=$(date +%s)
 groupmode='g+wX'
 long=false
-retval=0
 sign="$(command -v sha1sum 2> /dev/null)"; sign="${sign:-$(command -v shasum 2> /dev/null)}"
 GetTmp tmpdir
 
@@ -142,7 +142,7 @@ CreateArchive () { # <archive> <files> ...
   exec 6>&1
   for file in "${files[@]}"
   do
-    if [[ ! $(file --mime "${file}") =~ .*(ascii|text|empty).* ]]
+    if [[ ! $(file --mime "${file}") =~ .*${mime_types}.* ]]
     then
       if Contains text_extensions "${file##*.}"
       then
@@ -362,5 +362,5 @@ then
   cd -
 fi
 
-Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
-Exit "${retval}"
+Trace 'Exit %s. (%s)' "${CMD}" "${RETVAL}"
+Exit

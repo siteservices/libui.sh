@@ -8,7 +8,9 @@
 test_PV () {
   LibuiGetDisplayTestValues
   local pv=true
-  local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0; ${ZSH} && ((53 > zv)) && pv=false
+  local zv
+  ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && zv="${ZSH_VERSION%.*}" || zv="${ZSH_VERSION:-0}"; zv="${zv//.}"
+  ${ZSH} && ((zv < 53)) && pv=false
   LibuiPerformTest 'Tell -- "${PV}"'
   LibuiValidateTest ${?} 0 "${pv}"
   return ${?}

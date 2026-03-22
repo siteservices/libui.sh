@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.012 1.9
+Version -r 2.013 1.10
 
 # load mods
 LoadMod File
@@ -49,7 +49,6 @@ heading4="${DFg}"
 code="${DFy}"
 strong="${Db}"
 emphasis="${Dsu}"
-retval=0
 
 ##### options - libui already uses options h, H, X:
 
@@ -127,19 +126,19 @@ do
   Trace 'Display file. (%s)' "${file}"
   cat "${file}" | \
       sed -E "/^\`\`\`$/,/^\`\`\`$/!{
-        s/^[[:space:]]{0,3}[\*_\-][[:space:]]*[\*_\-][[:space:]]*[\*_\-][[:space:]]*[\*_\-]*[[:space:]]*$/${rule}/;
+        s/^[[:space:]]{0,3}[*_-][[:space:]]*[*_-][[:space:]]*[*_-][[:space:]]*[*_-]*[[:space:]]*$/${rule}/;
         s/^#[[:space:]](.*)$/${heading1}\1${D}\n/;
         s/^##[[:space:]](.*)$/${heading2}\1${D}\n/;
         s/^###[[:space:]](.*)$/${heading3}\1${D}\n/;
         s/^#####*[[:space:]](.*)$/${heading4}\1${D}\n/;
-        s/\*\*([^\*]+)\*\*/${strong}\1${D}/g;
+        s/^([[:space:]]*)[*-][[:space:]](.*)$/\1  o  \2/;
+        s/\*\*([^*]+)\*\*/${strong}\1${D}/g;
         s/__([^_]+)__/${strong}\1${D}/g;
-        s/\*([^\*]+)\*/${emphasis}\1${D}/g;
-        s/(^|[^\\])_([^_]+)([^\\])_/${emphasis}\1\2\3${D}/g;
+        s/\*([^*]+)\*/${emphasis}\1${D}/g;
+        s/(^|[^\\])_([^_]+)([^\\])_/\1${emphasis}\2\3${D}/g;
         s/\`\`\`([^\`]+)\`\`\`/${code}\1${D}/g;
         s/(^|[^\`])\`([^\`]+)\`([^\`]|$)/\1${code}\2${D}\3/g;
         s/(^|[^\\])<[^>]*([^\\])>/\1/g;
-        s/^([[:space:]]*)[\*\-][[:space:]](.*)$/\1  o  \2/;
         s/^>>>>[[:space:]]/  |  |  |  |  /;
         s/^>>>[[:space:]]/  |  |  |  /;
         s/^>>[[:space:]]/  |  |  /;
@@ -155,5 +154,5 @@ do
       less -R
 done
 
-Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
-Exit "${retval}"
+Trace 'Exit %s. (%s)' "${CMD}" "${RETVAL}"
+Exit

@@ -35,7 +35,7 @@ This shebang automatically loads the libui.sh library for use. See the libui.sh 
 While the libui library provides a large number of commands, there are a few key commands that almost every libui script will utilize. The following paragraphs provide an overview of these key commands.
 
 * Action
-> This command supports the execution of commands that will generate persistent changes. It supports debugging, logging, command-line control, and user interaction for tasks that the user or programmer would like to control during script execution.
+> This command supports the execution of commands that will generate persistent changes. It supports debugging, logging, command-line control, and user interaction for tasks that the user or programmer would like to control during script execution. Any return value is also added to `${RETVAL}`.
 
 * AddOption
 > This command adds an option flag to the command line and captures the use of the flag into a named variable. The data provided is also used to generate the usage information for the user.

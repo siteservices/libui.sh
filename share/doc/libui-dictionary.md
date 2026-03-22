@@ -39,10 +39,11 @@ Note: New mods can be created and loaded to support new functionality and doing 
 
 ### Action (man libui.sh) - Perform tasks using the libui library.
 
-Primary function for performing tasks while using the libui library. The Action command should be used for any task that might make persistent changes. It provides support for tracing, confirmation, debugging, etc. It will generate a warning message on an action failure.
+Primary function for performing tasks while using the libui library. The Action command should be used for any task that might make persistent changes. It provides support for tracing, confirmation, debugging, etc. It will generate a warning message on an action failure. Any return value is also added to the `${RETVAL}` variable.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
+* **-A** - add return value (a.k.a. ${?}) to RETVAL (setting Error if non-zero)
 * **-C** - always confirm action
 * **-e** - message to display on a non-zero (error) return value
 * **-f** - generate error on failiure
@@ -52,14 +53,14 @@ Primary function for performing tasks while using the libui library. The Action 
 * **-p** - use provided pipeline action as return value
 * **-q** - confirmation question to ask
 * **-r** - retry action provided number of times before failing
-* **-R** - reset any prior failures (see -F)
+* **-R** - reset any prior failures and reset RETVAL to 0 (also see -F)
 * **-s** - display progress spinner while executing
 * **-t** - tee output to display and log file
 * **-w** - wait time between retries (use with -r)
 * **-W** - do not generate a warning on failure
 
 ```sh
-Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 ```
 
 ### At (man libuiTerm.sh) - Execute a command at a position on the terminal.
@@ -208,7 +209,7 @@ Capture <stdout_variable> <stderr_variable> <rv_variable> <command_string>
 
 ### Caution (man libui.sh) - Display a highlighted caution message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed in magenta text. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in magenta text. The message can also be logged to a log file. Caution will return `${RETVAL}` or a return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -329,7 +330,7 @@ Drop <array_variable> <value>|<value>: ...
 
 ### Error (man libui.sh) - Display a highlighted error message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed in yellow text on a red background. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag. Normally the Error command will exit the script (using the Exit command). This can be disabled with the **-E** (Disable Exit) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in yellow text on a red background. The message can also be logged to a log file. Error will return `${RETVAL}` or a return value can provided with the **-r** (Return Value) option flag. Normally the Error command will exit the script (using the Exit command). This can be disabled with the **-E** (Disable Exit) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -535,6 +536,7 @@ Creates any necessary directories in the provided path and sets the permissions 
 
 * **-g** - set the group ownership of the directories to the provided group
 * **-m** - use the provided mask as the umask when creating the directories
+* **-p** - create parent directories (noop: MkDir always creates needed parents)
 * **-s** - set the setgid bit for the created directories
 * **-W** - Do not generate a warning on failure
 
@@ -910,7 +912,7 @@ WaitSpinner
 
 ### Warn (man libui.sh) - Display a highlighted warning message for the user.
 
-Sends a highlighted text message to STDERR. By default this message is displayed in black text on a yellow background. The message can also be logged to a log file. A return value can provided with the **-r** (Return Value) option flag.
+Sends a highlighted text message to STDERR. By default this message is displayed in black text on a yellow background. The message can also be logged to a log file. Warn will return `${RETVAL}` or a return value can provided with the **-r** (Return Value) option flag.
 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
@@ -982,10 +984,12 @@ The libui library defines the following variables for use in scripts. Please not
 * **\${NRPARAM}** - The number of parameters provided on the command line.
 * **\${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
 * **\${OS_DIST}** - The operating system distribution. Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
+* **\${RETVAL}** - The sum of any return values from executed `Action` commands.
 * **\${SHENV}** - The path of the currently executing shell (limited to: zsh, bash, or sh).
 * **\${TERMINAL}** - Set to "true" if standard out is to a terminal, "false" if standard out is not to a terminal. When standard out is to a terminal, the libui library generates color text and additional user cues including questions, etc. Note: The ${TERMINAL} variable  can be set to "true" or "false" before executing the script (or sourcing libui.sh) to force enabling / disabling these terminal effects. Note: The ${TERMINAL} variable is only set during initialization and should not be used to determine if output is actually to a terminal. Use the `[[ -t 1 ]]` construct to determine if STDOUT is actually to a terminal.
 * **\${UICMD}** - An array containing the names of (available) libui commands (including libui mod provided commands).
 * **\${UIMOD}** - An array containing the filenames of loaded libui mods.
+* **\${UTF8}** - Set to true if UTF-8 character set is available, otherwise false. Note: Not a comprehensive test.
 * **\${UIVERSION}** - An array containing the filenames and versions of the loaded scripts and libui mods in alternating "pairs": \<file\> \<version\> ...
 * **\${UNIX}** - The type of the operating system. The possible values are BSD, SYSV, or GNU (i.e. Linux).
 * **\${WIDTH}** - Terminal window width in colums.

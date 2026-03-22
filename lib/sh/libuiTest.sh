@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.9
+Version -r 2.013 -m 1.10
 
 ##### configuration
 
@@ -224,7 +224,8 @@ LibuiTest () {
     fi
 
     ${_M} && _Trace 'Find tests. (%s)' "${_Test_testdir}"
-    [[ -z "${@}" ]] && GetFileList -f -n _Test_tests "${_Test_testdir}"/test_* || _Test_tests=( "${@}" )
+    [[ -n "${@}" ]] && _Test_tests=( "${@}" ) || GetFileList -f -n _Test_tests "${_Test_testdir}/test_*"
+    [[ -z "${_Test_tests}" ]] && Error 'No tests available.'
 
     ${_M} && _Trace 'Start session log.'
     Tell 'Test environment (%s):' "${LIBUI}"
@@ -239,7 +240,6 @@ LibuiTest () {
 
       ${_M} && _Trace 'Prepare for test %s: (%s)' "${_Test_count}" "${_Test_test}"
       _Test_env="LIBUI_TRACE=false COUNT=${_Test_count} "
-#      _Test_opt='-x T '
       _Test_opt='-T '
       ${_Test_debug} && _Test_opt+='-x d '
       ((0 < _xdb)) && _Test_opt+="-X ${_xdb} "

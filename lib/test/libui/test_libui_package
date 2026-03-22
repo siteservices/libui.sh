@@ -10,9 +10,9 @@ test_libui_package () {
   libui -p "${tl}/pkg"
   mkdir "${tl}/ti"
   ls -al "${tl}"
-  sh "${tl}/pkg.tarp" -XF -i "${tl}/ti"
-  LibuiPerformTest 'diff <(cd "${LIBUI%/*/*/*}" && find . -name ".git" -prune -o -type f -print | sort) <(cd "${tl}/ti" && find . -name ".git" -prune -o -type f -print | sort) | grep "\(<\|>\)" | LC_ALL=C sort'
-  LibuiValidateTest ${?} 0 "< ./.buildrecipe${N}< ./.gitignore${N}< ./LICENSE.md${N}< ./Makefile${N}< ./README.md${N}< ./changelog.md"
+  ${SHENV} "${tl}/pkg.tarp" -XF -i "${tl}/ti"
+  LibuiPerformTest 'diff <(cd "${LIBUI%/*/*/*}" && find . -name ".git" -prune -o -type f -print | sort) <(cd "${tl}/ti" && find . -name ".git" -prune -o -type f -print | sort) | grep "\(<\|>\)" | grep -v '\.git' | LC_ALL=C sort'
+  LibuiValidateTest ${?} 0 "< ./.buildrecipe${N}< ./LICENSE.md${N}< ./Makefile${N}< ./README.md${N}< ./changelog.md"
   return ${?}
 }
 

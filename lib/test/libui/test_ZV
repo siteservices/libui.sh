@@ -7,7 +7,8 @@
 
 test_ZV () {
   LibuiGetDisplayTestValues
-  local zv="${ZSH_VERSION%.*}"; [[ -n "${zv}" ]] && zv="${zv//.}" || zv=0
+  local zv
+  ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && zv="${ZSH_VERSION%.*}" || zv="${ZSH_VERSION:-0}"; zv="${zv//.}"
   LibuiPerformTest 'Tell -- "${ZV}"'
   LibuiValidateTest ${?} 0 "${zv}"
   return ${?}

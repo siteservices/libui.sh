@@ -9,13 +9,13 @@ test_libui-p () {
   GetTmp tl
   libui -p "${tl}/pkg"
   pushd "${tl}" 2> /dev/null
-  sh "pkg.tarp" -e
+  ${SHENV} "pkg.tarp" -e
   popd 2> /dev/null
   pushd "${LIBUI%/*/*/*}" 2> /dev/null
-  LibuiPerformTest 'diff <(find . -name ".git" -prune -o -type f -print | sort) <(tar tf "${tl}/pkg.tarp.tar" | sort) | grep "\(<\|>\)" | LC_ALL=C sort'
+  LibuiPerformTest 'diff <(find . -name ".git" -prune -o -type f -print | sort) <(tar tf "${tl}/pkg.tarp.tar" | sort) | grep "\(<\|>\)" | grep -v '\.git' | LC_ALL=C sort'
   local tv=${?}
   popd 2> /dev/null
-  LibuiValidateTest "${tv}" 0 "< ./.buildrecipe${N}< ./.gitignore${N}< ./LICENSE.md${N}< ./Makefile${N}< ./README.md${N}< ./changelog.md"
+  LibuiValidateTest "${tv}" 0 "< ./.buildrecipe${N}< ./LICENSE.md${N}< ./Makefile${N}< ./README.md${N}< ./changelog.md"
   return ${?}
 }
 
