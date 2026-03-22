@@ -1,5 +1,41 @@
 # Change Log
 
+## v2.013
+
+### New Features / Enhancements
+
+* Add `${RETVAL}` containing the sum of return values from Action commands.
+* Update Exit to default to return `${RETVAL}`.
+* Update Caution, Error, Warn (i.e. Tell) to default to returning `${RETVAL}`.
+* Add Action `-A` option flag to add return value (a.k.a. `${?}`) to `${RETVAL}`.
+* Update the "libui -n" (New Script) template to utilize `${RETVAL}`.
+* Add `${UTF8}` true / false variable indicating support for UTF-8 character set.
+* Add `MkDir -p` option flag for muscle memory (also make parent directories).
+* Update `star` application to include more "text" types (including UTF-8).
+* Improve `mless` bullet and emphasis handling.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+* Fix spelling typos.
+* Formatting cleanup.
+
+### Bug Fixes
+
+* Fix libui `LoadMod` bug in the `LIBUI_PATH` / `PATH` search.
+* Fix libui credentials permissions test.
+* Fix `${ZV}` and `${BV}` processing to ensure they include major/minor.
+* Fix `libui -t` regression tests identification when tests are unavailable.
+
+### Incompatibilities
+
+* Removed libui Workspace mod. (Depends on shell dotfiles.)
+* Removed repopull from example scripts. (Depends on workspaces.)
+* Removed showmodifieddotfiles from example scripts. (Depends on workspaces.)
+* Removed updateprojects from example scripts. (Depends on workspaces.)
+* Removed wssetup from example scripts. (Depends on workspaces.)
+
+Note: The Workspace and dotfiles components remain available separately.
+
 ## v2.012
 
 ### New Features / Enhancements

@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.23
+Version -r 2.013 -m 1.24
 
 # defaults
 
@@ -165,11 +165,12 @@ cd - > /dev/null
 _Package_head+="
 # run installer
 \${_Package_installer}
+rv=\\\${?}
 
 # done
 rm -rf \\\"\\\${t}\\\"
 printf 'Done.\\n'
-exit 0
+exit \\\${rv}
 
 \${_Package_null}__PAYLOAD__
 "

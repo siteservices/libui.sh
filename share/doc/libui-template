@@ -59,7 +59,6 @@ LoadMod Workspace                                                               
 statuslevel=0                                                                                       # demo content
 GetTmp tmpdir                                                                                       # demo content
 <DEFAULT VALUES HERE>
-retval=0
 
 ##### options - libui already uses options h, H, X:
 
@@ -149,15 +148,13 @@ do                                                                              
   printf 'File: %s' "${file}"                                                                      # demo content
   Action -q "Copy ${file}?" -i "Copying file... (${file})" "cp ${FMFLAGS} '${file}' '${tmpdir}'"   # demo content
 done                                                                                               # demo content
-((retval+=${?}))                                                                                   # demo content
                                                                                                    # demo content
 ls -l "${tmpdir}"                                                                                  # demo content
                                                                                                    # demo content
 <MAIN SCRIPT HERE>
 
-((retval+=${?})) # note: Action errors cascade forward unless reset with -R
+# note: Action errors and RETVAL cascade forward unless reset with -R
+! ((RETVAL)) && Alert 'Done.' || Warn 'A processing error occured.'
 
-! ((retval)) && Alert 'Done.' || Warn -r "${retval}" 'A processing error occured.'
-
-Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
-Exit "${retval}"
+Trace 'Exit %s. (%s)' "${CMD}" "${RETVAL}"
+Exit

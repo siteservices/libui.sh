@@ -72,7 +72,7 @@ The libui User Interface Library can be installed directly from a downloaded pac
 The easiest way to install the libui User Interface Library is download the libui release package from [https://github.com/siteservices/libui.sh/releases/](https://github.com/siteservices/libui.sh/releases/) and then execute the following command to install the downloaded libui package into the provided \<COMMONROOT\> path. (Replace \<version\> with the downloaded version and \<COMMONROOT\> with the desired installation path.)
 
 ```sh
-sh libui-<version>.tarp -i <COMMONROOT>
+sh libui-<version>.tarp -I <COMMONROOT>
 ```
 
 After installing, the following should be added to your environment:

@@ -32,7 +32,8 @@
 #
 #   Exit [return_value]
 #
-#     Where return_value is the value to be returned by the main script.
+#     Where return_value is the value to be returned by the main script. The
+#     return value defaults to ${RETVAL}.
 #
 # Man page available for this library: man 3 libui.sh
 #
@@ -70,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.012 # Sat Feb 14 11:28:40 EST 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.013 # Sun Mar 22 10:37:51 EDT 2026
 
 #####
 #
@@ -470,7 +471,8 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
 # perform an action
 _action=true
 UICMD+=( 'Action' )
-Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+  local rv=${?}
   ${_S} && ((_cAction++))
   ${_T} && _Trace 'Action [%s]' "${*}"
 
@@ -498,7 +500,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':123456789acCe:fFi:l:p:q:r:Rstw:W' _opt
+  while getopts ':123456789aAcCe:fFi:l:p:q:r:Rstw:W' _opt
   do
     case ${_opt} in
       [1-9])
@@ -509,6 +511,10 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       a|c)
         ${_T} && _Trace 'File mode. (%s)' "${_opt}"
         _c="-${_opt}"
+        ;;
+      A)
+        ${_T} && _Trace 'Add return value to RETVAL.'
+        ((RETVAL+=rv)) && _error=true
         ;;
       C)
         ${_T} && _Trace 'Confirm action.'
@@ -550,6 +556,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
       R)
         ${_T} && _Trace 'Reset action state.'
         _action=true
+        RETVAL=0
         ;;
       s)
         ${_T} && _Trace 'Use spinner.'
@@ -589,6 +596,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
   if Error
   then
     ${_T} && _Trace 'Action error return. (%s)' "${ERRV}"
+    ((RETVAL+=ERRV))
     return ${ERRV}
   else
     if ${_a} || ${_action}
@@ -711,6 +719,7 @@ Action () { # [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] 
     fi
 
     ${_T} && _Trace 'Action return. (%s)' "${_rv}"
+    ((RETVAL+=_rv))
     return ${_rv}
   fi
 }
@@ -808,7 +817,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
     if ${_a}
     then
       ${_T} && _Trace 'AA test %s.' "${_v}"
-      [[ "$(declare -p "${_v}" 2> /dev/null)" =~ .*\ -A\ .* ]]
+      [[ "$(declare -p "${_v}" 2> /dev/null)" =~ \ -A\  ]]
     else
       ${ZSH} && _x="${(P)_v}" || _x="${!_v}"
 
@@ -1042,7 +1051,7 @@ Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <p
         ${_T} && _Trace 'Validate answer. (%s)' "${ANSWER}"
         if ((${#_a[@]}))
         then
-          if [[ -n "${_p}" && "${ANSWER}" =~ .*/.* ]]
+          if [[ -n "${_p}" && "${ANSWER}" =~ / ]]
           then
             _g=true
             _Trace 'Path provided. (%s) Ignoring path option. (%s)' "${ANSWER}" "${_p}"
@@ -1203,6 +1212,7 @@ Tell () { # [-1..-9|-a|-A|-B|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] 
         _d="${DCaution}CAUTION"
         _t='CAUTION'
         _w=true
+        ((_rv)) || _rv=${RETVAL}
         ((_rv)) || _rv=1
         ;;
       E)
@@ -1212,6 +1222,7 @@ Tell () { # [-1..-9|-a|-A|-B|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] 
         _e=true
         _error=true
         ${_init} && _x=false || _x=true
+        ((_rv)) || _rv=${RETVAL}
         ((_rv)) || _rv=1
         ;;
       f)
@@ -1260,6 +1271,7 @@ Tell () { # [-1..-9|-a|-A|-B|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] 
         _d="${DWarn}WARNING"
         _t='WARNING'
         _w=true
+        ((_rv)) || _rv=${RETVAL}
         ((_rv)) || _rv=1
         ;;
       *)
@@ -2036,7 +2048,7 @@ _exitcleanup=true
 _exitcallback=( )
 UICMD+=( 'Exit' )
 Exit () { # [<return_value>]
-  local _rv="${1:-${?}}"
+  local _rv="${1:-${RETVAL:-${?}}}"
   ${_S} && ((_cExit++))
   ${_T} && _Trace 'Exit [%s]' "${*}"
 
@@ -2085,7 +2097,7 @@ Exit () { # [<return_value>]
   if ${_ldb}
   then
     local _l="${LIBUI_LEDGERFILE:-${LIBUI_STATE}/ledger}"
-    if [[ ! -f "${_l}" && "${_l}" =~ .*/.* ]]
+    if [[ ! -f "${_l}" && "${_l}" =~ / ]]
     then
       ${_T} && _Trace 'Check ledger dir. (%s)' "${_l}"
       test -d "${_l%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_LEDGERFILE path. (%s)' "${_l}"
@@ -2136,7 +2148,7 @@ Exit () { # [<return_value>]
       source "${_s}"
       _ctime="$(printf '%.6f' ${_ctime})" # broken floats
     else
-      if [[ "${_s}" =~ .*/.* ]]
+      if [[ "${_s}" =~ / ]]
       then
         ${_T} && _Trace 'Check stats dir. (%s)' "${_s}"
         test -d "${_s%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_STATSFILE path. (%s)' "${_s}"
@@ -2189,7 +2201,7 @@ Exit () { # [<return_value>]
   if ${_tdb}
   then
     local _t="${LIBUI_TRACEFILE:-${LIBUI_STATE}/trace}"
-    if [[ ! -f "${_t}" && "${_t}" =~ .*/.* ]]
+    if [[ ! -f "${_t}" && "${_t}" =~ / ]]
     then
       ${_T} && _Trace 'Check trace dir. (%s)' "${_t}"
       test -d "${_t%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_TRACEFILE path. (%s)' "${_t}"
@@ -2257,9 +2269,9 @@ LoadMod () { # [-P <path>] <libui_mod_name>
       _rv=${?}
       _f=true
     else
-      ! ${ZSH} && _p && IFS=: read -a _p <<< "${LIBUI_PATH:+${LIBUI_PATH}:}${PATH}"
+      ${ZSH} && _p=( "${(@s/:/)LIBUI_PATH}" "${(@)path}" ) || IFS=: read -a _p <<< "${LIBUI_PATH:+${LIBUI_PATH}:}${PATH}"
       local _s
-      for _s in "${path[@]}"
+      for _s in "${_p[@]}"
       do
         if [[ -f "${_s}/libui${_m}.sh" ]]
         then
@@ -2309,17 +2321,20 @@ LIBUI_STATE="${LIBUI_STATE:-${XDG_STATE_HOME:-${HOME}/.local/state}/libui}"
 LIBUI_CACHE="${LIBUI_CACHE:-${XDG_CACHE_HOME:-${HOME}/.cache}/libui}"
 
 # defaults
+RETVAL=0
 LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
 ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
-BV="${BASH_VERSION%.*}"; [[ -n "${BV}" ]] && BV="${BV//.}" || BV=0; ! ${ZSH} && ((40 > BV)) && AA=false || AA=true
-ZV="${ZSH_VERSION%.*}"; [[ -n "${ZV}" ]] && ZV="${ZV//.}" || ZV=0; ${ZSH} && ((53 > ZV)) && PV=false || PV=true
+${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH_VERSION:-0}"; ZV="${ZV//.}"
+${ZSH} && ((ZV < 53)) && PV=false || PV=true
+! ${ZSH} && BV="${BASH_VERSION//[^\.]/}" && ((${#BV} > 1)) && BV="${BASH_VERSION%.*}" || BV="${BASH_VERSION:-0}"; BV="${BV//.}"
+! ${ZSH} && ((BV < 40)) && AA=false || AA=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
 LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
-[[ "${PATH}" =~ (.*:|^)"${LIBUI%/*}"($|:.*) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
+[[ "${PATH}" =~ (:|^)"${LIBUI%/*}"($|:) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
 DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
 [[ 'local' == "${DOMAIN}" ]] && DOMAIN=
 DOMAIN="${DOMAIN:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)}"
@@ -2386,6 +2401,7 @@ ${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LI
 ${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
 ${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((0$(tput colors 2> /dev/null) >= 8)) && \
     source "${LIBUI_CACHE}/display-${TERM}" 2> /dev/null && _display=true || _display=false
+[[ "$(locale charmap)" =~ UTF-*8 ]] && UTF8=true || UTF8=false
 
 # debug
 _tdb="${LIBUI_TRACE:-false}"; _T="${_tdb}"
@@ -2416,8 +2432,8 @@ then
 fi
 
 # credentials
-[[ 'GNU' == "${UNIX}" ]] && _perm='-c "%a"' || _perm='-f "%Lp"'
-((0$(eval 'stat ${_perm} "${LIBUI_CREDENTIALS}/${CMD}"' 2> /dev/null) == 600)) && \
+[[ 'GNU' == "${UNIX}" ]] && _perm='stat -c %a' || _perm='stat -f %Lp'
+(($(eval '${_perm} "${LIBUI_CREDENTIALS}/${CMD}"' 2> /dev/null) + 0 == 600)) && \
     source "${LIBUI_CREDENTIALS}/${CMD}" && _credentials=true || _credentials=false
 
 # global log

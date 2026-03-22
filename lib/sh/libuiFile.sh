@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.15
+Version -r 2.013 -m 1.16
 
 # defaults
 _File_ip=
@@ -689,16 +689,16 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
 # Create a new directory path with special permissions
 #
-# Syntax: MkDir [-s|-W] [-g <group>] [-m <mask>] <path>
+# Syntax: MkDir [-p|-s|-W] [-g <group>] [-m <mask>] <path>
 #
-# Example: Mkdir -g users -s path/to/dir
+# Example: MkDir -g users -s path/to/dir
 #
 # Result: Creates new directories in the path/to/dir as needed. Also sets the
 # group ownership, permissions mode of the new directory (using the umask) and
 # optionally sets the setgid bit.
 #
 UICMD+=( 'MkDir' )
-MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
+MkDir () { # [-p|-s|-W] [-g <group>] [-m <mask>] <path>
   ${_S} && ((_cMkDir++))
   ${_M} && _Trace 'MkDir [%s]' "${*}"
 
@@ -712,7 +712,7 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':g:m:sW' _opt
+  while getopts ':g:m:psW' _opt
   do
     case ${_opt} in
       g)
@@ -722,6 +722,10 @@ MkDir () { # [-s|-W] [-g <group>] [-m <mask>] <path>
       m)
         ${_M} && _Trace 'Mask. (%s)' "${OPTARG}"
         _File_m="${OPTARG}"
+        ;;
+      p)
+        ${_M} && _Trace 'Parents.'
+        # nop - always creates parents (here for muscle memory)
         ;;
       s)
         ${_M} && _Trace 'Set setgid bit.'

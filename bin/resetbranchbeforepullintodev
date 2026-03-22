@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.000 1.7
+Version -r 2.013 1.8
 
 # load mods
 
@@ -91,7 +91,6 @@ then
     Action -F "git push --force"
   fi
 fi
-retval=${?}
 
-Trace 'Exit %s. (%s)' "${CMD}" "${retval}"
-Exit ${retval}
+Trace 'Exit %s. (%s)' "${CMD}" "${RETVAL}"
+Exit

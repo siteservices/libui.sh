@@ -1,0 +1,28 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-A
+#
+#####
+
+test_Action-A () {
+  /invalid_command 2> /dev/null
+  Action -A
+  ls -al /invalid_path 2> /dev/null
+  Action -A
+  LibuiPerformTest 'Tell -- "${RETVAL}"; Warn -- "${RETVAL}"'
+  case "${OS}" in
+    Darwin|FreeBSD)
+      LibuiValidateTest ${?} 128 "128${N}WARNING: 128"
+      ;;
+    *)
+      LibuiValidateTest ${?} 129 "129${N}WARNING: 129"
+      ;;
+  esac
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

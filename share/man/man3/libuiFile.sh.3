@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd January 26, 2026
+.Dd February 22, 2026
 .Dt LIBUIFILE.SH 3
 .Os
 .Sh NAME
@@ -47,7 +47,7 @@ user interface library
 .Ar <variable_name>
 .Pp
 .Sy MkDir
-.Op Fl s Fl W
+.Op Fl p Fl s Fl W
 .Op Fl g Ar <group>
 .Op Fl m Ar <mask>
 .Ar <path>
@@ -310,7 +310,7 @@ The following command creates a directory path and sets permissions on any
 created directories:
 .Bd -ragged -offset 4n
 .Sy MkDir
-.Op Fl s Fl W
+.Op Fl p Fl s Fl W
 .Op Fl g Ar <group>
 .Op Fl m Ar <mask>
 .Ar <path>
@@ -330,11 +330,18 @@ Set the setgid bit for any created directories.
 .It Fl W
 Do not generate a warning message if a failure occurs when making the directory.
 .El
+.Pp
 While the standard
 .Xr mkdir 1
 command can be used to create a directory path (with the -p option flag), it
 does not properly set the permissions of any created parent directories.
-This command, however, sets the proper permissions on any created directories.
+This command, however, sets the proper permissions on all created directories.
+.Pp
+Note: the
+.Sy MkDir
+always creates any required parent directories. The
+.Fl p
+(Parents) option flag is not required (but provided as a convenience).
 .Ss Open
 The following command opens a file, locks it, and associates a file ID with the
 file path:

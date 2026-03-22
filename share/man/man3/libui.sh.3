@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd February 14, 2026
+.Dd March 22, 2026
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -792,7 +792,7 @@ The following command executes a command string under
 library control:
 .Bd -ragged -offset 4n
 .Sy Action
-.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl c Fl C Fl f Fl F Fl R Fl s Fl t Fl W
+.Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl c Fl C Fl f Fl F Fl R Fl s Fl t Fl W
 .Op Fl e Ar <error_message>
 .Op Fl i Ar <info_message>
 .Op Fl l Ar <file_path>
@@ -822,6 +822,12 @@ Open a log file, and append after any existing data.
 This option is only applicable when also using the
 .Fl l Ar <file_path>
 option.
+.It Fl A
+Add the last return value (a.k.a. ${?}) to RETVAL and set Error if the result is
+non-zero.
+See the
+.Sx Error
+command for more information about Error.
 .It Fl c
 Open the log file, removing any existing data.
 This option is only applicable when also using the
@@ -925,7 +931,9 @@ See also the
 .Fl w
 (Retry Wait) option.
 .It Fl R
-Reset previous action result to a "success" state.
+Reset previous action result to a "success" state and reset the
+.It Dv ${RETVAL}
+variable to 0.
 This will effectively negate the result of any previous action.
 Also see the
 .Fl F
@@ -1688,7 +1696,9 @@ On color terminals (TTY), this text will be displayed using the
 display format which by default is magenta.
 If the
 .Fl r
-(Return) option is not provided, the return value will be 1.
+(Return) option is not provided, the return value will be
+.Sx ${RETVAL}
+if non-zero otherwise 1.
 .It Fl E
 This option displays the
 .Ar <message>
@@ -1712,14 +1722,18 @@ options.
 .Pp
 If the
 .Fl r
-(Return) option is not provided, the return value will be 1.
+(Return) option is not provided, the return value will be
+.Sx ${RETVAL}
+if non-zero otherwise 1.
 .It Fl f
 Force an
 .Sy Exit
 after displaying the (ERROR) message text by calling the
 .Sx Exit
 command.
-This will return the current return value unless the
+This will return
+.Sx ${RETVAL}
+unless the
 .Fl r
 command is called.
 .It Fl F
@@ -1806,7 +1820,9 @@ On color terminals (TTY), this text will be displayed using the
 display format which by default is black on a yellow background.
 If the
 .Fl r
-(Return) option is not provided, the return value will be 1.
+(Return) option is not provided, the return value will be
+.Sx ${RETVAL}
+if non-zero otherwise 1.
 .El
 .Pp
 Display the highlighted
@@ -2173,6 +2189,16 @@ Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
 .It Dv ${PV}
 Set to "true" if shell supports "print -v var", otherwise "false" (and use the
 "var=$(printf)" construct).
+.It Dv ${RETVAL}
+The sum of all return values from
+.Sx Action
+commands.
+Since the "success" return value is 0, the
+.It Dv ${RETVAL}
+variable can reliably be used to determine the success (0) or failure (non-zero)
+of a series of
+.Sx Action
+commands.
 .It Dv ${SHENV}
 The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
@@ -2203,6 +2229,9 @@ mod provided commands).
 An array containing the filenames of loaded
 .Nm
 mods.
+.It Dv ${UTF8}
+Set to true if UTF-8 character set is available, otherwise false.
+Note: Not a comprehensive test.
 .It Dv ${UIVERSION}
 An array containing the filenames and versions of the loaded scripts and
 .Nm
