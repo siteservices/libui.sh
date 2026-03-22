@@ -10,7 +10,7 @@
 * Add Action `-A` option flag to add return value (a.k.a. `${?}`) to `${RETVAL}`.
 * Update the "libui -n" (New Script) template to utilize `${RETVAL}`.
 * Add `${UTF8}` true / false variable indicating support for UTF-8 character set.
-* Add `MkDir -p` option flag for muscle memory (also make parent directories).
+* Add `MkDir -p` option flag for muscle memory (always made parent directories).
 * Update `star` application to include more "text" types (including UTF-8).
 * Improve `mless` bullet and emphasis handling.
 * Add and update regression tests.
@@ -24,6 +24,7 @@
 * Fix libui `LoadMod` bug in the `LIBUI_PATH` / `PATH` search.
 * Fix libui credentials permissions test.
 * Fix `${ZV}` and `${BV}` processing to ensure they include major/minor.
+* Fix libuiPackage.sh default installer so it returns proper return value.
 * Fix `libui -t` regression tests identification when tests are unavailable.
 
 ### Incompatibilities
