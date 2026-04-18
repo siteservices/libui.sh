@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-s-b
+#
+#####
+
+test_Action-s-b () {
+  TERMINAL=true LibuiPerformTest 'Action -s -b "Test info." "ls -d /tmp" 4>&1'
+  LibuiValidateTest -r ${?} 0 '/tmp...*'
+  return ${?}
+}
+
+return 0

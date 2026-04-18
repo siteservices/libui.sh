@@ -44,11 +44,11 @@ Primary function for performing tasks while using the libui library. The Action 
 * **-1..-9** - file id
 * **-a** | **-c** - append to / create log
 * **-A** - add return value (a.k.a. ${?}) to RETVAL (setting Error if non-zero)
+* **-b** - message to display while executing (use with **-s** for spinner)
 * **-C** - always confirm action
 * **-e** - message to display on a non-zero (error) return value
 * **-f** - generate error on failiure
 * **-F** - skip action if prior failure
-* **-i** - message to display while executing (use with **-s** or spinner)
 * **-l** - log output to file
 * **-p** - use provided pipeline action as return value
 * **-q** - confirmation question to ask
@@ -60,7 +60,7 @@ Primary function for performing tasks while using the libui library. The Action 
 * **-W** - do not generate a warning on failure
 
 ```sh
-Action [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-i <info_message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <error_message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 ```
 
 ### At (man libuiTerm.sh) - Execute a command at a position on the terminal.
@@ -779,7 +779,7 @@ SSHSend [-q|-v] **-d** <destination> [-p <password>] [-P <port>] [-t <target>] [
 Starts a progress spinner that is displayed a space after the current cursor position. The spinner should be stopped with the StopSpinner command. An informational message can be optionally displayed. Note: the spinner should also stop when the program ends with the Exit command. (Under certain error conditions, it is possible for the Spinner to persist beyond the script and would need to be killed manually.)
 
 ```sh
-StartSpinner [<info_message>]
+StartSpinner [<message>]
 ```
 
 ### StartTimer (man libuiTimer.sh) - Start a timer.
@@ -982,6 +982,7 @@ The libui library defines the following variables for use in scripts. Please not
 * **\${N}** - The newline character. This is equivalent to $'\n' but, available for use in string assignments.
 * **\${NROPT}** - The number of options provided on the command line.
 * **\${NRPARAM}** - The number of parameters provided on the command line.
+* **\${NULL}** - When using Z Shell, contains the string "(N)", otherwise the empty string. When appended to a glob that is `eval` processed, the glob becomes shell agnostic.
 * **\${OS}** - The name of the operating system. Typical values are Darwin, Linux, SunOS, Solaris, etc.
 * **\${OS_DIST}** - The operating system distribution. Typical values are almalinux, debian, rhel, SunOS, Solaris, ubuntu, etc.
 * **\${RETVAL}** - The sum of any return values from executed `Action` commands.

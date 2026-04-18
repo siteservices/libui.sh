@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.013 # Sun Mar 22 10:37:51 EDT 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.014 # Sat Apr 18 17:08:35 EDT 2026
 
 #####
 #
@@ -471,18 +471,18 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
 # perform an action
 _action=true
 UICMD+=( 'Action' )
-Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
   local rv=${?}
   ${_S} && ((_cAction++))
   ${_T} && _Trace 'Action [%s]' "${*}"
 
   local _a=true
   local _b; ${ZSH} && _b=' ; _ps=( "${pipestatus[@]}" )' || _b=' ; _ps=( "${PIPESTATUS[@]}" )'
+  local _bm
   local _c='-a'
   local _e=false
   local _f
   local _h='Failure while evaluating command.'
-  local _i
   local _l
   local _m=false
   local _n; ((${_spinner:-0})) || _n="${DJBL}"
@@ -500,7 +500,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
   local _opt
   local OPTIND
   local OPTARG
-  while getopts ':123456789aAcCe:fFi:l:p:q:r:Rstw:W' _opt
+  while getopts ':123456789aAb:cCe:fFl:p:q:r:Rstw:W' _opt
   do
     case ${_opt} in
       [1-9])
@@ -515,6 +515,10 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
       A)
         ${_T} && _Trace 'Add return value to RETVAL.'
         ((RETVAL+=rv)) && _error=true
+        ;;
+      b)
+        ${_T} && _Trace 'Brief message. (%s)' "${OPTARG}"
+        _bm="${OPTARG}"
         ;;
       C)
         ${_T} && _Trace 'Confirm action.'
@@ -531,10 +535,6 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
       F)
         ${_T} && _Trace 'Skip action if prior failure.'
         _a=false
-        ;;
-      i)
-        ${_T} && _Trace 'Info message. (%s)' "${OPTARG}"
-        _i="${OPTARG}"
         ;;
       l)
         ${_T} && _Trace 'Log file path. (%s)' "${OPTARG}"
@@ -606,8 +606,8 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
       ${_T} && _Trace 'Check if confirming action. (%s)' "${_v}"
       if ! ${_v} || Verify $([[ -z "${_q}" ]] && printf '-l') "${DConfirm}(Confirm)${D} ${_q:-${*}}"
       then
-        ${_T} && _Trace 'Process message. (%s)' "${_i}"
-        ${TERMINAL} && ! ${_quiet} && [[ -n "${_i}" ]] && printf "${DJBL}${DBrief}%s${D}${DCEL}${_n}" "${_i}" >&4 # duplicate stderr
+        ${_T} && _Trace 'Process message. (%s)' "${_bm}"
+        ${TERMINAL} && ! ${_quiet} && [[ -n "${_bm}" ]] && printf "${DJBL}${DBrief}%s${D}${DCEL}${_n}" "${_bm}" >&4 # duplicate stderr
 
         ${_T} && _Trace 'Check for no action. (%s)' "${_noaction}"
         if ${_noaction}
@@ -618,7 +618,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
           _rv=0
         else
           ${_T} && _Trace 'Check for verbose. (%s)' "${_vdb}"
-          ${_vdb} && printf "${DJBL}${DAction}(Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}"
+          ${_vdb} && printf "${DJBL}${DBrief}(Action) %s (PWD: %s)${D}${DCEL}\n" "${*}" "${PWD}"
 
           local _p
           local _x
@@ -708,14 +708,14 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message
               ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
               ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s, PWD: %s)" "${*}" "${PWD}"
             else
-              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_i:-${*}}"
-              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_i:-${*}}"
+              ${_e} && _action=false && Tell -E ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_bm:-${*}}"
+              ${_w} && _action=false && Tell -W ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} "(Action) ${_h} (%s)" "${_bm:-${*}}"
             fi
           fi
         fi
       fi
     else
-      ${_w} && _rv=2 && Tell -W ${_c} ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} '(Action) Skipping due to previous failure: %s' "${_i:-${*}}"
+      ${_w} && _rv=2 && Tell -W ${_c} ${_f:+-${_f}} ${_l:+-l} ${_l:+"${_l}"} '(Action) Skipping due to previous failure: %s' "${_bm:-${*}}"
     fi
 
     ${_T} && _Trace 'Action return. (%s)' "${_rv}"
@@ -2328,6 +2328,7 @@ ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH
 ${ZSH} && ((ZV < 53)) && PV=false || PV=true
 ! ${ZSH} && BV="${BASH_VERSION//[^\.]/}" && ((${#BV} > 1)) && BV="${BASH_VERSION%.*}" || BV="${BASH_VERSION:-0}"; BV="${BV//.}"
 ! ${ZSH} && ((BV < 40)) && AA=false || AA=true
+${ZSH} && NULL='(N)' || NULL=
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )

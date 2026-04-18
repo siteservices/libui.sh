@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.013 -m 1.10
+Version -r 2.014 -m 1.11
 
 ##### configuration
 
@@ -441,7 +441,6 @@ LibuiGetDisplayTestValues () {
     Tss="$(tput smso)" # start standout
     Tes="$(tput rmso)" # exit standout
     T="$(tput sgr0)" # normal
-    TAction="${Tfb}" # display formats
     TAlarm="${Td}${Tfr}"
     TAlert="${Tb}${TFg:-${Tfg}}"
     TAnswer="${Tfy}"

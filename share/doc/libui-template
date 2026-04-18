@@ -134,7 +134,7 @@ Initialize
 
 Trace 'Start %s. (%s)' "${CMD}" "${CMDLINE}"
 
-#Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-e <message>] [-i <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
+#Action [-1..-9|-a|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message>] [-l <file_path>] [-p <pipe_element>] [-q <question>] [-r <retries>] [-w <retry_wait>] <command_string_to_evaluate>
 Trace 'Check for show status. (%s)' "${showstatus}"                                                # demo content
 if ${showstatus}                                                                                   # demo content
 then                                                                                               # demo content
@@ -146,7 +146,7 @@ GetFileList files                                                               
 for file in "${files[@]}"                                                                          # demo content
 do                                                                                                 # demo content
   printf 'File: %s' "${file}"                                                                      # demo content
-  Action -q "Copy ${file}?" -i "Copying file... (${file})" "cp ${FMFLAGS} '${file}' '${tmpdir}'"   # demo content
+  Action -q "Copy ${file}?" -b "Copying file... (${file})" "cp ${FMFLAGS} '${file}' '${tmpdir}'"   # demo content
 done                                                                                               # demo content
                                                                                                    # demo content
 ls -l "${tmpdir}"                                                                                  # demo content

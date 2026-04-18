@@ -1,0 +1,24 @@
+#!/usr/bin/env libui
+#####
+#
+# test_NULL
+#
+#####
+
+test_NULL () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Tell -- "${NULL}"'
+  local tv=${?}
+  if [[ -n "${ZSH_VERSION}" ]]
+  then
+    LibuiValidateTest "${tv}" 0 '(N)'
+  else
+    LibuiValidateTest "${tv}" 0 ''
+  fi
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

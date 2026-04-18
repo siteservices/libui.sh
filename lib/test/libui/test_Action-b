@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Action-b
+#
+#####
+
+test_Action-b () {
+  LibuiGetDisplayTestValues
+  TERMINAL=true LibuiPerformTest 'Action -b "Test info." "ls -d /tmp" 4>&1'
+  LibuiValidateTest ${?} 0 "${TJBL}${TBrief}Test info.${T}${TCEL}${TJBL}/tmp"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0
