@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.013 -m 1.24
+Version -r 2.014 -m 1.25
 
 # defaults
 
@@ -393,7 +393,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
       local _Package_tarball
       GetTmp -f _Package_tarball
       ${_M} && _Trace 'Create tar archive. (%s)' "${_Package_files[*]}"
-      Action -f -q 'Create tar archive?' -i 'Creating tar archive...' "tar ${_Package_cmd} ${_Package_compression} -chf '${_Package_tarball}' \"\${_Package_files[@]}\""
+      Action -f -q 'Create tar archive?' -b 'Creating tar archive...' "tar ${_Package_cmd} ${_Package_compression} -chf '${_Package_tarball}' \"\${_Package_files[@]}\""
       ${_M} && _Trace 'Created tar archive: %s' "${_Package_tarball}"
 
       ${_M} && _Trace 'Check if creating tar package. (%s)' "${_Package_tarp}"
@@ -411,15 +411,15 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         local _Package_subdir
         GetTmp -s _Package_subdir
         pushd ${_Package_subdir} > /dev/null
-        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Unpack tar archive?' -b 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
         if [[ 'GNU' == "${UNIX}" ]]
         then
-          Action -q "Create shar package archive for ${_Package_package}?" -i 'Creating shar archive...' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
+          Action -q "Create shar package archive for ${_Package_package}?" -b 'Creating shar archive...' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         else
-          Action -q "Append shar archive to packge ${_Package_package}?" -i 'Creating shar archive...' "shar \$(find .) >> '${_Package_package}'"
+          Action -q "Append shar archive to packge ${_Package_package}?" -b 'Creating shar archive...' "shar \$(find .) >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
@@ -430,11 +430,11 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         local _Package_subdir
         GetTmp -s _Package_subdir
         pushd ${_Package_subdir} > /dev/null
-        Action -f -q 'Unpack tar archive?' -i 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
+        Action -f -q 'Unpack tar archive?' -b 'Unpacking tar archive...' "tar xf '${_Package_tarball}'"
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -P -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
-        Action -q "Append star archive to package ${Package_package}?" -i 'Creating star archive...' "star -c . >> '${_Package_package}'"
+        Action -q "Append star archive to package ${Package_package}?" -b 'Creating star archive...' "star -c . >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created starp package: %s' "${_Package_package}"
         popd > /dev/null
@@ -488,7 +488,7 @@ ListPackage () { # <package>
       GetTmp -s _Package_subdir
       pushd "${_Package_subdir}" > /dev/null
       ${_M} && _Trace 'Extract shar. (%s)' "${_Package_subdir}"
-      Action -q 'Extract shar?' -i 'Extracting shar...' "sh '${_Package_package}' > /dev/null"
+      Action -q 'Extract shar?' -b 'Extracting shar...' "sh '${_Package_package}' > /dev/null"
       Action -q 'Remove shar?' "rm ${FMFLAGS} '${_Package_package}'"
       _Package_list=( $(ls -A | sed 's|^|./|') )
       popd - > /dev/null

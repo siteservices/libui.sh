@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd March 22, 2026
+.Dd April 18, 2026
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -793,8 +793,8 @@ library control:
 .Bd -ragged -offset 4n
 .Sy Action
 .Op Fl 1 Fl 2 Fl 3 Fl 4 Fl 5 Fl 6 Fl 7 Fl 8 Fl 9 Fl a Fl A Fl c Fl C Fl f Fl F Fl R Fl s Fl t Fl W
+.Op Fl b Ar <message>
 .Op Fl e Ar <error_message>
-.Op Fl i Ar <info_message>
 .Op Fl l Ar <file_path>
 .Op Fl p Ar <pipe_element>
 .Op Fl q Ar <question>
@@ -833,6 +833,21 @@ Open the log file, removing any existing data.
 This option is only applicable when also using the
 .Fl l Ar <file_path>
 option.
+.It Fl b Ar <message>
+Provide an info message to display while the
+.Ar <command_string_to_execute>
+is running.
+When combined with the
+.Fl s
+(Spinner) option or the StartSpinner / StopSpinner commands from the
+.Xr libuiSpinner 3
+mod, output the provided
+.Ar <message>
+before the spinner.
+The cursor is left at the end of the message so that it will be erased by the
+next
+.Nm
+display output.
 .It Fl C
 Always confirm the action.
 .It Fl e Ar <error_message>
@@ -857,21 +872,6 @@ Do not perform action if previous action failed.
 Also see the
 .Fl R
 (Reset) option.
-.It Fl i Ar <info_message>
-Provide an info message to display while the
-.Ar <command_string_to_execute>
-is running.
-When combined with the
-.Fl s
-(Spinner) option or the StartSpinner / StopSpinner commands from the
-.Xr libuiSpinner 3
-mod, output the provided
-.Ar <info_message>
-before the spinner.
-The cursor is left at the end of the message so that it will be erased by the
-next
-.Nm
-display output.
 .It Fl l Ar <file_path>
 Log the output from the
 .Sy Action
@@ -1052,7 +1052,7 @@ Note: If local debugging is enabled using the
 .Ar <command_string_to_evaluate>
 will also be displayed just before evaluation.
 On color terminals (TTY), this text will be displayed using the
-.Sx ${DAction}
+.Sx ${DBrief}
 display format which by default is blue.
 .Ss Alert
 The following command sends an alert message to the user:
@@ -2180,6 +2180,10 @@ string assignments.
 The number of options provided on the command line.
 .It Dv ${NRPARAM}
 The number of parameters provided on the command line.
+.It Dv ${NULL}
+When using Z Shell, contains the string "(N)", otherwise the empty string.
+When appended to a glob that is `eval` processed, the glob becomes shell
+agnostic.
 .It Dv ${OS}
 The name of the operating system.
 Typical values are Darwin, Linux, SunOS, Solaris, etc.
@@ -2380,8 +2384,6 @@ library uses the following display modifier variables for displaying generated
 messages.
 It is possible for a main script to changes these values during initialization.
 .Bl -tag -offset 4n -width 12n -compact
-.It Dv ${DAction}
-Action display format - defaults to blue text.
 .It Dv ${DAlarm}
 Alarm display format - defaults to dim red text.
 .It Dv ${DAlert}

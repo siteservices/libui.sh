@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.7
+Version -r 2.014 -m 1.8
 
 ##### configuration
 
@@ -218,7 +218,6 @@ _Terminal () {
       printf "Dss='$(tput smso)'\n" # start standout
       printf "Des='$(tput rmso)'\n" # exit standout
       printf "D='$(tput sgr0)'\n" # normal
-      printf 'DAction="${Dfb}"\n' # display formats
       printf 'DAlarm="${Dd}${Dfr}"\n'
       printf 'DAlert="${Db}${DFg:-${Dfg}}"\n'
       printf 'DAnswer="${Dfy}"\n'

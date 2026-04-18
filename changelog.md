@@ -1,5 +1,21 @@
 # Change Log
 
+## v2.014
+
+### New Features / Enhancements
+
+* Add `${NULL}` to support null glob `eval`. In zsh, contains '(N)' otherwise empty.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+* Fix spelling typos.
+* Formatting cleanup.
+
+### Incompatibilities
+
+* Change `Action -i` (Info) option flag to `-b` (Brief) to match new `Brief` command.
+* Removed `${DAction}` display format; Action messages now use `${DBrief}` format.
+
 ## v2.013
 
 ### New Features / Enhancements

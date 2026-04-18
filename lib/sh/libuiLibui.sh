@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.012 -m 1.22
+Version -r 2.014 -m 1.23
 
 ##### configuration
 
@@ -361,7 +361,6 @@ LibuiDemo () {
   Tell 'Capabilities Demo'
 
   Tell '\nDisplay formats:'
-  Tell "\t${DAction}Action format."
   Tell "\t${DAlarm}Alarm format."
   Tell "\t${DAlert}Alert format."
   Tell "\t${DAnswer}Answer format."
