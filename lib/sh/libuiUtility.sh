@@ -177,41 +177,45 @@ _Terminal () {
       if ((16 <= $(tput colors)))
       then
         printf "DB0='$(tput setab 8)'\n" # bright black
+        printf "DBs='$(tput setab 8)'\n" # bright black
         printf "DBr='$(tput setab 9)'\n" # bright red
         printf "DBg='$(tput setab 10)'\n" # bright green
         printf "DBy='$(tput setab 11)'\n" # bright yellow
         printf "DBb='$(tput setab 12)'\n" # bright blue
         printf "DBm='$(tput setab 13)'\n" # bright magenta
         printf "DBc='$(tput setab 14)'\n" # bright cyan
-        printf "DB7='$(tput setab 15)'\n" # bright white
+        printf "DBw='$(tput setab 15)'\n" # bright white
         printf "DF0='$(tput setaf 8)'\n" # bright black
+        printf "DFs='$(tput setaf 8)'\n" # bright black
         printf "DFr='$(tput setaf 9)'; Dfr=\"\${DFr}\"\n" # bright / red
         printf "DFg='$(tput setaf 10)'\n" # bright green
         printf "DFy='$(tput setaf 11)'; Dfy=\"\${DFy}\"\n" # bright / yellow
         printf "DFb='$(tput setaf 12)'; Dfb=\"\${DFb}\"\n" # bright / blue
         printf "DFm='$(tput setaf 13)'\n" # bright magenta
         printf "DFc='$(tput setaf 14)'\n" # bright cyan
-        printf "DF7='$(tput setaf 15)'; Df7=\"\${DF7}\"\n" # bright / white
+        printf "DFw='$(tput setaf 15)'; Dfw=\"\${DFw}\"\n" # bright / white
       else
         printf "Dfr='$(tput bold; tput setaf 1)'\n" # red
         printf "Dfy='$(tput bold; tput setaf 3)'\n" # yellow
         printf "Dfb='$(tput bold; tput setaf 4)'\n" # blue
-        printf "Df7='$(tput bold; tput setaf 7)'\n" # white
+        printf "Dfw='$(tput bold; tput setaf 7)'\n" # white
       fi
       printf "Db0='$(tput setab 0)'\n" # black
+      printf "Dbs='$(tput setab 0)'\n" # black
       printf "Dbr='$(tput setab 1)'\n" # red
       printf "Dbg='$(tput setab 2)'\n" # green
       printf "Dby='$(tput setab 3)'\n" # yellow
       printf "Dbb='$(tput setab 4)'\n" # blue
       printf "Dbm='$(tput setab 5)'\n" # magenta
       printf "Dbc='$(tput setab 6)'\n" # cyan
-      printf "Db7='$(tput setab 7)'\n" # white
+      printf "Dbw='$(tput setab 7)'\n" # white
       printf "Df0='$(tput setaf 0)'\n" # black
+      printf "Dfs='$(tput setaf 0)'\n" # black
       printf "Dfg='$(tput setaf 2)'\n" # green
       printf "Dfm='$(tput setaf 5)'\n" # magenta
       printf "Dfc='$(tput setaf 6)'\n" # cyan
       printf "Db='$(tput bold)'\n" # bold
-      [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DF0:-${Df7}}"\n' # dim
+      [[ -n "$(tput dim)" ]] && printf "Dd='$(tput dim)'\n" || printf 'Dd="${DFs:-${Dfw}}"\n' # dim
       printf "Dsu='$(tput smul)'\n" # start underline
       printf "Deu='$(tput rmul)'\n" # end underline
       printf "Dr='$(tput rev)'\n" # reverse

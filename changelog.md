@@ -1,5 +1,25 @@
 # Change Log
 
+## v2.015
+
+### New Features / Enhancements
+
+* Add `${Dfw}` and `${Dfs}` for white and black foreground colors.
+* Add `${DFw}` and `${DFs}` for bold white and black foreground colors.
+* Add `${Dbw}` and `${Dbs}` for white and black background colors.
+* Add `${DBw}` and `${DBs}` for bold white and black background colors.
+* Add libui `-!` option flag to initialize libui environment and exit.
+* Add libui `-r` option flag to restore a deferred environment.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+* Fix spelling typos.
+* Formatting cleanup.
+
+### Incompatibilities
+
+* Remove `${Df7}`, `${DF7}`, `${Db7}`, `${DB7}` white colors.
+
 ## v2.014
 
 ### New Features / Enhancements

@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.014 -m 1.23
+Version -r 2.015 -m 1.24
 
 ##### configuration
 
@@ -144,6 +144,7 @@ _LibuiSetup () {
   AddOption -n empty -f -k 'New Empty Script' -d 'Create a libui script with the provided filename without demo content.' N
   AddOption -n package -f -k 'Package' -d 'Create a libui.sh package with the provided filename.' p
   AddOption -n prepackage -f -k 'Pre-package' -d 'Update documentation / datestamps in preparation for packaging.' P
+  AddOption -n restore -f -k 'Restore' -d 'Resture deferred user environment.' r
   AddOption -n stats -f -k 'Stats' -d 'Display stats.' s
   AddOption -n statereset -f -k 'State Reset' -d 'Reset (clear) state (i.e., stats, logs, and ledger).' S
   AddOption -n testing -f -k 'Test' -d 'Perform libui regression testing.' t
@@ -254,6 +255,9 @@ regression testing, capabilities demonstration, and usage statistics reports.
 Hints: ${D0}Use the "-n" (New Script) option to generate a new liubi script.${D}
        Use the "-d" (Demo) option to see the display formats available.
        Use the "-v" (Verify) option more than once to increase verbosity.
+
+Notes: The "-?" option returns the current libui.sh path.
+       The "-!" option initializes the environment and exits.
 
 Shell environment: ${SHENV}
 
@@ -398,37 +402,41 @@ LibuiDemo () {
     [[ -z "${DJH}" ]] && Tell -W 'Jump to home (DJH) not defined.' || printf '\t%s\n' 'DJH - Jump to home.'
     [[ -z "${DCP}" ]] && Tell -W 'Read cursor position (DCP) not defined.' || printf '\t%s\n' 'DCP - Read cursor position.'
     [[ -z "${Db0}" ]] && Tell -W 'Black background (Db0) not defined.' || printf "\t${Db0}%s${D}\n" 'Db0 - Black background.'
+    [[ -z "${Dbs}" ]] && Tell -W 'Black background (Dbs) not defined.' || printf "\t${Db0}%s${D}\n" 'Dbs - Black background.'
     [[ -z "${Dbr}" ]] && Tell -W 'Red background (Dbr) not defined.' || printf "\t${Dbr}%s${D}\n" 'Dbr - Red background.'
     [[ -z "${Dbg}" ]] && Tell -W 'Green background(Dbg) not defined.' || printf "\t${Dbg}%s${D}\n" 'Dbg - Green backgroun.'
     [[ -z "${Dby}" ]] && Tell -W 'Yellow background (Dby) not defined.' || printf "\t${Dby}%s${D}\n" 'Dby - Yellow background.'
     [[ -z "${Dbb}" ]] && Tell -W 'Blue background (Dbb) not defined.' || printf "\t${Dbb}%s${D}\n" 'Dbb - Blue background.'
     [[ -z "${Dbm}" ]] && Tell -W 'Magenta background (Dbm) not defined.' || printf "\t${Dbm}%s${D}\n" 'Dbm - Magenta background.'
     [[ -z "${Dbc}" ]] && Tell -W 'Cyan background (Dbc) not defined.' || printf "\t${Dbc}%s${D}\n" 'Dbc - Cyan background.'
-    [[ -z "${Db7}" ]] && Tell -W 'White background (Db7) not defined.' || printf "\t${Db7}%s${D}\n" 'Db7 - White background.'
+    [[ -z "${Dbw}" ]] && Tell -W 'White background (Dbw) not defined.' || printf "\t${Dbw}%s${D}\n" 'Dbw - White background.'
     [[ -z "${DB0}" ]] && Tell -W 'Bright black background (DB0) not defined.' || printf "\t${DB0}%s${D}\n" 'DB0 - Bright black background.'
+    [[ -z "${DBs}" ]] && Tell -W 'Bright black background (DBs) not defined.' || printf "\t${DBs}%s${D}\n" 'DBs - Bright black background.'
     [[ -z "${DBr}" ]] && Tell -W 'Bright red background (DBr) not defined.' || printf "\t${DBr}%s${D}\n" 'DBr - Bright red background.'
     [[ -z "${DBg}" ]] && Tell -W 'Bright green background (DBg) not defined.' || printf "\t${DBg}%s${D}\n" 'DBg - Bright green background.'
     [[ -z "${DBy}" ]] && Tell -W 'Bright yellow background (DBy) not defined.' || printf "\t${DBy}%s${D}\n" 'DBy - Bright yellow background.'
     [[ -z "${DBb}" ]] && Tell -W 'Bright blue background (DBb) not defined.' || printf "\t${DBb}%s${D}\n" 'DBb - Bright blue background.'
     [[ -z "${DBm}" ]] && Tell -W 'Bright magenta background (DBm) not defined.' || printf "\t${DBm}%s${D}\n" 'DBm - Bright magenta background.'
     [[ -z "${DBc}" ]] && Tell -W 'Bright cyan background (DBc) not defined.' || printf "\t${DBc}%s${D}\n" 'DBc - Bright cyan background.'
-    [[ -z "${DB7}" ]] && Tell -W 'Bright white background (DB7) not defined.' || printf "\t${DB7}%s${D}\n" 'DB7 - Bright white background.'
+    [[ -z "${DBw}" ]] && Tell -W 'Bright white background (DBw) not defined.' || printf "\t${DBw}%s${D}\n" 'DBw - Bright white background.'
     [[ -z "${Df0}" ]] && Tell -W 'Black foreground (Df0) not defined.' || printf "\t${Df0}%s${D}\n" 'Df0 - Black foreground.'
+    [[ -z "${Dfs}" ]] && Tell -W 'Black foreground (Dfs) not defined.' || printf "\t${Dfs}%s${D}\n" 'Dfs - Black foreground.'
     [[ -z "${Dfr}" ]] && Tell -W 'Red foreground (Dfr) not defined.' || printf "\t${Dfr}%s${D}\n" 'Dfr - Red foreground.'
     [[ -z "${Dfg}" ]] && Tell -W 'Green foreground (Dfg) not defined.' || printf "\t${Dfg}%s${D}\n" 'Dfg - Green foreground.'
     [[ -z "${Dfy}" ]] && Tell -W 'Yellow foreground (Dfy) not defined.' || printf "\t${Dfy}%s${D}\n" 'Dfy - Yellow foreground.'
     [[ -z "${Dfb}" ]] && Tell -W 'Blue foreground (Dfb) not defined.' || printf "\t${Dfb}%s${D}\n" 'Dfb - Blue foreground.'
     [[ -z "${Dfm}" ]] && Tell -W 'Magenta foreground (Dfm) not defined.' || printf "\t${Dfm}%s${D}\n" 'Dfm - Magenta foreground.'
     [[ -z "${Dfc}" ]] && Tell -W 'Cyan foreground (Dfc) not defined.' || printf "\t${Dfc}%s${D}\n" 'Dfc - Cyan foreground.'
-    [[ -z "${Df7}" ]] && Tell -W 'White foreground (Df7) not defined.' || printf "\t${Df7}%s${D}\n" 'Df7 - White foreground.'
+    [[ -z "${Dfw}" ]] && Tell -W 'White foreground (Dfw) not defined.' || printf "\t${Dfw}%s${D}\n" 'Dfw - White foreground.'
     [[ -z "${DF0}" ]] && Tell -W 'Bright black foreground (DF0) not defined.' || printf "\t${DF0}%s${D}\n" 'DF0 - Bright black foreground.'
+    [[ -z "${DFs}" ]] && Tell -W 'Bright black foreground (DFs) not defined.' || printf "\t${DFs}%s${D}\n" 'DFs - Bright black foreground.'
     [[ -z "${DFr}" ]] && Tell -W 'Bright red foreground (DFr) not defined.' || printf "\t${DFr}%s${D}\n" 'DFr - Bright red foreground.'
     [[ -z "${DFg}" ]] && Tell -W 'Bright green foreground (DFg) not defined.' || printf "\t${DFg}%s${D}\n" 'DFg - Bright green foreground.'
     [[ -z "${DFy}" ]] && Tell -W 'Bright yellow foreground (DFy) not defined.' || printf "\t${DFy}%s${D}\n" 'DFy - Bright yellow foreground.'
     [[ -z "${DFb}" ]] && Tell -W 'Bright blue foreground (DFb) not defined.' || printf "\t${DFb}%s${D}\n" 'DFb - Bright blue foreground.'
     [[ -z "${DFm}" ]] && Tell -W 'Bright magenta foreground (DFm) not defined.' || printf "\t${DFm}%s${D}\n" 'DFm - Bright magenta foreground.'
     [[ -z "${DFc}" ]] && Tell -W 'Bright cyan foreground (DFc) not defined.' || printf "\t${DFc}%s${D}\n" 'DFc - Bright cyan foreground.'
-    [[ -z "${DF7}" ]] && Tell -W 'Bright white foreground (DF7) not defined.' || printf "\t${DF7}%s${D}\n" 'DF7 - Bright white foreground.'
+    [[ -z "${DFw}" ]] && Tell -W 'Bright white foreground (DFw) not defined.' || printf "\t${DFw}%s${D}\n" 'DFw - Bright white foreground.'
     [[ -z "${Db}" ]] && Tell -W 'Bold text (Db) not defined.' || printf "\t${Db}%s${D}\n" 'Db - Bold text.'
     [[ -z "${Dd}" ]] && Tell -W 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dd - Dim text.'
     [[ -z "${Dsu}" ]] && Tell -W 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Dsu - Start underline.'
@@ -643,7 +651,7 @@ LibuiTimestamp () {
   ${_M} && _Trace 'LibuiTimestamp [%s]' "${*}"
 
   ${_M} && _Trace 'Update %s timestamp.' "${LIBUI}"
-  local _Util_now=$(date '+%a %b %e %T %Z %Y' | sed 's/  / /g')
+  local _Util_now=$(date -u '+%a %b %e %T %Z %Y' | sed 's/  / /g')
   local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
   Action -q 'Update the libui.sh notation date?' "sed ${_Util_sedi} -e 's/ LIBUI_VERSION=\([0-9][0-9]*\.[0-9][0-9][0-9]\) # .* .* .* .*:.*:.* .* [0-9][0-9][0-9][0-9]$/ LIBUI_VERSION=\1 # ${_Util_now}/' '${LIBUI}'" && \
       Tell -A '%s timestamp updated.' "${LIBUI}"
@@ -915,7 +923,7 @@ LibuiDefer () { # [-d|-D|-u|-v]
         if [[ -f "${COMMONROOT}/${_Util_file}" ]]
         then
           ${_M} && _Trace 'Copy %s to %s.' "${_Util_libuiroot}/${_Util_file}" "${COMMONROOT}/${_Util_file}"
-          Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}? (y/n)" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && \
+          Action -q "Copy ${_Util_libuiroot}/${_Util_file} file to ${COMMONROOT}?" "cp ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${COMMONROOT}/${_Util_file}'" && \
               ${group} && Action "chmod ${_Util_groupmode} '${COMMONROOT}/${_Util_file}'"
         fi
       done
@@ -945,7 +953,8 @@ LibuiDefer () { # [-d|-D|-u|-v]
       if [[ -f "${COMMONROOT}/${_Util_file}" ]]
       then
         ${_M} && _Trace 'Defer %s.' "${_Util_libuiroot}/${_Util_file}"
-        Action -q "The file ${COMMONROOT}/${_Util_file} exists, defer in ${_Util_libuiroot}? (y/n)" "mv ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${_Util_libuiroot}/Deferred/${_Util_file}'"
+        [[ "${_Util_file}" =~ / ]] && MkDir "${_Util_libuiroot}/Deferred/${_Util_file%/*}"
+        Action -q "The file ${COMMONROOT}/${_Util_file} exists, defer in ${_Util_libuiroot}?" "mv ${FMFLAGS} '${_Util_libuiroot}/${_Util_file}' '${_Util_libuiroot}/Deferred/${_Util_file}'"
       fi
     done
     popd > /dev/null
@@ -958,6 +967,21 @@ LibuiDefer () { # [-d|-D|-u|-v]
   popd > /dev/null
 
   ${_M} && _Trace 'LibuiDefer return. (%s)' 0
+  return 0
+}
+
+UICMD+=( 'LibuiRestore' )
+LibuiRestore () {
+  ${_S} && ((_cLibuiRestore++))
+  ${_M} && _Trace 'LibuiRestore [%s]' "${*}"
+
+  pushd "${_Util_libuiroot}" > /dev/null
+
+  Action -q "Restore deferred files?" "mv ${FMFLAGS} '${_Util_libuiroot}'/Deferred/* '${_Util_libuiroot}/'"
+
+  popd > /dev/null
+
+  ${_M} && _Trace 'LibuiRestore return. (%s)' 0
   return 0
 }
 
@@ -1107,6 +1131,9 @@ _LibuiProcess () {
     else
       LibuiDefer $(${verify} && printf -- '-v '; ${update} && printf -- '-u '; ${defer} && printf -- '-D')
     fi
+  elif ${restore}
+  then
+    LibuiRestore
   elif ${new}
   then
     LibuiNew -t "${_Util_template}" "${param}"

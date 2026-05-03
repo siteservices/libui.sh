@@ -13,7 +13,7 @@ test_Help () {
 
 # help compare text
 helptext="
-USAGE: libui [-c|-C|-d|-D|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-P|-s|-S|-t|-T|-u|-U|-v|-V ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
+USAGE: libui [-c|-C|-d|-D|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-P|-r|-s|-S|-t|-T|-u|-U|-v|-V ...|-h|-H] [-e <shells>] ... [-x <testopt>] ... [-X <option>] [<param>]
 
   -c  Config           - Create default configuration file \"${HOME}/.config/libui/libui.conf\". (config: false)
   -C  Cache Reset      - Reset (clear) library caches. (cachereset: false)
@@ -31,6 +31,7 @@ USAGE: libui [-c|-C|-d|-D|-g|-i|-I|-l|-L|-m|-M|-n|-N|-p|-P|-s|-S|-t|-T|-u|-U|-v|
   -N  New Empty Script - Create a libui script with the provided filename without demo content. (empty: false)
   -p  Package          - Create a libui.sh package with the provided filename. (package: false)
   -P  Pre-package      - Update documentation / datestamps in preparation for packaging. (prepackage: false)
+  -r  Restore          - Resture deferred user environment. (restore: false)
   -s  Stats            - Display stats. (stats: false)
   -S  State Reset      - Reset (clear) state (i.e., stats, logs, and ledger). (statereset: false)
   -t  Test             - Perform libui regression testing. (testing: false)
@@ -72,6 +73,9 @@ regression testing, capabilities demonstration, and usage statistics reports.
 Hints: Use the \"-n\" (New Script) option to generate a new liubi script.
        Use the \"-d\" (Demo) option to see the display formats available.
        Use the \"-v\" (Verify) option more than once to increase verbosity.
+
+Notes: The \"-?\" option returns the current libui.sh path.
+       The \"-!\" option initializes the environment and exits.
 
 Shell environment: ${SHENV}
 

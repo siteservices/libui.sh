@@ -62,6 +62,9 @@ else
   # load libui.sh
   source "${LIBUI:-${_dir}/lib/sh/libui.sh}" "${0}" "${@}"
 
+  # init only
+  [[ "${1}" == '-!' ]] && exit 0
+
   # load mods
   LoadMod Libui
 
