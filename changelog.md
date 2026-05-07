@@ -16,9 +16,13 @@
 * Fix spelling typos.
 * Formatting cleanup.
 
+### Bug Fixes
+
+* Rectify comparisons. (Not really a bugfix but also not an enhancement.)
+
 ### Incompatibilities
 
-* Remove `${Df7}`, `${DF7}`, `${Db7}`, `${DB7}` white colors.
+* Remove `${Df7}`, `${DF7}`, `${Db7}`, `${DB7}` white color display variables.
 
 ## v2.014
 

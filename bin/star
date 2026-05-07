@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.013 2.10
+Version -r 2.015 2.11
 
 # load mods
 LoadMod Convert
@@ -152,9 +152,9 @@ CreateArchive () { # <archive> <files> ...
         continue
       fi
     fi
-    [[ '/' == "${file:0:1}" ]] && prefix='.' || prefix=
-    [[ 'GNU' == "${UNIX}" ]] && dirperms="$(stat -c '%a' "${file%/*}")" || dirperms="$(stat -f '%Mp%Lp' "${file%/*}")"
-    [[ 'GNU' == "${UNIX}" ]] && fileperms="$(stat -c '%a' "${file}")" || fileperms="$(stat -f '%Mp%Lp' "${file}")"
+    [[ "${file:0:1}" == '/' ]] && prefix='.' || prefix=
+    [[ "${UNIX}" == 'GNU' ]] && dirperms="$(stat -c '%a' "${file%/*}")" || dirperms="$(stat -f '%Mp%Lp' "${file%/*}")"
+    [[ "${UNIX}" == 'GNU' ]] && fileperms="$(stat -c '%a' "${file}")" || fileperms="$(stat -f '%Mp%Lp' "${file}")"
     timestamp="$(date -r "${file}" +%s)"
     ${verbose} && Brief 'Archiving %s...' "${file}" >&6
     printf '===== file:%s:%s:%s:%s:file %s =====\n' "${prefix}${file}" "${dirperms}" "${fileperms}" "${timestamp}" "${ts}"
@@ -173,7 +173,7 @@ CreateArchive () { # <archive> <files> ...
   ((rv+=${?}))
 
   Trace 'Write archive. (%s)' "${archive}"
-  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  if [[ -z "${archive}" || "${archive}" == '-' ]]
   then
     exec 9>&1
   else
@@ -198,7 +198,7 @@ ExtractArchive () { # <archive>
   local ts
 
   Trace 'Open archive file descriptor. (%s)' "${archive}"
-  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  if [[ -z "${archive}" || "${archive}" == '-' ]]
   then
     exec 8<&0
   else
@@ -229,7 +229,7 @@ ExtractArchive () { # <archive>
       Trace 'Set permissions. (%s)' "${fileinfo[((AO + 3))]}"
       Action "chmod '${fileinfo[((AO + 3))]}' '${fileinfo[((AO + 1))]}'" || return 1
       ${group} && Action "chmod '${groupmode}' '${fileinfo[((AO + 1))]}'"
-      [[ 'GNU' == "${UNIX}" ]] && timestamp="@${fileinfo[((AO + 4))]}" || \
+      [[ "${UNIX}" == 'GNU' ]] && timestamp="@${fileinfo[((AO + 4))]}" || \
           ConvertDate -i '%s' -o '%Y-%m-%dT%H:%M:%S' timestamp "${fileinfo[((AO + 4))]}"
       Action "touch -d '${timestamp}' '${fileinfo[((AO + 1))]}'"
 
@@ -280,7 +280,7 @@ ListArchive () { # <archive>
   local ts
 
   Trace 'Open archive file descriptor. (%s)' "${archive}"
-  if [[ -z "${archive}" || '-' == "${archive}" ]]
+  if [[ -z "${archive}" || "${archive}" == '-' ]]
   then
     exec 8<&0
   else

@@ -652,7 +652,7 @@ LibuiTimestamp () {
 
   ${_M} && _Trace 'Update %s timestamp.' "${LIBUI}"
   local _Util_now=$(date -u '+%a %b %e %T %Z %Y' | sed 's/  / /g')
-  local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+  local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
   Action -q 'Update the libui.sh notation date?' "sed ${_Util_sedi} -e 's/ LIBUI_VERSION=\([0-9][0-9]*\.[0-9][0-9][0-9]\) # .* .* .* .*:.*:.* .* [0-9][0-9][0-9][0-9]$/ LIBUI_VERSION=\1 # ${_Util_now}/' '${LIBUI}'" && \
       Tell -A '%s timestamp updated.' "${LIBUI}"
 
@@ -672,7 +672,7 @@ LibuiUpdateMan () {
   local _Util_fts
   local _Util_mp
   local _Util_mts
-  local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+  local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
   for _Util_file in $(find . -name 'man' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
@@ -768,14 +768,14 @@ LibuiPackage () {
   Sort -u _Util_files
 
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
-  if [[ ".sharp" == "${_Util_package: -6}" ]]
+  if [[ "${_Util_package: -6}" == '.sharp' ]]
   then
     Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
-  elif [[ ".starp" == "${_Util_package: -6}" ]]
+  elif [[ "${_Util_package: -6}" == '.starp' ]]
   then
     Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   else
-    [[ ".tarp" == "${_Util_package: -5}" ]] || _Util_package+='.tarp'
+    [[ "${_Util_package: -5}" == '.tarp' ]] || _Util_package+='.tarp'
     Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   fi
   Tell -A 'Creation of libui package complete. (%s)' "${_Util_package}"
@@ -829,7 +829,7 @@ EOF
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using Z shell (zsh)."
     else
       Tell -W 'Z shell (zsh) is not available, modifying %s to use bash.' "${COMMONROOT}/bin/libui"
-      local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+      local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
       Action -F "sed ${_Util_sedi} -e '1s|^#!/usr/bin/env zsh|#!/usr/bin/env bash|' '${COMMONROOT}/bin/libui'"
       Action -F "sed ${_Util_sedi} -e '3s|^#!/usr/bin/env bash|#!/usr/bin/env zsh|' '${COMMONROOT}/bin/libui'"
       Tell "${D}Using '#!/usr/bin/env libui' shebang will execute scripts using bash."
@@ -1025,7 +1025,7 @@ LibuiNew () { # [-e] =t <template_file>
     [[ -f "${_Util_target}" ]] && Action "rm ${FMFLAGS} '${_Util_target}'"
 
     ${_M} && _Trace 'Create new libui script. (%s)' "${_Util_target}"
-    local _Util_sedi; [[ 'GNU' == "${UNIX}" ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
+    local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
     ${_Util_empty} && Action -F "cat '${_Util_template}' | grep -v 'demo content' > '${_Util_target}'" || \
         Action -F "cat '${_Util_template}' | sed -e '/^\(#.*\)# demo content/s//\1  # demo content/' | sed -e '/^[^#].*# demo content/s/^/#/' > '${_Util_target}'"
     Ask -d '<TITLE HERE>' 'Provide a title for the script header:'
