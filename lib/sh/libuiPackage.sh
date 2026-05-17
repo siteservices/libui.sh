@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.014 -m 1.25
+Version -r 2.015 -m 1.26
 
 # defaults
 
@@ -322,18 +322,18 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
     ${_M} && _Trace 'Check if tar package. (%s)' "${_Package_tarp}"
     if ${_Package_tarp}
     then
-      [[ ".tarp" == "${_Package_package: -5}" ]] || _Package_package+='.tarp'
+      [[ "${_Package_package: -5}" == '.tarp' ]] || _Package_package+='.tarp'
     elif ${_Package_sharp}
     then
-      [[ ".sharp" == "${_Package_package: -6}" ]] || _Package_package+='.sharp'
+      [[ "${_Package_package: -6}" == '.sharp' ]] || _Package_package+='.sharp'
     elif ${_Package_starp}
     then
-      [[ ".starp" == "${_Package_package: -6}" ]] || _Package_package+='.starp'
+      [[ "${_Package_package: -6}" == '.starp' ]] || _Package_package+='.starp'
     elif ${_Package_gtarp}
     then
-      [[ ".gtarp" == "${_Package_package: -6}" ]] || _Package_package+='.gtarp'
+      [[ "${_Package_package: -6}" == '.gtarp' ]] || _Package_package+='.gtarp'
     else
-      [[ ".tar" == "${_Package_package: -4}" ]] || _Package_package+='.tar'
+      [[ "${_Package_package: -4}" == '.tar' ]] || _Package_package+='.tar'
     fi
     if ! Overwrite
     then
@@ -385,7 +385,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
       ${_M} && _Trace 'Prepare tar command.'
       LoadMod File
       local _Package_cmd=''
-      [[ 'Darwin' == "${OS}" ]] && _Package_cmd+="--no-mac-metadata " # don't include mac metadata
+      [[ "${OS}" == 'Darwin' ]] && _Package_cmd+="--no-mac-metadata " # don't include mac metadata
       for _Package_exclude in "${_Package_excludes[@]}"
       do
         [[ -n "${_Package_exclude}" ]] && _Package_cmd+="--exclude=\"${_Package_exclude}\" "
@@ -415,7 +415,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         Action -f -q 'Remove tar archive?' "rm ${FMFLAGS} '${_Package_tarball}'"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
         Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -S -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
-        if [[ 'GNU' == "${UNIX}" ]]
+        if [[ "${UNIX}" == 'GNU' ]]
         then
           Action -q "Create shar package archive for ${_Package_package}?" -b 'Creating shar archive...' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         else
@@ -482,7 +482,7 @@ ListPackage () { # <package>
     ${_M} && _Trace 'Extract package. (%s)' "${_Package_package}"
     Action -q 'Extract package?' "tail -n +${_Package_ll} '${1}' > '${_Package_package}'"
 
-    if [[ ".sharp" == "${1: -6}" ]]
+    if [[ "${1: -6}" == '.sharp' ]]
     then
       local _Package_subdir
       GetTmp -s _Package_subdir

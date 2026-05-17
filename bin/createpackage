@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.008 1.13
+Version -r 2.015 1.14
 
 # load mods
 LoadMod File
@@ -56,7 +56,7 @@ GetTmp -f tmpfile
 
 AddOption -n addfiles -m -k 'Add' -d 'Add files matching provided pattern to package.' a:
 AddOption -n compression -i '-j' -k 'Compression' -d 'Compression format option.' c:
-[[ 'GNU' == "${UNIX}" ]] && AddOption -n encoding -k 'Encoding' -d 'Shar encoding format option.' e:
+[[ "${UNIX}" == 'GNU' ]] && AddOption -n encoding -k 'Encoding' -d 'Shar encoding format option.' e:
 AddOption -n package -k 'File' -d 'The filename (or directory) for the package.' f:
 AddOption -n installer -k 'Installer' -d 'Package installer path relative to install directory.' i:
 AddOption -n prep -k 'Install Prep' -d 'Package installer preparation commands.' I:
@@ -134,17 +134,17 @@ InitCallback () {
   case "${pkgtype}" in
     sharp)
       Trace 'Files to include in shar package. (%s)' "${#files[@]}"
-      [[ ".sharp" == "${package: -6}" ]] || package+='.sharp'
+      [[ "${package: -6}" == '.sharp' ]] || package+='.sharp'
       ;;
 
     starp)
       Trace 'Files to include in star package. (%s)' "${#files[@]}"
-      [[ ".starp" == "${package: -6}" ]] || package+='.starp'
+      [[ "${package: -6}" == '.starp' ]] || package+='.starp'
       ;;
 
     tarp)
       Trace 'Files to include in tar package. (%s)' "${#files[@]}"
-      [[ ".tarp" == "${package: -5}" ]] || package+='.tarp'
+      [[ "${package: -5}" == '.tarp' ]] || package+='.tarp'
       ;;
 
     *)

@@ -9,7 +9,7 @@ test_DOMAIN () {
   LibuiGetDisplayTestValues
   local h="$(/bin/hostname -f 2> /dev/null)"
   local d; ${ZSH} && d="${(L)h#*\.}" || d="$(printf '%s\n' "${h#*\.}" | tr '[:upper:]' '[:lower:]')"
-  [[ 'local' == "${d}" ]] && d=
+  [[ "${d}" == 'local' ]] && d=
   d="${d:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | /usr/bin/cut -d ' ' -f 2)}"
   LibuiPerformTest 'Tell -- "${DOMAIN}"'
   LibuiValidateTest ${?} 0 "${d}"

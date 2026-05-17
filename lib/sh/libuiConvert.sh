@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.012 -m 2.4
+Version -r 2.015 -m 2.5
 
 # defaults
 
@@ -86,7 +86,7 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
   ${_M} && _Trace 'Converting date. (%s -> %s)' "${_Convert_ifmt}" "${_Convert_ofmt}"
   if date -d 20250729 &> /dev/null
   then
-    [[ '%s' == "${_Convert_ifmt}" ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
+    [[ "${_Convert_ifmt}" == '%s' ]] && eval "${_Convert_var}=\"\$(date -d \"@${_Convert_date[@]}\" '+${_Convert_ofmt}')\"" || \
         eval "${_Convert_var}=\"\$(date -d \"${_Convert_date[@]}\" '+${_Convert_ofmt}')\""
   elif date -j &> /dev/null
   then

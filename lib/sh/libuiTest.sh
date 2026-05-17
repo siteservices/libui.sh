@@ -400,41 +400,45 @@ LibuiGetDisplayTestValues () {
     if ((16 <= $(tput colors)))
     then
       TB0="$(tput setab 8)" # bright black
+      TBs="$(tput setab 8)" # bright black
       TBr="$(tput setab 9)" # bright red
       TBg="$(tput setab 10)" # bright green
       TBy="$(tput setab 11)" # bright yellow
       TBb="$(tput setab 12)" # bright blue
       TBm="$(tput setab 13)" # bright magenta
       TBc="$(tput setab 14)" # bright cyan
-      TB7="$(tput setab 15)" # bright white
+      TBw="$(tput setab 15)" # bright white
       TF0="$(tput setaf 8)" # bright black
+      TFs="$(tput setaf 8)" # bright black
       TFr="$(tput setaf 9)"; Tfr="${TFr}" # bright / red
       TFg="$(tput setaf 10)" # bright green
       TFy="$(tput setaf 11)"; Tfy="${TFy}" # bright / yellow
       TFb="$(tput setaf 12)"; Tfb="${TFb}" # bright / blue
       TFm="$(tput setaf 13)" # bright magenta
       TFc="$(tput setaf 14)" # bright cyan
-      TF7="$(tput setaf 15)"; Tf7="${TF7}" # bright / white
+      TFw="$(tput setaf 15)"; Tfw="${TFw}" # bright / white
     else
       Tfr="$(tput bold; tput setaf 1)" # red
       Tfy="$(tput bold; tput setaf 3)" # yellow
       Tfb="$(tput bold; tput setaf 4)" # blue
-      Tf7="$(tput bold; tput setaf 7)" # white
+      Tfw="$(tput bold; tput setaf w)" # white
     fi
     Tb0="$(tput setab 0)" # black
+    Tbs="$(tput setab 0)" # black
     Tbr="$(tput setab 1)" # red
     Tbg="$(tput setab 2)" # green
     Tby="$(tput setab 3)" # yellow
     Tbb="$(tput setab 4)" # blue
     Tbm="$(tput setab 5)" # magenta
     Tbc="$(tput setab 6)" # cyan
-    Tb7="$(tput setab 7)" # white
+    Tbw="$(tput setab 7)" # white
     Tf0="$(tput setaf 0)" # black
+    Tfs="$(tput setaf 0)" # black
     Tfg="$(tput setaf 2)" # green
     Tfm="$(tput setaf 5)" # magenta
     Tfc="$(tput setaf 6)" # cyan
     Tb="$(tput bold)" # bold
-    [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TF0:-${Tf7}}" # dim
+    [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TFs:-${Tfw}}" # dim
     Tsu="$(tput smul)" # start underline
     Teu="$(tput rmul)" # end underline
     Tr="$(tput rev)" # reverse

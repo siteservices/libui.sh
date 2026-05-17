@@ -1,5 +1,30 @@
 # Change Log
 
+## v2.015
+
+### New Features / Enhancements
+
+* Add `${Dfw}` and `${Dfs}` for white and black foreground colors.
+* Add `${DFw}` and `${DFs}` for bold white and black foreground colors.
+* Add `${Dbw}` and `${Dbs}` for white and black background colors.
+* Add `${DBw}` and `${DBs}` for bold white and black background colors.
+* Add libui `-!` option flag to initialize libui environment and exit.
+* Add libui `-r` option flag to restore a deferred environment.
+* Add and update regression tests.
+* Minor performance tweaks.
+* Update documentation.
+* Update man pages.
+* Fix spelling typos.
+* Formatting cleanup.
+
+### Bug Fixes
+
+* Rectify comparisons. (Not really a bugfix but also not an enhancement.)
+
+### Incompatibilities
+
+* Remove `${Df7}`, `${DF7}`, `${Db7}`, `${DB7}` white color display variables.
+
 ## v2.014
 
 ### New Features / Enhancements
@@ -110,13 +135,13 @@ Note: The Workspace and dotfiles components remain available separately.
 * Change libui -v option flag to "version" and -V to "Verify".
 * (Breakling) Change the zsh / bash "include libui via source" command from:
 ```
--source "${LIBUI:-libui.sh}" "${0}" "${@}"
+source "${LIBUI:-libui.sh}" "${0}" "${@}"
 ```
 
 to:
 
 ```
-+source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
+source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 ```
 
 ## v2.011

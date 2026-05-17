@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.014 -m 1.9
+Version -r 2.015 -m 1.10
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
@@ -57,10 +57,10 @@ IsRemote () { # <target>
 
   ${_M} && _Trace 'Check for localhost. (%s)' "${_SSH_target}"
   [[ -z "${_SSH_target}" ]] && return 1
-  [[ 'localhost' == "${_SSH_target}" ]] && return 1
-  [[ '127.0.0.1' == "${_SSH_target}" ]] && return 1
-  [[ "${HOST}" == "${_SSH_target}" ]] && return 1
-  [[ "${HOST}.${DOMAIN}" == "${_SSH_target}" ]] && return 1
+  [[ "${_SSH_target}" == 'localhost' ]] && return 1
+  [[ "${_SSH_target}" == '127.0.0.1' ]] && return 1
+  [[ "${_SSH_target}" == "${HOST}" ]] && return 1
+  [[ "${_SSH_target}" == "${HOST}.${DOMAIN}" ]] && return 1
 
   ${_M} && _Trace 'IsRemote return. (%s)' 0
   return 0

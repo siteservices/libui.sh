@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.014 # Sat Apr 18 17:08:35 EDT 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.015 # Sun May 17 17:10:07 UTC 2026
 
 #####
 #
@@ -232,7 +232,7 @@ AddOption () { # [-a|-C|-f|-m|-r|-t] [-c <callback>] [-d <desc>] [-i <initial_va
         ;;
       i|I)
         ${_T} && _Trace 'Initial option value. (%s)' "${OPTARG}"
-        if [[ 'I' == "${_opt}" ]]
+        if [[ "${_opt}" == 'I' ]]
         then
           ${ZSH} && _i=( "${(P@)OPTARG}" ) || eval "_i=( \"\${${OPTARG}[@]}\" )"
         else
@@ -393,7 +393,7 @@ AddParameter () { # [-a|-m|-r] [-c <callback>] [-d <desc>] [-i <initial_value>] 
         ;;
       i|I)
         ${_T} && _Trace 'Initial parameter value. (%s)' "${OPTARG}"
-        if [[ 'I' == "${_opt}" ]]
+        if [[ "${_opt}" == 'I' ]]
         then
           ${ZSH} && _i=( "${(P@)OPTARG}" ) || eval "_i=( \"\${${OPTARG}[@]}\" )"
         else
@@ -792,7 +792,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
       q|Q)
         ${_T} && _Trace 'Question. (%s)' "${OPTARG}"
         _q="${OPTARG}"
-        [[ 'Q' == "${_opt}" ]] && _f=true
+        [[ "${_opt}" == 'Q' ]] && _f=true
         ;;
       s|S)
         ${_T} && _Trace 'Selection value. (%s)' "${OPTARG}"
@@ -825,7 +825,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
       if ! Error && [[ -z "${_x}" && -n "${_q}" ]] || ${_f}
       then
         ${_T} && _Trace 'Query and test -%s ${%s}. (%s)' "${_t}" "${_v}" "${_x}"
-        ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
+        ${_h} && [[ "${_x:0:1}" == '~' ]] && _x="${_x/\~/${HOME}}"
         until ! ${_f} && [[ -n "${_x}" ]] && test -${_t} "${_x}" # must use test
         do
           ${_T} && _Trace 'Check value. (%s)' "${_x}"
@@ -838,7 +838,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
             ${_T} && _Trace 'Check if empty and allowed. (%s / %s)' "${_x}" "${_z}"
             [[ -n "${_z}" && -z "${_x}" ]] && break
             ${_T} && _Trace 'Loop and test -%s %s. (%s)' "${_t}" "${_v}" "${_x}"
-            ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
+            ${_h} && [[ "${_x:0:1}" == '~' ]] && _x="${_x/\~/${HOME}}"
           else
             Verify 'Response invalid (%s). Try again?' "${_x}" && _f=true || break
           fi
@@ -853,7 +853,7 @@ ConfirmVar () { # [-A|-d|-e|-E|-f|-n|-z] [-D <default>] [-P <path>] [-q|-Q <ques
         ${_T} && _Trace 'Check if empty allowed. (%s)' "${_z}"
         [[ -n "${_z}" ]]
       else
-        ${_h} && [[ '~' == "${_x:0:1}" ]] && _x="${_x/\~/${HOME}}"
+        ${_h} && [[ "${_x:0:1}" == '~' ]] && _x="${_x/\~/${HOME}}"
         test -${_t} "${_x}" # must use test
       fi
     fi
@@ -1041,7 +1041,7 @@ Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <p
         read ANSWER
         ${_e} || stty echo && [[ -t ${_o} ]] && printf "\n${DCEL}" >&${_o}
       fi
-      [[ -n "${_b}" && 'q' == "${ANSWER}" ]] && Tell -E -f -r 9 'Quit requested.'
+      [[ -n "${_b}" && "${ANSWER}" == 'q' ]] && Tell -E -f -r 9 'Quit requested.'
       if [[ -z "${ANSWER}" ]]
       then
         ANSWER="${_d}"
@@ -1572,7 +1572,7 @@ Initialize () {
       fi
       break
     fi
-    [[ '-X' == "${_i}" ]] && _p=true
+    [[ "${_i}" == '-X' ]] && _p=true
   done
 
   ${_T} && _Trace 'Process initialize options. (%s)' "${_a[*]}"
@@ -2254,7 +2254,7 @@ LoadMod () { # [-P <path>] <libui_mod_name>
     local _c
     for _c in "${UIMOD[@]}"
     do
-      [[ "libui${_m}.sh" == "${_c}" ]] && _l=false && break
+      [[ "${_c}" == "libui${_m}.sh" ]] && _l=false && break
     done
   fi
 
@@ -2313,16 +2313,16 @@ _WINCH () {
 #####
 
 # load config
-LIBUI_CONFIG="${LIBUI_CONFIG:-${XDG_CONFIG_HOME:-${HOME}/.config}/libui}"
+[[ -z "${LIBUI_CONFIG}" ]] && LIBUI_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/libui"
 test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
 test -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" && source "${_}"
-LIBUI_CREDENTIALS="${LIBUI_CREDENTIALS:-${XDG_CONFIG_HOME:-${HOME}/.config}/credentials}"
-LIBUI_STATE="${LIBUI_STATE:-${XDG_STATE_HOME:-${HOME}/.local/state}/libui}"
-LIBUI_CACHE="${LIBUI_CACHE:-${XDG_CACHE_HOME:-${HOME}/.cache}/libui}"
+[[ -z "${LIBUI_CREDENTIALS}" ]] && LIBUI_CREDENTIALS="${XDG_CONFIG_HOME:-${HOME}/.config}/credentials"
+[[ -z "${LIBUI_STATE}" ]] && LIBUI_STATE="${XDG_STATE_HOME:-${HOME}/.local/state}/libui"
+[[ -z "${LIBUI_CACHE}" ]] && LIBUI_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/libui"
 
 # defaults
 RETVAL=0
-LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
+[[ -z "${LIBUI_HOOKDIR}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
 ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
 ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH_VERSION:-0}"; ZV="${ZV//.}"
 ${ZSH} && ((ZV < 53)) && PV=false || PV=true
@@ -2334,20 +2334,19 @@ CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
-LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
+[[ -z "${LIBUI_HOOKPREFIX}" ]] && LIBUI_HOOKPREFIX=".${CMD}-"
 [[ "${PATH}" =~ (:|^)"${LIBUI%/*}"($|:) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
 DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
-[[ 'local' == "${DOMAIN}" ]] && DOMAIN=
-DOMAIN="${DOMAIN:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)}"
+[[ -z "${DOMAIN}" || "${DOMAIN}" == 'local' ]] && DOMAIN="$(grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)"
 if ${ZSH}
 then
   DOMAIN="${(L)DOMAIN}"
 else
   ((40 <= BV)) && DOMAIN="${DOMAIN,,}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
 fi
-HOST="${HOST:-${HOSTNAME}}"
-HOST="${HOST:-$(hostname -s 2> /dev/null)}"
-HOST="${HOST:-$(uname -n 2> /dev/null)}"
+[[ -z "${HOST}" ]] && HOST="${HOSTNAME}"
+[[ -z "${HOST}" ]] && HOST="$(hostname -s 2> /dev/null)"
+[[ -z "${HOST}" ]] && HOST="$(uname -n 2> /dev/null)"
 HOST="${HOST%%\.*}"
 if ${ZSH}
 then
@@ -2355,8 +2354,8 @@ then
 else
   ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
 fi
-ARCH="${ARCH:-$(uname -m)}"
-OS="${OS:-$(uname -s)}"
+[[ -z "${ARCH}" ]] && ARCH="$(uname -m)"
+[[ -z "${OS}" ]] && OS="$(uname -s)"
 case "${OS}" in
   Darwin)
     OS_DIST="$(sw_vers --ProductName)"
@@ -2386,8 +2385,8 @@ case "${OS}" in
   *)
     ;;
 esac
-GROUP="${GROUP:-$(${BSDPATH}id -gn)}"
-TMPDIR="${TMPDIR:-/tmp}"
+[[ -z "${GROUP}" ]] && GROUP="$(${BSDPATH}id -gn)"
+[[ -z "${TMPDIR}" ]] && TMPDIR="/tmp"
 MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647
 CHFLAGS=
 FMFLAGS=
@@ -2398,7 +2397,7 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 
 # terminal setup
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
-${TERMINAL} && [[ 'dumb' == "${TERM}" ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
+${TERMINAL} && [[ "${TERM}" == 'dumb' ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
 ${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
 ${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((0$(tput colors 2> /dev/null) >= 8)) && \
     source "${LIBUI_CACHE}/display-${TERM}" 2> /dev/null && _display=true || _display=false
@@ -2433,7 +2432,7 @@ then
 fi
 
 # credentials
-[[ 'GNU' == "${UNIX}" ]] && _perm='stat -c %a' || _perm='stat -f %Lp'
+[[ "${UNIX}" == 'GNU' ]] && _perm='stat -c %a' || _perm='stat -f %Lp'
 (($(eval '${_perm} "${LIBUI_CREDENTIALS}/${CMD}"' 2> /dev/null) + 0 == 600)) && \
     source "${LIBUI_CREDENTIALS}/${CMD}" && _credentials=true || _credentials=false
 

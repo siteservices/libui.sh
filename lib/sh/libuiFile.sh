@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.013 -m 1.16
+Version -r 2.015 -m 1.17
 
 # defaults
 _File_ip=
@@ -598,7 +598,7 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
         _File_s="$(cd "${_File_s}" && pwd -P)"
       else
         _File_f="/${_File_s##*/}"
-        [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
+        [[ "${_File_f}" == '/' || "${_File_f}" == '/.' ]] && _File_f=
         _File_s="$(cd "${_File_s%/*}" && pwd -P)"
       fi
 
@@ -747,7 +747,7 @@ MkDir () { # [-p|-s|-W] [-g <group>] [-m <mask>] <path>
   if [[ ! -d "${1}" ]]
   then
     local _File_d
-    local _File_n; [[ '/' == "${1:0:1}" ]] || _File_n="${PWD}"
+    local _File_n; [[ "${1:0:1}" == '/' ]] || _File_n="${PWD}"
     local _File_p
     ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -a _File_p <<< "${1}"
     for _File_d in "${_File_p[@]}"
@@ -770,7 +770,7 @@ MkDir () { # [-p|-s|-W] [-g <group>] [-m <mask>] <path>
           local _File_e
           if ${ZSH} && ((${+commands[stat]})) || command -v stat &> /dev/null
           then
-            [[ 'GNU' == "${UNIX}" ]] && _File_e="$(stat -c '%G' "${_File_n}")" || _File_e="$(stat -f '%Sg' "${_File_n}")"
+            [[ "${UNIX}" == 'GNU' ]] && _File_e="$(stat -c '%G' "${_File_n}")" || _File_e="$(stat -f '%Sg' "${_File_n}")"
           fi
           if [[ "${_File_g}" != "${_File_e}" ]]
           then
@@ -831,7 +831,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
         ;;
       a|c)
         ${_M} && _Trace 'File mode. (%s)' "${_opt}"
-        [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
+        [[ "${_opt}" == 'a' ]] && _File_c=false || _File_c=true
         ;;
       b)
         ${_M} && _Trace 'Backup file.'
@@ -1128,7 +1128,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
         ;;
       a|c)
         ${_M} && _Trace 'File mode. (%s)' "${_opt}"
-        [[ 'a' == "${_opt}" ]] && _File_c=false || _File_c=true
+        [[ "${_opt}" == 'a' ]] && _File_c=false || _File_c=true
         ;;
       f)
         ${_M} && _Trace 'File path. (%s)' "${OPTARG}"
