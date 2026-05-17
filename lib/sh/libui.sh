@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.015 # Thu May 7 02:36:41 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.015 # Sun May 17 17:10:07 UTC 2026
 
 #####
 #
@@ -2313,16 +2313,16 @@ _WINCH () {
 #####
 
 # load config
-LIBUI_CONFIG="${LIBUI_CONFIG:-${XDG_CONFIG_HOME:-${HOME}/.config}/libui}"
+[[ -z "${LIBUI_CONFIG}" ]] && LIBUI_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/libui"
 test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
 test -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" && source "${_}"
-LIBUI_CREDENTIALS="${LIBUI_CREDENTIALS:-${XDG_CONFIG_HOME:-${HOME}/.config}/credentials}"
-LIBUI_STATE="${LIBUI_STATE:-${XDG_STATE_HOME:-${HOME}/.local/state}/libui}"
-LIBUI_CACHE="${LIBUI_CACHE:-${XDG_CACHE_HOME:-${HOME}/.cache}/libui}"
+[[ -z "${LIBUI_CREDENTIALS}" ]] && LIBUI_CREDENTIALS="${XDG_CONFIG_HOME:-${HOME}/.config}/credentials"
+[[ -z "${LIBUI_STATE}" ]] && LIBUI_STATE="${XDG_STATE_HOME:-${HOME}/.local/state}/libui"
+[[ -z "${LIBUI_CACHE}" ]] && LIBUI_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/libui"
 
 # defaults
 RETVAL=0
-LIBUI_HOOKDIR="${LIBUI_HOOKDIR:-${LIBUI_CONFIG}/hook}"
+[[ -z "${LIBUI_HOOKDIR}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
 ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
 ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH_VERSION:-0}"; ZV="${ZV//.}"
 ${ZSH} && ((ZV < 53)) && PV=false || PV=true
@@ -2334,20 +2334,19 @@ CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
-LIBUI_HOOKPREFIX="${LIBUI_HOOKPREFIX:-.${CMD}-}"
+[[ -z "${LIBUI_HOOKPREFIX}" ]] && LIBUI_HOOKPREFIX=".${CMD}-"
 [[ "${PATH}" =~ (:|^)"${LIBUI%/*}"($|:) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
 DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
-[[ "${DOMAIN}" == 'local' ]] && DOMAIN=
-DOMAIN="${DOMAIN:-$(/usr/bin/grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)}"
+[[ -z "${DOMAIN}" || "${DOMAIN}" == 'local' ]] && DOMAIN="$(grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)"
 if ${ZSH}
 then
   DOMAIN="${(L)DOMAIN}"
 else
   ((40 <= BV)) && DOMAIN="${DOMAIN,,}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
 fi
-HOST="${HOST:-${HOSTNAME}}"
-HOST="${HOST:-$(hostname -s 2> /dev/null)}"
-HOST="${HOST:-$(uname -n 2> /dev/null)}"
+[[ -z "${HOST}" ]] && HOST="${HOSTNAME}"
+[[ -z "${HOST}" ]] && HOST="$(hostname -s 2> /dev/null)"
+[[ -z "${HOST}" ]] && HOST="$(uname -n 2> /dev/null)"
 HOST="${HOST%%\.*}"
 if ${ZSH}
 then
@@ -2355,8 +2354,8 @@ then
 else
   ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
 fi
-ARCH="${ARCH:-$(uname -m)}"
-OS="${OS:-$(uname -s)}"
+[[ -z "${ARCH}" ]] && ARCH="$(uname -m)"
+[[ -z "${OS}" ]] && OS="$(uname -s)"
 case "${OS}" in
   Darwin)
     OS_DIST="$(sw_vers --ProductName)"
@@ -2386,8 +2385,8 @@ case "${OS}" in
   *)
     ;;
 esac
-GROUP="${GROUP:-$(${BSDPATH}id -gn)}"
-TMPDIR="${TMPDIR:-/tmp}"
+[[ -z "${GROUP}" ]] && GROUP="$(${BSDPATH}id -gn)"
+[[ -z "${TMPDIR}" ]] && TMPDIR="/tmp"
 MAXINT=9223372036854775807; ((2147483647 > MAXINT)) && MAXINT=2147483647
 CHFLAGS=
 FMFLAGS=

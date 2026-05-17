@@ -11,6 +11,7 @@
 * Add libui `-!` option flag to initialize libui environment and exit.
 * Add libui `-r` option flag to restore a deferred environment.
 * Add and update regression tests.
+* Minor performance tweaks.
 * Update documentation.
 * Update man pages.
 * Fix spelling typos.
@@ -134,13 +135,13 @@ Note: The Workspace and dotfiles components remain available separately.
 * Change libui -v option flag to "version" and -V to "Verify".
 * (Breakling) Change the zsh / bash "include libui via source" command from:
 ```
--source "${LIBUI:-libui.sh}" "${0}" "${@}"
+source "${LIBUI:-libui.sh}" "${0}" "${@}"
 ```
 
 to:
 
 ```
-+source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
+source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 ```
 
 ## v2.011
