@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd March 22, 2026
+.Dd June 2, 2026
 .Dt LIBUIUSER.SH 3
 .Os
 .Sh NAME
@@ -54,27 +54,34 @@ The
 mod provides the following commands:
 .Ss SetUserInfo
 The SetUserInfo command asks questions and the answers are stored in the
-~/.user file.
+${HOME}/.config/user file.
 .Pp
 .Sy SetUserInfo
 .Pp
 When executed, the
 .Sy SetUserInfo
 command, will ask the user a series of questions and create a simple shell
-script in the ~/.user file that can sourced.
-After creating the ~/.user file, it is sourced.
-The questions asked are based upon the contents of the "userinfo" array
-variable.
-The command knows to ask clearer user questions for the user NAME, ORG, TITLE,
-EMAIL, PHONE, and COLOR variables.
-Other variables will simply be asked as,
-.Qq Enter value for Ar <variable> Ns \&:
-It is possible to set the userinfo array with a requested set of user
-information variables prior to calling the
+script in the ${HOME}/.config/user file containing name value pairs that can
+sourced.
+See the EXAMPLES section below for more details.
+.Pp
+The questions asked are based upon the names contained in the "${userinfo[@]}"
+array variable.
+The
+.Sy SetUserInfo
+command knows specific questions for the user "NAME", "ORG", "TITLE", "EMAIL",
+"PHONE", "COLOR", and (edit) "MODE" names.
+For any other names, the command will query the user with a simple,
+.Qq Enter a value for Ar <name> Ns \&:
+It is possible to set the ${userinfo[@]} array with any set of user information
+names prior to calling the
 .Sy SetUserInfo
 command.
 .Pp
-Note: The ${HOME}/.config/user file is also sourced whenever the
+Note: After
+.Sy SetUserInfo
+creates the ${HOME}/.config/user file, it is sourced.
+The ${HOME}/.config/user file is also sourced whenever the
 .Sy LoadMod User
 command is executed to load the mod.
 .Sh FILES
@@ -91,14 +98,15 @@ An example file:
 .Bd -literal -offset 4n
 #!/bin/zsh
 ##### User Information
-userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' )
+userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' )
 NAME='John Doe'
 ORG='siteservices.net, Inc.'
 TITLE='Engineer'
 EMAIL='jdoe@siteservices.net'
 PHONE='+1.321.000.0000'
 COLOR='true'
-export NAME ORG TITLE EMAIL PHONE COLOR
+MODE='vi'
+export NAME ORG TITLE EMAIL PHONE COLOR MODE
 .Ed
 .Sh EXAMPLES
 Some examples include:

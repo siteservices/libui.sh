@@ -1,5 +1,28 @@
 # Change Log
 
+## v2.016
+
+### New Features / Enhancements
+
+* Add support for (Edit) MODE in libui User mod.
+* Add support for \`\`\`{qualifier} to `mless`.
+* Improve statistics handling.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+
+### Bug Fixes
+
+* Fix fail-through error in `Action` return value.
+* Prevent `Ask` from accepting an empty value when in a selection.
+* Fix display variables handling in non-terminal / plain terminal environments.
+* Fix `mless` backslash handling.
+* Fix `LIBUI_CONFIG` directory error message edge case.
+
+### Incompatibilities
+
+* N/A
+
 ## v2.015
 
 ### New Features / Enhancements
@@ -549,7 +572,7 @@ source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 
 ### Bug Fixes
 
-* Fix load mod handling in bash.
+* Fix `LoadMod` handling in bash.
 * Fix some tests.
 
 ## v1.829

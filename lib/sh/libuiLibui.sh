@@ -349,7 +349,7 @@ LibuiConfig () {
     DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
     Close -1
 
-    Tell -A 'Config file has been created. (%s)' "${_Util_configfile}"
+    Tell -I 'Config file has been created. (%s)' "${_Util_configfile}"
   fi
   _Util_rv=${?}
 
@@ -504,7 +504,7 @@ LibuiStats () {
   ${_M} && _Trace 'LibuiStats [%s]' "${*}"
 
   ${_M} && _Trace 'Prepare to display stats. (%s)' "${_Util_statsfile}"
-  ( # subshell
+  ( # subshell to bypass stats corruption
     source "${_Util_statsfile}"
     ${ZSH} && ((_cav = ${_ctime} / ${_crun})) || _cav="$(bc <<< "scale=6; ${_ctime} / ${_crun}")"
     Tell '%-17s %28s' 'Stats since:' "${_cstart}"
@@ -546,7 +546,7 @@ LibuiResetCache () {
           Action -q "Really remove ${_Util_file}?" "rm ${FMFLAGS} '${_Util_file}'"
         fi
       done
-      Tell -A 'Cache files have been removed. (%s)' "${cachefiles[*]}"
+      Tell -I 'Cache files have been removed. (%s)' "${cachefiles[*]}"
     fi
   fi
 
@@ -574,7 +574,7 @@ LibuiResetState () {
           Action -q "Really remove ${_Util_file}?" "rm ${FMFLAGS} '${_Util_file}'"
         fi
       done
-      Tell -A 'State files have been removed. (%s)' "${statefiles[*]}"
+      Tell -I 'State files have been removed. (%s)' "${statefiles[*]}"
     fi
   fi
 
@@ -613,7 +613,7 @@ LibuiUnlock () {
           Action -q "Really remove ${_Util_file} lockfile?" "rm ${FMFLAGS} '${_Util_file}'"
         fi
       done
-      Tell -A 'Lockfiles have been removed.'
+      Tell -I 'Lockfiles have been removed.'
     fi
   else
     Tell -C 'No lockfiles were found.'
@@ -654,7 +654,7 @@ LibuiTimestamp () {
   local _Util_now=$(date -u '+%a %b %e %T %Z %Y' | sed 's/  / /g')
   local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
   Action -q 'Update the libui.sh notation date?' "sed ${_Util_sedi} -e 's/ LIBUI_VERSION=\([0-9][0-9]*\.[0-9][0-9][0-9]\) # .* .* .* .*:.*:.* .* [0-9][0-9][0-9][0-9]$/ LIBUI_VERSION=\1 # ${_Util_now}/' '${LIBUI}'" && \
-      Tell -A '%s timestamp updated.' "${LIBUI}"
+      Tell -I '%s timestamp updated.' "${LIBUI}"
 
   ${_M} && _Trace 'LibuiTimestamp return. (%s)' 0
   return 0
@@ -699,7 +699,7 @@ LibuiUpdateMan () {
       fi
     fi
   done
-  Tell -A 'Man page headers are up to date.'
+  Tell -I 'Man page headers are up to date.'
 
   popd > /dev/null
 
@@ -778,7 +778,7 @@ LibuiPackage () {
     [[ "${_Util_package: -5}" == '.tarp' ]] || _Util_package+='.tarp'
     Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   fi
-  Tell -A 'Creation of libui package complete. (%s)' "${_Util_package}"
+  Tell -I 'Creation of libui package complete. (%s)' "${_Util_package}"
 
   popd > /dev/null
 
@@ -812,7 +812,7 @@ LibuiInstall () {
 
     StopSpinner
 
-    Tell -A 'Installation of libui into %s complete.' "${COMMONROOT}"
+    Tell -I 'Installation of libui into %s complete.' "${COMMONROOT}"
     GetRealPath COMMONROOT
     Quiet || cat << EOF
 To use the library, the following should be added to your environment:
@@ -931,12 +931,12 @@ LibuiDefer () { # [-d|-D|-u|-v]
 
       StopSpinner
 
-      Tell -A 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
+      Tell -I 'Update %s -> %s complete.' "${_Util_libuiroot}" "${COMMONROOT}"
     else
       Tell -C 'Local files and commonroot files are different. (%s != %s)' "${COMMONROOT}" "${_Util_libuiroot}"
     fi
   else
-    Tell -A 'Verify complete, no file differences. (%s = %s)' "${COMMONROOT}" "${_Util_libuiroot}"
+    Tell -I 'Verify complete, no file differences. (%s = %s)' "${COMMONROOT}" "${_Util_libuiroot}"
   fi
 
   ${_M} && _Trace 'Check for defer. (%s)' "${_Util_defer}"
@@ -961,7 +961,7 @@ LibuiDefer () { # [-d|-D|-u|-v]
 
     StopSpinner
 
-    Tell -A 'Deferral to %s environment complete.' "${COMMONROOT}"
+    Tell -I 'Deferral to %s environment complete.' "${COMMONROOT}"
   fi
 
   popd > /dev/null
@@ -1038,7 +1038,7 @@ LibuiNew () { # [-e] =t <template_file>
     Action -F "sed ${_Util_sedi} -e 's/<SCRIPT VERSION HERE>/1.0/g' '${_Util_target}'"
     Action -F "chmod +x '${_Util_target}'"
 
-    Tell -A 'New file has been created. (%s)' "${_Util_target}"
+    Tell -I 'New file has been created. (%s)' "${_Util_target}"
     local _Util_here=$(tr '[:space:]' '\n' < "${param}" | grep -c 'HERE'); ((_Util_here)) || unset _Util_here
     Tell 'Search for "HERE" and replace%s with new script content.' "${_Util_here:+ all ${_Util_here}}"
     ${_Util_empty} || Tell 'The lines containing "demo content" should be deleted.'

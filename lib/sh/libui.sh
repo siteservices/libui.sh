@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.015 # Sun May 17 17:10:07 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.016 # Wed Jun 3 12:07:17 UTC 2026
 
 #####
 #
@@ -647,14 +647,14 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
               then
                 if ${ZSH}
                 then
-                  eval "${_z}${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
+                  true && eval "${_z}${@}${_b}" >&1 >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
                 else
                   _File_ip=${_p} Flush "-${_f}"
-                  eval "${_z}${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
+                  true && eval "${_z}${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
                   ((0 > _pe)) && ((_pe--))
                 fi
               else
-                eval "${@}${_b}" >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
+                true && eval "${@}${_b}" >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
               fi
               ${_T} && _Trace 'Log action. (%s%s)' "${_p}" "${_f}"
             elif [[ -n "${_l}" ]]
@@ -666,14 +666,14 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
               if ${_t}
               then
-                eval "${_z}${@} 2>&1 | tee -a '${_l}'${_b}"
+                true && eval "${_z}${@} 2>&1 | tee -a '${_l}'${_b}"
                 ((0 > _pe)) && ((_pe--))
               else
-                eval "${_z}${@}${_b}" >> "${_l}" 2>&1
+                true && eval "${_z}${@}${_b}" >> "${_l}" 2>&1
               fi
             else
               ${_T} && _Trace -I 'ACTION: %s' "${*}"
-              eval "${_z}${@}${_b}"
+              true && eval "${_z}${@}${_b}"
             fi
 
             ${_m} && StopSpinner
@@ -984,22 +984,27 @@ Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <p
 
   ${_T} && _Trace 'Check for selection. (%s)' "${#_a[@]}"
   local _i
-  ${_quiet} || if ((${#_a[@]}))
+  if ! ${_quiet} && ((${#_a[@]}))
   then
+    local _h=false
     printf "${DJBL}${DCEL}${DCES}\n${DOptions}The possible responses are:\n" >&${_o}
     if ${ZSH}
     then
       for ((_i = 1; _i <= ${#_a}; _i++))
       do
         printf "%4s. %s${DCEL}\n" ${_i} "${_a[${_i}]/${_p:+${_p%\/}\/}}" >&${_o}
+        [[ "${_a[_i]}" == "${_d}" ]] && _h=true
       done
     else
       for _i in "${!_a[@]}"
       do
         printf "%4s. %s${DCEL}\n" $((_i + 1)) "${_a[${_i}]/${_p:+${_p%\/}\/}}" >&${_o}
+        [[ "${_a[_i]}" == "${_d}" ]] && _h=true
       done
     fi
     printf "${D}${DCEL}\n" >&${_o}
+  else
+    local _h=true
   fi
 
   ${_T} && _Trace 'Check if auto "yes". (%s | ! %s)' "${_yes}" "${TERMINAL}"
@@ -1046,7 +1051,7 @@ Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <p
       then
         ANSWER="${_d}"
         ${ZSH} || ((${#_a[@]})) || printf "\n"
-        break
+        ${_h} && break
       else
         ${_T} && _Trace 'Validate answer. (%s)' "${ANSWER}"
         if ((${#_a[@]}))
@@ -1443,7 +1448,6 @@ Trace () { # <message>
 }
 
 # library trace
-typeset -F SECONDS # use zsh to improve profiling (Bash 5.3 introduces EPOCHREALTIME)
 UICMD+=( '_Trace' )
 _Trace () { # [-I|-u] <message>
   ${_S} && ((_c_Trace++))
@@ -2123,17 +2127,23 @@ Exit () { # [<return_value>]
     local _m
     if ! ${ZSH}
     then
-      local _d
-      local _u; _u=( )
-      for _m in "${UICMD[@]}"
-      do
-        for _d in "${_u[@]}"
+      local _i
+      if ((40 <= BV))
+      then
+        declare -A _u; _u=( )
+        for _i in "${UICMD[@]}"
         do
-          [[ "${_m}" == "${_d}" ]] && continue 2
+          _u["$_i"]=1
         done
-        _u+=( "${_m}" )
-      done
-      UICMD=( "${_u[@]}" )
+        UICMD=( "${!_u[@]}" )
+      else
+        local _u; _u=( )
+        while IFS= read -r _i
+        do
+          _u+=( "${_i}" )
+        done < <(printf '%s\n' "${UICMD[@]}" | LC_ALL=C sort -u)
+        UICMD=( "${_u[@]}" )
+      fi
     fi
     for _m in "${UICMD[@]}"
     do
@@ -2161,16 +2171,22 @@ Exit () { # [<return_value>]
     ((_crun++)); _c+=( "_crun=${_crun}" )
     if ! ${ZSH}
     then
-      _u=( )
-      for _m in "${UICMD[@]}"
-      do
-        for _d in "${_u[@]}"
+      if ((40 <= BV))
+      then
+        _u=( )
+        for _i in "${UICMD[@]}"
         do
-          [[ "${_m}" == "${_d}" ]] && continue 2
+          _u["$_i"]=1
         done
-        _u+=( "${_m}" )
-      done
-      UICMD=( "${_u[@]}" )
+        UICMD=( "${!_u[@]}" )
+      else
+        _u=( )
+        while IFS= read -r _i
+        do
+          _u+=( "${_i}" )
+        done < <(printf '%s\n' "${UICMD[@]}" | LC_ALL=C sort -u)
+        UICMD=( "${_u[@]}" )
+      fi
     fi
     for _m in "${UICMD[@]}"
     do
@@ -2314,21 +2330,21 @@ _WINCH () {
 
 # load config
 [[ -z "${LIBUI_CONFIG}" ]] && LIBUI_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/libui"
-test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
 test -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" && source "${_}"
+[[ -z "${LIBUI_HOOKDIR}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
 [[ -z "${LIBUI_CREDENTIALS}" ]] && LIBUI_CREDENTIALS="${XDG_CONFIG_HOME:-${HOME}/.config}/credentials"
 [[ -z "${LIBUI_STATE}" ]] && LIBUI_STATE="${XDG_STATE_HOME:-${HOME}/.local/state}/libui"
 [[ -z "${LIBUI_CACHE}" ]] && LIBUI_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/libui"
 
 # defaults
 RETVAL=0
-[[ -z "${LIBUI_HOOKDIR}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
 ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
 ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH_VERSION:-0}"; ZV="${ZV//.}"
 ${ZSH} && ((ZV < 53)) && PV=false || PV=true
 ! ${ZSH} && BV="${BASH_VERSION//[^\.]/}" && ((${#BV} > 1)) && BV="${BASH_VERSION%.*}" || BV="${BASH_VERSION:-0}"; BV="${BV//.}"
-! ${ZSH} && ((BV < 40)) && AA=false || AA=true
+${ZSH} && typeset -gaU UIMOD && typeset -gaU UICMD && typeset -gF SECONDS # bash 5.3 has EPOCHREALTIME but no FP math
 ${ZSH} && NULL='(N)' || NULL=
+! ${ZSH} && ((BV < 40)) && AA=false || AA=true
 CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
@@ -2392,15 +2408,12 @@ CHFLAGS=
 FMFLAGS=
 N=$'\n'
 ERRV=100
-${ZSH} && typeset -aU UIMOD && typeset -aU UICMD
 UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 
 # terminal setup
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
-${TERMINAL} && [[ "${TERM}" == 'dumb' ]] && LIBUI_PLAIN=true || LIBUI_PLAIN=${LIBUI_PLAIN:-false}
-${LIBUI_PLAIN} && TERM= || tput cols &> /dev/null || TERM="${TERM%-*}" # attempt to handle unknown (x)term type
-${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((0$(tput colors 2> /dev/null) >= 8)) && \
-    source "${LIBUI_CACHE}/display-${TERM}" 2> /dev/null && _display=true || _display=false
+${TERMINAL} && ((0$(tput colors 2> /dev/null) >= 8)) && LIBUI_PLAIN=${LIBUI_PLAIN:-false} || LIBUI_PLAIN=true
+${LIBUI_PLAIN} && TERM='dumb'
 [[ "$(locale charmap)" =~ UTF-*8 ]] && UTF8=true || UTF8=false
 
 # debug
@@ -2425,11 +2438,14 @@ _sdb="${LIBUI_STATS:-true}"; _S="${_sdb}"; ${_sdb} && _Trace 'Stats enabled.'
 _ldb="${LIBUI_LEDGER:-true}"; ${_ldb} && _Trace 'Ledger enabled.'
 
 # build terminal cache (after debug setup)
-if ! ${_display}
+if ! source "${LIBUI_CACHE}/display-${TERM}" 2> /dev/null
 then
   LoadMod Utility
   _Terminal
 fi
+
+# config dir
+test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
 
 # credentials
 [[ "${UNIX}" == 'GNU' ]] && _perm='stat -c %a' || _perm='stat -f %Lp'
