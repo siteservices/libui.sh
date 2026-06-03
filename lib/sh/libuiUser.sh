@@ -28,11 +28,11 @@
 #
 #####
 
-Version -r 2.012 -m 1.14
+Version -r 2.016 -m 1.15
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' )
 
 # Set user information
 #
@@ -176,9 +176,13 @@ _SetUserInfo () {
             COLOR=false
           fi
           ;;
+        MODE)
+          MODE="${MODE:-vi}"
+          Ask -n MODE -s 'vi' -s 'emacs' -d "${MODE}" 'Preferred edit mode?'
+          ;;
         *)
-          ${ZSH} && Ask -n ${_User_entry} -d "${(P)_User_entry}" 'Enter value for %s:' "${_User_entry}"
-          ${ZSH} || Ask -n ${_User_entry} -d "${!_User_entry}" 'Enter value for %s:' "${_User_entry}"
+          ${ZSH} && Ask -n ${_User_entry} -d "${(P)_User_entry}" 'Enter a value for %s:' "${_User_entry}"
+          ${ZSH} || Ask -n ${_User_entry} -d "${!_User_entry}" 'Enter a value for %s:' "${_User_entry}"
           eval "${_User_entry}=\"\${${_User_entry}}\""
           ;;
       esac

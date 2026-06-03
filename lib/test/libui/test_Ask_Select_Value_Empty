@@ -1,0 +1,26 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Ask_Select_Value_Empty
+#
+#####
+
+test_Ask_Select_Value_Empty () {
+  LibuiGetDisplayTestValues
+  local a=( '' 'one' )
+  LibuiPerformTest 'TERMINAL=true Ask -s one -s two -s three "Test question?" < <(printf "%s\n" "${a[@]}"); Tell "The answer is: %s" "${ANSWER}"'
+  LibuiValidateTest ${?} 0 '
+The possible responses are:
+   1. one
+   2. two
+   3. three
+
+Test question? [] Invalid response provided.
+Test question? [] The answer is: one'
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0
