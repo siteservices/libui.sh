@@ -62,7 +62,7 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-c <compression>] [-d <description
   local _Package_prep
   local _Package_srcdir
   local _Package_unarchive='tar xf'
-  local _Package_helper='bzip2'
+  local _Package_helper='xz'
 
   ${_M} && _Trace 'Process _CreatePackageHeader options. (%s)' "${*}"
   local opt
@@ -248,7 +248,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
   local _Package_sharp=false
   local _Package_starp=false
   local _Package_tarp=true
-  local _Package_compression='J'
+  local _Package_compression='-J'
   local _Package_rv=0
 
   ${_M} && _Trace 'Process CreatePackage options. (%s)' "${*}"
