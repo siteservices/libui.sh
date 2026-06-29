@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.015 2.11
+Version -r 2.017 2.12
 
 # load mods
 LoadMod Convert
@@ -142,7 +142,7 @@ CreateArchive () { # <archive> <files> ...
   exec 6>&1
   for file in "${files[@]}"
   do
-    if [[ ! $(file --mime "${file}") =~ .*${mime_types}.* ]]
+    if [[ ! $(file --mime "${file}") =~ ${mime_types} ]]
     then
       if Contains text_extensions "${file##*.}"
       then
@@ -239,7 +239,7 @@ ExtractArchive () { # <archive>
 
     Trace 'Process file info. (%s)' "${line}"
     [[ -z "${line}" ]] && break
-    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
+    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -r -a fileinfo <<< "${line}"
     ${verbose} && Brief 'Extracting %s...' "${fileinfo[((AO + 1))]}"
 
     Trace 'Process directory. (%s)' "${fileinfo[((AO + 1))]%/*}"
@@ -298,7 +298,7 @@ ListArchive () { # <archive>
   while read -r line
   do
     Trace 'Process separator. (%s)' "${line}"
-    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -ra fileinfo <<< "${line}"
+    ${ZSH} && fileinfo=( "${(@s|:|)line}" ) || IFS=: read -r -a fileinfo <<< "${line}"
     if ${long}
     then
       Trace 'Process file info. (%s)' "${line}"

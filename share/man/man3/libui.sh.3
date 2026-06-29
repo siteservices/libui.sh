@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd June 3, 2026
+.Dd June 28, 2026
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -2241,7 +2241,7 @@ An array containing the filenames and versions of the loaded scripts and
 .Nm
 mods in alternating "pairs": <file> <version> ...
 .It Dv ${UNIX}
-The type of the operating system.
+The host Unix type.
 The possible values are BSD, SYSV, or GNU (i.e. Linux).
 .It Dv ${WIDTH}
 Terminal window width in colums.
@@ -2271,7 +2271,7 @@ Clear to End of Screen
 .It Dv ${DCP}
 Read Current Cursor Position -
 note that the position must be read after sending this sequence
-(e.g.: printf "${DCP}" && IFS='[;' read -sd R _x ROW COL)
+(e.g.: printf "${DCP}" && IFS='[;' read -rsd R _x ROW COL)
 .It Dv ${DJBL}
 Jump to Beginning of Line
 .It Dv ${DJH}

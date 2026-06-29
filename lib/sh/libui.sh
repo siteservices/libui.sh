@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.016 # Wed Jun 3 12:07:17 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.017 # Mon Jun 29 00:04:30 UTC 2026
 
 #####
 #
@@ -2414,7 +2414,7 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
 ${TERMINAL} && ((0$(tput colors 2> /dev/null) >= 8)) && LIBUI_PLAIN=${LIBUI_PLAIN:-false} || LIBUI_PLAIN=true
 ${LIBUI_PLAIN} && TERM='dumb'
-[[ "$(locale charmap)" =~ UTF-*8 ]] && UTF8=true || UTF8=false
+[[ "$(locale charmap)" =~ UTF-*8 ]] && UTF8="${UTF8:-true}" || UTF8=false
 
 # debug
 _tdb="${LIBUI_TRACE:-false}"; _T="${_tdb}"

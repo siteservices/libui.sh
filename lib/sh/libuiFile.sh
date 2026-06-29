@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.015 -m 1.17
+Version -r 2.017 -m 1.18
 
 # defaults
 _File_ip=
@@ -321,7 +321,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     local _File_z; _File_z=(  )
 
     ${_M} && _Trace 'Obtain list. (%s)' "${_File_s}"
-    if [[ ${_File_s} =~ .*/.* ]]
+    if [[ ${_File_s} =~ / ]]
     then
       _File_p="${_File_s%/*}"
       _File_n="${_File_s##*/}"
@@ -436,7 +436,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     ${_M} && _Trace 'Get spec from var. (%s)' "${_File_v}"
     ${ZSH} && _File_x=( ${(P)_File_v[@]} ) || eval "_File_x=( \"\${${_File_v}[@]}\" )"
   fi
-  [[ -z "${_File_x}" ]] && Tell -E '(GetFileList) Called without a file specification.'
+  [[ -z "${_File_x}" ]] && Tell -E -r 1 '(GetFileList) Called without a file specification.'
 
   ${_M} && _Trace 'Build file list. (%s)' "${_File_x[*]}"
   if [[ -n "${_File_c}" ]]
@@ -468,7 +468,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
       eval "${_File_b}"
     fi
   done
-  ((_File_rv)) && Tell -E '(GetFileList) Unable to obtain file list. (%s)' "${*}"
+  ((_File_rv)) && Tell -E -r "${_File_rv }" '(GetFileList) Unable to obtain file list. (%s)' "${*}"
   if [[ -z "${_File_l[@]}" ]]
   then
     ${_File_e} && Tell -E -r 2 '(GetFileList) No file found. (%s)' "${*}"
@@ -566,8 +566,8 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
       eval "_File_s=${_File_s}"
     fi
   fi
-  [[ -z "${_File_s}" ]] && Tell -E '(GetRealPath) No path provided. (%s)' "${1}"
-  [[ "${_File_s}" =~ .*/.* ]] || _File_s="${PWD}/${_File_s}"
+  [[ -z "${_File_s}" ]] && Tell -E -r 1 '(GetRealPath) No path provided. (%s)' "${1}"
+  [[ "${_File_s}" =~ / ]] || _File_s="${PWD}/${_File_s}"
   ${_File_p} && _File_f="/${_File_s##*/}" && _File_s="${_File_s%/*}" && [[ '/' == "${_File_f}" || '/.' == "${_File_f}" ]] && _File_f=
 
   ${_T} && _Trace 'Check for path validation. (%s)' "${_File_v}"
@@ -579,7 +579,7 @@ GetRealPath () { # [-P|-v] <var_name> [<path_specification>]
     eval "${1}='${_File_s}${_File_f}'"
   else
     ${_T} && _Trace 'Check if path exists. (%s)' "${_File_s}"
-    [[ -e "${_File_s}" ]] || Tell -E '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
+    [[ -e "${_File_s}" ]] || Tell -E -r 1 '(GetRealPath) Invalid path provided. (%s)' "${_File_s}"
 
     ${_M} && _Trace 'Check for realpath.'
     if ${ZSH} && ((${+commands[realpath]})) || command -v realpath &> /dev/null
@@ -659,7 +659,7 @@ GetTmp () { # [-d|-f|-s] <var_name>
 
   ${_M} && _Trace 'Check / Create tmp directory. (%s)' "${_tmpdir}"
   [[ -d "${_tmpdir}" ]] || _tmpdir="$(mktemp -q -d "${TMPDIR%/}/${CMD}.XXXXXX")"
-  ((${?})) && Tell -E '(GetTmp) Unable to create temp dir.'
+  ((${?})) && Tell -E -r 1 '(GetTmp) Unable to create temp dir.'
   eval "${1}='${_tmpdir}'"
 
   ${_M} && _Trace 'Check for error.'
@@ -672,14 +672,14 @@ GetTmp () { # [-d|-f|-s] <var_name>
     then
       ${_M} && _Trace 'Create tmp file.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q '${_tmpdir}/${CMD}.XXXXXX')\""
-      ((${?})) && Tell -E '(GetTmp) Unable to create temp file.'
+      ((${?})) && Tell -E -r 1 '(GetTmp) Unable to create temp file.'
     fi
 
     if ${_File_s}
     then
       ${_M} && _Trace 'Create tmp subdirectory.'
       eval "${1}=\"\$(TMPDIR='${_tmpdir}' mktemp -q -d '${_tmpdir}/${CMD}.XXXXXX')\""
-      ((${?})) && Tell -E '(GetTmp) Unable to create temp subdirectory.'
+      ((${?})) && Tell -E -r 1 '(GetTmp) Unable to create temp subdirectory.'
     fi
 
     ${_M} && _Trace 'GetTmp return. (%s)' 0
@@ -749,7 +749,7 @@ MkDir () { # [-p|-s|-W] [-g <group>] [-m <mask>] <path>
     local _File_d
     local _File_n; [[ "${1:0:1}" == '/' ]] || _File_n="${PWD}"
     local _File_p
-    ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -a _File_p <<< "${1}"
+    ${ZSH} && _File_p=( "${(s:/:)1}" ) || IFS=/ read -r -a _File_p <<< "${1}"
     for _File_d in "${_File_p[@]}"
     do
       [[ -z "${_File_d}" ]] && continue
@@ -915,7 +915,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       eval "exec ${_File_f}>>'${_File_n}'" || _File_f=
     fi
   fi
-  [[ -n "${_File_f}" ]] || Tell -E '(Open) Unable to open file. (%s)' "${_File_n}"
+  [[ -n "${_File_f}" ]] || Tell -E -r 1 '(Open) Unable to open file. (%s)' "${_File_n}"
 
   _File_fd[${_File_i}]="${_File_f}"
 
@@ -941,7 +941,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       sleep "0.1$((RANDOM % 10))" 2> /dev/null || sleep 1
     done
     local _File_d="${LIBUI_LOCKDIR:-${LIBUI_STATE}/lock}"
-    [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E 'Invalid lock directory path. (%s)' "${_File_d}"
+    [[ -d "${_File_d}" ]] || mkdir -p "${_File_d}" || Tell -E -r 1 'Invalid lock directory path. (%s)' "${_File_d}"
     [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
     printf '%s\n' "${_File_n}.lock" >"${_File_d}/${_File_n##*/}.lock"
     [[ -n "${_File_m}" ]] && umask "${_File_x}"
@@ -1063,7 +1063,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
           _File_d+=( "${_File_x}" )
         else
           Action "rm ${FMFLAGS} ${_File_f} \"${_File_x}\""
-          ((${?})) && Tell -E '(RemoveFileList) Unable to remove file. (%s)' "${_File_x}"
+          ((${?})) && Tell -E -r 1 '(RemoveFileList) Unable to remove file. (%s)' "${_File_x}"
         fi
       done
 
@@ -1075,7 +1075,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
         for _File_x in "${_File_d[@]}"
         do
           Action "rmdir ${FMFLAGS} ${_File_f} \"${_File_x}\""
-          ((${?})) && Tell -E '(RemoveFileList) Unable to remove directory. (%s)' "${_File_x}"
+          ((${?})) && Tell -E -r 1 '(RemoveFileList) Unable to remove directory. (%s)' "${_File_x}"
         done
       fi
 
@@ -1124,7 +1124,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
       [1-9])
         ${_M} && _Trace 'File ID. (%s%s)' "${_File_ip}" "${_opt}"
         _File_i="${_File_ip}${_opt}"
-        [[ -z "${_File_fd[${_File_i}]}" ]] && Tell -E 'File ID not open. (%s)' "${_File_i}"
+        [[ -z "${_File_fd[${_File_i}]}" ]] && Tell -E -r 1 'File ID not open. (%s)' "${_File_i}"
         ;;
       a|c)
         ${_M} && _Trace 'File mode. (%s)' "${_opt}"
@@ -1157,7 +1157,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
   then
     ${_M} && _Trace 'Write using ID %s to file %s via descriptor %s. (%s)' "${_File_i}" "${_File_fp[${_File_i}]}" "${_File_fd[${_File_i}]}" "${*}"
     printf -- "${_File_p}${_File_r}" "${@}" >&${_File_fd[${_File_i}]}
-    ((${?})) && Tell -E '(Write) Unable to write to file via file ID. (%s)' "${_File_i}"
+    ((${?})) && Tell -E -r 1 '(Write) Unable to write to file via file ID. (%s)' "${_File_i}"
   elif [[ -n "${_File_f}" ]]
   then
     ${_M} && _Trace 'Write to file %s. (%s)' "${_File_f}" "${*}"
@@ -1168,7 +1168,7 @@ Write () { # [-0|-1..-9|-a|-c] [-f <file_path>] [-p <format>] [-r <record_marker
       printf -- "${_File_p}${_File_r}" "${@}" >> "${_File_f}"
     fi
     _File_rv=${?}
-    ((${_File_rv})) && Tell -E '(Write) Unable to write to file. (%s)' "${_File_f}"
+    ((${_File_rv})) && Tell -E -r "${_File_rv}" '(Write) Unable to write to file. (%s)' "${_File_f}"
   else
     Tell -E -f -L '(Write) No file ID or file path provided.'
   fi

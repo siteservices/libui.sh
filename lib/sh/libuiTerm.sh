@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.004 -m 1.1
+Version -r 2.017 -m 1.2
 
 # At Position Execute Command
 #
@@ -72,7 +72,7 @@ GetCursor () {
     local _x
     if ${ZSH}
     then
-      printf "${DCP}" && IFS='[;' read -sd R _x ROW COL
+      printf "${DCP}" && IFS='[;' read -rsd R _x ROW COL
     else
       IFS='[;' read -p ${DCP} -rsd R _x ROW COL
     fi

@@ -7,7 +7,7 @@
 
 test_CHFLAGS_Q () {
   local tflags
-  [[ "${arg[*]}" =~ .*-X\ *[0-9].* ]] && tflags+='-X [0-9] '
+  [[ "${arg[*]}" =~ -X\ *[0-9] ]] && tflags+='-X [0-9] '
   tflags+='-X [qQ] '
   _quiet=false # turn off quiet
   LibuiPerformTest 'Tell -- "${CHFLAGS}"'

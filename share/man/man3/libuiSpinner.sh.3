@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd March 22, 2026
+.Dd June 5, 2026
 .Dt LIBUISPINNER.SH 3
 .Os
 .Sh NAME
@@ -43,7 +43,7 @@ user interface library
 The
 .Nm
 .Xr libui.sh 3
-mod provides commands for displaying a progress spinner.
+mod provides commands for displaying a progress spinner on STDERR.
 The
 .Sx StartSpinner
 and
@@ -59,20 +59,22 @@ and
 .Sx ResumeSpinner
 commands can be used within an action or within code being executed to pause and
 resume an active spinner.
+The
+.Nm
+libui mod only generates spinner output on STDERR if STDOUT is to a terminal.
 .Pp
 The
 .Nm
-.Xr libui.sh 3
-mod provides the following commands:
+libui mod provides the following commands:
 .Ss StartSpinner
-The following command starts a visual spinner on stderr in the background.
+The following command starts a visual spinner on STDERR in the background.
 .Bd -ragged -offset 4n
 .Sy StartSpinner
 .Op Ar <message>
 .Ed
 .Pp
 Starts a background subshell that displays the optional <message> and a spinner
-on stderr and captures the background process ID ($!) for the
+on STDERR and captures the background process ID ($!) for the
 .Sx StopSpinner
 command.
 .Pp
@@ -144,7 +146,7 @@ command executes:
 .Sy WaitSpinner
 .Ed
 .Pp
-Display a foreground spinner on stderr until the last executed background
+Display a foreground spinner on STDERR until the last executed background
 process ($!) exits.
 .Ss Sleep
 The following command displays a countdown message while waiting for time to
@@ -193,9 +195,26 @@ Display a countdown message while waiting for time to elapse (i.e., sleeping).
 .Sh VARIABLES
 The
 .Nm
+libui mod will rotate through the characters stored as a string in
+.Ev LIBUI_UTF8SPINNER
+if the variable is set (before loading the Spinner mod) and the
+.Nm
+libui mod detects the terminal is capable of displaying UTF-8 characters.
+Some example
+.Ev LIBUI_UTF8SPINNER
+settings include:
+.Bl -tag -offset 4n -width 4n
+.It LIBUI_UTF8SPINNER=' ░▒▓▓▒░ '
+.It LIBUI_UTF8SPINNER='⣾⣷⣽⣯⣻⣟⢿⡿'
+.It LIBUI_UTF8SPINNER='⠁⠂⠄⡀⡈⡐⡠⣀⣁⣂⣄⣌⣔⣤⣥⣦⣮⣶⣷⣿⡿⠿⢟⠟⡛⠛⠫⢋⠋⠍⡉⠉⠑⠡⢁'
+.El
+.Pp
+The
+.Ev LIBUI_UTF8SPINNER
+variable can be set in the "~/.config/libui/libui.conf" file.
+See
 .Xr libui.sh 3
-mod
-only generates spinner output on stderr if stdout is to a terminal.
+for more information.
 .Sh EXAMPLES
 Some examples include:
 .Bd -literal -offset 4n
