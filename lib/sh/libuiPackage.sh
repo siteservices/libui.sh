@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.015 -m 1.26
+Version -r 2.017 -m 1.27
 
 # defaults
 
@@ -50,7 +50,7 @@ Version -r 2.015 -m 1.26
 # path. The default installer is "\${d}/.installer \${@} \${a}".
 #
 UICMD+=( '_CreatePackageHeader' )
-_CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>] [-I <installer_prep>] [-s <source_directory>] <package_filename>
+_CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-c <compression>] [-d <description>] [-i <installer>] [-I <installer_prep>] [-s <source_directory>] <package_filename>
   ${_S} && ((_c_CreatePackageHeader++))
   ${_M} && _Trace '_CreatePackageHeader [%s]' "${*}"
 
@@ -62,14 +62,50 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
   local _Package_prep
   local _Package_srcdir
   local _Package_unarchive='tar xf'
+  local _Package_helper='bzip2'
 
   ${_M} && _Trace 'Process _CreatePackageHeader options. (%s)' "${*}"
   local opt
   local OPTIND
   local OPTARG
-  while getopts ':d:Gi:I:Ps:STX' opt
+  while getopts ':c:d:Gi:I:Ps:STX' opt
   do
     case ${opt} in
+      c)
+        ${_M} && _Trace 'Decompression helper. (%s)' "${OPTARG}"
+        case "${OPTARG}" in
+          lrzip)
+            _Package_helper='lrzip'
+            ;;
+          lzma)
+            _Package_helper='lzma'
+            ;;
+          lzop)
+            _Package_helper='lzop'
+            ;;
+          lz4)
+            _Package_helper='lz4'
+            ;;
+          j|bzip)
+            _Package_helper='bzip2'
+            ;;
+          J|xz)
+            _Package_helper='xz'
+            ;;
+          z)
+            _Package_helper='gzip'
+            ;;
+          Z)
+            _Package_helper='compress'
+            ;;
+          zstd)
+            _Package_helper='zstd'
+            ;;
+          *)
+            _Package_helper='unknown'
+            ;;
+        esac
+        ;;
       d)
         ${_M} && _Trace 'Description. (%s)' "${OPTARG}"
         [[ -n "${OPTARG}" ]] && _Package_desc="${OPTARG}"
@@ -93,6 +129,7 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
         [[ -z "${_Package_prep}" ]] && \
             _Package_prep='s="$(command -v star 2> /dev/null)"; s="${s:-$(command -v starx 2> /dev/null)}"; s="${s:-error}"'
         _Package_unarchive='${s} -x -f'
+        _Package_helper='starx'
         ;;
       s)
         ${_M} && _Trace 'Source directory. (%s)' "${OPTARG}"
@@ -102,6 +139,7 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
         ${_M} && _Trace 'Make shar.'
         _Package_archive='shar'
         _Package_unarchive='sh'
+        _Package_helper='bash / zsh'
         ;;
       T)
         ${_M} && _Trace 'Make tar.'
@@ -141,11 +179,11 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-d <description>] [-i <installer>]
 
 # startup
 tail -n 1 \\\"\\\${0}\\\" > /dev/null 2>&1 && n='-n ' || n=
-\${_Package_prep:+\${_Package_prep}\${N}}error () { printf 'Self-extract failure.\\\n'; exit 1; }
-l=\\\$(head \\\${n:--}\${_Package_headlen// /} \\\"\\\${0}\\\" | tail \\\${n:--}1) && [ '__PAYLOAD__' = \\\"\\\${l}\\\" ] || error
+\${_Package_prep:+\${_Package_prep}\${N}}error () { printf 'Self-extract failure: %s\\\n' \\\"\\\${*}\\\"; exit 1; }
+l=\\\$(head \\\${n:--}\${_Package_headlen// /} \\\"\\\${0}\\\" | tail \\\${n:--}1) && [ '__PAYLOAD__' = \\\"\\\${l}\\\" ] || error \\\"Unable to extract archive.\\\"
 
 # extract archive
-t=\\\"\\\$(mktemp -d)\\\" || error
+t=\\\"\\\$(mktemp -d)\\\" || error \\\"Unable to create temporary directory.\\\"
 a=\\\"\\\${0##*/}\\\"; a=\\\"\\\${t}/\\\${a%\\\\\\.*}.\${_Package_archive}\\\"
 [ \\\"\\\${1}\\\" = '-h' ] && echo \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\"\\\${a}\\\"'\${_Package_installer:+, then execute installer application}.\\\" && exit 0
 printf 'Preparing...'
@@ -156,9 +194,9 @@ tail \\\${n// /} +\$((_Package_headlen + 1)) \\\"\\\${0}\\\" > \\\"\\\${a}\\\"
 ${_Package_extract} && _Package_head+="
 # extract installer
 d=\\\"\\\${t}/a\\\"
-mkdir \\\"\\\${d}\\\" || error
+mkdir \\\"\\\${d}\\\" || error \\\"Unable to create installer subdirectory.\\\"
 cd \\\"\\\${d}\\\" > /dev/null
-\${_Package_unarchive} \\\"\\\${a}\\\" > /dev/null 2>&1 || error
+\${_Package_unarchive} \\\"\\\${a}\\\" > /dev/null 2>&1 || error \\\"Unable to unpack archive. (Need \${_Package_helper}?)\\\"
 cd - > /dev/null
 "
 
@@ -210,7 +248,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
   local _Package_sharp=false
   local _Package_starp=false
   local _Package_tarp=true
-  local _Package_compression='-j'
+  local _Package_compression='J'
   local _Package_rv=0
 
   ${_M} && _Trace 'Process CreatePackage options. (%s)' "${*}"
@@ -223,7 +261,9 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
       c)
         ${_M} && _Trace 'Compression. (%s)' "${OPTARG}"
         _Package_compression="${OPTARG}"
-        [[ -n "${_Package_compression}" ]] &&[[ "${_Package_compression:0:1}" != '-' ]] && \
+        [[ -n "${_Package_compression}" ]] && [[ "${_Package_compression:0:1}" != '-' ]] && \
+            _Package_compression="${_Package_compression:+-${_Package_compression}}" && \
+            [[ "${#_Package_compression}" > 2 ]] && \
             _Package_compression="${_Package_compression:+-${_Package_compression}}"
         ;;
       d)
@@ -401,7 +441,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
       then
         ${_M} && _Trace 'Create tar package: %s' "${_Package_package}"
         [[ -z "${_Package_header}" ]] && _Package_header="_CreatePackageHeader"
-        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -$(${_Package_gtarp} && printf 'G' || printf 'T') -s '${_Package_srcdir}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
+        Action -f -q "Create package header for ${_Package_package}?" "${_Package_header} -$(${_Package_gtarp} && printf 'G' || printf 'T') -s '${_Package_srcdir}' -c '${_Package_compression#-}' -d '${_Package_desc}' ${_Package_extract} -I '${_Package_prep}' -i '${_Package_installer}' '${_Package_package}'"
         Action -q "Append tar archive to package ${_Package_package}?" "cat '${_Package_tarball}' >> '${_Package_package}'"
         _Package_rv=${?}
         ${_M} && _Trace 'Created tarp package: %s' "${_Package_package}"

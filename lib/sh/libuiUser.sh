@@ -28,11 +28,11 @@
 #
 #####
 
-Version -r 2.016 -m 1.15
+Version -r 2.017 -m 1.16
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
 
 # Set user information
 #
@@ -103,7 +103,7 @@ _SetUserInfo () {
           while ${_User_invalid}
           do
             Ask -n NAME -d "${NAME:-${USER}}" "What is the user's full name?"
-            if [[ "${NAME}" =~ .*\ .* ]]
+            if [[ "${NAME}" =~ \  ]]
             then
               _User_invalid=false
             else
@@ -139,7 +139,7 @@ _SetUserInfo () {
           while ${_User_invalid}
           do
             Ask -n EMAIL -d "${EMAIL:-${USER}@${DOMAIN}}" "What is the user's email address?"
-            if [[ "${EMAIL}" =~ .*@.*\..* ]]
+            if [[ "${EMAIL}" =~ @.*\. ]]
             then
               _User_invalid=false
             else
@@ -179,6 +179,34 @@ _SetUserInfo () {
         MODE)
           MODE="${MODE:-vi}"
           Ask -n MODE -s 'vi' -s 'emacs' -d "${MODE}" 'Preferred edit mode?'
+          ;;
+        FONTFACE)
+          FONTFACE="${FONTFACE:-Hack}"
+          StartSpinner 'Searhcing for monospace fonts...'
+          local faces; faces=( )
+          if ${ZSH}
+          then
+            faces+=( ${(f)"$(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u)"} )
+          else
+            ((40 <= BV)) && readarray -t faces < <(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) || \
+                IFS=$'\n' faces+=( $(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) )
+          fi
+          Contains faces 'Hack' || faces+=( 'Hack' )
+          StopSpinner
+          Ask -n FONTFACE -S faces -d "${FONTFACE}" 'Desired termnial font face?'
+          ;;
+        FONTSIZE)
+          FONTSIZE="${FONTSIZE:-9}"
+          while ${_User_invalid}
+          do
+            Ask -n FONTSIZE -d "${FONTSIZE}" 'Desired termnial font size?'
+            if ((FONTSIZE > 5 && FONTSIZE < 25 ))
+            then
+              _User_invalid=false
+            else
+              Verify 'Are you sure? That response does not appear to be a reasonable size.' && _User_invalid=false
+            fi
+          done
           ;;
         *)
           ${ZSH} && Ask -n ${_User_entry} -d "${(P)_User_entry}" 'Enter a value for %s:' "${_User_entry}"

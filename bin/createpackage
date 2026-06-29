@@ -31,7 +31,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.015 1.14
+Version -r 2.017 1.15
 
 # load mods
 LoadMod File
@@ -109,7 +109,7 @@ InitCallback () {
         then
           files+=( ${(f)"$(grep -v '^\s*\(#\|$\)' "${manifest}")"} )
         else
-          ((40 <= BV)) && mapfile files <(grep -v '^\s*\(#\|$\)' "${manifest}") || \
+          ((40 <= BV)) && readarray -t files < <(grep -v '^\s*\(#\|$\)' "${manifest}") || \
               IFS=$'\n' files+=( $(grep -v '^\s*\(#\|$\)' "${manifest}") )
         fi
       else

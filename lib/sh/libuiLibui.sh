@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.015 -m 1.24
+Version -r 2.017 -m 1.25
 
 ##### configuration
 
@@ -106,28 +106,28 @@ _LibuiSetup () {
   local vparam
 
   ${_M} && _Trace 'Parameter flags capture for tests.' "${arg[*]}"
-  [[ " ${arg[*]} " =~ .*\ -x\ *oa\ .* ]] && aopt=true || aopt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *oA\ .* ]] && Aopt=true || Aopt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *oc\ .* ]] && copt=true || copt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *oC\ .* ]] && Copt=true || Copt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *os\ .* ]] && sopt=true || sopt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *oS\ .* ]] && Sopt=true || Sopt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *ov\ .* ]] && vopt=true || vopt=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *pa\ .* ]] && aparam=true || aparam=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *pA\ .* ]] && Aparam=true || Aparam=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *ps\ .* ]] && sparam=true || sparam=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *pS\ .* ]] && Sparam=true || Sparam=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *pv\ .* ]] && vparam=true || vparam=false
-  [[ " ${arg[*]} " =~ .*\ -x\ *m\ .* ]] && LoadMod Multiuser && Multiuser
-  [[ " ${arg[*]} " =~ .*\ -x\ *r\ .* ]] && LoadMod Root && AllowRoot
-  [[ " ${arg[*]} " =~ .*\ -x\ *R\ .* ]] && LoadMod Root && RequireRoot
-  [[ " ${arg[*]} " =~ .*\ -x\ *t\ .* ]] && TERMINAL=true
-  [[ " ${arg[*]} " =~ .*\ -t\ .* || " ${arg[*]} " =~ .*\ -x\ *p\ .* ]] && popt='-m' # set AddParameter option for testing
-  [[ " ${arg[*]} " =~ .*\ -p\ .* ]] && popt='-r' # set AddParameter option for package
+  [[ " ${arg[*]} " =~ \ -x\ *oa\  ]] && aopt=true || aopt=false
+  [[ " ${arg[*]} " =~ \ -x\ *oA\  ]] && Aopt=true || Aopt=false
+  [[ " ${arg[*]} " =~ \ -x\ *oc\  ]] && copt=true || copt=false
+  [[ " ${arg[*]} " =~ \ -x\ *oC\  ]] && Copt=true || Copt=false
+  [[ " ${arg[*]} " =~ \ -x\ *os\  ]] && sopt=true || sopt=false
+  [[ " ${arg[*]} " =~ \ -x\ *oS\  ]] && Sopt=true || Sopt=false
+  [[ " ${arg[*]} " =~ \ -x\ *ov\  ]] && vopt=true || vopt=false
+  [[ " ${arg[*]} " =~ \ -x\ *pa\  ]] && aparam=true || aparam=false
+  [[ " ${arg[*]} " =~ \ -x\ *pA\  ]] && Aparam=true || Aparam=false
+  [[ " ${arg[*]} " =~ \ -x\ *ps\  ]] && sparam=true || sparam=false
+  [[ " ${arg[*]} " =~ \ -x\ *pS\  ]] && Sparam=true || Sparam=false
+  [[ " ${arg[*]} " =~ \ -x\ *pv\  ]] && vparam=true || vparam=false
+  [[ " ${arg[*]} " =~ \ -x\ *m\  ]] && LoadMod Multiuser && Multiuser
+  [[ " ${arg[*]} " =~ \ -x\ *r\  ]] && LoadMod Root && AllowRoot
+  [[ " ${arg[*]} " =~ \ -x\ *R\  ]] && LoadMod Root && RequireRoot
+  [[ " ${arg[*]} " =~ \ -x\ *t\  ]] && TERMINAL=true
+  [[ " ${arg[*]} " =~ \ -t\  || " ${arg[*]} " =~ \ -x\ *p\  ]] && popt='-m' # set AddParameter option for testing
+  [[ " ${arg[*]} " =~ \ -p\  ]] && popt='-r' # set AddParameter option for package
 
   ${_M} && _Trace 'Set up utility options.'
-  [[ " ${arg[*]} " =~ .*\ -x\ *b\ .* ]] && AddOption -n binaryft -f -k 'Binary F/T' -d '(Only for test.) For testing AddOption -f option.' b
-  [[ " ${arg[*]} " =~ .*\ -x\ *B\ .* ]] && AddOption -n binarytf -t -k 'Binary T/F' -d '(Only for test.) For testing AddOption -t option.' B
+  [[ " ${arg[*]} " =~ \ -x\ *b\  ]] && AddOption -n binaryft -f -k 'Binary F/T' -d '(Only for test.) For testing AddOption -f option.' b
+  [[ " ${arg[*]} " =~ \ -x\ *B\  ]] && AddOption -n binarytf -t -k 'Binary T/F' -d '(Only for test.) For testing AddOption -t option.' B
   AddOption -n config -f -k 'Config' -d 'Create default configuration file "${_Util_configfile}".' c
   AddOption -n cachereset -f -k 'Cache Reset' -d 'Reset (clear) library caches.' C
   AddOption -n demo -f -k 'Demo' -d 'Provide capabilities demonstration.' d
@@ -345,7 +345,7 @@ LibuiConfig () {
     Open -1 -c ${_Util_configfile}
     Write -1 "#####${N}#${N}# libui.conf - $(date)${N}#${N}######${N}"
     Write -1 "# use LIBUI_{VAR}=\"\${LIBUI_{VAR}:-<value>}\" to support temporary command line environment changes.${N}"
-    Write -1 "$(grep 'LIBUI_' "${LIBUI}" | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_[^:]*\):-\([^;]*\)}.*$/\1="${\1:-\2}"/' | sed 's/^/#/' | sort -u)"
+    Write -1 "$(grep -r 'LIBUI_' "${LIBUI%/*}" | grep -v 'LIBUI_{VAR}' | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_[^:]*\):-\([^;]*\)}.*$/\1="${\1:-\2}"/' | cut -f 1 -d '&' | sed 's/^/#/; s/ *$//' | sort -u)" # LIBUI_{VAR}
     DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
     Close -1
 

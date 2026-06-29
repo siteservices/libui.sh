@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.010 -m 1.6
+Version -r 2.017 -m 1.7
 
 ${AA} || Tell -E -f -L '(libuiRecord) Requires associative arrays that %s does not provide.' "${SHENV}"
 
@@ -140,7 +140,7 @@ RecordEntry () { # [-1..-9] [<data_assoc_array>] [<column_array>]
     local _Record_entry
     for _Record_key in "${RecordColumns[@]}"
     do
-      [[ ${RecordData[${_Record_key}]} =~ .*(,|\").* ]] && \
+      [[ ${RecordData[${_Record_key}]} =~ (,|\") ]] && \
           _Record_entry+="\"${RecordData[${_Record_key}]//\"/\"\"}\"," || \
           _Record_entry+="${RecordData[${_Record_key}]//\"/\"\"},"
     done

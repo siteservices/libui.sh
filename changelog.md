@@ -1,5 +1,34 @@
 # Change Log
 
+## v2.017
+
+### New Features / Enhancements
+
+* Add `${LIBUI_UTF8SPINNER}` support for UTF-8 spinner strings.
+* Add `libui` commands support for '--help'.
+* Add FONTFACE, FONTSIZE support to libui User mod.
+* Add additional compression support in libui Package mod and default to xz.
+* Improve libui Package mod self-extractor error messages.
+* Add libui Workspace mod for workspace support (with dotfiles).
+* Simplify regex patterns.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+
+Note: Workspace support is provided in dotfiles package (available separately).
+
+### Bug Fixes
+
+* Fix `libui -c` creation of sample libui.conf files.
+* Fix bad path creation in `GetRealPath` with no path provided error.
+* Fix missing error return codes with `Tell -E` commands in a few places.
+* Fix a couple read loops with incorrect read option flags.
+* Fix `mless` angle bracket handling in single backtick (grave accent) quotes.
+
+### Incompatibilities
+
+* N/A
+
 ## v2.016
 
 ### New Features / Enhancements
@@ -18,10 +47,6 @@
 * Fix display variables handling in non-terminal / plain terminal environments.
 * Fix `mless` backslash handling.
 * Fix `LIBUI_CONFIG` directory error message edge case.
-
-### Incompatibilities
-
-* N/A
 
 ## v2.015
 

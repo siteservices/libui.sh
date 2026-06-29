@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd June 2, 2026
+.Dd June 17, 2026
 .Dt LIBUIUSER.SH 3
 .Os
 .Sh NAME
@@ -28,12 +28,12 @@ user interface library
 .Sh DESCRIPTION
 The
 .Nm
-libui.sh mod provides a function for loading and setting user information.
+libui mod provides a function for loading and setting user information.
 The information is stored in the ${HOME}/.config/user file (i.e. a .user file in
 the users home directory).
 The ${HOME}/.config/user file is sourced when the
 .Sx User
-libui.sh mod is loaded with the
+libui mod is loaded with the
 .Sy LoadMod User
 command.
 The .user file contains variable assignments enabling access to the stored home
@@ -43,15 +43,14 @@ Note: If the
 .Sy LoadMod User
 command is executed and there is not an existing ${HOME}/.config/user file, the
 .Nm
-libui.sh mod will automatically call the
+libui mod will automatically call the
 .Sx SetUserInfo
 command.
 This will effectively create and load the user information.
 .Pp
 The
 .Nm
-.Xr libui.sh 3
-mod provides the following commands:
+libui mod provides the following commands:
 .Ss SetUserInfo
 The SetUserInfo command asks questions and the answers are stored in the
 ${HOME}/.config/user file.
@@ -70,7 +69,8 @@ array variable.
 The
 .Sy SetUserInfo
 command knows specific questions for the user "NAME", "ORG", "TITLE", "EMAIL",
-"PHONE", "COLOR", and (edit) "MODE" names.
+"PHONE", "COLOR", (edit) "MODE", and preferred terminal "FONTFACE" and
+"FONTSIZE" names.
 For any other names, the command will query the user with a simple,
 .Qq Enter a value for Ar <name> Ns \&:
 It is possible to set the ${userinfo[@]} array with any set of user information
@@ -98,7 +98,7 @@ An example file:
 .Bd -literal -offset 4n
 #!/bin/zsh
 ##### User Information
-userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' )
+userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
 NAME='John Doe'
 ORG='siteservices.net, Inc.'
 TITLE='Engineer'
@@ -106,7 +106,9 @@ EMAIL='jdoe@siteservices.net'
 PHONE='+1.321.000.0000'
 COLOR='true'
 MODE='vi'
-export NAME ORG TITLE EMAIL PHONE COLOR MODE
+FONTFACE='Hack'
+FONTSIZE='10'
+export NAME ORG TITLE EMAIL PHONE COLOR MODE FONTFACE FONTSIZE
 .Ed
 .Sh EXAMPLES
 Some examples include:

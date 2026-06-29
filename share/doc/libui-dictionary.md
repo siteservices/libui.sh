@@ -776,7 +776,7 @@ SSHSend [-q|-v] **-d** <destination> [-p <password>] [-P <port>] [-t <target>] [
 
 ### StartSpinner (man libuiSpinner.sh) - Start a progress spinner.
 
-Starts a progress spinner that is displayed a space after the current cursor position. The spinner should be stopped with the StopSpinner command. An informational message can be optionally displayed. Note: the spinner should also stop when the program ends with the Exit command. (Under certain error conditions, it is possible for the Spinner to persist beyond the script and would need to be killed manually.)
+Starts a progress spinner that is displayed a space after the current cursor position. The spinner should be stopped with the StopSpinner command. An informational message can be optionally displayed. A UTF-8 spinner can also be defined (before loading the Spinner mod) by setting LIBUI_UTF8SPINNER to a string of the UTF-8 characters to rotate through. Note: the spinner should also stop when the program ends with the Exit command. (Under certain error conditions, it is possible for the Spinner to persist beyond the script and would need to be killed manually.)
 
 ```sh
 StartSpinner [<message>]

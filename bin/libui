@@ -38,6 +38,9 @@ _dir="${BASH_SOURCE[0]}" && _dir="${_dir:-${(%):-%N}}" && _dir="${_dir%/bin/*}"
 # libui.sh path
 [[ "${1}" == '-?' ]] && printf "%s\n" "${LIBUI:-${_dir}/lib/sh/libui.sh}" && exit 0
 
+# --help
+[[ "${2}" == '--help' ]] && set -- "${1}" '-H' "${@:3}"
+
 if [[ 0 < ${#} && "${1:0:1}" != '-' ]]
 then
   # load libui.sh
@@ -55,9 +58,9 @@ else
   script=( "${BASH_SOURCE[0]:-${(%):-%x}}" )
   arg=( "${@}" )
   wd="${PWD}"
-  [[ " ${*} " =~ .*\ -x\ n\ .* ]] && LIBUI_LEDGER='false' && LIBUI_TRACE='false' && LIBUI_STATS='false' # no log
-  [[ " ${*} " =~ .*\ -x\ P\ .* ]] && LIBUI_PLAIN=true # plain ui
-  [[ " ${*} " =~ .*\ -x\ T\ .* ]] && TERMINAL=false # no terminal
+  [[ " ${*} " =~ \ -x\ n\  ]] && LIBUI_LEDGER='false' && LIBUI_TRACE='false' && LIBUI_STATS='false' # no log
+  [[ " ${*} " =~ \ -x\ P\  ]] && LIBUI_PLAIN=true # plain ui
+  [[ " ${*} " =~ \ -x\ T\  ]] && TERMINAL=false # no terminal
 
   # load libui.sh
   source "${LIBUI:-${_dir}/lib/sh/libui.sh}" "${0}" "${@}"

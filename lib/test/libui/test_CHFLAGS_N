@@ -7,7 +7,7 @@
 
 test_CHFLAGS_N () {
   local tflags
-  [[ "${arg[*]}" =~ .*-X\ *[0-9].* ]] && tflags+='-X [0-9] '
+  [[ "${arg[*]}" =~ -X\ *[0-9] ]] && tflags+='-X [0-9] '
   tflags+='-X [nN] '
   LibuiPerformTest 'Tell -- "${CHFLAGS}"'
   LibuiValidateTest -r ${?} 0 ".*${tflags}.*"

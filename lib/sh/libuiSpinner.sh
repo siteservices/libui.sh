@@ -28,9 +28,17 @@
 #
 #####
 
-Version -r 2.012 -m 1.20
+Version -r 2.017 -m 1.21
 
 # defaults
+#LIBUI_UTF0SPINNER="${LIBUI_UTF8SPINNER:-|/-\}"
+if ${UTF8} && [[ -n "${LIBUI_UTF8SPINNER}" ]]
+then
+  ! ${ZSH} && [[ "${LIBUI_UTF8SPINNER}" =~ ${LIBUI_UTF8SPINNER//?/(.)} ]] && _Spinner_e=("${BASH_REMATCH[@]:1}") || \
+      _Spinner_e=( ${(s::)LIBUI_UTF8SPINNER} )
+else
+  _Spinner_e=( '|' '/' '-' '\' )
+fi
 
 # Display spinner in the background
 #
@@ -79,9 +87,9 @@ StartSpinner () { # [<message>]
           ${ZSH} && jobs -Z 'Spinner' || BASH_ARGV0='Spinner'
           while true
           do
-            for _Spinner_i in '|' '/' '-' '\'
+            for _Spinner_i in "${_Spinner_e[@]}"
             do
-              printf " ${DSpinner} %s${D}${DCEL}\b\b\b" ${_Spinner_i} >&4 # duplicate stderr
+              printf " ${DSpinner} %s${D}${DCEL}\b\b\b" "${_Spinner_i}" >&4 # duplicate stderr
               sleep 0.1 2> /dev/null || sleep 1
             done
           done
@@ -213,10 +221,10 @@ WaitSpinner () {
           local _Spinner_i
           while kill -0 ${_Spinner_pid} &> /dev/null
           do
-            for _Spinner_i in '|' '/' '-' '\'
+            for _Spinner_i in "${_Spinner_e[@]}"
             do
-              printf " ${DSpinner} %s${D}${DCEL}\b\b\b" ${_Spinner_i} >&4 # duplicate stderr
-              sleep 0.1
+              printf " ${DSpinner} %s${D}${DCEL}\b\b\b" "${_Spinner_i}" >&4 # duplicate stderr
+              sleep 0.1 2> /dev/null || sleep 1
             done
           done
           printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
@@ -258,7 +266,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
   if ${TERMINAL} && ! ${LIBUI_PLAIN}
   then
     local _Spinner_u=1
-    local _Spinner_i='Waiting %s...'
+    local _Spinner_b='Waiting %s...'
 
     local opt
     local OPTIND
@@ -268,7 +276,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
       case ${opt} in
         i)
           ${_M} && _Trace 'Message. (%s)' "${OPTARG}"
-          _Spinner_i="${OPTARG}"
+          _Spinner_b="${OPTARG}"
           ;;
         u)
           ${_M} && _Trace 'Update interval. (%s)' "${OPTARG}"
@@ -285,7 +293,7 @@ Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
     ${_M} && _Trace 'Verbose sleep. (%s)' "${_Spinner_c}"
     while ((0 < (_Spinner_c-=${_Spinner_u})))
     do
-      printf "${DJBL}${DBrief}${_Spinner_i}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
+      printf "${DJBL}${DBrief}${_Spinner_b}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
       sleep ${_Spinner_u} 2> /dev/null || sleep $((${_Spinner_u%.*} + 1))
     done
     printf "${DJBL}${DCEL}" >&4 # duplicate stderr
