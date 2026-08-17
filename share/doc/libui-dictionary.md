@@ -798,6 +798,14 @@ Stops a progress spinner that was started by the StartSpinner command. Note: the
 StopSpinner
 ```
 
+### Success (man libui.sh) - Check if last Action commands were successful.
+
+Returns 0 if all of the `Action` commands since the last `Action -R` (Reset) have been successfully executed, otherwise returns 1.
+
+```sh
+Success
+```
+
 ### Syslog (man libuiSyslog.sh) - Send a message to the system log.
 
 Sends a message with the provided priority to the system log. The default priority is "user.notice".

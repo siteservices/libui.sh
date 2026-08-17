@@ -69,7 +69,7 @@ GetTmp tmpdir                                                                   
 # EX: AddParameter -n <var> -r -m -k '<Keyword>' -d '<Short description.>' <var>
 AddOption -n showstatus -c StatusCallback -f -k 'Show Opts' -d 'Show option status.' s              # demo content
 AddOption -n lines -i 100 -k 'Lines' -d 'Specify the number of lines to include in each batch.' l:  # demo content
-AddParameter -n files -r -m -k 'Files' -d 'Files to be processed.' files                            # demo content
+AddParameter -n files -r -m -k 'Files' -d 'The files to process.' files                             # demo content
 <ADD OPTIONS AND PARAMETERS HERE>
 
 ##### callbacks

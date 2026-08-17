@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd June 7, 2026
+.Dd July 19, 2026
 .Dt LIBUI 1
 .Os
 .Sh NAME
@@ -57,10 +57,12 @@ caches
 Demonstrate some
 .Xr libui.sh 3
 capabilities«
-.It Fl i
+.It Fl i Ar <parameter>
 Install the
 .Xr libui.sh 3
-library into the COMMONROOT directory with libui test suite
+library into the
+.Ar <parameter>
+directory
 .It Fl m
 Access the
 .Xr libui.sh 3
@@ -154,13 +156,11 @@ Group
 .Pp
 Set the permissions on the installed files and directories to be group writable.
 .It Fl i
-Install (with tests)
+Install (without tests)
 .Pp
 Install the
 .Xr libui.sh 3
-utility files along with the with
-.Xr libui.sh 3
-test suite into the directory specified by
+utility files (without the libui test suite) into the directory specified by
 .Ar <parameter> .
 If a
 .Ar <parameter>
@@ -182,19 +182,20 @@ documentation will be installed into the share/doc subdirectory.
 The man pages will be installed into the share/man/man1 and share/man/man3
 subdirectories.
 .It Fl I
-Install (without tests)
+Install (with tests)
 .Pp
 Install the
 .Xr libui.sh 3
-utility files (without the
-.Xr libui.sh 3
-test suite) into the directory specified by
+utility files along with the libui test suite into the directory specified by
 .Ar <parameter> .
 If a
 .Ar <parameter>
 is not provided, the directory specified by the
 .Ev COMMONROOT
 environment variable is used.
+If a parameter is not provided and
+.Ev COMMONROOT
+is empty, an error will be generated.
 .Pp
 This is the same installation as performed when using the
 .Fl i

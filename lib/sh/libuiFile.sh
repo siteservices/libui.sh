@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.017 -m 1.18
+Version -r 2.018 -m 1.19
 
 # defaults
 _File_ip=
@@ -894,7 +894,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
   fi
 
   ${_M} && _Trace 'Open path. (%s)' "${_File_n}"
-  if ${ZSH} || ((40 <= BV))
+  if ${ZSH} || ((BV >= 40))
   then
     if ${_File_c}
     then
