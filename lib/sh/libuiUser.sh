@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.017 -m 1.16
+Version -r 2.018 -m 1.17
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
@@ -188,7 +188,7 @@ _SetUserInfo () {
           then
             faces+=( ${(f)"$(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u)"} )
           else
-            ((40 <= BV)) && readarray -t faces < <(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) || \
+            ((BV >= 40)) && readarray -t -O "${#faces[@]}" faces < <(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) || \
                 IFS=$'\n' faces+=( $(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) )
           fi
           Contains faces 'Hack' || faces+=( 'Hack' )

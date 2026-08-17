@@ -1,5 +1,34 @@
 # Change Log
 
+## v2.018
+
+### New Features / Enhancements
+
+* Add `Success` command returns true if last `Action` commands were successful.
+* Add display format names to display formats in `libui -d`.
+* Add italics (with no substitution `LIBUI_USE_UNDERLINE=false`) and strikethrough.
+* Swap `libui` install options to be `-i` (Install) and `-I` (Install with Tests).
+* Update libui Package mod default package header to pass '-h' to installer.
+* Add the `-P` (No Paging) option to the `mless` command.
+* Various improvements in `mless` tag handling, colors, and formatting.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+
+Note: Workspace support is provided in dotfiles package (available separately).
+
+### Bug Fixes
+
+* Fix `mless` line wrapping.
+* Fix `mless` tag handling errors in backtick (grave accent) code quotes.
+* Fix several `mless` backslash handling errors.
+* Remove ^O in libui Utility mod tput sgr0 (`${D}`) to fix "broken" tmux terminfo.
+* Fix libui Libui mot to remove extraneous files from generated packages.
+
+### Incompatibilities
+
+* Swap `libui` install options to be `-i` (Install) and `-I` (Install with Tests).
+
 ## v2.017
 
 ### New Features / Enhancements
@@ -24,10 +53,6 @@ Note: Workspace support is provided in dotfiles package (available separately).
 * Fix missing error return codes with `Tell -E` commands in a few places.
 * Fix a couple read loops with incorrect read option flags.
 * Fix `mless` angle bracket handling in single backtick (grave accent) quotes.
-
-### Incompatibilities
-
-* N/A
 
 ## v2.016
 
@@ -182,6 +207,7 @@ Note: The Workspace and dotfiles components remain available separately.
 * Change libui -U (Unify) to -D (Defer) local environment with / to COMMONROOT.
 * Change libui -v option flag to "version" and -V to "Verify".
 * (Breakling) Change the zsh / bash "include libui via source" command from:
+
 ```
 source "${LIBUI:-libui.sh}" "${0}" "${@}"
 ```
