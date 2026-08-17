@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.015 -m 1.10
+Version -r 2.018 -m 1.11
 
 # defaults
 _SSH_timeout="${LIBUI_SSHTIMEOUT:-30}" # connection timeout in seconds
@@ -52,7 +52,7 @@ IsRemote () { # <target>
   then
     _SSH_target="${(L)1}"
   else
-    ((40 <= BV)) && _SSH_target="${1,,}" || _SSH_target="$(printf '%s' "${1}" | tr '[:upper:]' '[:lower:]')"
+    ((BV >= 40)) && _SSH_target="${1,,}" || _SSH_target="$(printf '%s' "${1}" | tr '[:upper:]' '[:lower:]')"
   fi
 
   ${_M} && _Trace 'Check for localhost. (%s)' "${_SSH_target}"

@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Success_false
+#
+#####
+
+test_Success_false () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest 'Action "ls -d /badpath"; Success'
+  LibuiValidateTest -r ${?} 1 "ls: .*/badpath.*: No such file or directory${N}.*WARNING: \(Action\) Failure while evaluating command. \(ls -d /badpath\)"
+  return ${?}
+}
+
+return 0

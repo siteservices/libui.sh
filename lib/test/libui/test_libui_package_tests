@@ -1,0 +1,19 @@
+#!/usr/bin/env libui
+#####
+#
+# test_libui_package_tests
+#
+#####
+
+test_libui_package_tests () {
+  GetTmp tl
+  libui -p "${tl}/pkg"
+  mkdir "${tl}/ti"
+  ls -al "${tl}"
+  ${SHENV} "${tl}/pkg.tarp" -XF -I "${tl}/ti"
+  LibuiPerformTest 'diff <(cd "${LIBUI%/*/*/*}" && find . -name ".DS_Store" -prune -o -name ".gitignore" -prune -o -path "./.git" -prune -o -name "Makefile" -prune -o -type f -print | LC_ALL=C sort) <(cd "${tl}/ti" && find . -type f -print | LC_ALL=C sort) | grep "\(<\|>\)" | LC_ALL=C sort'
+  LibuiValidateTest ${?} 0
+  return ${?}
+}
+
+return 0
