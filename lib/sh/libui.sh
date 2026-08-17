@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.017 # Mon Jun 29 00:04:30 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.020 # Mon Aug 17 06:13:34 UTC 2026
 
 #####
 #
