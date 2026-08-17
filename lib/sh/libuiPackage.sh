@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.28
+Version -r 2.017 -m 1.27
 
 # defaults
 
@@ -167,7 +167,7 @@ _CreatePackageHeader () { # [-G|-P|-S|-T|-X] [-c <compression>] [-d <description
     return ${ERRV}
   else
     ${_M} && _Trace 'Prepare self-extracting package header. (%s)' "${_Package_installer}"
-    local _Package_head="#!/usr/bin/env zsh
+    local _Package_head="#!/bin/zsh
 #####
 #
 #	${_Package_desc} (${1##*/})
@@ -185,7 +185,7 @@ l=\\\$(head \\\${n:--}\${_Package_headlen// /} \\\"\\\${0}\\\" | tail \\\${n:--}
 # extract archive
 t=\\\"\\\$(mktemp -d)\\\" || error \\\"Unable to create temporary directory.\\\"
 a=\\\"\\\${0##*/}\\\"; a=\\\"\\\${t}/\\\${a%\\\\\\.*}.\${_Package_archive}\\\"
-[ \\\"\\\${1}\\\" = '-h' ] && echo \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\"\\\${a}\\\"'\${_Package_installer:+, then execute the installer application}...\\\"
+[ \\\"\\\${1}\\\" = '-h' ] && echo \\\"Executing 'zsh \\\${0}' will unarchive using '\${_Package_unarchive} \\\"\\\${a}\\\"'\${_Package_installer:+, then execute installer application}.\\\" && exit 0
 printf 'Preparing...'
 tail \\\${n// /} +\$((_Package_headlen + 1)) \\\"\\\${0}\\\" > \\\"\\\${a}\\\"
 [ \\\"\\\${1}\\\" = '-e' ] && mv \\\"\\\${a}\\\" ./ && rmdir \\\"\\\${t}\\\" && printf 'Done.\\n' && exit 0

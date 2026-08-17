@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/zsh
 #####
 #
 #	Simple .star file Extractor - Extract files from a .star archive.

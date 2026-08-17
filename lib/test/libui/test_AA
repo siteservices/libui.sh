@@ -10,7 +10,7 @@ test_AA () {
   local bv="${BASH_VERSION//[^\.]/}" && ((${#bv} > 1)) && bv="${BASH_VERSION%.*}" || bv="${BASH_VERSION:-0}"; bv="${bv//.}"
   LibuiPerformTest 'Tell -- "${AA}"'
   local tv=${?}
-  if ${ZSH} || ((bv >= 40))
+  if ${ZSH} || ((40 <= bv))
   then
     LibuiValidateTest "${tv}" 0 'true'
   else
