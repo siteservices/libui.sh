@@ -1,6 +1,6 @@
 # Change Log
 
-## v2.018
+## v2.020
 
 ### New Features / Enhancements
 
@@ -28,6 +28,8 @@ Note: Workspace support is provided in dotfiles package (available separately).
 ### Incompatibilities
 
 * Swap `libui` install options to be `-i` (Install) and `-I` (Install with Tests).
+
+Note: v2.018 and v2.019 were skipped.
 
 ## v2.017
 
