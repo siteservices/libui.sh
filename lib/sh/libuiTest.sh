@@ -389,7 +389,6 @@ LibuiGetDisplayTestValues () {
   if ${TERMINAL} && ! ${LIBUI_PLAIN} && [[ -n "${TERM}" ]] && ((8 <= $(tput colors 2> /dev/null)))
   then
     ${_M} && _Trace 'Define display values.'
-    [[ -z "${LIBUI_USE_UNDERLINE}" ]] && LIBUI_USE_UNDERLINE=false
     TCS="$(tput clear)" # clear screen (jump home)
     TCEL="$(tput el)" # clear end of line
     TCES="$(tput ed || tput cd)" # clear end of screen
@@ -442,20 +441,16 @@ LibuiGetDisplayTestValues () {
     [[ -n "$(tput dim)" ]] && Td="$(tput dim)" || Td="${TFs:-${Tfw}}" # dim
     Tsu="$(tput smul)" # start underline
     Teu="$(tput rmul)" # end underline
-    Tsi="$(! tput sitm && ${LIBUI_USE_UNDERLINE} && tput smul)" # start italic
-    Tei="$(! tput ritm && ${LIBUI_USE_UNDERLINE} && tput rmul)" # end italic
-    Tsx="$(tput smxx)" # start strikethrough
-    Tex="$(tput rmxx)" # end strikethrough
     Tr="$(tput rev)" # reverse
     Tss="$(tput smso)" # start standout
     Tes="$(tput rmso)" # exit standout
     T="$(tput sgr0)" # normal
     TAlarm="${Td}${Tfr}"
     TAlert="${Tb}${TFg:-${Tfg}}"
-    TAnswer="${Tfy}${Tsi}"
-    TBrief="${TFc:-${Tfc}}${Tsi}"
+    TAnswer="${Tfy}"
+    TBrief="${TFc:-${Tfc}}"
     TCaution="${TFm:-${Tfm}}"
-    TConfirm="${Tb}${TFy:-${Tfy}}${Tsi}"
+    TConfirm="${Tb}${TFy:-${Tfy}}"
     TError="${Tbr}${Tb}${TFy:-${Tfy}}"
     TInfo="${Tb}${TFc:-${Tfc}}"
     TOptions="${Tb}"

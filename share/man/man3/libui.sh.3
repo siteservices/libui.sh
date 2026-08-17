@@ -823,9 +823,7 @@ This option is only applicable when also using the
 .Fl l Ar <file_path>
 option.
 .It Fl A
-Add the last return value (a.k.a. ${?}) to
-.Sx ${RETVAL}
-and set Error if the result is
+Add the last return value (a.k.a. ${?}) to RETVAL and set Error if the result is
 non-zero.
 See the
 .Sx Error
@@ -934,7 +932,7 @@ See also the
 (Retry Wait) option.
 .It Fl R
 Reset previous action result to a "success" state and reset the
-.Sx ${RETVAL}
+.It Dv ${RETVAL}
 variable to 0.
 This will effectively negate the result of any previous action.
 Also see the
@@ -1623,18 +1621,6 @@ See the
 (Quiet)
 .Nm
 standard command line option for more information.
-.Ss Success
-The following command indicates if the
-.Sy Action
-commands have successfully executed.
-.Bd -ragged -offset 4n
-.Sy Success
-.Ed
-.Pp
-Returns 0 (true) if the
-.Sy Action
-commands since the last "Action -R" (Reset) have successfully executed,
-otherwise returns 1 (false).
 .Ss Tell
 The following command sends a message to the user:
 .Bd -ragged -offset 4n
@@ -2153,7 +2139,7 @@ This is the same as: ${CMD} "${CMDARGS[@]}"
 .It Dv ${CMDPATH}
 The absolute path of the main script file.
 .It Dv ${DOMAIN}
-The lowercase domain of the current machine.
+The domain of the current machine.
 .It Dv ${FMFLAGS}
 File management flags: For use by cp, mv, rm.
 .Pp
@@ -2169,7 +2155,7 @@ The primary group of the user.
 .It Dv ${HEIGHT}
 Terminal window height in rows.
 .It Dv ${HOST}
-The lowercase hostname of the current machine (hostname only, not fully qualified).
+The hostname of the current machine (hostname only, not fully qualified).
 .It Dv ${IWD}
 The path of the directory where the script was initially executed.
 .It Dv ${LIBUI}
@@ -2212,14 +2198,11 @@ The sum of all return values from
 .Sx Action
 commands.
 Since the "success" return value is 0, the
-.Sx ${RETVAL}
+.It Dv ${RETVAL}
 variable can reliably be used to determine the success (0) or failure (non-zero)
 of a series of
 .Sx Action
 commands.
-See also the
-.Sx Success
-command.
 .It Dv ${SHENV}
 The path of the currently executing shell (limited to: zsh, bash, or sh).
 .It Dv ${TERMINAL}
@@ -2373,14 +2356,6 @@ Dim
 Start Underline
 .It Dv ${Deu}
 End Underline
-.It Dv ${Dsi}
-Start Italics
-.It Dv ${Dei}
-End Italics
-.It Dv ${Dsx}
-Start Strikethrough
-.It Dv ${Dex}
-End Strikethrough
 .It Dv ${Dr}
 Reverse Display
 .It Dv ${Dss}
@@ -2422,13 +2397,13 @@ Alarm display format - defaults to dim red text.
 .It Dv ${DAlert}
 Alert display format - defaults to bold green text.
 .It Dv ${DAnswer}
-Answer display format - defaults to italic yellow text.
+Answer display format - defaults to yellow text.
 .It Dv ${DBrief}
-Brief display format - defaults to italic cyan text.
+Brief display format - defaults to cyan text.
 .It Dv ${DCaution}
 Caution display format - defaults to magenta text.
 .It Dv ${DConfirm}
-Confirm display format - defaults to bold italic yellow text.
+Confirm display format - defaults to bold yellow text.
 .It Dv ${DError}
 Error display format - defaults to bold yellow text on a red background.
 .It Dv ${DInfo}
@@ -2452,28 +2427,22 @@ The
 library automatically generates ANSI X3.64 escape codes to deliver enhanced
 (color) display content, spinners, and informational messages.
 The
-.Ev TERMINAL
+.Sy TERMINAL
 and the
-.Ev LIBUI_PLAIN
+.Sy LIBUI_PLAIN
 variables can be set to "true" or "false" before sourcing
 .Nm
 to enable / disable these terminal effects.
 Setting the
-.Ev TERMINAL
+.Sy TERMINAL
 variable to "false" disables terminal interactions including the enhanced text
 effects, Brief messages, spinner, Ask, and Verify.
 It defaults answers and removes all other interactive actions.
 Alternatively, setting the
-.Ev LIBUI_PLAIN
+.Sy LIBUI_PLAIN
 variable to "true" disables only the enhanced text effects, Brief messages, and
 spinner.
 All other terminal interactions remain operational.
-.Pp
-Note: If display italics are not supported, the
-.Ev LIBUI_USE_UNDERLINE
-environment variable can be set to "true" (e.g. LIBUI_USE_UNDERLINE=true) to
-have the system automatically use underlined text in place of italics.
-The default is to ignore the request for italics and display regular text.
 .Sh UIMOD
 The
 .Nm

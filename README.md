@@ -72,12 +72,12 @@ The libui User Interface Library can be installed directly from a downloaded pac
 The easiest way to install the libui User Interface Library is download the libui release package from [https://github.com/siteservices/libui.sh/releases/](https://github.com/siteservices/libui.sh/releases/) and then execute the following command to install the downloaded libui package into the provided \<COMMONROOT\> path. (Replace \<version\> with the downloaded version and \<COMMONROOT\> with the desired installation path.)
 
 ```sh
-sh libui-<version>.tarp -i <COMMONROOT>
+sh libui-<version>.tarp -I <COMMONROOT>
 ```
 
 After installing, the following should be added to your environment:
 
-  * Add "\<COMMONROOT\>/bin" to your PATH to access libui and example scripts.
+  * Add "\<COMMONROOT\>" to your PATH to access libui and example scripts.
   * Add "\<COMMONROOT\>/share/man" to your MANPATH to access the man pages.
 
 Once added, you can use "man 3 libui.sh" or "libui -m" to view the libui man page.
@@ -90,7 +90,7 @@ Use git to pull down the repository from [https://github.com/siteservices/libui.
 make install
 ```
 
-This will execute the libui script with the `-i` (Install) option. If the `${COMMONROOT}` environment variable contains a path, the libui User Interface Library will be installed into that path. If the `${COMMONROOT}` environment variable does not contain a path, a prompt will appear asking for the COMMONROOT directory. The default path is `~/.local/libui`. The installation path must be writable by the user performing the installation.
+This will execute the libui script with the `-I` (Install) option. If the `${COMMONROOT}` environment variable contains a path, the libui User Interface Library will be installed into that path. If the `${COMMONROOT}` environment variable does not contain a path, a prompt will appear asking for the COMMONROOT directory. The default path is `~/.local/libui`. The installation path must be writable by the user performing the installation.
 
 The libui.sh library installs files into several subdirectories under the provided path. These include: `bin`, `lib/sh`, `lib/test`, `share/doc`, `share/man/man1`, and `share/man/man3`.
 
@@ -99,12 +99,12 @@ The libui.sh library installs files into several subdirectories under the provid
 The libui script may be used directly to install the library. To execute the libui script directly from within the downloaded repo, use the following command. It performs the same as the above `make install`.
 
 ```sh
-bin/libui -i <COMMONROOT>
+bin/libui -I <COMMONROOT>
 ```
 
 ### Manual Installation With Regression Tests
 
-To include all the libui regression tests, use `libui -I <COMMONROOT>`, i.e., using the `-I` (Install With Tests) option flag instead of the `-i` (Install Without Tests) option flag. The regression tests can then be executed using the `libui -t` command.
+To include all the libui regression tests, use `libui -i <COMMONROOT>`, i.e., using the `-i` (Install With Tests) option flag instead of the `-I` (Install Without Tests) option flag. The regression tests can then be executed using the `libui -t` command.
 
 ## Post Installation
 

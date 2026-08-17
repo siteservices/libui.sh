@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.26
+Version -r 2.017 -m 1.25
 
 ##### configuration
 
@@ -60,16 +60,6 @@ _Util_dcprefix="${LIBUI_CACHE}/display-"
 _Util_statsfile="${LIBUI_STATE}/stats"
 _Util_lockdir="${LIBUI_LOCKDIR:-${LIBUI_STATE}/lock}"
 _Util_workdir="${PWD}"
-_Util_files=( './changelog.md' './LICENSE.md' './README.md' )
-_Util_excludes=(
-  '*~'
-  '.*~'
-  '.*.sw?'
-  '*.pyc'
-  '.DS_Store'
-  '.git'
-  '.gitignore'
-)
 GetTmp _Util_tmpdir
 
 
@@ -144,8 +134,8 @@ _LibuiSetup () {
   AddOption -n defer -f -k 'Defer' -d 'Defer user environment by preferring COMMONROOT (or provided directory).' D
   AddOption -n shells -m -s 'zsh' -s 'bash' -i 'zsh' -i 'bash' -k 'Execution' -d 'Specify shell for regression testing (otherwise both bash and zsh).' e:
   AddOption -n group -f -k 'Group' -d 'Make installed files / directories group writable.' g
-  AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' i
-  AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' I
+  AddOption -n installtests -f -k 'Install Tests' -d 'Install libui and tests into provided directory (or COMMONROOT).' i
+  AddOption -n install -f -k 'Install' -d 'Install libui into provided directory (or COMMONROOT).' I
   AddOption -n list -f -k 'List' -d 'List files that would be included in a libui package.' l
   AddOption -n unlock -f -k 'Lockfiles' -d 'Remove leftover lockfiles.' L
   AddOption -n mpage -f -k 'Man Page' -d 'Display man page.' m
@@ -375,20 +365,20 @@ LibuiDemo () {
   Tell 'Capabilities Demo'
 
   Tell '\nDisplay formats:'
-  Tell "\t${DAlarm}DAlarm - Alarm format."
-  Tell "\t${DAlert}DAlert - Alert format."
-  Tell "\t${DAnswer}DAnswer - Answer format."
-  Tell "\t${DBrief}DBrief - Brief format."
-  Tell "\t${DCaution}DCaution - Caution format."
-  Tell "\t${DConfirm}DConfirm - Confirm format."
-  Tell "\t${DError}DError - Error format."
-  Tell "\t${DInfo}DInfo - Info format."
-  Tell "\t${DOptions}DOptions - Options format."
-  Tell "\t${DQuestion}DQuestion - Question format."
-  Tell "\t${DSpinner}DSpinner - Spinner format."
-  Tell "\t${DTell}DTell - Tell format."
-  Tell "\t${DTrace}DTrace - Trace format."
-  Tell "\t${DWarn}DWarn - Warning format."
+  Tell "\t${DAlarm}Alarm format."
+  Tell "\t${DAlert}Alert format."
+  Tell "\t${DAnswer}Answer format."
+  Tell "\t${DBrief}Brief format."
+  Tell "\t${DCaution}Caution format."
+  Tell "\t${DConfirm}Confirm format."
+  Tell "\t${DError}Error format."
+  Tell "\t${DInfo}Info format."
+  Tell "\t${DOptions}Options format."
+  Tell "\t${DQuestion}Question format."
+  Tell "\t${DSpinner}Spinner format."
+  Tell "\t${DTell}Tell format."
+  Tell "\t${DTrace}Trace format."
+  Tell "\t${DWarn}Warning format."
 
   Tell '\nDisplay modes:'
   Tell "\t${D0}D0 - Display mode %d." 0
@@ -451,10 +441,6 @@ LibuiDemo () {
     [[ -z "${Dd}" ]] && Tell -W 'Dim text (Dd) not defined.' || printf "\t${Dd}%s${D}\n" 'Dd - Dim text.'
     [[ -z "${Dsu}" ]] && Tell -W 'Start underline (Dsu) not defined.' || printf "\t${Dsu}%s${D}\n" 'Dsu - Start underline.'
     [[ -z "${Deu}" ]] && Tell -W 'End underline (Deu) not defined.' || printf "\t${Deu}%s${D}\n" 'Deu - End underline.'
-    [[ -z "${Dsi}" ]] && Tell -W 'Start italic (Dsi) not defined.' || printf "\t${Dsi}%s${D}\n" 'Dsi - Start italic.'
-    [[ -z "${Dei}" ]] && Tell -W 'End italic (Dei) not defined.' || printf "\t${Dei}%s${D}\n" 'Dei - End italic.'
-    [[ -z "${Dsx}" ]] && Tell -W 'Start strikethrough (Dsx) not defined.' || printf "\t${Dsx}%s${D}\n" 'Dsx - Start strikethrough.'
-    [[ -z "${Dex}" ]] && Tell -W 'End strikethrough (Dex) not defined.' || printf "\t${Dex}%s${D}\n" 'Dex - End strikethrough.'
     [[ -z "${Dr}" ]] && Tell -W 'Reverse display (Dr) not defined.' || printf "\t${Dr}%s${D}\n" 'Dr - Reverse display.'
     [[ -z "${Dss}" ]] && Tell -W 'Start standout text (Dss) not defined.' || printf "\t${Dss}%s${D}\n" 'Dss - Start standout text.'
     [[ -z "${Des}" ]] && Tell -W 'End standout text (Des) not defined.' || printf "\t${Des}%s${D}\n" 'Des - End standout text.'
@@ -729,7 +715,7 @@ LibuiPackageList () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'List libui package.'
-  _Util_files+=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  local _Util_files; _Util_files=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
@@ -776,7 +762,7 @@ LibuiPackage () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
-  _Util_files+=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  local _Util_files; _Util_files=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
@@ -784,13 +770,13 @@ LibuiPackage () {
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
   if [[ "${_Util_package: -6}" == '.sharp' ]]
   then
-    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x _Util_excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui shar package archive?' "CreatePackage -S -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   elif [[ "${_Util_package: -6}" == '.starp' ]]
   then
-    Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x _Util_excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui star package archive?' "CreatePackage -P -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   else
     [[ "${_Util_package: -5}" == '.tarp' ]] || _Util_package+='.tarp'
-    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x _Util_excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
+    Action -q 'Create libui tar package archive?' "CreatePackage -T -f _Util_files -x excludes -i '${_Util_installer}' -s '${_Util_libuiroot}' '${_Util_package}'"
   fi
   Tell -I 'Creation of libui package complete. (%s)' "${_Util_package}"
 
@@ -810,7 +796,7 @@ LibuiInstall () {
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
-    _Util_files+=( $(find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+    _Util_files=( $(find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
     ${installtests} && [[ -d "${_Util_libuitest}" ]] && \
         _Util_files+=( $(find "${_Util_libuitest}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )

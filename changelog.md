@@ -56,6 +56,10 @@ Note: Workspace support is provided in dotfiles package (available separately).
 * Fix a couple read loops with incorrect read option flags.
 * Fix `mless` angle bracket handling in single backtick (grave accent) quotes.
 
+### Incompatibilities
+
+* N/A
+
 ## v2.016
 
 ### New Features / Enhancements
@@ -209,7 +213,6 @@ Note: The Workspace and dotfiles components remain available separately.
 * Change libui -U (Unify) to -D (Defer) local environment with / to COMMONROOT.
 * Change libui -v option flag to "version" and -V to "Verify".
 * (Breakling) Change the zsh / bash "include libui via source" command from:
-
 ```
 source "${LIBUI:-libui.sh}" "${0}" "${@}"
 ```
