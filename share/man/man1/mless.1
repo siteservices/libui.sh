@@ -12,7 +12,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd August 13, 2026
+.Dd June 28, 2026
 .Dt STAR 1
 .Os
 .Sh NAME
@@ -20,7 +20,7 @@
 .Nd Display markdown files from a command line in a terminal
 .Sh SYNOPSIS
 .Sy mless
-.Op Fl P Fl h Fl H
+.Op Fl h Fl H
 .Op Fl X Ar <option>
 .Op Ar <filepath> ...
 .Sh DESCRIPTION
@@ -50,32 +50,27 @@ The
 script can be executed using the following:
 .Bd -ragged -offset 4n
 .Sy mless
-.Op Fl P Fl h Fl H
+.Op Fl h Fl H
 .Op Fl X Ar <option>
 .Op Ar <filepath>
 .Ed
 .Pp
 Available command line options are:
 .Bl -tag -offset 4n -width 4n
-.It Fl P
-No Paging
-.Pp
-Disable Paging. Do not use a pager when display the markdown content.
 .It Ar <filepath> ...
 File Path
 .Pp
 The files to display.
-Each file is interpreted and displayed using the application defined by the
-.Ev PAGER
-environment variable or,
-if
-.Ev PAGER
-is not defined, the "less" application.
+Each file is interpreted and displayed using the "less" application.
 If the filepath provided is not found, the script will attempt to find the file
 by first adding a ".md" extension, and then searching through the directories in
 the
 .Ev MLESSPATH
 environment variable.
+.Pp
+See
+.Xr less 1
+for more information.
 .Pp
 Note: If the
 .Ar <filepath>

@@ -28,7 +28,7 @@ all:
 .PHONY: install update verify clean distclean env printenv
 
 install:
-	@lib/sh/libui -i "$(COMMONROOT)"
+	@lib/sh/libui -I "$(COMMONROOT)"
 
 update:
 	@lib/sh/libui -u "$(COMMONROOT)"

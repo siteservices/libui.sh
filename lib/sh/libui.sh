@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.018 # Sun Aug 16 00:26:53 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.017 # Mon Jun 29 00:04:30 UTC 2026
 
 #####
 #
@@ -1138,8 +1138,8 @@ AnswerMatches () { # [-r] <answer_match_string>
   then
     [[ "${ANSWER}" =~ ${_m} ]] && _rv=0
   else
-    ${ZSH} && _m="${(L)_m}"; ((BV >= 40)) && _m="${_m,,}"
-    local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((BV >= 40)) && _a="${_a,,}"
+    ${ZSH} && _m="${(L)_m}"; ((40 <= BV)) && _m="${_m,,}"
+    local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((40 <= BV)) && _a="${_a,,}"
     [[ -n "${_m}" && "${_m}" == "${_a}" ]] && _rv=0
   fi
   ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${_a}" "${_m}" "${_rv}"
@@ -2005,16 +2005,6 @@ Quiet () {
   ${_quiet} && return 0 || return 1
 }
 
-# success check
-UICMD+=( 'Success' )
-Success () {
-  ${_S} && ((_cSuccess++))
-  ${_T} && _Trace 'Success [%s]' "${*}"
-
-  ${_T} && _Trace 'Return success state. (%s)' "$((RETVAL))"
-  ((RETVAL)) && return 1 || return 0
-}
-
 # verbose check
 UICMD+=( 'Verbose' )
 Verbose () {
@@ -2138,7 +2128,7 @@ Exit () { # [<return_value>]
     if ! ${ZSH}
     then
       local _i
-      if ((BV >= 40))
+      if ((40 <= BV))
       then
         declare -A _u; _u=( )
         for _i in "${UICMD[@]}"
@@ -2181,7 +2171,7 @@ Exit () { # [<return_value>]
     ((_crun++)); _c+=( "_crun=${_crun}" )
     if ! ${ZSH}
     then
-      if ((BV >= 40))
+      if ((40 <= BV))
       then
         _u=( )
         for _i in "${UICMD[@]}"
@@ -2368,7 +2358,7 @@ if ${ZSH}
 then
   DOMAIN="${(L)DOMAIN}"
 else
-  ((BV >= 40)) && DOMAIN="${DOMAIN,,}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
+  ((40 <= BV)) && DOMAIN="${DOMAIN,,}" || DOMAIN="$(printf '%s' "${DOMAIN}" | tr '[:upper:]' '[:lower:]')"
 fi
 [[ -z "${HOST}" ]] && HOST="${HOSTNAME}"
 [[ -z "${HOST}" ]] && HOST="$(hostname -s 2> /dev/null)"
@@ -2378,7 +2368,7 @@ if ${ZSH}
 then
   HOST="${(L)HOST}"
 else
-  ((BV >= 40)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
+  ((40 <= BV)) && HOST="${HOST,,}" || HOST="$(printf '%s' "${HOST}" | tr '[:upper:]' '[:lower:]')"
 fi
 [[ -z "${ARCH}" ]] && ARCH="$(uname -m)"
 [[ -z "${OS}" ]] && OS="$(uname -s)"

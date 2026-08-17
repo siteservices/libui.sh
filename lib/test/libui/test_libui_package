@@ -11,8 +11,8 @@ test_libui_package () {
   mkdir "${tl}/ti"
   ls -al "${tl}"
   ${SHENV} "${tl}/pkg.tarp" -XF -i "${tl}/ti"
-  LibuiPerformTest 'diff <(cd "${LIBUI%/*/*/*}" && find . -name ".DS_Store" -prune -o -name ".gitignore" -prune -o -path "./.git" -prune -o -name "Makefile" -prune -o -path "./lib/test/libui" -prune -o -type f -print | LC_ALL=C sort) <(cd "${tl}/ti" && find . -type f -print | LC_ALL=C sort) | grep "\(<\|>\)" | LC_ALL=C sort'
-  LibuiValidateTest ${?} 0
+  LibuiPerformTest 'diff <(cd "${LIBUI%/*/*/*}" && find . -name ".git" -prune -o -type f -print | sort) <(cd "${tl}/ti" && find . -name ".git" -prune -o -type f -print | sort) | grep "\(<\|>\)" | grep -v '\.git' | LC_ALL=C sort'
+  LibuiValidateTest ${?} 0 "< ./.buildrecipe${N}< ./LICENSE.md${N}< ./Makefile${N}< ./README.md${N}< ./changelog.md"
   return ${?}
 }
 
