@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.26
+Version -r 2.019 -m 1.27
 
 ##### configuration
 
@@ -687,7 +687,7 @@ LibuiUpdateMan () {
   local _Util_mp
   local _Util_mts
   local _Util_sedi; [[ "${UNIX}" == 'GNU' ]] && _Util_sedi="-i" || _Util_sedi="-i ''"
-  for _Util_file in $(find . -name 'man' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print)
+  for _Util_file in $(command find . -name 'man' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     ${ZSH} && eval "_Util_mp=( ${_Util_libuiroot}/share/man/man*/${_Util_file##*/}.*(N) )" || \
@@ -729,8 +729,8 @@ LibuiPackageList () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'List libui package.'
-  _Util_files+=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
-  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
+  _Util_files+=( $(command find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(command find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
@@ -776,8 +776,8 @@ LibuiPackage () {
   pushd "${_Util_libuiroot}" > /dev/null
 
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
-  _Util_files+=( $(find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
-  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
+  _Util_files+=( $(command find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+  [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(command find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
   _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
@@ -810,9 +810,9 @@ LibuiInstall () {
   if Force || Verify 'Really install libui from "%s" into "%s"?' "${_Util_libuiroot}" "${COMMONROOT}"
   then
     ${_M} && _Trace 'Install libui from "%s" into "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
-    _Util_files+=( $(find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
+    _Util_files+=( $(command find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
     ${installtests} && [[ -d "${_Util_libuitest}" ]] && \
-        _Util_files+=( $(find "${_Util_libuitest}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
+        _Util_files+=( $(command find "${_Util_libuitest}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
     _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
@@ -901,7 +901,7 @@ LibuiDefer () { # [-d|-D|-u|-v]
   StartSpinner 'Comparing "%s" with commonroot "%s".' "${_Util_libuiroot}" "${COMMONROOT}"
 
   ${_M} && _Trace 'Verify %s environment with %s.' "${COMMONROOT}" "${_Util_libuiroot}"
-  for _Util_file in $(find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -o -name '.DS_Store*' -prune -o -type f -print)
+  for _Util_file in $(command find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -o -name '.DS_Store*' -prune -o -type f -print)
   do
     _Util_file="${_Util_file#./}"
     if [[ -f "${COMMONROOT}/${_Util_file}" ]]
@@ -961,7 +961,7 @@ LibuiDefer () { # [-d|-D|-u|-v]
     ${_M} && _Trace 'Defer user environment to %s. (%s)' "${COMMONROOT}" "${_Util_libuiroot}"
     pushd "${_Util_libuiroot}" > /dev/null
     MkDir "${_Util_libuiroot}/Deferred"
-    for _Util_file in $(find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
+    for _Util_file in $(command find . -name 'Deferred' -prune -o -name '.git' -prune -o -name '.*.sw*' -prune -o -name '*version' -prune -o -type f -print)
     do
       _Util_file="${_Util_file#./}"
       if [[ -f "${COMMONROOT}/${_Util_file}" ]]

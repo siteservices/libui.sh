@@ -29,7 +29,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.9
+Version -r 2.019 -m 1.10
 
 ##### configuration
 
@@ -170,7 +170,7 @@ _Terminal () {
       printf "DCEL='$(tput el)'\n" # clear end of line
       printf "DCES='$(tput ed || tput cd)'\n" # clear end of screen
       [[ -n "$(tput u7)" ]] && printf "DCP='$(tput u7)'\n" || printf "DCP=$'\\e[6n'\n" # read cursor position
-      [[ -n "$(tput hpa 0)" ]] && printf "DJBL='$(tput hpa 0)'\n" || printf "DJBL=$'\\r'\n" # jump to begining of line
+      printf "DJBL='$(tput cr)'\n" # jump to the beginning of the current line
       printf "DJH='$(tput cup 0 0)'\n" # jump home (0, 0)
       printf "DRC='$(tput rc)'\n" # restore cursor
       printf "DSC='$(tput sc)'\n" # save cursor

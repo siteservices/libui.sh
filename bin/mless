@@ -30,7 +30,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.018 1.11
+Version -r 2.019 1.12
 
 # load mods
 LoadMod File
@@ -173,14 +173,16 @@ for file in "${files[@]}"
 do
   Trace 'Display file. (%s)' "${file}"
   cat "${file}" | \
-      awk "/^\`\`\`[a-zA-Z]*\$/ {
+      awk "BEGIN { code = 0 }
+      /^\`\`\`[a-zA-Z]*\$/ {
         if (code == 0) {
           print \"  ${codebox}${top}${D}\"; print \"  ${codebox}${vertical}${D}\"; print; code = 1
         } else {
           print; print \"  ${codebox}${vertical}${D}\"; print \"  ${codebox}${bottom}${D}\"; code = 0
         } next
-      } !code {
-        FS=\"\`\"; OFS=\"\`\";
+      }
+      ! code {
+        FS=\"\`\"; OFS=\"\`\"; \$0 = \$0;
         if (NF >= 2) for (i=2; i < NF; i += 2) {
           gsub(/\\\\/, \"\x01\", \$i)
           gsub(/_/, \"\\\\_\", \$i)

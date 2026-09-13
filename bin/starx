@@ -69,7 +69,7 @@ then
   exit 1
 fi
 
-# find initial separator
+# determine initial separator
 exec 8< "${file}"
 while IFS= read -r line
 do

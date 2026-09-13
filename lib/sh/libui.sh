@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.018 # Mon Aug 17 07:02:45 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.019 # Sun Sep 13 20:02:24 UTC 2026
 
 #####
 #
@@ -596,7 +596,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
   if Error
   then
     ${_T} && _Trace 'Action error return. (%s)' "${ERRV}"
-    ((RETVAL+=ERRV))
+    ((RETVAL=ERRV))
     return ${ERRV}
   else
     if ${_a} || ${_action}

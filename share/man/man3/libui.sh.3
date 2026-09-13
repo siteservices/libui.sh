@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd August 17, 2026
+.Dd September 13, 2026
 .Dt LIBUI.SH 3
 .Os
 .Sh NAME
@@ -2286,9 +2286,11 @@ Clear to End of Line
 .It Dv ${DCES}
 Clear to End of Screen
 .It Dv ${DCP}
-Read Current Cursor Position -
-note that the position must be read after sending this sequence
-(e.g.: printf "${DCP}" && IFS='[;' read -rsd R _x ROW COL)
+Read Current Cursor Position
+.Pp
+Note: The response must be read after sending this sequence
+(e.g.: printf "${DCP}" && IFS='[;' read -t 0.25 -rsd R _x ROW COL)
+Search terminfo U7 for more information.
 .It Dv ${DJBL}
 Jump to Beginning of Line
 .It Dv ${DJH}

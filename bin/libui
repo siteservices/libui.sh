@@ -32,7 +32,7 @@
 #
 #####
 
-# find root dir
+# determine root dir
 _dir="${BASH_SOURCE[0]}" && _dir="${_dir:-${(%):-%N}}" && _dir="${_dir%/bin/*}"
 
 # libui.sh path
