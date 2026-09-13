@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.014 -m 1.11
+Version -r 2.019 -m 1.12
 
 ##### configuration
 
@@ -394,7 +394,7 @@ LibuiGetDisplayTestValues () {
     TCEL="$(tput el)" # clear end of line
     TCES="$(tput ed || tput cd)" # clear end of screen
     [[ -n "$(tput u7)" ]] && TCP="$(tput u7)" || TCP=$'\e[6n' # read cursor position
-    [[ -n "$(tput hpa 0)" ]] && TJBL="$(tput hpa 0)" || TJBL=$'\r' # jump to begining of line
+    TJBL="$(tput cr)" # jump to the beginning of the current line
     TJH="$(tput cup 0 0)" # jump home (0, 0)
     TRC="$(tput rc)" # restore cursor
     TSC="$(tput sc)" # save cursor

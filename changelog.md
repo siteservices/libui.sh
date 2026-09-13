@@ -1,5 +1,21 @@
 # Change Log
 
+## v2.019
+
+### New Features / Enhancements
+
+* Various improvements in `mless` tag handling, colors, and formatting.
+* Change `${DJBL}` to use `tput cr` instead of `tput hpa 0`.
+* Update regression tests.
+* Update documentation.
+* Update man pages.
+
+### Bug Fixes
+
+* Fix code handling in `mless`.
+* Use command find to minimize find function impact.
+* Add timeout to libui Term mod `GetCursor`.
+
 ## v2.018
 
 ### New Features / Enhancements

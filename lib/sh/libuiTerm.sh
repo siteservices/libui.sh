@@ -69,13 +69,8 @@ GetCursor () {
 
   if [[ -n "${DCP}" ]]
   then
-    local _x
-    if ${ZSH}
-    then
-      printf "${DCP}" && IFS='[;' read -rsd R _x ROW COL
-    else
-      IFS='[;' read -p ${DCP} -rsd R _x ROW COL
-    fi
+    local _
+    printf "${DCP}" && IFS='[;' read -t "${LIBUI_LATENCY:-0.25}" -rsd R _ ROW COL
     local _TERM_rv=${?}
     ((ROW--))
     ((COL--))

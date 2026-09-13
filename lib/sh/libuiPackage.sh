@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.28
+Version -r 2.019 -m 1.29
 
 # defaults
 
@@ -459,7 +459,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
         then
           Action -q "Create shar package archive for ${_Package_package}?" -b 'Creating shar archive...' "shar -q ${_Package_encoding} . >> '${_Package_package}'"
         else
-          Action -q "Append shar archive to packge ${_Package_package}?" -b 'Creating shar archive...' "shar \$(find .) >> '${_Package_package}'"
+          Action -q "Append shar archive to packge ${_Package_package}?" -b 'Creating shar archive...' "shar \$(command find .) >> '${_Package_package}'"
         fi
         _Package_rv=${?}
         ${_M} && _Trace 'Created sharp package: %s' "${_Package_package}"
