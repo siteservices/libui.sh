@@ -356,7 +356,7 @@ LibuiConfig () {
     Open -1 -c ${_Util_configfile}
     Write -1 "#####${N}#${N}# libui.conf - $(date)${N}#${N}######${N}"
     Write -1 "# use LIBUI_{VAR}=\"\${LIBUI_{VAR}:-<value>}\" to support temporary command line environment changes.${N}"
-    Write -1 "$(grep -r 'LIBUI_' "${LIBUI%/*}" | grep -v 'LIBUI_{VAR}' | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_[^:]*\):-\([^;]*\)}.*$/\1="${\1:-\2}"/' | cut -f 1 -d '&' | sed 's/^/#/; s/ *$//' | sort -u)" # LIBUI_{VAR}
+    Write -1 "$(grep -r --exclude-dir .git 'LIBUI_' "${LIBUI%/*}" | grep -v 'LIBUI_{VAR}' | grep 'LIBUI_\S*:-' | sed 's/^.*\(LIBUI_[^:]*\):-\([^;]*\)}.*$/\1="${\1:-\2}"/' | cut -f 1 -d '&' | sed 's/^/#/; s/ *$//' | sort -u)" # LIBUI_{VAR}
     DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
     Close -1
 
@@ -732,7 +732,7 @@ LibuiPackageList () {
   ${_M} && _Trace 'List libui package.'
   _Util_files+=( $(command find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(command find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
-  _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
+  _Util_files+=( $(grep -rl --exclude-dir .git '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
   ${_M} && _Trace 'Files in libui package. (%s)' "${_Util_files[*]}"
@@ -779,7 +779,7 @@ LibuiPackage () {
   ${_M} && _Trace 'Create libui package. (%s)' "${_Util_package}"
   _Util_files+=( $(command find . -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
   [[ -d "${_Util_libuitest}" ]] && _Util_files+=( $(command find .${_Util_libuitest#${_Util_libuiroot}} -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
-  _Util_files+=( $(grep -rl '{libui tool}' . | grep -v '\.sw.$') )
+  _Util_files+=( $(grep -rl --exclude-dir .git '{libui tool}' . | grep -v '\.sw.$') )
   Sort -u _Util_files
 
   ${_M} && _Trace 'Files to include in libui package. (%s)' "${_Util_files[*]}"
@@ -814,7 +814,7 @@ LibuiInstall () {
     _Util_files+=( $(command find "${_Util_libuiroot}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -name 'libui*' -print) )
     ${installtests} && [[ -d "${_Util_libuitest}" ]] && \
         _Util_files+=( $(command find "${_Util_libuitest}" -name '.git' -prune -o -name '.*.sw*' -prune -o -type f -print) )
-    _Util_files+=( $(grep -rl '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
+    _Util_files+=( $(grep -rl --exclude-dir .git '{libui tool}' "${_Util_libuiroot}" | grep -v '\.sw.$') )
     local _Util_file
     for _Util_file in "${_Util_files[@]#${_Util_libuiroot%/}/}"
     do
