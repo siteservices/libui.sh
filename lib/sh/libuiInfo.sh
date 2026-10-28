@@ -157,7 +157,7 @@ EOF
 
     ${_M} && _Trace 'Display parameters.'
     _UsageInfo_i="${AO}"
-    if ((0 < ${#_pd[@]}))
+    if ((${#_pd[@]} > 0))
     then
       ((_UsageInfo_x=_UsageInfo_x+4))
       for _UsageInfo_p in "${_pd[@]}"
@@ -184,7 +184,7 @@ EOF
     fi
 
     ${_M} && _Trace 'Display available option values.'
-    if ((0 < ${#_ol[@]}))
+    if ((${#_ol[@]} > 0))
     then
       printf '  Available option values:\n'
       ${ZSH} && printf '    For %s\n' "${_ol[@]}" || printf '    For %s\n' "${_ol[@]%, }"
@@ -192,7 +192,7 @@ EOF
     fi
 
     ${_M} && _Trace 'Display available parameter values.'
-    if ((0 < ${#_pl[@]}))
+    if ((${#_pl[@]} > 0))
     then
       printf '  Available parameter values:\n'
       ${ZSH} && printf '    For %s\n' "${_pl[@]}" || printf '    For %s\n' "${_pl[@]%, }"

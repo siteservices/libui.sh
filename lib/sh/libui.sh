@@ -71,7 +71,7 @@
 #
 #####
 
-[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.019 # Sun Sep 13 20:02:24 UTC 2026
+[[ -n ${LIBUI_VERSION+x} ]] && return 0 || LIBUI_VERSION=2.020 # Wed Oct 28 01:55:49 UTC 2026
 
 #####
 #
@@ -157,7 +157,7 @@ Version () { # [-a|-m] [-r <required_libui_version>] <script_version>
     esac
   done
   shift $((OPTIND - 1))
-  if ((0 == ${#}))
+  if ((${#} == 0))
   then
     _Trace 'Display version. (%s)' "${_s##*/}"
     local _i=${AO}
@@ -583,7 +583,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
   done
   shift $((OPTIND - 1))
   ${_T} && _Trace 'Action state: %s (%s)' "${_action}" "${_a}"
-  ((0 == ${#})) && _Trace 'Return action state. (%s)' "${_action}" && return $(${_action})
+  ((${#} == 0)) && _Trace 'Return action state. (%s)' "${_action}" && return $(${_action})
   if [[ -z "${_f}" && -z "${_l}" ]]
   then
     ${_t} && Tell -E -f -L '(Action) Called with -t but without -[1-9] or -l <path>.'
@@ -651,7 +651,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
                 else
                   _File_ip=${_p} Flush "-${_f}"
                   true && eval "${_z}${@} 2>&1 | tee >(cat)>&${_File_fd[((${_p:-0} * 10 + _x + _f))]}${_b}"
-                  ((0 > _pe)) && ((_pe--))
+                  ((_pe < 0)) && ((_pe--))
                 fi
               else
                 true && eval "${@}${_b}" >&${_File_fd[((${_p:-0} * 10 + _x + _f))]} 2>&1
@@ -667,7 +667,7 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
               if ${_t}
               then
                 true && eval "${_z}${@} 2>&1 | tee -a '${_l}'${_b}"
-                ((0 > _pe)) && ((_pe--))
+                ((_pe < 0)) && ((_pe--))
               else
                 true && eval "${_z}${@}${_b}" >> "${_l}" 2>&1
               fi
@@ -683,14 +683,14 @@ Action () { # [-1..-9|-a|-A|-c|-C|-f|-F|-R|-s|-t|-W] [-b <message>] [-e <message
             then
               _rv="${_ps[${_pe}]}"
             else
-              ((0 > _pe)) && _rv="${_ps[${#_ps[@]} + ${_pe}]}" || _rv="${_ps[${_pe}]}"
+              ((_pe < 0)) && _rv="${_ps[${#_ps[@]} + ${_pe}]}" || _rv="${_ps[${_pe}]}"
             fi
 
             ${_T} && _Trace 'Check return value. (%s)' "${_rv}"
             if ((_rv))
             then
               ${_T} && _Trace 'Attempt failed, sleep before retry. (%s / %s)' "${_s}" "${_r}"
-              if ((0 < _r))
+              if ((_r > 0))
               then
                 sleep ${_s} 2> /dev/null || sleep $((${_s%.*} + 1))
               fi
@@ -1097,7 +1097,7 @@ Ask () { # [-b|-C|-E|-l|-N|-Y|-z] [-d <default>] [-n <varname>] [-o <fd>] [-P <p
   ${_T} && _Trace -I 'ANSWER: %s' "${ANSWER}"
 
   ${_T} && _Trace 'Assign answer. (%s=%s)' "${_n}" "${ANSWER}"
-  [[ -n "${_n}" ]] && eval "${_n}='${ANSWER}'"
+  [[ -n "${_n}" ]] && eval "${_n}=\"${ANSWER}\""
 
   ${_T} && _Trace 'Ask return. (%s)' 0
   return 0
@@ -1138,8 +1138,9 @@ AnswerMatches () { # [-r] <answer_match_string>
   then
     [[ "${ANSWER}" =~ ${_m} ]] && _rv=0
   else
-    ${ZSH} && _m="${(L)_m}"; ((BV >= 40)) && _m="${_m,,}"
-    local _a="${ANSWER:0:${#_m}}"; ${ZSH} && _a="${(L)_a}"; ((BV >= 40)) && _a="${_a,,}"
+    ${ZSH} && _m="${(L)_m}"; ((BV >= 40)) && _m="${_m,,}"; ((BV < 40)) && _m="$(tr '[:upper:]' '[:lower:]' <<< "${_m}")"
+    local _a="${ANSWER:0:${#_m}}"
+    ${ZSH} && _a="${(L)_a}"; ((BV >= 40)) && _a="${_a,,}"; ((BV < 40)) && _a="$(tr '[:upper:]' '[:lower:]' <<< "${_a}")"
     [[ -n "${_m}" && "${_m}" == "${_a}" ]] && _rv=0
   fi
   ${_T} && _Trace -I 'Answer match: %s=%s. (%s)' "${_a}" "${_m}" "${_rv}"
@@ -1155,7 +1156,7 @@ Verify () { # [-C|-l|-N|-Y] [-d <default>] [-n <varname>] [-r <required_regex>] 
   ${_S} && ((_cVerify++))
   ${_T} && _Trace 'Verify [%s]' "${*}"
 
-  ((0 == ${#})) && _Trace 'Return verify state. (%s)' "${_verify}" && return $(${_verify})
+  ((${#} == 0)) && _Trace 'Return verify state. (%s)' "${_verify}" && return $(${_verify})
 
   local _a="${ANSWER}"
   Ask -b -d 'yes' "${@}"
@@ -1286,7 +1287,7 @@ Tell () { # [-1..-9|-a|-A|-B|-c|-C|-E|-f|-F|-i|-I|-L|-n|-N|-W] [-l <file_path>] 
   done
   shift $((OPTIND - 1))
 
-  if ${_e} && ((0 < _xdb)) || [[ -n "${_h}" ]]
+  if ${_e} && ((_xdb > 0)) || [[ -n "${_h}" ]]
   then
     ${_T} && _Trace 'Get location.'
     if ${ZSH}
@@ -1397,7 +1398,7 @@ Error () { # [-1..-9|-a|-c|-f|-F|-i|-L|-n|-N] [-l <file_path>] [-r <return_value
   ${_S} && ((_cError++))
   ${_T} && _Trace 'Error [%s]' "${*}"
 
-  ((0 == ${#})) && _Trace 'Return error / help state. (%s / %s)' "${_error}" "${_help}" && return $(${_error} || ${_help})
+  ((${#} == 0)) && _Trace 'Return error / help state. (%s / %s)' "${_error}" "${_help}" && return $(${_error} || ${_help})
 
   Tell -E "${@}"
   local _rv=${?}
@@ -1725,7 +1726,7 @@ Initialize () {
   fi
 
   ${_T} && _Trace 'Obtain parameters. (%s)' "${_pvar[*]}"
-  if ((0 < ${#_pvar[@]}))
+  if ((${#_pvar[@]} > 0))
   then
     _i=$((AO - 1))
 
@@ -1772,13 +1773,13 @@ Initialize () {
       ${_T} && _Trace 'Capture multiple values. (%s)' "${_a[*]}"
       ((${#_a[@]})) && eval "${_p}=( \"\${${_p}[@]}\" \"\${_a[@]}\" )"
     fi
-  elif ((0 < ${#_a[@]}))
+  elif ((${#_a[@]} > 0))
   then
     Tell -E 'Too many parameters provided. (%s)' "${_a[*]}"
   fi
 
   ${_T} && _Trace 'Check if root. (%s)' "${EUID}"
-  if ((0 == EUID || 0 == $(${BSDPATH}id -u)))
+  if ((EUID == 0 || $(${BSDPATH}id -u) == 0))
   then
     ${_allowroot} || Tell -E 'You cannot execute %s as root.' "${CMD}"
   else
@@ -1903,11 +1904,17 @@ Initialize () {
   fi
 
   ${_T} && _Trace 'Check for default init hook. (%s)' "${LIBUI_HOOKDIR}/init"
-  test -f "${LIBUI_HOOKDIR}/init" && _Trace 'Source default init hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${LIBUI_HOOKDIR}/init" ]] && \
+      _Trace 'Source default init hook. (%s)' "${LIBUI_HOOKDIR}/init" && \
+      source "${LIBUI_HOOKDIR}/init"
   ${_T} && _Trace 'Check for global program init hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-init"
-  test -f "${LIBUI_HOOKDIR}/${CMD}-init" && _Trace 'Source global program init hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${LIBUI_HOOKDIR}/${CMD}-init" ]] && \
+      _Trace 'Source global program init hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-init" && \
+      source "${LIBUI_HOOKDIR}/${CMD}-init"
   ${_T} && _Trace 'Check for local program init hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}init"
-  test -f "${IWD}/${LIBUI_HOOKPREFIX}init" && _Trace 'Source local program init hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${IWD}/${LIBUI_HOOKPREFIX}init" ]] && \
+      _Trace 'Source local program init hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}init" && \
+      source "${IWD}/${LIBUI_HOOKPREFIX}init"
 
   if ${_error}
   then
@@ -2083,11 +2090,17 @@ Exit () { # [<return_value>]
   fi
 
   ${_T} && _Trace 'Check for local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit"
-  test -f "${IWD}/${LIBUI_HOOKPREFIX}exit" && _Trace 'Source local program exit hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${IWD}/${LIBUI_HOOKPREFIX}exit" ]] && \
+      _Trace 'Source local program exit hook. (%s)' "${IWD}/${LIBUI_HOOKPREFIX}exit" && \
+      source "${IWD}/${LIBUI_HOOKPREFIX}exit"
   ${_T} && _Trace 'Check for global program exit hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-exit"
-  test -f "${LIBUI_HOOKDIR}/${CMD}-exit" && _Trace 'Source global program exit hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${LIBUI_HOOKDIR}/${CMD}-exit" ]] && \
+      _Trace 'Source global program exit hook. (%s)' "${LIBUI_HOOKDIR}/${CMD}-exit" && \
+      source "${LIBUI_HOOKDIR}/${CMD}-exit"
   ${_T} && _Trace 'Check for default exit hook. (%s)' "${LIBUI_HOOKDIR}/exit"
-  test -f "${LIBUI_HOOKDIR}/exit" && _Trace 'Source default exit hook. (%s)' "${_}" && source "${_}"
+  [[ -f "${LIBUI_HOOKDIR}/exit" ]] && \
+      _Trace 'Source default exit hook. (%s)' "${LIBUI_HOOKDIR}/exit" && \
+      source "${LIBUI_HOOKDIR}/exit"
 
   ${_T} && _Trace 'Check for cleanup. (%s)' "${_exitcleanup}"
   if ${_exitcleanup} # for debug
@@ -2101,7 +2114,7 @@ Exit () { # [<return_value>]
     done
 
     ${_T} && _Trace 'Remove temp directory. (%s)' "${_tmpdir}"
-    test -d "${_tmpdir}" && rm -rf "${_}"
+    [[ -d "${_tmpdir}" ]] && rm -rf "${_tmpdir}"
   fi
 
   local _ctime="${SECONDS}"
@@ -2114,7 +2127,7 @@ Exit () { # [<return_value>]
     if [[ ! -f "${_l}" && "${_l}" =~ / ]]
     then
       ${_T} && _Trace 'Check ledger dir. (%s)' "${_l}"
-      test -d "${_l%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_LEDGERFILE path. (%s)' "${_l}"
+      [[ -d "${_l%/*}" ]] || mkdir -p "${_l%/*}" || Tell -E 'Invalid LIBUI_LEDGERFILE path. (%s)' "${_l}"
     fi
 
     ${_T} && _Trace 'Save ledger entry. (%s)' "${_l}"
@@ -2171,7 +2184,7 @@ Exit () { # [<return_value>]
       if [[ "${_s}" =~ / ]]
       then
         ${_T} && _Trace 'Check stats dir. (%s)' "${_s}"
-        test -d "${_s%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_STATSFILE path. (%s)' "${_s}"
+        [[ -d "${_s%/*}" ]] || mkdir -p "${_s%/*}" || Tell -E 'Invalid LIBUI_STATSFILE path. (%s)' "${_s}"
         _cstart="$(date)"
       fi
     fi
@@ -2230,13 +2243,13 @@ Exit () { # [<return_value>]
     if [[ ! -f "${_t}" && "${_t}" =~ / ]]
     then
       ${_T} && _Trace 'Check trace dir. (%s)' "${_t}"
-      test -d "${_t%/*}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_TRACEFILE path. (%s)' "${_t}"
+      [[ -d "${_t%/*}" ]] || mkdir -p "${_t%/*}" || Tell -E 'Invalid LIBUI_TRACEFILE path. (%s)' "${_t}"
     fi
     ${_T} && _Trace 'Save trace file. (%s)' "${_t}"
     mv -f "${_tfile}" "${_t}" || Tell -W 'Unable to save trace file. (%s)' "${_t}"
     _tdb=false
   fi
-  test -e "${_tfile}" && rm -f "${_}"
+  [[ -e "${_tfile}" ]] && rm -f "${_tfile}"
 
   ${_T} && _Trace 'Program exit. (%s)' "${_rv}"
   exit ${_rv}
@@ -2339,28 +2352,30 @@ _WINCH () {
 #####
 
 # load config
-[[ -z "${LIBUI_CONFIG}" ]] && LIBUI_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/libui"
-test -f "${LIBUI_CONF:-${LIBUI_CONFIG}/libui.conf}" && source "${_}"
-[[ -z "${LIBUI_HOOKDIR}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
-[[ -z "${LIBUI_CREDENTIALS}" ]] && LIBUI_CREDENTIALS="${XDG_CONFIG_HOME:-${HOME}/.config}/credentials"
-[[ -z "${LIBUI_STATE}" ]] && LIBUI_STATE="${XDG_STATE_HOME:-${HOME}/.local/state}/libui"
-[[ -z "${LIBUI_CACHE}" ]] && LIBUI_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/libui"
+[[ -z "${LIBUI_CONFIG:-}" ]] && LIBUI_CONFIG="${XDG_CONFIG_HOME:-${HOME}/.config}/libui"
+[[ -f "${LIBUI_CONF:-${LIBUI_CONFIG:-}/libui.conf}" ]] && source "${LIBUI_CONF:-${LIBUI_CONFIG:-}/libui.conf}"
+[[ -z "${LIBUI_HOOKDIR:-}" ]] && LIBUI_HOOKDIR="${LIBUI_CONFIG}/hook"
+[[ -z "${LIBUI_CREDENTIALS:-}" ]] && LIBUI_CREDENTIALS="${XDG_CONFIG_HOME:-${HOME}/.config}/credentials"
+[[ -z "${LIBUI_STATE:-}" ]] && LIBUI_STATE="${XDG_STATE_HOME:-${HOME}/.local/state}/libui"
+[[ -z "${LIBUI_CACHE:-}" ]] && LIBUI_CACHE="${XDG_CACHE_HOME:-${HOME}/.cache}/libui"
 
 # defaults
 RETVAL=0
-ZSH=false; AO=0; [[ -n "${ZSH_VERSION}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
+ZSH=false; AO=0; [[ -n "${ZSH_VERSION:-}" ]] && ZSH=true && AO=1 && SHENV="${commands[zsh]}" || SHENV="${BASH:-sh}"
 ${ZSH} && ((${#ZSH_VERSION//[^\.]/} > 1)) && ZV="${ZSH_VERSION%.*}" || ZV="${ZSH_VERSION:-0}"; ZV="${ZV//.}"
 ${ZSH} && ((ZV < 53)) && PV=false || PV=true
 ! ${ZSH} && BV="${BASH_VERSION//[^\.]/}" && ((${#BV} > 1)) && BV="${BASH_VERSION%.*}" || BV="${BASH_VERSION:-0}"; BV="${BV//.}"
 ${ZSH} && typeset -gaU UIMOD && typeset -gaU UICMD && typeset -gF SECONDS # bash 5.3 has EPOCHREALTIME but no FP math
 ${ZSH} && NULL='(N)' || NULL=
 ! ${ZSH} && ((BV < 40)) && AA=false || AA=true
-CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; CMD="${CMDPATH##*/}"
+CMDPATH="${1}"; CMDPATH="${CMDPATH:-${0}}"; [[ "${CMDPATH}" == /* ]] || CMDPATH="${PWD}/${CMDPATH}"
+[[ ! -f "${CMDPATH}" ]] && CMDPATH="$(command -v "${CMDPATH}" 2> /dev/null)"
+CMD="${CMDPATH##*/}"
 CMDARGS=( "${@:2}" )
 CMDLINE=( "${CMDPATH}" "${CMDARGS[@]}" )
 IWD="${PWD}"
 LIBUI="${BASH_SOURCE[0]:-${(%):-%x}}"
-[[ -z "${LIBUI_HOOKPREFIX}" ]] && LIBUI_HOOKPREFIX=".${CMD}-"
+[[ -z "${LIBUI_HOOKPREFIX:-}" ]] && LIBUI_HOOKPREFIX=".${CMD}-"
 [[ "${PATH}" =~ (:|^)"${LIBUI%/*}"($|:) ]] || PATH="${LIBUI%/*}${PATH:+:${PATH}}"
 DOMAIN="${LIBUI_DOMAIN:-${DOMAIN:-$(/bin/hostname -f 2> /dev/null | cut -d . -f 2-)}}"
 [[ -z "${DOMAIN}" || "${DOMAIN}" == 'local' ]] && DOMAIN="$(grep '^search ' /etc/resolv.conf 2> /dev/null | cut -d ' ' -f 2)"
@@ -2422,7 +2437,7 @@ UIVERSION=( "${LIBUI##*/}" "${LIBUI_VERSION}" )
 
 # terminal setup
 [[ -t 1 ]] && TERMINAL="${TERMINAL:-true}" || TERMINAL="${TERMINAL:-false}"
-${TERMINAL} && ((0$(tput colors 2> /dev/null) >= 8)) && LIBUI_PLAIN=${LIBUI_PLAIN:-false} || LIBUI_PLAIN=true
+${TERMINAL} && (($(tput colors 2> /dev/null) + 0 >= 8)) && LIBUI_PLAIN=${LIBUI_PLAIN:-false} || LIBUI_PLAIN=true
 ${LIBUI_PLAIN} && TERM='dumb'
 [[ "$(locale charmap)" =~ UTF-*8 ]] && UTF8="${UTF8:-true}" || UTF8=false
 
@@ -2455,7 +2470,7 @@ then
 fi
 
 # config dir
-test -d "${LIBUI_CONFIG}" || mkdir -p "${_}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${_}"
+[[ -d "${LIBUI_CONFIG}" ]] || mkdir -p "${LIBUI_CONFIG}" || Tell -E 'Invalid LIBUI_CONFIG path. (%s)' "${LIBUI_CONFIG}"
 
 # credentials
 [[ "${UNIX}" == 'GNU' ]] && _perm='stat -c %a' || _perm='stat -f %Lp'

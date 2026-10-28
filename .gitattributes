@@ -1,0 +1,40 @@
+text=auto
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.csv text eol=crlf
+*.ps1 text eol=crlf
+
+*.7z binary
+*.bz binary
+*.bz2 binary
+*.bzip2 binary
+*.eps binary
+*.gif binary
+*.gz binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.lz binary
+*.lzma binary
+*.pdf binary
+*.png binary
+*.rar binary
+*.tar binary
+*.taz inary
+*.tbz binary
+*.tbz2 binary
+*.tgz binary
+*.tif binary
+*.tiff binary
+*.tlz binary
+*.txz binary
+*.xz binary
+*.Z binary
+*.zip binary
+*.zst binary
+
+*.min.js -diff
+*.pdf -diff
+
+*.docx diff=word

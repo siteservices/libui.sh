@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_AnswerMatches
+#
+#####
+
+test_AnswerMatches () {
+  ANSWER='Yes please'
+  LibuiPerformTest 'AnswerMatches "yes" && printf "prefix=matched\n" || printf "prefix=missed\n"; AnswerMatches -r "ease" && printf "regex=matched\n" || printf "regex=missed\n"'
+  LibuiValidateTest ${?} 0 "prefix=matched${N}regex=matched"
+  return ${?}
+}
+
+return 0

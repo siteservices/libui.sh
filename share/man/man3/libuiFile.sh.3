@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd August 17, 2026
+.Dd October 25, 2026
 .Dt LIBUIFILE.SH 3
 .Os
 .Sh NAME
@@ -325,23 +325,27 @@ Set the group ownership of any created directories to
 Use the
 .Ar <mask>
 as the umask when creating any needed directories.
+.It Fl p
+The
+.Sy MkDir
+always creates any required parent directories.
+.Fl p
+(Parents) option flag is not necessary but supported as a convenience.
+Set the setgid bit for any created directories.
 .It Fl s
 Set the setgid bit for any created directories.
 .It Fl W
 Do not generate a warning message if a failure occurs when making the directory.
 .El
 .Pp
+The
+.Sy MkDir
+command always creates any required parent directories with proper permissions.
 While the standard
 .Xr mkdir 1
-command can be used to create a directory path (with the -p option flag), it
-does not properly set the permissions of any created parent directories.
-This command, however, sets the proper permissions on all created directories.
-.Pp
-Note: the
-.Sy MkDir
-always creates any required parent directories. The
-.Fl p
-(Parents) option flag is not required (but provided as a convenience).
+command can create the full directory path (with the -p option flag), it does
+not properly set the permissions of any created parent directories.
+This command sets the proper permissions on all created directories.
 .Ss Open
 The following command opens a file, locks it, and associates a file ID with the
 file path:

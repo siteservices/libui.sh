@@ -1,0 +1,23 @@
+#!/usr/bin/env libui
+#####
+#
+# test_PermsToOctal_Special
+#
+#####
+
+test_PermsToOctal_Special () {
+  local data=( 'rwSr--r--' 'rw-r-Sr--' 'rw-r--r-T' )
+  LoadMod Convert
+  local perms
+  local results; results=( )
+  for perms in "${data[@]}"
+  do
+    PermsToOctal perms
+    results+=( "${perms}" )
+  done
+  LibuiPerformTest 'printf "%s\n" "${results[@]}"'
+  LibuiValidateTest ${?} 0 "4644${N}2644${N}1644"
+  return ${?}
+}
+
+return 0

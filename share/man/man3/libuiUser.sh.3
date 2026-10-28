@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd August 17, 2026
+.Dd October 25, 2026
 .Dt LIBUIUSER.SH 3
 .Os
 .Sh NAME
@@ -69,8 +69,8 @@ array variable.
 The
 .Sy SetUserInfo
 command knows specific questions for the user "NAME", "ORG", "TITLE", "EMAIL",
-"PHONE", "COLOR", (edit) "MODE", and preferred terminal "FONTFACE" and
-"FONTSIZE" names.
+"PHONE", "LOCATION", "COLOR", (edit) "MODE", and preferred terminal "FONTFACE"
+and "FONTSIZE" names.
 For any other names, the command will query the user with a simple,
 .Qq Enter a value for Ar <name> Ns \&:
 It is possible to set the ${userinfo[@]} array with any set of user information
@@ -98,17 +98,18 @@ An example file:
 .Bd -literal -offset 4n
 #!/usr/bin/env zsh
 ##### User Information
-userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
+userinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'LOCATION' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
 NAME='John Doe'
 ORG='siteservices.net, Inc.'
 TITLE='Engineer'
 EMAIL='jdoe@siteservices.net'
 PHONE='+1.321.000.0000'
+LOCATION='123 Main St, City, ST, 00000, CC'
 COLOR='true'
 MODE='vi'
 FONTFACE='Hack'
 FONTSIZE='10'
-export NAME ORG TITLE EMAIL PHONE COLOR MODE FONTFACE FONTSIZE
+export NAME ORG TITLE EMAIL PHONE LOCATION COLOR MODE FONTFACE FONTSIZE
 .Ed
 .Sh EXAMPLES
 Some examples include:

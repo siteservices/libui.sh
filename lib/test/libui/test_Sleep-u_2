@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sleep-u_2
+#
+#####
+
+test_Sleep-u_2 () {
+  LibuiPerformTest 'Sleep -u 2 2 4>&1'
+  TERMINAL=true LibuiValidateTest -r ${?} 0 ".*Waiting 2\.\.\..*"
+  return ${?}
+}
+
+return 0

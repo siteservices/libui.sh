@@ -401,7 +401,7 @@ CreatePackage () { # [-G|-l|-N|-P|-S|-T|-X] [-c <compression>] [-d <description>
           _Package_glob=( ${_Package_exclude[@]} )
           shopt -u nullglob
         fi
-        if ((0 < ${#_Package_glob[@]}))
+        if ((${#_Package_glob[@]} > 0))
         then
           for _Package_file in "${_Package_glob[@]}"
           do

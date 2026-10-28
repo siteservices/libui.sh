@@ -99,7 +99,7 @@ do
   bsum=0
   csum=0
   crcsum=0
-  ((0 < iterate)) && ((block = start + iterate)) || block=${end}
+  ((iterate > 0)) && ((block = start + iterate)) || block=${end}
   while IFS= read -u 3 -r line # unset IFS
   do
     ((lineno = lineno + 1))

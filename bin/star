@@ -32,7 +32,7 @@
 ##### libui setup
 
 # script version
-Version -r 2.017 2.12
+Version -r 2.020 2.13
 
 # load mods
 LoadMod Convert
@@ -110,7 +110,7 @@ InitCallback () {
   fi
 
   Trace 'Check list and pathlist count. ($s:%s)' "${list}" "${#pathlist[@]}"
-  ${list} && ((0 < ${#pathlist[@]})) && Error 'No paths allowed when listing. (Did you forget the -f option flag?)'
+  ${list} && ((${#pathlist[@]} > 0)) && Error 'No paths allowed when listing. (Did you forget the -f option flag?)'
 }
 
 ##### functions

@@ -1,0 +1,25 @@
+#!/usr/bin/env libui
+#####
+#
+# test_OctalToPerms_Special
+#
+#####
+
+test_OctalToPerms_Special () {
+  local expected="rwSr--r--
+rw-r-Sr--
+rw-r--r-T"
+  LoadMod Convert
+  local perms
+  local results; results=( )
+  for perms in 4644 2644 1644
+  do
+    OctalToPerms perms
+    results+=( "${perms}" )
+  done
+  LibuiPerformTest 'printf "%s\n" "${results[@]}"'
+  LibuiValidateTest ${?} 0 "${expected}"
+  return ${?}
+}
+
+return 0

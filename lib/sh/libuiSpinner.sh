@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.017 -m 1.21
+Version -r 2.020 -m 1.22
 
 # defaults
 #LIBUI_UTF0SPINNER="${LIBUI_UTF8SPINNER:-|/-\}"
@@ -60,7 +60,7 @@ StartSpinner () { # [<message>]
   if ! ${_quiet}
   then
     ${_M} && _Trace 'Check for existing spinner. (%s)' "${_spinner}"
-    if ((0 == ${_spinner:-0}))
+    if ((${_spinner:-0} == 0))
     then
       ${_M} && _Trace 'Check for terminal.'
       if ${TERMINAL} && ! ${LIBUI_PLAIN} && ! Error
@@ -125,7 +125,7 @@ PauseSpinner () {
   if ${TERMINAL} && ! ${LIBUI_PLAIN}
   then
     ${_M} && _Trace 'Pausing spinner. (%s)' "${_spinner}"
-    ((0 < ${_spinner:-0})) && kill -TSTP ${_spinner} &> /dev/null
+    ((${_spinner:-0} > 0)) && kill -TSTP ${_spinner} &> /dev/null
     ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   fi
   local _Spinner_rv=${?}
@@ -156,7 +156,7 @@ ResumeSpinner () {
   then
     ${_M} && _Trace 'Resuming spinner. (%s)' "${_spinner}"
     ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
-    ((0 < ${_spinner:-0})) && kill -CONT ${_spinner} &> /dev/null
+    ((${_spinner:-0} > 0)) && kill -CONT ${_spinner} &> /dev/null
   fi
   local _Spinner_rv=${?}
 
@@ -181,7 +181,7 @@ StopSpinner () {
   ${_M} && _Trace 'StopSpinner [%s]' "${*}"
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
-  ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
+  ((${_spinner:-0} > 0)) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
   ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} || printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
   local _Spinner_rv=${?}
 
@@ -206,13 +206,13 @@ WaitSpinner () {
   local pid=$!
 
   ${_M} && _Trace 'Check for valid PID. (%s)' "${_Spinner_pid}"
-  if ((0 < _Spinner_pid))
+  if ((_Spinner_pid > 0))
   then
     ${_M} && _Trace 'Check for quiet. (%s)' "${_quiet}"
     if ! ${_quiet}
     then
       ${_M} && _Trace 'Check for existing spinner. (%s)' "${_spinner}"
-      if ((0 == ${_spinner:-0}))
+      if ((${_spinner:-0} == 0))
       then
         ${_M} && _Trace 'Check for terminal.'
         if ${TERMINAL} && ! ${LIBUI_PLAIN}
@@ -246,7 +246,7 @@ WaitSpinner () {
 
 # Display countdown while waiting
 #
-# Syntax: Sleep [-i "<message>"] [-u <interval>] [<sleep>]
+# Syntax: Sleep [-m "<message>"] [-u <interval>] [<seconds>]
 #
 # Example: Sleep -u 10 60
 #
@@ -254,46 +254,46 @@ WaitSpinner () {
 # message every 10 seconds until 60 seconds have elapsed.
 #
 # Note: The <message> should include one "%s" to capture the countdown. If
-# <sleep> is not provided, will sleep 1 second. If <interval> is not provided,
+# <seconds> is not provided, will sleep 1 second. If <interval> is not provided,
 # it will default to 1 second.
 #
 UICMD+=( 'Sleep' )
-Sleep () { # [-i "<message>"] [-u <interval>] [<sleep>]
+Sleep () { # [-m "<message>"] [-u <interval>] [<seconds>]
   ${_S} && ((_cSleep++))
   ${_M} && _Trace 'Sleep [%s]' "${*}"
+
+  local _Spinner_u=1
+  local _Spinner_m='Waiting %s...'
+
+  local opt
+  local OPTIND
+  local OPTARG
+  while getopts ':m:u:' opt
+  do
+    case ${opt} in
+      m)
+        ${_M} && _Trace 'Message. (%s)' "${OPTARG}"
+        _Spinner_m="${OPTARG}"
+        ;;
+      u)
+        ${_M} && _Trace 'Update interval. (%s)' "${OPTARG}"
+        _Spinner_u="${OPTARG}"
+        ;;
+      *)
+        Tell -E -f -L '(Sleep) Unknown option. (-%s)' "${OPTARG}"
+        ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+  local _Spinner_c=$((${1:0} + _Spinner_u))
 
   ${_M} && _Trace 'Check for terminal.'
   if ${TERMINAL} && ! ${LIBUI_PLAIN}
   then
-    local _Spinner_u=1
-    local _Spinner_b='Waiting %s...'
-
-    local opt
-    local OPTIND
-    local OPTARG
-    while getopts ':i:u:' opt
-    do
-      case ${opt} in
-        i)
-          ${_M} && _Trace 'Message. (%s)' "${OPTARG}"
-          _Spinner_b="${OPTARG}"
-          ;;
-        u)
-          ${_M} && _Trace 'Update interval. (%s)' "${OPTARG}"
-          _Spinner_u="${OPTARG}"
-          ;;
-        *)
-          Tell -E -f -L '(Sleep) Unknown option. (-%s)' "${OPTARG}"
-          ;;
-      esac
-    done
-    shift $((OPTIND - 1))
-    local _Spinner_c=$((${1:0} + ${_Spinner_u}))
-
     ${_M} && _Trace 'Verbose sleep. (%s)' "${_Spinner_c}"
-    while ((0 < (_Spinner_c-=${_Spinner_u})))
+    while (((_Spinner_c-=${_Spinner_u}) > 0))
     do
-      printf "${DJBL}${DBrief}${_Spinner_b}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
+      printf "${DJBL}${DBrief}${_Spinner_m}${D}${DCEL}" "${_Spinner_c}" >&4 # duplicate stderr
       sleep ${_Spinner_u} 2> /dev/null || sleep $((${_Spinner_u%.*} + 1))
     done
     printf "${DJBL}${DCEL}" >&4 # duplicate stderr
@@ -311,7 +311,7 @@ _SpinnerExitCallback () {
   ${_M} && _Trace '_SpinnerExitCallback [%s]' "${*}"
 
   ${_M} && _Trace 'Stopping spinner. (%s)' "${_spinner}"
-  ((0 < ${_spinner:-0})) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
+  ((${_spinner:-0} > 0)) && kill -TERM ${_spinner} &> /dev/null && unset _spinner
   ! ${_quiet} && ${TERMINAL} && ! ${LIBUI_PLAIN} && printf "${DCEL:-   \b\b\b}${DJBL}${DCEL}" >&4 # duplicate stderr
 }
 

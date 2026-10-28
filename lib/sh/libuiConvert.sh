@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.015 -m 2.5
+Version -r 2.020 -m 2.6
 
 # defaults
 
@@ -96,7 +96,7 @@ ConvertDate () { # [-i <input_format>] [-o <output_format>] <var_name> [<date>]
         Error "Date conversion not available. (Installing Perl's Date::Parse module may provide support.)"
   fi
 
-  ${M} && Trace 'ConvertDate return. (%s)' 0
+  ${_M} && _Trace 'ConvertDate return. (%s)' 0
   return 0
 }
 
@@ -138,18 +138,38 @@ OctalToPerms () { # <variable> [<octal_perms>]
   do
     _Convert_p=${_Convert_octal:${_Convert_i}:1}
     _Convert_x='x'
-    ((4 <= _Convert_p)) && _Convert_p=$((_Convert_p - 4)) && _Convert_perms+='r' || _Convert_perms+='-'
-    ((2 <= _Convert_p)) && _Convert_p=$((_Convert_p - 2)) && _Convert_perms+='w' || _Convert_perms+='-'
-    ((0 == _Convert_i && 4 <= _Convert_s)) && _Convert_s=$((_Convert_s - 4)) && _Convert_x='s'
-    ((1 == _Convert_i && 2 <= _Convert_s)) && _Convert_s=$((_Convert_s - 2)) && _Convert_x='s'
-    ((2 == _Convert_i && 1 <= _Convert_s)) && _Convert_x='t'
-    ((1 <= _Convert_p)) && _Convert_perms+="${_Convert_x}" || _Convert_perms+='-'
+    ((_Convert_p >= 4)) && _Convert_p=$((_Convert_p - 4)) && _Convert_perms+='r' || _Convert_perms+='-'
+    ((_Convert_p >= 2)) && _Convert_p=$((_Convert_p - 2)) && _Convert_perms+='w' || _Convert_perms+='-'
+    if ((_Convert_i == 0 && _Convert_s >= 4))
+    then
+      _Convert_s=$((_Convert_s - 4))
+      ((_Convert_p >= 1)) && _Convert_x='s' || _Convert_x='S'
+    fi
+    if ((_Convert_i == 1 && _Convert_s >= 2))
+    then
+      _Convert_s=$((_Convert_s - 2))
+      ((_Convert_p >= 1)) && _Convert_x='s' || _Convert_x='S'
+    fi
+    if ((_Convert_i == 2 && _Convert_s >= 1))
+    then
+      ((_Convert_p >= 1)) && _Convert_x='t' || _Convert_x='T'
+    fi
+    if ((_Convert_p >= 1))
+    then
+      _Convert_perms+="${_Convert_x}"
+    else
+      case "${_Convert_x}" in
+        s|t) _Convert_perms+='-' ;;
+        S|T) _Convert_perms+="${_Convert_x}" ;;
+        *) _Convert_perms+='-' ;;
+      esac
+    fi
   done
 
   ${_M} && _Trace 'Perms string. (%s)' "${_Convert_perms}"
   eval "${_Convert_var}=\"\${_Convert_perms}\""
 
-  ${M} && Trace 'OctalToPerms return. (%s)' 0
+  ${_M} && _Trace 'OctalToPerms return. (%s)' 0
   return 0
 }
 
@@ -197,25 +217,31 @@ PermsToOctal () { # <variable> [<perms_string>]
       x)
         ((_Convert_x+=1))
         ;;
-      s|S)
+      s)
         ((_Convert_s+=(8 - _Convert_i) / 3 * 2))
         ((_Convert_x+=1))
         ;;
-      t|T)
+      S)
+        ((_Convert_s+=(8 - _Convert_i) / 3 * 2))
+        ;;
+      t)
         ((_Convert_s+=1))
         ((_Convert_x+=1))
+        ;;
+      T)
+        ((_Convert_s+=1))
         ;;
       *)
         ;;
     esac
-    ((0 == ++_Convert_i % 3)) && _Convert_octal+="${_Convert_x}" && _Convert_x=0
+    ((++_Convert_i % 3 == 0)) && _Convert_octal+="${_Convert_x}" && _Convert_x=0
   done
   ((_Convert_s)) || _Convert_s=
 
   ${_M} && _Trace 'Octal perms. (%s)' "${_Convert_octal}"
   eval "${_Convert_var}=\"\${_Convert_s}\${_Convert_octal}\""
 
-  ${M} && Trace 'PermsToOctal return. (%s)' 0
+  ${_M} && _Trace 'PermsToOctal return. (%s)' 0
   return 0
 }
 

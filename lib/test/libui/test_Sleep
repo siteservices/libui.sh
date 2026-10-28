@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sleep
+#
+#####
+
+test_Sleep () {
+  LibuiPerformTest 'Sleep 0 && printf "slept\n"'
+  LibuiValidateTest ${?} 0 'slept'
+  return ${?}
+}
+
+return 0

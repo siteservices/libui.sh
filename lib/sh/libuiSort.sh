@@ -201,7 +201,7 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> .
       local _Sort_i
       local _Sort_l
       local _Sort_p
-      while ((0 < ${#_Sort_source[@]}))
+      while ((${#_Sort_source[@]} > 0))
       do
         _Sort_b=${_Sort_source[${AO}]}
         _Sort_e=${_Sort_source[$((AO + 1))]}
@@ -221,8 +221,8 @@ Sort () { # [-a|-A|-l|-L|-n|-N|-p|-u] [-c <compare_function>] <array_var_name> .
           ((_Sort_i++))
         done
         _Sort_results=( "${_Sort_results[@]:0:$((_Sort_b - AO))}" "${_Sort_l[@]}" "${_Sort_p}" "${_Sort_g[@]}" "${_Sort_results[@]:$((_Sort_e - AO + 1))}" )
-        ((0 < ${#_Sort_l[@]} - AO)) && _Sort_source+=( "${_Sort_b}" "$((_Sort_b + ${#_Sort_l[@]} + AO - 1))" )
-        ((0 < ${#_Sort_g[@]} - AO)) && _Sort_source+=( "$((_Sort_e - ${#_Sort_g[@]} + 1))" "${_Sort_e}" )
+        ((${#_Sort_l[@]} - AO > 0)) && _Sort_source+=( "${_Sort_b}" "$((_Sort_b + ${#_Sort_l[@]} + AO - 1))" )
+        ((${#_Sort_g[@]} - AO > 0)) && _Sort_source+=( "$((_Sort_e - ${#_Sort_g[@]} + 1))" "${_Sort_e}" )
       done
 
       ${_M} && _Trace 'Check for unique. (%s)' "${_Sort_unique}"
