@@ -1,0 +1,15 @@
+#!/usr/bin/env libui
+#####
+#
+# test_IsRemote
+#
+#####
+
+test_IsRemote () {
+  LoadMod SSH
+  LibuiPerformTest 'IsRemote localhost; printf "localhost=%s\n" "${?}"; IsRemote example.com; printf "remote=%s\n" "${?}"'
+  LibuiValidateTest ${?} 0 "localhost=1${N}remote=0"
+  return ${?}
+}
+
+return 0

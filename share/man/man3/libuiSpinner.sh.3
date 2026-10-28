@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd July 19, 2026
+.Dd October 25, 2026
 .Dt LIBUISPINNER.SH 3
 .Os
 .Sh NAME
@@ -36,9 +36,9 @@ user interface library
 .Sy WaitSpinner
 .Pp
 .Sy Sleep
-.Op Fl i Ar <message>
+.Op Fl m Ar <message>
 .Op Fl u Ar <interval>
-.Op Ar <sleep>
+.Op Ar <seconds>
 .Sh DESCRIPTION
 The
 .Nm
@@ -153,9 +153,9 @@ The following command displays a countdown message while waiting for time to
 pass:
 .Bd -ragged -offset 4n
 .Sy Sleep
-.Op Fl i Ar "<message>"
+.Op Fl m Ar "<message>"
 .Op Fl u Ar <interval>
-.Op Ar <sleep>
+.Op Ar <seconds>
 .Ed
 The command options are as follows:
 .Bl -tag -offset 4n -width 4n
@@ -175,13 +175,13 @@ The number of seconds to sleep between updates to the message.
 The default is one second if an
 Ar <interval>
 is not provided.
-.It Ar <sleep>
+.It Ar <seconds>
 The number of seconds to sleep.
 The default is one second.
 Note: The total number of seconds that the
 .Sx Sleep
 command will sleep is the
-.Ar <sleep>
+.Ar <seconds>
 seconds
 divided by the
 .Ar <interval>

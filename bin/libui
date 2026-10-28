@@ -33,7 +33,10 @@
 #####
 
 # determine root dir
-_dir="${BASH_SOURCE[0]}" && _dir="${_dir:-${(%):-%N}}" && _dir="${_dir%/bin/*}"
+_app="${BASH_SOURCE[0]:-${(%):-%N}}"
+[[ "${_app}" != */* ]] && _path="$(command -v "${_app}" 2> /dev/null)" && [[ -n "${_path}" ]] && _app="${_path}"
+[[ "${_app}" == */* ]] && _dir="${_app%/*}" || _dir='.'
+_dir="$(cd -- "${_dir}" 2> /dev/null && pwd)" && _dir="${_dir%/bin}"
 
 # libui.sh path
 [[ "${1}" == '-?' ]] && printf "%s\n" "${LIBUI:-${_dir}/lib/sh/libui.sh}" && exit 0

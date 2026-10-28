@@ -1,5 +1,33 @@
 # Change Log
 
+## v2.020
+
+### New Features / Enhancements
+
+* Add support for LOCATION in libui User mod.
+* Add SetUID/SetGID and Sticky bit support to libui Convert mod OctalToPerms.
+* Add SetUID/SetGID and Sticky bit support to libui Convert mod PermsToOctal.
+* Improve libui CMDPATH directory identification.
+* Improve libui root directory identification.
+* Add and update regression tests.
+* Update documentation.
+* Update man pages.
+
+### Bug Fixes
+
+* Fix answer capture in libui.sh when an answer contains a single quote.
+* Fix AnswerMatches comparison in libui.sh when using bash 3.
+* Fix libui File mod file descriptor allocation overlap.
+* Fix sleep processing in libui Spinner mod Sleep command.
+* Fix macOS font selection in libui User mod.
+* Fix libui Term mod default latency in bash.
+* Change several comparisons to common convention (var to val, not val to var).
+* Other minor fixes and tweaks.
+
+### Incompatibilities
+
+* Change libui Spinner mod Sleep -i (Info Message) to -m (Message).
+
 ## v2.019
 
 ### New Features / Enhancements
@@ -327,9 +355,9 @@ source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 ### Bug Fixes
 
 * Fix libui package / installer duplicate file in tarball.
-* Fix multi-word handling in libui Sort mod `Sort` command. (Bash)
-* Fix `awk` math processing in libui Timer mod. (Bash)
-* Use `awk` math processing in libui.sh if `bc` is not available. (Bash)
+* Fix multi-word handling in libui Sort mod `Sort` command. (bash)
+* Fix `awk` math processing in libui Timer mod. (bash)
+* Use `awk` math processing in libui.sh if `bc` is not available. (bash)
 
 ## v2.006
 
@@ -693,4 +721,4 @@ source "${LIBUI:-$(libui -\?)}" "${0}" "${@}"
 * Fix `LibuiUpdateMan` (change man= to \_Util\_mp).
 * Update libui and libui-tests.sh to improve testing.
 * Fix some tests in libui-test.sh.
-* Also simplified `((0 == ${?}))` constructs to just `((${?}))`.
+* Also simplified `((${?} == 0))` constructs to just `((${?}))`.

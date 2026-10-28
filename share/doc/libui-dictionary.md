@@ -706,11 +706,11 @@ Pauses execution and optionally provides a countdown. The countdown is updated a
 Waiting %s...
 ```
 
-* **-i** - the message to display in sleep (include "%s" for seconds remaining)
+* **-m** - the message to display in sleep (include "%s" for seconds remaining)
 * **-u** - the number of seconds to sleep between updates to the message
 
 ```sh
-Sleep [-m "<message>"] [-u <interval>] [<sleep>]
+Sleep [-m "<message>"] [-u <interval>] [<seconds>]
 ```
 
 ### SetCursor (man libuiTerm.sh) - Move the cursor to the provided position.

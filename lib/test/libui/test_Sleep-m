@@ -1,0 +1,14 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Sleep-m
+#
+#####
+
+test_Sleep-m () {
+  LibuiPerformTest 'Sleep -m "Message %s." 1 4>&1'
+  TERMINAL=true LibuiValidateTest -r ${?} 0 ".*Message 1\..*"
+  return ${?}
+}
+
+return 0

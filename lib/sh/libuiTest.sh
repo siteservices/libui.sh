@@ -242,7 +242,7 @@ LibuiTest () {
       _Test_env="LIBUI_TRACE=false COUNT=${_Test_count} "
       _Test_opt='-T '
       ${_Test_debug} && _Test_opt+='-x d '
-      ((0 < _xdb)) && _Test_opt+="-X ${_xdb} "
+      ((_xdb > 0)) && _Test_opt+="-X ${_xdb} "
       _Test_param=' '
       _Test_errout=false
 
@@ -344,7 +344,7 @@ LibuiTest () {
       do
         Tell '  %s %s' "${_Test_failedids[${i}]}" "${_Test_failedtests[${i}]}"
       done
-      Ask -z 'Press return to exit. (%s)' "${TESTDIR}"
+      [[ -t 0 && -t 1 ]] && Ask -z 'Press return to exit. (%s)' "${TESTDIR}"
     fi
   fi
 
@@ -369,7 +369,7 @@ RetryCountdown () {
 
   ${_M} && _Trace 'RetryCountdown. (%s)' "${retries}"
   ((retries--))
-  if ((0 < retries))
+  if ((retries > 0))
   then
     ${_M} && _Trace 'Return "Bad". (%s)' "${retries}"
     printf "Bad\n"

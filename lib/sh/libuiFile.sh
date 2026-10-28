@@ -28,7 +28,7 @@
 #
 #####
 
-Version -r 2.018 -m 1.19
+Version -r 2.020 -m 1.20
 
 # defaults
 _File_ip=
@@ -73,8 +73,8 @@ Close () { #  [-0|-1..-9] [<file_path>]
     esac
   done
   shift $((OPTIND - 1))
-  ((0 < ${#})) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Close) Called with a file ID and a file path.'
-  ((1 < ${#})) && Tell -E -f -L '(Close) Called with multiple file paths.'
+  ((${#} > 0)) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Close) Called with a file ID and a file path.'
+  ((${#} > 1)) && Tell -E -f -L '(Close) Called with multiple file paths.'
 
   local _File_l
 
@@ -122,7 +122,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
         if ${ZSH}
         then
           _File_x=${_File_fd[${_File_l}]}
-          eval "exec {_File_x}>&-"
+          exec {_File_x}>&-
         else
           eval "exec ${_File_fd[${_File_l}]}>&-"
         fi
@@ -140,7 +140,7 @@ Close () { #  [-0|-1..-9] [<file_path>]
         if ${ZSH}
         then
           _File_x=${_File_fd[${_File_l}]}
-          eval "exec {_File_x}>&-"
+          exec {_File_x}>&-
         else
           eval "exec ${_File_fd[${_File_l}]}>&-"
         fi
@@ -192,8 +192,8 @@ Flush () { #  [-0|-1..-9] [<file_path>]
     esac
   done
   shift $((OPTIND - 1))
-  ((0 < ${#})) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Flush) Called with a file ID and a file path.'
-  ((1 < ${#})) && Tell -E -f -L '(Flush) Called with multiple file paths.'
+  ((${#} > 0)) && [[ -n "${_File_i}" ]] && Tell -E -f -L '(Flush) Called with a file ID and a file path.'
+  ((${#} > 1)) && Tell -E -f -L '(Flush) Called with multiple file paths.'
 
   local _File_l
   local _File_x
@@ -235,10 +235,9 @@ Flush () { #  [-0|-1..-9] [<file_path>]
     then
       if ${ZSH}
       then
-        # is this close / open needed in zsh?
         _File_x=${_File_fd[${_File_l}]}
-        eval "exec {_File_x}>&-"
-        eval "exec ${_File_fd[${_File_l}]}>>'${_File_fp[${_File_l}]}'"
+        exec {_File_x}>&-
+        exec {_File_x}>>"${_File_fp[${_File_l}]}"
       else
         eval "exec ${_File_fd[${_File_l}]}>&-"
         eval "exec ${_File_fd[${_File_l}]}>>'${_File_fp[${_File_l}]}'"
@@ -422,7 +421,7 @@ GetFileList () { # [-d|-e|-f|-h|-n|-p|-r|-w] [-c <path>] <var_name> <file_specif
     esac
   done
   shift $((OPTIND - 1))
-  ((0 < ${#})) || Tell -E -f -L '(GetFileList) Called without a variable name and file specification.'
+  ((${#} > 0)) || Tell -E -f -L '(GetFileList) Called without a variable name and file specification.'
 
   ${_M} && _Trace 'Capture var and spec. (%s)' "${*}"
   local _File_v="${1}" # var
@@ -905,7 +904,7 @@ Open () { # [-0|-1..-9|-a|-b|-c] [-B <path>] [-m <mask>] [-t <timeout>] [-w <tim
       exec {_File_f}>>"${_File_n}"
     fi
   else
-    _File_f=$((_File_i % 10 + 10))
+    _File_f=$((_File_i % 10 + 100))
     if ${_File_c}
     then
       [[ -n "${_File_m}" ]] && _File_x="$(umask)" && umask "${_File_m}"
@@ -1068,7 +1067,7 @@ RemoveFileList () { # [-f (force)] <name_of_array_variable> ...
       done
 
       ${_M} && _Trace 'If any directories, remove them. (%s)' "${_File_d[*]}"
-      if ((0 < ${#_File_d[@]}))
+      if ((${#_File_d[@]} > 0))
       then
         LoadMod Sort
         Sort -p _File_d

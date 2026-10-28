@@ -91,7 +91,7 @@ ValidateWorkspace () { # [-n|-w]
   ${_M} && _Trace 'Check WORKSPACE. (%s)' "${WORKSPACE}"
   if [[ -z "${WORKSPACE}" ]]
   then
-    test -f "${_WS_wsfile}" && source "${_}" || WORKSPACE="${PWD}"
+    [[ -f "${_WS_wsfile}" ]] && source "${_WS_wsfile}" || WORKSPACE="${PWD}"
   fi
 
   ${_M} && _Trace 'Validate WORKSPACE. (%s)' "${WORKSPACE}"
@@ -101,7 +101,7 @@ ValidateWorkspace () { # [-n|-w]
     ConfirmVar -d WORKSPACE && GetRealPath WORKSPACE
 
     ${_M} && _Trace 'Check if in WORKSPACE. (%s)' "${WORKSPACE##*/}"
-    ((0 == NRPARAM)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
+    ((NRPARAM == 0)) && ! PathMatches -P "${PWD}" "${WORKSPACE}" && \
         Tell -C 'Not using current path, using workspace "%s".' "${WORKSPACE##*/}"
 
     ${_M} && _Trace 'Load WORKSPACE environment. (%s)' "${_WS_wsenv}/${WORKSPACE##*/}${_WS_wsenvext}"

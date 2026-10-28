@@ -13,7 +13,7 @@
 .\" contract, tort, or otherwise, arising from, out of, or in connection with
 .\" the use of this content or any of the associated files.
 .\"
-.Dd July 19, 2026
+.Dd October 25, 2026
 .Dt LIBUICONVERT.SH 3
 .Os
 .Sh NAME
@@ -33,6 +33,10 @@ user interface library
 .Sy OctalToPerms
 .Ar <variable_name>
 .Op Ar <octal_perms>
+.Pp
+.Sy PermsToOctal
+.Ar <variable_name>
+.Op Ar <perms_string>
 .Sh DESCRIPTION
 The
 .Nm
@@ -86,7 +90,7 @@ This value must match the input format for proper interpretation.
 .Pp
 The command performs a conversion of the provided
 .Ar <date_time_value>
-provided and places the converted value in the
+and places the converted value in the
 .Ar <variable_name>
 variable.
 If the
@@ -107,7 +111,7 @@ The command options are as follows:
 .It Ar <variable_name>
 The name of the variable that the
 .Nm
-function should place the output format converted date / time value.
+function should place the converted permissions string value.
 .It Ar <octal_perms>
 The octal permissions value that should be converted.
 The value can be 3 or 4 digits, i.e., the function understands the SUID, SGID,
@@ -116,12 +120,42 @@ and sticky bits.
 .Pp
 The command performs a conversion of the provided
 .Ar <octal_perms>
-provided and places the converted string in the
+and places the converted string in the
 .Ar <variable_name>
 variable.
 If the
 .Ar <octal_perms>
 is not provided, the command will obtain the octal permissions from the
+.Ar <variable_name>
+variable.
+.Ss PermsToOctal
+The PermsToOctal command converts an octal permissions value into a permissions
+string similar to that provided by "ls".
+.Pp
+.Sy PermsToOctal
+.Ar <variable_name>
+.Op Ar <perms_string>
+.Pp
+The command options are as follows:
+.Bl -tag -offset 4n -width 4n
+.It Ar <variable_name>
+The name of the variable that the
+.Nm
+function should place the converted permissions string value.
+.It Ar <perms_string>
+The permissions string that should be converted.
+The string format should comply with the format defined in
+.Xr chmod 3 ,
+.El
+.Pp
+The command performs a conversion of the provided
+.Ar <perms_string>
+and places the converted string octal value in the
+.Ar <variable_name>
+variable.
+If the
+.Ar <perms_string>
+is not provided, the command will obtain the permissions string from the
 .Ar <variable_name>
 variable.
 .Sh EXAMPLES
@@ -140,6 +174,12 @@ is assigned the value '2021-12-28'.
 Result: The variable
 .Ar perms
 is assigned the value 'rwxr-x---'.
+.Sy PermsToOctal perms 'rw-r--r--'
+.Ed
+.Pp
+Result: The variable
+.Ar perms
+is assigned the value 644.
 .Sh SEE ALSO
 .Xr bash 1 ,
 .Xr date 1 ,

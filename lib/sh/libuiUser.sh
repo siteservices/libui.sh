@@ -28,11 +28,11 @@
 #
 #####
 
-Version -r 2.018 -m 1.17
+Version -r 2.020 -m 1.18
 
 # defaults
 userdotfile="${userdotfile:-${HOME}/.config/user}"
-defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
+defaultuserinfo=( 'NAME' 'ORG' 'TITLE' 'EMAIL' 'PHONE' 'LOCATION' 'COLOR' 'MODE' 'FONTFACE' 'FONTSIZE' )
 
 # Set user information
 #
@@ -46,6 +46,8 @@ UICMD+=( '_SetUserInfo' )
 _SetUserInfo () {
   ${_S} && ((_c_SetUserInfo++))
   ${_M} && _Trace '_SetUserInfo [%s]' "${*}"
+
+  ! [[ -t 0 && -t 1 ]] && Tell -E -f 'User setup required. Please execute "libui -U" in an interactive shell first.'
 
   ${_quiet} && Tell -E -f 'User setup required. Please execute without -Q (Quiet) option.'
 
@@ -69,7 +71,7 @@ _SetUserInfo () {
         do
           if ${ZSH}
           then
-            ((0 < ${_User_info[(Ie)${_User_entry}]})) && _User_entry=
+            ((${_User_info[(Ie)${_User_entry}]} > 0)) && _User_entry=
           else
             for _User_test in "${_User_info[@]}"
             do
@@ -158,11 +160,43 @@ _SetUserInfo () {
             else
               _User_test="${PHONE//[^0-9]/}"
               ((10 == ${#_User_test})) && PHONE="+1.${_User_test:0:3}.${_User_test:3:3}.${_User_test:6}"
-              ((11 == ${#_User_test})) && ((1 == ${_User_test:0:1})) && PHONE="+1.${_User_test:1:3}.${_User_test:4:3}.${_User_test:7}"
-              if Verify 'Save telephone number as "%s"?' "${PHONE}"
+              ((11 == ${#_User_test})) && \
+                  ((1 == ${_User_test:0:1})) && PHONE="+1.${_User_test:1:3}.${_User_test:4:3}.${_User_test:7}"
+              Verify 'Save telephone number as "%s"?' "${PHONE}" && _User_invalid=false
+            fi
+          done
+          ;;
+        LOCATION)
+          while ${_User_invalid}
+          do
+            _User_test="${LOCATION}"
+            Ask -n LOCATION -d "${LOCATION}" -z "What is the user's location? (Address, City, ST[, Zip[, CC]])"
+            if [[ "${_User_test}" == "${LOCATION}" ]]
+            then
+              _User_invalid=false
+            else
+              ${ZSH} && eval "_User_test=( \"\${(s:,:)LOCATION}\" )" || IFS=, read -r -a _User_test <<< "${LOCATION}"
+              local _User_address="${_User_test[@]:0:1}"; _User_address="${_User_address## }"
+              local _User_city="${_User_test[@]:1:1}"; _User_city="${_User_city## }"
+              local _User_state="${_User_test[@]:2:1}"; _User_state="${_User_state## }"
+              local _User_zip="${_User_test[@]:3:1}"; _User_zip="${_User_zip## }"
+              local _User_country="${_User_test[@]:4:1}"; _User_country="${_User_country## }"
+              if [[ -z "${_User_zip}" ]]
               then
-                _User_invalid=false
+                ${ZSH} && eval "_User_test=( \"\${(s: :)_User_state}\" )" || read -r -a _User_test <<< "${_User_state}"
+                _User_state="${_User_test[@]:0:1}"
+                _User_zip="${_User_test[@]:1:1}"
+                _User_country="${_User_test[@]:2:1}"
               fi
+              [[ ! "${_User_zip}" =~ ^[0-9][0-9]*$ ]] && _User_country="${_User_zip}" && _User_zip=
+              ${ZSH} && eval "_User_state=\"\${(U)_User_state}\"" || \
+                  _User_state="$(printf '%s' "${_User_state}" | tr '[:lower:]' '[:upper:]')"
+              ${ZSH} && eval "_User_country=\"\${(U)_User_country}\"" || \
+                  _User_country="$(printf '%s' "${_User_country}" | tr '[:lower:]' '[:upper:]')"
+              [[ -z "${_User_country}" || "${_User_country}" =~ ^U\\.*S\\.*A*\\.*$ ]] && _User_country="US"
+              ((2 != ${#_User_country})) && Info 'Please use a two-character country code.' && continue
+              LOCATION="${_User_address}, ${_User_city}, ${_User_state}, ${_User_zip:+${_User_zip}, }${_User_country}"
+              Verify 'Save location as "%s"?' "${LOCATION}" && _User_invalid=false
             fi
           done
           ;;
@@ -183,17 +217,33 @@ _SetUserInfo () {
         FONTFACE)
           FONTFACE="${FONTFACE:-Hack}"
           StartSpinner 'Searhcing for monospace fonts...'
-          local faces; faces=( )
-          if ${ZSH}
+          local _User_faces; _User_faces=( )
+          if [[ "${OS}" == 'Darwin' ]]
           then
-            faces+=( ${(f)"$(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u)"} )
+            fontfaces () {
+osascript <<'APPLESCRIPT'
+use framework "Foundation"
+use framework "AppKit"
+set fontManager to current application's NSFontManager's sharedFontManager()
+set fontlist to fontManager's availableFontNamesWithTraits:(current application's NSFixedPitchFontMask)
+set monolist to fontlist as list
+set AppleScript's text item delimiters to linefeed
+set monoFonts to monolist as text
+return monoFonts
+APPLESCRIPT
+            }
+            _User_faces=( $(fontfaces | cut -f 1 -d '-' | sort -u) )
           else
-            ((BV >= 40)) && readarray -t -O "${#faces[@]}" faces < <(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) || \
-                IFS=$'\n' faces+=( $(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u) )
+            if ${ZSH}
+            then
+              _User_faces+=( ${(f)"$(fc-list :spacing=100 family 2> /dev/null | grep -iv '\(^\.\|Emoji\)' | sort -u)"} )
+            else
+              readarray -t -O "${#_User_faces[@]}" _User_faces < <(fc-list :spacing=100 family | grep -iv '\(^\.\|Emoji\)' | sort -u)
+            fi
           fi
-          Contains faces 'Hack' || faces+=( 'Hack' )
+          Contains _User_faces 'Hack' || _User_faces+=( 'Hack' )
           StopSpinner
-          Ask -n FONTFACE -S faces -d "${FONTFACE}" 'Desired termnial font face?'
+          Ask -n FONTFACE -S _User_faces -d "${FONTFACE}" 'Desired termnial font face?'
           ;;
         FONTSIZE)
           FONTSIZE="${FONTSIZE:-9}"
@@ -220,17 +270,14 @@ _SetUserInfo () {
     {
       printf "#!%s\n##### User Information\n" "${SHELL:-/bin/zsh}"
       printf 'userinfo=('
-      printf " '%s'" "${userinfo[@]}"
+      printf " '%s'" "${userinfo[@]//'/'\\''}"
       printf ' )\n'
-      local _User_export; _User_export=( )
+      local _User_value _User_export; _User_export=( )
       for _User_entry in "${userinfo[@]}"
       do
-        if ${ZSH}
-        then
-          [[ -n "${(P)_User_entry}" ]] && printf "%s='%s'\n" "${_User_entry}" "${(P)_User_entry}" && _User_export+=( ${_User_entry} )
-        else
-          [[ -n "${!_User_entry}" ]] && printf "%s='%s'\n" "${_User_entry}" "${!_User_entry}" && _User_export+=( ${_User_entry} )
-        fi
+        ${ZSH} && _User_value="${(P)_User_entry}" || _User_value="${!_User_entry}"
+        [[ -n "${_User_value}" ]] && printf "%s='%s'\n" "${_User_entry}" "${_User_value//'/'\\''}" && \
+            _User_export+=( ${_User_entry} )
       done
       printf 'export %s\n' "${_User_export[*]}"
     } > "${userdotfile}"

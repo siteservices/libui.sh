@@ -28,7 +28,10 @@
 #
 #####
 
-Version -r 2.017 -m 1.2
+Version -r 2.020 -m 1.3
+
+# defaults
+${ZSH} && _Term_latency=0.25 || _Term_latency=1
 
 # At Position Execute Command
 #
@@ -47,11 +50,11 @@ At () {
   tput cup ${1} ${2}
   shift 2
   "${@}"
-  local _TERM_rv=${?}
+  local _Term_rv=${?}
   printf "${DRC}"
 
-  ${_T} && _Trace 'At return. (%s)' "${_TERM_rv}"
-  return ${_TERM_rv}
+  ${_T} && _Trace 'At return. (%s)' "${_Term_rv}"
+  return ${_Term_rv}
 }
 
 # Get Cursor Position
@@ -70,8 +73,8 @@ GetCursor () {
   if [[ -n "${DCP}" ]]
   then
     local _
-    printf "${DCP}" && IFS='[;' read -t "${LIBUI_LATENCY:-0.25}" -rsd R _ ROW COL
-    local _TERM_rv=${?}
+    printf "${DCP}" && IFS='[;' read -t "${LIBUI_LATENCY:-${_Term_latency}}" -rsd R _ ROW COL
+    local _Term_rv=${?}
     ((ROW--))
     ((COL--))
   else
@@ -79,8 +82,8 @@ GetCursor () {
     COL=
   fi
 
-  ${_T} && _Trace 'GetCursor return. (%s)' "${_TERM_rv}"
-  return ${_TERM_rv}
+  ${_T} && _Trace 'GetCursor return. (%s)' "${_Term_rv}"
+  return ${_Term_rv}
 }
 
 # Set Cursor Position
@@ -97,10 +100,10 @@ SetCursor () {
   ${_T} && _Trace 'SetCursor [%s]' "${*}"
 
   tput cup ${1} ${2}
-  local _TERM_rv=${?}
+  local _Term_rv=${?}
 
-  ${_T} && _Trace 'SetCursor return. (%s)' "${_TERM_rv}"
-  return ${_TERM_rv}
+  ${_T} && _Trace 'SetCursor return. (%s)' "${_Term_rv}"
+  return ${_Term_rv}
 }
 
 # Save Cursor Position

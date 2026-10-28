@@ -1,0 +1,17 @@
+#!/usr/bin/env libui
+#####
+#
+# test_GetElapsed
+#
+#####
+
+test_GetElapsed () {
+  StartTimer t
+  sleep 1
+  GetElapsed t
+  LibuiPerformTest 'Tell "Elapsed: %s" "${ELAPSED}"'
+  LibuiValidateTest -r ${?} 0 'Elapsed: [12].*'
+  return ${?}
+}
+
+return 0

@@ -11,6 +11,10 @@ environment.
 The easiest way to start execute the test suite is to use the `libui -t`
 command. Use `man libui` for more details.
 
+Note: Many of the tests assume running in a terminal, therefore, if running the
+tests in a pipeline or other non-terminal environment force terminal execution
+using the `TERMINAL=true libui -t` command.
+
 ## License
 
 This content and associated files as published by siteservices.net, Inc. are

@@ -1,0 +1,29 @@
+#!/usr/bin/env libui
+#####
+#
+# test_FormatElapsed-d
+#
+#####
+
+test_FormatElapsed-d () {
+  LibuiGetDisplayTestValues
+  LoadMod Timer
+  if ${ZSH}
+  then
+    ELAPSED=90061.5
+    FormatElapsed -d
+    LibuiPerformTest 'Tell "Formatted zsh: %s" "${ELAPSED}"'
+    LibuiValidateTest ${?} 0 'Formatted zsh: 1 day 01:01:01.5000'
+  else
+    ELAPSED=90061
+    FormatElapsed -d
+    LibuiPerformTest 'Tell "Formatted bash: %s" "${ELAPSED}"'
+    LibuiValidateTest ${?} 0 'Formatted bash: 1 day 01:01:01'
+  fi
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0

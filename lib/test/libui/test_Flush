@@ -1,0 +1,21 @@
+#!/usr/bin/env libui
+#####
+#
+# test_Flush
+#
+#####
+
+test_Flush () {
+  local lfile; GetTmp -f lfile
+  LoadMod File
+  Open -1 -c "${lfile}"
+  Write -1 'Flushed data'
+  Flush -1
+  LibuiPerformTest "cat '${lfile}'"
+  local rv=${?}
+  Close -1
+  LibuiValidateTest "${rv}" 0 'Flushed data'
+  return ${?}
+}
+
+return 0

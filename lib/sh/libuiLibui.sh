@@ -33,7 +33,7 @@
 #
 #####
 
-Version -r 2.019 -m 1.27
+Version -r 2.020 -m 1.28
 
 ##### configuration
 
@@ -68,6 +68,7 @@ _Util_excludes=(
   '*.pyc'
   '.DS_Store'
   '.git'
+  '.gitattributes'
   '.gitignore'
 )
 GetTmp _Util_tmpdir
@@ -289,7 +290,7 @@ EOF
   ExitCallback () {
     ${_M} && _Trace 'In user exit callback.'
 
-    ${debug} && Verify -r '[yY].*' 'Delete logs and exit? (%s)' "${_Util_tmpdir}"
+    ${debug} && [[ -t 0 ]] && [[ -t 1 ]] && Verify -r '[yY].*' 'Delete logs and exit? (%s)' "${_Util_tmpdir}"
   }
 
   InitCallback () {

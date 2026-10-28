@@ -1,0 +1,18 @@
+#!/usr/bin/env libui
+#####
+#
+# test_CMDPATH_Absolute
+#
+#####
+
+test_CMDPATH_Absolute () {
+  LibuiGetDisplayTestValues
+  LibuiPerformTest '[[ "${CMDPATH}" == /* ]] && Tell "Absolute" || Tell "Relative"'
+  LibuiValidateTest ${?} 0 "Absolute"
+  return ${?}
+}
+
+# test setup
+_Test_opt+='-x P '
+
+return 0
